@@ -1,3 +1,5 @@
+import '../global'
+import 'react-native-get-random-values'
 import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native'
 import { SplashScreen, Stack } from 'expo-router'
 import { useColorScheme } from 'react-native'
@@ -9,6 +11,7 @@ import { config } from '../tamagui.config'
 import { useFonts } from 'expo-font'
 import { useEffect } from 'react'
 import delegateManager from '../lib/delegate-manager'
+import * as SecureStore from 'expo-secure-store'
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -21,14 +24,23 @@ export const unstable_settings = {
 }
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
-SplashScreen.preventAutoHideAsync()
+SplashScreen.preventAutoHideAsync();
 
 // Initialize the delegate
-// delegateManager.init().then(() => {
-//   console.log("DELEGATE INITIALIZED")
-// }).catch((e) => {
-//   console.error("UNABLE TO INITIALIZE DELEGATE", e)
-// })
+// TODO: remove this 
+// (async () => {
+//   await SecureStore.deleteItemAsync('private_key')
+//   await SecureStore.deleteItemAsync('delegate')
+//   await SecureStore.deleteItemAsync('owner')
+//   await SecureStore.deleteItemAsync('session')
+//   await SecureStore.deleteItemAsync('profile')
+
+// })();
+delegateManager.init().then(() => {
+  console.log("DELEGATE INITIALIZED")
+}).catch((e) => {
+  console.error("UNABLE TO INITIALIZE DELEGATE", e)
+})
 
 export default function RootLayout() {
   const [interLoaded, interError] = useFonts({

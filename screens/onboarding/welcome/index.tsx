@@ -9,11 +9,6 @@ import delegateManager from '../../../lib/delegate-manager'
 const WelcomeScreen = () => {
     const insets = useSafeAreaInsets()
     const rounter = useRouter()
-    useEffect(() => {
-        (async () => {
-            await delegateManager.init()
-        })()
-    }, [])
     const goToNext = async () => {
         router.push('/onboard/kade-connect/scan')
         // try {

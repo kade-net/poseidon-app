@@ -1,5 +1,4 @@
-import { Aptos, AptosConfig } from "@aptos-labs/ts-sdk";
-import { AptosClient, Network, Provider } from "aptos";
+import { Account, Aptos, AptosConfig, Ed25519PrivateKey, Network } from "@aptos-labs/ts-sdk";
 
 export const USERNAMES_COLLECTION_ADDRESS = '0x90f80a1e3d3ffb9f96455eba717e55d1ee233a909d1f604f23b4bbae0686d38a'
 
@@ -21,11 +20,36 @@ export const USERNAME_CONTRACT = `${MODULE_ADDRESS}::usernames`
 export const ACCOUNT_ENTRY_FUNCTIONS = {
     create_account_and_delegate_link_intent: `${ACCOUNT_CONTRACT}::create_account_and_delegate_link_intent`,
     account_link_intent: `${ACCOUNT_CONTRACT}::account_link_intent`,
+    delegate_link_intent: `${ACCOUNT_CONTRACT}::delegate_link_intent`,
+    update_profile: `${ACCOUNT_CONTRACT}::update_profile`,
+    follow_account: `${ACCOUNT_CONTRACT}::follow_account`,
+    unfollow_account: `${ACCOUNT_CONTRACT}::unfollow_account`,
+}
+
+export const ACCOUNT_VIEW_FUNCTIONS = {
+    get_account: `${ACCOUNT_CONTRACT}::get_account`,
+    delegate_get_owner: `${ACCOUNT_CONTRACT}::delegate_get_owner`,
+}
+
+export const PUBLICATION_ENTRY_FUNCTIONS = {
+    create_publication: `${PUBLICATION_CONTRACT}::create_publication`,
+    remove_publication: `${PUBLICATION_CONTRACT}::remove_publication`,
+    create_comment: `${PUBLICATION_CONTRACT}::create_comment`,
+    remove_comment: `${PUBLICATION_CONTRACT}::remove_comment`,
+    create_repost: `${PUBLICATION_CONTRACT}::create_repost`,
+    remove_repost: `${PUBLICATION_CONTRACT}::remove_repost`,
+    create_quote: `${PUBLICATION_CONTRACT}::create_quote`,
+    remove_quote: `${PUBLICATION_CONTRACT}::remove_quote`,
+    create_reaction: `${PUBLICATION_CONTRACT}::create_reaction`,
+    remove_reaction: `${PUBLICATION_CONTRACT}::remove_reaction`,
 }
 
 
-export const client = new AptosClient('https://fullnode.testnet.aptoslabs.com')
-export const provider = new Provider(Network.TESTNET)
 
 export const aptosConfig = new AptosConfig({ network: Network.TESTNET });
 export const aptos = new Aptos(aptosConfig);
+
+
+export const APP_SUPPORT_API = 'https://f47c-41-80-117-115.ngrok-free.app'
+
+export const KADE_ACCOUNT_ADDRESS = '0x809001fa9030e21dbe72a45291ddf227610e9c228025c8d93670ddd894f4141d'

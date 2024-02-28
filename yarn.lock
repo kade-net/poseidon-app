@@ -7413,6 +7413,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"expo-file-system@npm:~16.0.7":
+  version: 16.0.7
+  resolution: "expo-file-system@npm:16.0.7"
+  peerDependencies:
+    expo: "*"
+  checksum: e9d61d15863f38a4f005f9545403f09ad282ef683e13acf5e5aade6906bfedb8e5e99caa1b27c7cf583719a98390b9e99146a81f31f5c094f9c1e3a458ba6c03
+  languageName: node
+  linkType: hard
+
 "expo-font@npm:~11.10.2":
   version: 11.10.2
   resolution: "expo-font@npm:11.10.2"
@@ -7421,6 +7430,26 @@ __metadata:
   peerDependencies:
     expo: "*"
   checksum: 6ac97223d820af1150dc5fa7ecc62035153b4ce35aae873e7a002b0bafdae25b9a99686ceb65db1130f8acab471b148e2c8ebdc96fd28f29a240def825914b17
+  languageName: node
+  linkType: hard
+
+"expo-image-loader@npm:~4.6.0":
+  version: 4.6.0
+  resolution: "expo-image-loader@npm:4.6.0"
+  peerDependencies:
+    expo: "*"
+  checksum: 02981667f03dc429cd9db37e0acc302e4a0c4bb5875dc087b1c26388ef64563481e52dddc1d42dd32794eb7051d1acf5bc0c078413469c29025a02d4d4af1154
+  languageName: node
+  linkType: hard
+
+"expo-image-picker@npm:~14.7.1":
+  version: 14.7.1
+  resolution: "expo-image-picker@npm:14.7.1"
+  dependencies:
+    expo-image-loader: "npm:~4.6.0"
+  peerDependencies:
+    expo: "*"
+  checksum: 43a139c2f52bc71ca9e5c520fe70ef3a2af229118d1cf4485947841f6e464440f974c9c07fc250fe7dd085fc63a812829c2f29e4ee98569af9be8dcecbd46162
   languageName: node
   linkType: hard
 
@@ -10966,7 +10995,9 @@ __metadata:
     dayjs: "npm:^1.11.10"
     expo: "npm:~50.0.6"
     expo-camera: "npm:~14.0.5"
+    expo-file-system: "npm:~16.0.7"
     expo-font: "npm:~11.10.2"
+    expo-image-picker: "npm:~14.7.1"
     expo-linking: "npm:^6.2.2"
     expo-router: "npm:~3.4.7"
     expo-secure-store: "npm:~12.8.1"

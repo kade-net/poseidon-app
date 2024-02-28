@@ -13,6 +13,7 @@ class DelegateManager {
     private_key: string | null = null;
     account: AptosAccount | null = null;
     private _owner: string | null = null;
+    signer: Account | null = null;
 
     get owner() {
         let current = this._owner
@@ -29,13 +30,13 @@ class DelegateManager {
     async createDelegate() {
         let account = new AptosAccount()
         this.private_key = account.toPrivateKeyObject().privateKeyHex
+        this.signer = Account.fromPrivateKey({
+            privateKey: new Ed25519PrivateKey(new HexString(this.private_key).toUint8Array())
+        })
         return this.private_key
     }
 
     async init() {
-        // TODO: remove this 
-        await SecureStore.deleteItemAsync('private_key')
-
 
         let pk = await SecureStore.getItemAsync('private_key')
 
@@ -48,6 +49,12 @@ class DelegateManager {
         }
 
         this.account = new AptosAccount(new HexString(pk).toUint8Array())
+        this.signer = Account.fromPrivateKey({
+            privateKey: new Ed25519PrivateKey(new HexString(pk).toUint8Array())
+        })
+        this.private_key = pk
+
+
     }
 
     async setOwner(owner: string) {
@@ -110,7 +117,7 @@ class DelegateManager {
 
         console.log(response.data)
 
-        SecureStore.setItem('account-link', 'complete')
+        SecureStore.setItem('deligate', 'registered')
     }
 
 }
