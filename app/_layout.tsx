@@ -8,6 +8,7 @@ import '../tamagui-web.css'
 import { config } from '../tamagui.config'
 import { useFonts } from 'expo-font'
 import { useEffect } from 'react'
+import delegateManager from '../lib/delegate-manager'
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -16,11 +17,18 @@ export {
 
 export const unstable_settings = {
   // Ensure that reloading on `/modal` keeps a back button present.
-  initialRouteName: '(tabs)',
+  initialRouteName: 'onboard',
 }
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync()
+
+// Initialize the delegate
+// delegateManager.init().then(() => {
+//   console.log("DELEGATE INITIALIZED")
+// }).catch((e) => {
+//   console.error("UNABLE TO INITIALIZE DELEGATE", e)
+// })
 
 export default function RootLayout() {
   const [interLoaded, interError] = useFonts({
@@ -48,9 +56,19 @@ function RootLayoutNav() {
   return (
     <TamaguiProvider config={config} defaultTheme={colorScheme as any}>
       <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-        <Stack>
+        <Stack
+          screenOptions={{
+            headerShown: false
+          }}
+          initialRouteName='onboard'
+          screenListeners={{
+            state: console.log
+          }}
+        >
+          <Stack.Screen name="onboard" options={{ headerShown: false }} />
+          <Stack.Screen name="connect" options={{ headerShown: false }} />
+          <Stack.Screen name="profiles" options={{ headerShown: false }} />
           <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-          <Stack.Screen name="modal" options={{ presentation: 'modal' }} />
         </Stack>
       </ThemeProvider>
     </TamaguiProvider>

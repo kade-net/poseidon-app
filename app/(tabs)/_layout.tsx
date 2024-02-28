@@ -1,3 +1,4 @@
+import { Bell, Home, Mail, Search } from '@tamagui/lucide-icons'
 import { Link, Tabs } from 'expo-router'
 import { Pressable } from 'react-native'
 import { Text } from 'tamagui'
@@ -6,28 +7,35 @@ export default function TabLayout() {
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: 'red',
+        headerShown: false,
+        tabBarShowLabel: false,
       }}
+      initialRouteName='feed'
     >
       <Tabs.Screen
-        name="index"
+        name="feed"
         options={{
-          title: 'Tab One',
-          tabBarIcon: ({ color }) => <Text>Hello!</Text>,
-          headerRight: () => (
-            <Link href="/modal" asChild>
-              <Pressable>
-                <Text>Hello!</Text>
-              </Pressable>
-            </Link>
-          ),
+          tabBarIcon: ({ focused }) => <Home />
         }}
       />
       <Tabs.Screen
-        name="two"
+        name="search"
         options={{
-          title: 'Tab Two',
-          tabBarIcon: ({ color }) => <Text>Hello!</Text>,
+          tabBarIcon: ({ focused }) => <Search />
+        }}
+      />
+      <Tabs.Screen
+        name="notifications"
+        options={{
+          tabBarIcon: ({ focused }) => <Bell />
+        }}
+      />
+
+
+      <Tabs.Screen
+        name="direct-messages"
+        options={{
+          tabBarIcon: ({ focused }) => <Mail /> 
         }}
       />
     </Tabs>
