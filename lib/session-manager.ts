@@ -26,7 +26,7 @@ class SessionManager {
         // TODO: update connector url
         try {
 
-            await axios.post(`https://connector-psi.vercel.app/api/add-delegate`, {
+            const response = await axios.post<{ delegate_linked: boolean, username: string, owner: string } | null>(`https://connector-psi.vercel.app/api/add-delegate`, {
                 delegate_address: address
             },
                 {
@@ -34,6 +34,8 @@ class SessionManager {
                         'Authorization': `Bearer ${this.session}`,
                     }
                 })
+
+            return response.data
         }
         catch (e) {
             console.log(`SOMETHING WENT WRONG:: ${e}`)

@@ -24,6 +24,7 @@ export const ACCOUNT_ENTRY_FUNCTIONS = {
     update_profile: `${ACCOUNT_CONTRACT}::update_profile`,
     follow_account: `${ACCOUNT_CONTRACT}::follow_account`,
     unfollow_account: `${ACCOUNT_CONTRACT}::unfollow_account`,
+    account_setup_with_self_delegate: `${ACCOUNT_CONTRACT}::account_setup_with_self_delegate`,
 }
 
 export const ACCOUNT_VIEW_FUNCTIONS = {
@@ -44,12 +45,21 @@ export const PUBLICATION_ENTRY_FUNCTIONS = {
     remove_reaction: `${PUBLICATION_CONTRACT}::remove_reaction`,
 }
 
+export const USERNAME_VIEW_FUNCTIONS = {
+    is_username_claimed: `${USERNAME_CONTRACT}::is_username_claimed`,
+    is_address_username_owner: `${USERNAME_CONTRACT}::is_address_username_owner`,
+}
+
+export const USERNAME_ENTRY_FUNCTIONS = {
+    claim_username: `${USERNAME_CONTRACT}::claim_username`,
+}
+
 
 
 export const aptosConfig = new AptosConfig({ network: Network.TESTNET });
-export const aptos = new Aptos(aptosConfig);
+export const aptos = new Aptos(aptosConfig); 
 
 
-export const APP_SUPPORT_API = 'https://f47c-41-80-117-115.ngrok-free.app'
+export const APP_SUPPORT_API = 'https://scrooge-rho.vercel.app'
 
 export const KADE_ACCOUNT_ADDRESS = '0x809001fa9030e21dbe72a45291ddf227610e9c228025c8d93670ddd894f4141d'

@@ -4,6 +4,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { Button, View } from 'tamagui'
 import petra from '../../../lib/wallets/petra'
 import delegateManager from '../../../lib/delegate-manager'
+import { User } from '@tamagui/lucide-icons'
 
 
 const WelcomeScreen = () => {
@@ -19,6 +20,14 @@ const WelcomeScreen = () => {
         // }
         // await petra.connect()
     }
+
+    const goToCreateAccount = () => {
+        router.push('/onboard/username')
+    }
+
+    const goToSignIn = () => {
+        router.push('/onboard/signin')
+    }
     return (
         <View w="100%" pb={insets.bottom} alignItems='center' justifyContent='space-between' flex={1} px={20} >
             <View h="80%" w="100%" alignItems='center' justifyContent='center' >
@@ -31,10 +40,15 @@ const WelcomeScreen = () => {
                 </View>
             </View>
 
+            <View w="100%" rowGap={20}  >
+                <Button icon={<User />} w="100%" variant='outlined' onPress={goToSignIn}  >
+                    Sign In
+                </Button>
+                <Button w="100%" onPress={goToCreateAccount}  >
+                    Create Account
+                </Button>
 
-            <Button w="100%" onPress={goToNext}  >
-                Get Started
-            </Button>
+            </View>
 
         </View >
     )
