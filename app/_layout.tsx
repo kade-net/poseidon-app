@@ -29,12 +29,7 @@ SplashScreen.preventAutoHideAsync();
 // Initialize the delegate
 // TODO: remove this 
 // (async () => {
-//   await SecureStore.deleteItemAsync('private_key')
-//   await SecureStore.deleteItemAsync('delegate')
-//   await SecureStore.deleteItemAsync('owner')
-//   await SecureStore.deleteItemAsync('session')
-//   await SecureStore.deleteItemAsync('profile')
-
+//   await delegateManager.nuke()
 // })();
 delegateManager.init().then(() => {
   console.log("DELEGATE INITIALIZED")
