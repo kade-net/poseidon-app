@@ -8,6 +8,8 @@ import { AccountAddress, AccountAuthenticator, Deserializer, RawTransaction, Acc
 import { HexString } from "aptos";
 import { TPROFILE, profileSchema } from "../../schema";
 import * as SecureStore from 'expo-secure-store'
+import client from '../../data/apollo';
+import { GET_MY_PROFILE } from '../../utils/queries';
 
 class AccountContract {
 

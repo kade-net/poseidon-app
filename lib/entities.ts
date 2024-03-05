@@ -2,9 +2,9 @@ namespace Entities {
 
     export interface Profile {
         banner: string;
-        avatar: string;
+        pfp: string;
         username: string;
-        displayName: string;
+        display_name: string;
         bio: string
         id: number
     }

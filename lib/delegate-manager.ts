@@ -199,6 +199,7 @@ class DelegateManager {
     }
 
     async init() {
+        console.log("Owner::", this.owner)
         let pk = await SecureStore.getItemAsync('private_key')
 
         if (!pk) {
