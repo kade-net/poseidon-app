@@ -12,6 +12,8 @@ import { useFonts } from 'expo-font'
 import { useEffect } from 'react'
 import delegateManager from '../lib/delegate-manager'
 import * as SecureStore from 'expo-secure-store'
+import { ApolloProvider } from '@apollo/client'
+import client from '../data/apollo'
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -30,6 +32,7 @@ SplashScreen.preventAutoHideAsync();
 // TODO: remove this 
 // (async () => {
 //   await delegateManager.nuke()
+//   console.log("DONE NUKING")
 // })();
 delegateManager.init().then(() => {
   console.log("DELEGATE INITIALIZED")
@@ -61,23 +64,25 @@ function RootLayoutNav() {
   const colorScheme = useColorScheme()
 
   return (
-    <TamaguiProvider config={config} defaultTheme={colorScheme as any}>
-      <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-        <Stack
-          screenOptions={{
-            headerShown: false
-          }}
-          initialRouteName='onboard'
-          screenListeners={{
-            state: console.log
-          }}
-        >
-          <Stack.Screen name="onboard" options={{ headerShown: false }} />
-          <Stack.Screen name="connect" options={{ headerShown: false }} />
-          <Stack.Screen name="profiles" options={{ headerShown: false }} />
-          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        </Stack>
-      </ThemeProvider>
-    </TamaguiProvider>
+    <ApolloProvider client={client}>
+      <TamaguiProvider config={config} defaultTheme={colorScheme as any}>
+        <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+          <Stack
+            screenOptions={{
+              headerShown: false
+            }}
+            initialRouteName='onboard'
+            screenListeners={{
+              state: console.log
+            }}
+          >
+            <Stack.Screen name="onboard" options={{ headerShown: false }} />
+            <Stack.Screen name="connect" options={{ headerShown: false }} />
+            <Stack.Screen name="profiles" options={{ headerShown: false }} />
+            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+          </Stack>
+        </ThemeProvider>
+      </TamaguiProvider>
+    </ApolloProvider>
   )
 }

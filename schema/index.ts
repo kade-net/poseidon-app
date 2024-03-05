@@ -7,3 +7,14 @@ export const profileSchema = z.object({
 })
 
 export type TPROFILE = z.infer<typeof profileSchema>
+
+export const publicationSchema = z.object({
+    content: z.string(),
+    tags: z.array(z.string()).optional(),
+    media: z.array(z.object({
+        type: z.string(),
+        url: z.string()
+    })).optional()
+})
+
+export type TPUBLICATION = z.infer<typeof publicationSchema>

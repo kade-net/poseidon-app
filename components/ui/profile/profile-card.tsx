@@ -15,7 +15,7 @@ const ProfileCard = (props: Entities.Profile) => {
             >
                 <Avatar circular size={"$3"} >
                     <Avatar.Image
-                        src={profile?.avatar}
+                        src={profile?.pfp}
                         accessibilityLabel="Profile Picture"
                     />
                     <Avatar.Fallback
@@ -28,7 +28,7 @@ const ProfileCard = (props: Entities.Profile) => {
                     <View flexDirection="row" alignItems="flex-start" columnGap={10}>
                         <View>
                             <Text>
-                                {profile?.displayName}
+                                {profile?.display_name}
                             </Text>
                             <Text fontSize={'$1'} color={'$gray10'} >
                                 @{profile?.username}
