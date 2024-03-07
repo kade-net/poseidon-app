@@ -10,7 +10,8 @@ export async function getAuthenticatorsAndRawTransaction(
 ): Promise<{
     raw_txn_desirialized: RawTransaction,
     fee_payer_signature: AccountAuthenticator
-    sender_signature: AccountAuthenticator
+    sender_signature: AccountAuthenticator,
+    client_ref?: string
 }> {
 
     const account = delegateManager.account
@@ -20,12 +21,12 @@ export async function getAuthenticatorsAndRawTransaction(
         throw new Error("No account found")
     }
 
-    const response = await axios.post<{ raw_txn: Array<number>, signature: Array<number> }>(`${sponsor_endpoint}`, {
+    const response = await axios.post<{ client_ref?: string, txn: { raw_txn: Array<number>, signature: Array<number> } }>(`${sponsor_endpoint}`, {
         ...payload,
         delegate_address: account.address().toString()
     })
 
-    const { raw_txn, signature } = response.data
+    const { client_ref, txn: { raw_txn, signature } } = response.data
 
     const txn_deserializer = new Deserializer(new Uint8Array(raw_txn))
     const signature_deserializer = new Deserializer(new Uint8Array(signature))
@@ -44,6 +45,7 @@ export async function getAuthenticatorsAndRawTransaction(
     return {
         raw_txn_desirialized: raw_txn_deserialized,
         fee_payer_signature: signature_deserialized,
-        sender_signature: accountSignature
+        sender_signature: accountSignature,
+        client_ref
     }
 }

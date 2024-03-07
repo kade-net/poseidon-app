@@ -1,28 +1,27 @@
-import { View, Text, Heading, Avatar, Separator } from 'tamagui'
+import { View, Text, Heading, Avatar, Separator, ScrollView } from 'tamagui'
 import React, { useEffect, useState } from 'react'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { TouchableOpacity } from 'react-native'
 import { ArrowLeft, Dot, MoreHorizontal } from '@tamagui/lucide-icons'
 import { useRouter } from 'expo-router'
 import { useQuery } from '@apollo/client'
-import { GET_POST } from '../../../../utils/queries'
 import dayjs from 'dayjs'
 import relativeTime from 'dayjs/plugin/relativeTime'
 import PostDetailStats from './post-detail-stats'
 import FeedImage from '../../../../components/ui/feed/image'
+import { PublicationQuery } from '../../../../__generated__/graphql'
+import Reactions from '../../../../components/ui/feed/reactions'
+import PublicationStats from '../../../../components/ui/feed/publication-stats'
+import PublicationComments from './publication-comments'
 dayjs.extend(relativeTime)
 
 interface Props {
-    id: string
+    data: PublicationQuery
 }
 
 const PostDetail = (props: Props) => {
-    const { id } = props
-    const postQuery = useQuery(GET_POST, {
-        variables: {
-            postId: parseInt(id)
-        }
-    })
+    const { data } = props
+
     const router = useRouter()
 
     const goBack = () => {
@@ -30,7 +29,9 @@ const PostDetail = (props: Props) => {
     }
 
     return (
-        <View flex={1} w="100%" height={"100%"} px={10} justifyContent='flex-start' >
+        <ScrollView w="100%" contentContainerStyle={{
+            width: '100%'
+        }} nestedScrollEnabled >
             <View w="100%" flexDirection='row' alignItems='center' columnGap={50} mb={20} >
                 <TouchableOpacity onPress={goBack} >
                     <ArrowLeft />
@@ -38,7 +39,7 @@ const PostDetail = (props: Props) => {
                 <Heading
                     size={"$6"}
                 >
-                    Post
+                    Conversation
                 </Heading>
             </View>
             <View w="100%">
@@ -51,7 +52,7 @@ const PostDetail = (props: Props) => {
                         <Avatar circular  >
                             <Avatar.Image
                                 accessibilityLabel='Profile Picture'
-                                src={postQuery?.data?.publication?.creator?.profile?.pfp as string}
+                                src={data?.publication?.creator?.profile?.pfp as string}
                             />
                             <Avatar.Fallback
                                 backgroundColor={'$pink10'}
@@ -59,19 +60,19 @@ const PostDetail = (props: Props) => {
                         </Avatar>
                         <View>
                             <Text fontWeight={"900"} >
-                                {postQuery?.data?.publication?.creator?.profile?.display_name}
+                                {data?.publication?.creator?.profile?.display_name}
                             </Text>
                             <View flexDirection='row' alignItems='center' columnGap={1} >
 
                                 <Text fontSize={"$3"} color={"$gray11"} >
-                                    @{postQuery?.data?.publication?.creator?.username?.username}
+                                    @{data?.publication?.creator?.username?.username}
                                 </Text>
                                 <Dot
                                     color={'$gray11'}
                                 />
                                 <Text fontSize={"$3"} color={"$gray11"} >
                                     {
-                                        dayjs(postQuery?.data?.publication?.timestamp).fromNow()
+                                        dayjs(data?.publication?.timestamp).fromNow()
                                     }
                                 </Text>
                             </View>
@@ -84,14 +85,14 @@ const PostDetail = (props: Props) => {
                 <View w="100%" py={10} >
                     <Text
                         mb={
-                            ((postQuery?.data?.publication?.content?.media?.length ?? 0) > 0) ? 20 : 0
+                            ((data?.publication?.content?.media?.length ?? 0) > 0) ? 20 : 0
                         }
                     >
-                        {postQuery?.data?.publication?.content?.content}
+                        {data?.publication?.content?.content}
                     </Text>
                     <View flexDirection="row" flexWrap="wrap" w="100%" columnGap={10} rowGap={10} >
                         {
-                            postQuery?.data?.publication?.content?.media?.filter((media: Entities.Media) => media?.type?.includes("image"))?.map((media: Entities.Media) => {
+                            data?.publication?.content?.media?.filter((media: Entities.Media) => media?.type?.includes("image"))?.map((media: Entities.Media) => {
                                 return (
                                     <FeedImage
                                         image={media?.url}
@@ -103,15 +104,34 @@ const PostDetail = (props: Props) => {
                     </View>
                 </View>
 
-                <Separator />
-                <PostDetailStats
-                    stats={postQuery?.data?.publication?.stats ?? null}
-                    publication_id={postQuery?.data?.publication?.id ?? 0}
+                <View rowGap={10} px={10} >
+
+                    <Separator />
+                    <PublicationStats
+                        initialStats={data.publication?.stats ? {
+                            ...data.publication.stats,
+                            ref: data.publication.publication_ref!
+                        } : undefined}
+                        publication_ref={data.publication?.publication_ref!}
+                    />
+                    <Separator />
+                    <Reactions
+                        showNumbers={false}
+                        initialStats={data.publication?.stats ? {
+                            ...data.publication.stats,
+                            ref: data.publication.publication_ref!
+                        } : undefined}
+                        publication_ref={data.publication?.publication_ref!}
+                    />
+                    <Separator />
+                </View>
+
+                <PublicationComments
+                    publication_ref={data.publication?.publication_ref!}
                 />
-                <Separator />
 
             </View>
-        </View>
+        </ScrollView>
     )
 }
 

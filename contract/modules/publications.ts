@@ -7,11 +7,12 @@ import { AccountAddress, AccountAuthenticator, Deserializer, Ed25519Signature, R
 import { isNumber, isString } from "lodash";
 import { getAuthenticatorsAndRawTransaction } from "./helpers";
 import uploadManager from "../../lib/upload-manager";
+import localStore from "../../lib/local-store";
 
 
 class PublicationsContract {
 
-    async createPublication(publication: TPUBLICATION) {
+    async createPublication(publication: TPUBLICATION | null, publication_type: 1 | 2 | 3 | 4 = 1, reference_kid?: number, parent_ref?: string, count?: number) {
 
         const account = delegateManager.account
 
@@ -19,51 +20,53 @@ class PublicationsContract {
             throw new Error("No account found")
         }
 
-        const delegate_address = account.address().toString()
+        const parsed = publication ? publicationSchema.safeParse(publication) : null
 
-        const parsed = publicationSchema.safeParse(publication)
-
-        if (!parsed.success) {
+        if (parsed && !parsed.success) {
             throw new Error("Invalid publication")
         }
 
-        const data = parsed.data
+        const data = parsed ? parsed.data : null
 
-        const response = await axios.post<{ raw_txn: Array<number>, signature: Array<number> }>(`${APP_SUPPORT_API}/contract/publications/create-publication`, {
-            payload: data,
-            delegate_address
-        })
+        console.log("Data::", data)
 
-        const { raw_txn, signature } = response.data
-
-        const txn_deserializer = new Deserializer(new Uint8Array(raw_txn))
-        const signature_deserializer = new Deserializer(new Uint8Array(signature))
-
-        const raw_txn_deserialized = RawTransaction.deserialize(txn_deserializer)
-        const signature_deserialized = AccountAuthenticator.deserialize(signature_deserializer)
-
-        const accountSignature = aptos.transaction.sign({
-            signer: delegateManager.signer,
-            transaction: {
-                rawTransaction: raw_txn_deserialized,
-                feePayerAddress: AccountAddress.from(KADE_ACCOUNT_ADDRESS)
-            }
+        const txn_details = await getAuthenticatorsAndRawTransaction(`${APP_SUPPORT_API}/contract/publications/create-publication`, {
+            type: publication_type,
+            reference_kid,
+            ...(data ? { payload: data } : null)
         })
 
         const commited_txn = await aptos.transaction.submit.simple({
-            senderAuthenticator: accountSignature,
+            senderAuthenticator: txn_details.sender_signature,
             transaction: {
-                rawTransaction: raw_txn_deserialized,
+                rawTransaction: txn_details.raw_txn_desirialized,
                 feePayerAddress: AccountAddress.from(KADE_ACCOUNT_ADDRESS)
             },
-            feePayerAuthenticator: signature_deserialized
+            feePayerAuthenticator: txn_details.fee_payer_signature
         })
 
-        return commited_txn
+        const status = await aptos.waitForTransaction({
+            transactionHash: commited_txn.hash
+        })
 
+        if (status.success) {
+            await localStore.addPublication(
+                data,
+                publication_type,
+                parent_ref ?? "",
+                txn_details.client_ref!,
+                count
+            )
+        }
+        else {
+            throw new Error("Transaction failed")
+        }
+
+
+        return txn_details.client_ref!
     }
 
-    async removePublication(publication_id: number) {
+    async removePublication(publication_id: number, ref?: string, publication_type?: 1 | 2 | 3 | 4) {
         if (!isNumber(publication_id)) {
             throw new Error("Invalid publication id")
         }
@@ -81,167 +84,129 @@ class PublicationsContract {
             feePayerAuthenticator: fee_payer_signature
         })
 
-        return commited_txn
+        const status = await aptos.waitForTransaction({
+            transactionHash: commited_txn.hash
+        })
+
+        if (!status.success) {
+            throw new Error("Transaction failed")
+        } else {
+            if (ref) {
+                await localStore.removePublication(ref, publication_type ?? 1)
+            }
+        }
     }
 
-    async createComment(reference_kid: number, type: number, payload: TPUBLICATION) {
-        if (!isNumber(reference_kid) || !isNumber(type)) {
-            throw new Error("Invalid publication id or type")
+
+    async createPublicationWithRef(publication: TPUBLICATION | null, publication_type: 1 | 2 | 3 | 4 = 1, ref: string, count?: number) {
+
+        const account = delegateManager.account
+
+        if (!account || !delegateManager.signer) {
+            throw new Error("No account found")
         }
 
-        const parsed = publicationSchema.safeParse(payload)
+        const parsed = publication ? publicationSchema.safeParse(publication) : null
 
-        if (!parsed.success) {
+        if (parsed && !parsed.success) {
             throw new Error("Invalid publication")
         }
 
-        const data = parsed.data
+        const data = parsed ? parsed.data : null
 
-        const { fee_payer_signature, raw_txn_desirialized, sender_signature } = await getAuthenticatorsAndRawTransaction(`${APP_SUPPORT_API}/contract/publications/create-comment`, {
-            reference_kid,
-            type,
-            content: data
-        })
 
-        const commited_txn = await aptos.transaction.submit.simple({
-            senderAuthenticator: sender_signature,
-            transaction: {
-                rawTransaction: raw_txn_desirialized,
-                feePayerAddress: AccountAddress.from(KADE_ACCOUNT_ADDRESS)
-            },
-            feePayerAuthenticator: fee_payer_signature
-        })
+        try {
+            const txn_details = await getAuthenticatorsAndRawTransaction(`${APP_SUPPORT_API}/contract/publications/create-publication-with-ref`, {
+                type: publication_type,
+                parent_ref: ref,
+                ...(data ? { payload: data } : null)
+            })
 
-        return commited_txn
+            await localStore.addPublication(
+                data,
+                publication_type,
+                ref,
+                txn_details.client_ref!,
+                count
+            )
+
+            const commited_txn = await aptos.transaction.submit.simple({
+                senderAuthenticator: txn_details.sender_signature,
+                transaction: {
+                    rawTransaction: txn_details.raw_txn_desirialized,
+                    feePayerAddress: AccountAddress.from(KADE_ACCOUNT_ADDRESS)
+                },
+                feePayerAuthenticator: txn_details.fee_payer_signature
+            })
+
+            const status = await aptos.waitForTransaction({
+                transactionHash: commited_txn.hash
+            })
+
+            if (status.success) {
+
+            } else {
+                throw new Error("Transaction failed")
+            }
+
+            return txn_details.client_ref!
+
+        }
+        catch (e) {
+            await localStore.removePublication(ref, publication_type)
+            throw e
+        }
 
     }
 
-    async removeComment(comment_id: number) {
-        if (!isNumber(comment_id)) {
-            throw new Error("Invalid comment id")
+
+    async removePublicationWithRef(publication_ref: string, publication_type?: 1 | 2 | 3 | 4, parent_ref?: string) {
+        if (!isString(publication_ref)) {
+            throw new Error("Invalid publication ref")
         }
 
-        const { fee_payer_signature, raw_txn_desirialized, sender_signature } = await getAuthenticatorsAndRawTransaction(`${APP_SUPPORT_API}/contract/publications/remove-comment`, {
-            kid: comment_id
-        })
+        await localStore.removePublication(publication_ref, publication_type ?? 1, parent_ref)
 
-        const commited_txn = await aptos.transaction.submit.simple({
-            senderAuthenticator: sender_signature,
-            transaction: {
-                rawTransaction: raw_txn_desirialized,
-                feePayerAddress: AccountAddress.from(KADE_ACCOUNT_ADDRESS)
-            },
-            feePayerAuthenticator: fee_payer_signature
-        })
+        try {
+            const { fee_payer_signature, raw_txn_desirialized, sender_signature } = await getAuthenticatorsAndRawTransaction(`${APP_SUPPORT_API}/contract/publications/remove-publication-with-ref`, {
+                ref: publication_ref
+            })
+            const commited_txn = await aptos.transaction.submit.simple({
+                senderAuthenticator: sender_signature,
+                transaction: {
+                    rawTransaction: raw_txn_desirialized,
+                    feePayerAddress: AccountAddress.from(KADE_ACCOUNT_ADDRESS)
+                },
+                feePayerAuthenticator: fee_payer_signature
+            })
 
-        return commited_txn
-    }
+            const status = await aptos.waitForTransaction({
+                transactionHash: commited_txn.hash
+            })
 
-    async createRepost(reference_kid: number, type: number) {
-        if (!isNumber(reference_kid) || !isNumber(type)) {
-            throw new Error("Invalid publication id or type")
+            if (status.success) {
+            }
+            else {
+                throw new Error("Transaction failed")
+            }
+
+        }
+        catch (e) {
+            await localStore.addPublication(null, publication_type ?? 1, parent_ref ?? "", publication_ref)
+            throw e
         }
 
-        const { fee_payer_signature, raw_txn_desirialized, sender_signature } = await getAuthenticatorsAndRawTransaction(`${APP_SUPPORT_API}/contract/publications/create-repost`, {
-            reference_kid,
-            type
-        })
-
-        const commited_txn = await aptos.transaction.submit.simple({
-            senderAuthenticator: sender_signature,
-            transaction: {
-                rawTransaction: raw_txn_desirialized,
-                feePayerAddress: AccountAddress.from(KADE_ACCOUNT_ADDRESS)
-            },
-            feePayerAuthenticator: fee_payer_signature
-        })
-
-        return commited_txn
-    }
-
-    async removeRepost(repost_id: number) {
-        if (!isNumber(repost_id)) {
-            throw new Error("Invalid repost id")
-        }
-
-        const { fee_payer_signature, raw_txn_desirialized, sender_signature } = await getAuthenticatorsAndRawTransaction(`${APP_SUPPORT_API}/contract/publications/remove-repost`, {
-            kid: repost_id
-        })
-
-        const commited_txn = await aptos.transaction.submit.simple({
-            senderAuthenticator: sender_signature,
-            transaction: {
-                rawTransaction: raw_txn_desirialized,
-                feePayerAddress: AccountAddress.from(KADE_ACCOUNT_ADDRESS)
-            },
-            feePayerAuthenticator: fee_payer_signature
-        })
-
-        return commited_txn
-    }
-
-    async createQuote(reference_kid: number, payload: TPUBLICATION) {
-        if (!isNumber(reference_kid)) {
-            throw new Error("Invalid publication id")
-        }
-
-        const parsed = publicationSchema.safeParse(payload)
-
-        if (!parsed.success) {
-            throw new Error("Invalid publication")
-        }
-
-        const data = parsed.data
-
-        const { fee_payer_signature, raw_txn_desirialized, sender_signature } = await getAuthenticatorsAndRawTransaction(`${APP_SUPPORT_API}/contract/publications/create-quote`, {
-            reference_kid,
-            payload: data
-        })
-
-        const commited_txn = await aptos.transaction.submit.simple({
-            senderAuthenticator: sender_signature,
-            transaction: {
-                rawTransaction: raw_txn_desirialized,
-                feePayerAddress: AccountAddress.from(KADE_ACCOUNT_ADDRESS)
-            },
-            feePayerAuthenticator: fee_payer_signature
-        })
-
-        return commited_txn
     }
 
 
-    async removeQuote(quote_id: number) {
-        if (!isNumber(quote_id)) {
-            throw new Error("Invalid quote id")
-        }
-
-        const { fee_payer_signature, raw_txn_desirialized, sender_signature } = await getAuthenticatorsAndRawTransaction(`${APP_SUPPORT_API}/contract/publications/remove-quote`, {
-            kid: quote_id
-        })
-
-        const commited_txn = await aptos.transaction.submit.simple({
-            senderAuthenticator: sender_signature,
-            transaction: {
-                rawTransaction: raw_txn_desirialized,
-                feePayerAddress: AccountAddress.from(KADE_ACCOUNT_ADDRESS)
-            },
-            feePayerAuthenticator: fee_payer_signature
-        })
-
-        return commited_txn
-    }
-
-
-    async createReaction(reaction: number, reference_kid: number, type: number) {
-        if (!isNumber(reaction) || !isNumber(reference_kid) || !isNumber(type)) {
-            throw new Error("Invalid reaction, publication id or type")
+    async createReaction(reaction: number, reference_kid: number) {
+        if (!isNumber(reaction) || !isNumber(reference_kid)) {
+            throw new Error("Invalid reaction")
         }
 
         const { fee_payer_signature, raw_txn_desirialized, sender_signature } = await getAuthenticatorsAndRawTransaction(`${APP_SUPPORT_API}/contract/publications/create-reaction`, {
             reaction,
-            reference_kid,
-            type
+            reference_kid
         })
 
         const commited_txn = await aptos.transaction.submit.simple({
@@ -253,7 +218,54 @@ class PublicationsContract {
             feePayerAuthenticator: fee_payer_signature
         })
 
-        return commited_txn
+        const status = await aptos.waitForTransaction({
+            transactionHash: commited_txn.hash
+        })
+
+        if (!status.success) {
+            throw new Error("Transaction failed")
+        }
+
+    }
+
+
+    async createReactionWithRef(reaction: number, ref: string) {
+        if (!isNumber(reaction) || !isString(ref)) {
+            throw new Error("Invalid reaction")
+        }
+
+        await localStore.addReactedToPublication(ref, reaction)
+
+        try {
+            const { fee_payer_signature, raw_txn_desirialized, sender_signature } = await getAuthenticatorsAndRawTransaction(`${APP_SUPPORT_API}/contract/publications/create-reaction-with-ref`, {
+                reaction,
+                ref
+            })
+
+            const commited_txn = await aptos.transaction.submit.simple({
+                senderAuthenticator: sender_signature,
+                transaction: {
+                    rawTransaction: raw_txn_desirialized,
+                    feePayerAddress: AccountAddress.from(KADE_ACCOUNT_ADDRESS)
+                },
+                feePayerAuthenticator: fee_payer_signature
+            })
+
+            const status = await aptos.waitForTransaction({
+                transactionHash: commited_txn.hash
+            })
+
+            if (!status.success) {
+                throw new Error("Transaction failed")
+            } else {
+
+            }
+
+        }
+        catch (e) {
+            await localStore.removeReactedToPublication(ref)
+            throw e
+        }
     }
 
 
@@ -275,8 +287,51 @@ class PublicationsContract {
             feePayerAuthenticator: fee_payer_signature
         })
 
-        return commited_txn
+        const status = await aptos.waitForTransaction({
+            transactionHash: commited_txn.hash
+        })
+
+        if (!status.success) {
+            throw new Error("Transaction failed")
+        }
     }
+
+    async removeReactionWithRef(publication_ref: string) {
+        if (!isString(publication_ref)) {
+            throw new Error("Invalid publication ref")
+        }
+        await localStore.removeReactedToPublication(publication_ref)
+        try {
+            const { fee_payer_signature, raw_txn_desirialized, sender_signature } = await getAuthenticatorsAndRawTransaction(`${APP_SUPPORT_API}/contract/publications/remove-reaction-with-ref`, {
+                ref: publication_ref
+            })
+
+            const commited_txn = await aptos.transaction.submit.simple({
+                senderAuthenticator: sender_signature,
+                transaction: {
+                    rawTransaction: raw_txn_desirialized,
+                    feePayerAddress: AccountAddress.from(KADE_ACCOUNT_ADDRESS)
+                },
+                feePayerAuthenticator: fee_payer_signature
+            })
+
+            const status = await aptos.waitForTransaction({
+                transactionHash: commited_txn.hash
+            })
+
+            if (!status.success) {
+                throw new Error("Transaction failed")
+            }
+
+        }
+        catch (e) {
+            await localStore.addReactedToPublication(publication_ref, 1)
+            throw e
+        }
+    }
+
+
+
 
 
 

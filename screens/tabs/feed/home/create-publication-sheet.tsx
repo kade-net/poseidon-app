@@ -69,12 +69,7 @@ const CreatePublicationSheet = (props: Props) => {
 
   const handlePublish = async (values: TPUBLICATION) => {
     try {
-      console.log('Publishing', values)
-      const txn = await publications.createPublication(values)
-
-      console.log('Published', txn)
-
-
+      await publications.createPublication(values)
     }
     catch (e) {
       console.log('Error publishing', e)

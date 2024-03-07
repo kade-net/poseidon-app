@@ -14,6 +14,8 @@ import delegateManager from '../lib/delegate-manager'
 import * as SecureStore from 'expo-secure-store'
 import { ApolloProvider } from '@apollo/client'
 import client from '../data/apollo'
+import localStore from '../lib/local-store'
+import { GET_MY_PROFILE } from '../utils/queries'
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -32,10 +34,12 @@ SplashScreen.preventAutoHideAsync();
 // TODO: remove this 
 // (async () => {
 //   await delegateManager.nuke()
+//   await localStore.nuke()
 //   console.log("DONE NUKING")
 // })();
 delegateManager.init().then(() => {
   console.log("DELEGATE INITIALIZED")
+
 }).catch((e) => {
   console.error("UNABLE TO INITIALIZE DELEGATE", e)
 })

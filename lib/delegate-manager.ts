@@ -6,6 +6,8 @@ import * as SecureStore from 'expo-secure-store';
 import { ACCOUNT_ENTRY_FUNCTIONS, APP_SUPPORT_API, KADE_ACCOUNT_ADDRESS, aptos } from '../contract';
 import { Account, AccountAddress, AccountAuthenticator, Deserializer, Ed25519PrivateKey, RawTransaction, Serializer } from '@aptos-labs/ts-sdk';
 import axios from 'axios';
+import client from '../data/apollo';
+import { GET_MY_PROFILE } from '../utils/queries';
 
 
 const DERIVATION_PATH = "m/44'/637'/0'/0'/0'"
@@ -199,7 +201,7 @@ class DelegateManager {
     }
 
     async init() {
-        console.log("Owner::", this.owner)
+
         let pk = await SecureStore.getItemAsync('private_key')
 
         if (!pk) {
@@ -216,7 +218,27 @@ class DelegateManager {
         })
         this.private_key = pk
 
+        if (!this.owner) {
+            this.setOwner(this.account.address().toString())
+        }
 
+        await client.query({
+            query: GET_MY_PROFILE,
+            variables: {
+                address: this.account.address.toString()
+            }
+        })
+
+
+    }
+
+    async reloadAccount() {
+        await client.query({
+            query: GET_MY_PROFILE,
+            variables: {
+                address: this.owner!
+            }
+        })
     }
 
     async setOwner(owner: string) {
