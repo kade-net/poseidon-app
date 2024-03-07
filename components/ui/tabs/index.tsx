@@ -7,7 +7,6 @@ import {AnimatePresence, SizableText, Tabs, YStack,styled} from 'tamagui'
 
 export const Tab = ({...props}) => {
     const deviceWidth: number = Dimensions.get('window').width
-    const deviceHeight: number = Dimensions.get('window').height
 
     const numberTabs: number = React.Children.count(props.children)
 
