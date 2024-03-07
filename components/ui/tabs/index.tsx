@@ -76,7 +76,6 @@ export const Tab = ({...props}) => {
                                             value={label}
                                             onInteraction={handleOnInteraction}
                                             >
-                                            {console.log('here are props',props)}
                                             <SizableText> { label } </SizableText>
                                         </Tabs.Tab>
                                     )
