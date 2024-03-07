@@ -1,5 +1,5 @@
 import { View, Text, Image } from 'tamagui'
-import React from 'react'
+import React, { memo } from 'react'
 import { TouchableOpacity } from 'react-native'
 import { Cross, X } from '@tamagui/lucide-icons'
 import { isUndefined } from 'lodash'
@@ -51,4 +51,4 @@ const FeedImage = (props: FeedImageProps) => {
     )
 }
 
-export default FeedImage
+export default memo(FeedImage)

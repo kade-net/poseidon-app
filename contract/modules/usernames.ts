@@ -1,5 +1,5 @@
 import axios from "axios";
-import { APP_SUPPORT_API, KADE_ACCOUNT_ADDRESS, USERNAME_VIEW_FUNCTIONS, aptos } from "..";
+import { APP_SUPPORT_API, KADE_ACCOUNT_ADDRESS, USERNAMES_COLLECTION_ADDRESS, USERNAME_VIEW_FUNCTIONS, aptos } from "..";
 import delegateManager from "../../lib/delegate-manager";
 import { AccountAddress, AccountAuthenticator, Deserializer, RawTransaction } from "@aptos-labs/ts-sdk";
 
@@ -89,7 +89,7 @@ class UsernamesContract {
                         },
                         "current_token_data": {
                             "collection_id": {
-                                "_eq": "0x90f80a1e3d3ffb9f96455eba717e55d1ee233a909d1f604f23b4bbae0686d38a"
+                                "_eq": USERNAMES_COLLECTION_ADDRESS
                             }
                         },
                         "amount": {

@@ -1,8 +1,8 @@
-import { View, Text, Avatar, Heading, ButtonIcon, useTheme, Separator, Sheet, Button, TextArea, ScrollView } from 'tamagui'
-import React, { useState } from 'react'
+import { View, Text, Avatar, Heading, ButtonIcon, useTheme, Separator, Sheet, Button, TextArea, ScrollView, Spinner } from 'tamagui'
+import React, { useCallback, useState } from 'react'
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context'
 import { ImagePlus, MessageCirclePlus, Settings } from '@tamagui/lucide-icons'
-import { Animated, FlatList, KeyboardAvoidingView, TouchableOpacity } from 'react-native'
+import { Animated, FlatList, KeyboardAvoidingView, ListRenderItem, TouchableOpacity } from 'react-native'
 import { feed } from './data'
 import BaseContentContainer from '../../../../components/ui/feed/base-content-container'
 import { useRouter } from 'expo-router'
@@ -13,6 +13,11 @@ import { useQuery } from '@apollo/client'
 import { GET_HOME_FEED, GET_MY_PROFILE } from '../../../../utils/queries'
 import delegateManager from '../../../../lib/delegate-manager'
 import CreatePublicationSheet from './create-publication-sheet'
+import client from '../../../../data/apollo'
+import { Publication } from '../../../../__generated__/graphql'
+import BaseContentSheet from '../../../../components/ui/action-sheets/base-content-sheet'
+import useDisclosure from '../../../../components/hooks/useDisclosure'
+import PublicationEditor from '../../../../components/ui/editor/publication-editor'
 
 
 const Home = () => {
@@ -20,9 +25,12 @@ const Home = () => {
     const { data, fetchMore, loading } = useQuery(GET_HOME_FEED, {
         variables: {
             page: 0,
-            size: 20
-        }
+            size: 20,
+            type: 1
+        },
+        fetchPolicy: 'cache-and-network'
     })
+
     const profileQuery = useQuery(GET_MY_PROFILE, {
         variables: {
             address: delegateManager.owner!
@@ -30,10 +38,7 @@ const Home = () => {
         skip: !delegateManager.owner
     })
 
-
-    const [isEditorOpen, setIsEditorOpen] = useState(false)
-
-    const [images, setImages] = useState<Array<ImagePicker.ImagePickerAsset>>([])
+    const { isOpen, onClose, onOpen, onToggle } = useDisclosure()
 
     const theme = useTheme()
     const router = useRouter()
@@ -41,8 +46,8 @@ const Home = () => {
     const scrollY = new Animated.Value(0)
     const diffClamp = Animated.diffClamp(scrollY, 0, 150)
     const translateY = diffClamp.interpolate({
-        inputRange: [0, 82],
-        outputRange: [0, -100]
+        inputRange: [0, 150],
+        outputRange: [0, -70]
     })
 
     const goToSettings = () => {
@@ -53,43 +58,20 @@ const Home = () => {
         router.push('/profiles/1/' as any) // TODO: update with a dynamic userid
     }
 
-    const handleChooseImage = async () => {
-        const result = await ImagePicker.launchImageLibraryAsync({
-            mediaTypes: ImagePicker.MediaTypeOptions.Images, // TODO: Add support for videos
-            allowsEditing: true,
-            quality: 1
-        })
-
-        if (!result.canceled) {
-            const chosen = result.assets ?? []
-            setImages((prev) => {
-                return [...prev, ...chosen]
-            })
-        }
-    }
-
     const handleFetchMore = async () => {
-        if ((data?.publications?.length ?? 0) < 20) {
-            console.log("No more publications")
-            return
-        }
         try {
+            const totalPublications = data?.publications?.length ?? 0
+            const nextPage = Math.floor(totalPublications / 20) + 1
+            console.log("Next page", nextPage)
             const results = await fetchMore({
                 variables: {
-                    page: currentPage + 1,
+                    page: nextPage,
                     size: 20
                 }
             })
-            const totalPublications = data?.publications?.length ?? 0
 
-            if (totalPublications <= (currentPage + 1) * 20) {
-                console.log("No more publications")
-                return
-            }
 
-            console.log("Fetched more")
-
-            setCurrentPage((prev) => prev + 1)
+            setCurrentPage((prev) => nextPage)
         }
         catch (e) {
             console.log("Error fetching more", e)
@@ -111,6 +93,19 @@ const Home = () => {
             console.log("Error fetching more", e)
         }
     }
+
+    const handleRefetchOnPost = async () => {
+        await handleFetchTop()
+    }
+
+    const renderPublication = useCallback(({ item }: any) => {
+        return (
+            <BaseContentContainer
+                data={item as any}
+            />
+        )
+
+    }, [])
 
     return (
         <View flex={1} width={"100%"} height={"100%"} >
@@ -152,32 +147,31 @@ const Home = () => {
             <View flex={1} position='relative' >
                 <FlatList
                     contentContainerStyle={{
-                        paddingTop: 80
+                        paddingTop: loading ? 0 : 80
                     }}
                     onScroll={(e) => {
                         scrollY.setValue(e.nativeEvent.contentOffset.y)
                     }}
-                    onStartReached={handleFetchTop}
-                    onStartReachedThreshold={0.5}
+                    refreshing={loading}
+
+                    onRefresh={handleFetchTop}
                     onEndReached={handleFetchMore}
-                    onEndReachedThreshold={0.5}
+                    onEndReachedThreshold={1}
                     showsVerticalScrollIndicator={false}
                     data={data?.publications ?? []}
-                    CellRendererComponent={({ children, index }) => {
-                        return (
-                            <View borderBottomWidth={1} borderColor={'$gray1'} >
-                                {children}
-                            </View>
-                        )
-                    }}
-
+                    maxToRenderPerBatch={20}
+                    initialNumToRender={20}
                     keyExtractor={(item) => item.id.toString()}
-                    renderItem={({ item }) => {
-                        return (
-                            <BaseContentContainer
-                                data={item as any}
-                            />
-                        )
+                    renderItem={renderPublication}
+                    ListFooterComponent={() => {
+                        return <View w="100%" flexDirection='row' alignItems='center' justifyContent='center' columnGap={10} >
+                            {loading && <>
+                                <Text color="$gray9" >
+                                    Loading...
+                                </Text>
+                                <Spinner />
+                            </>}
+                        </View>
                     }}
                 />
                 <View
@@ -186,10 +180,8 @@ const Home = () => {
                     right={20}
                     zIndex={2}
                 >
-                    {!isEditorOpen && <TouchableOpacity
-                        onPress={() => {
-                            setIsEditorOpen(true)
-                        }}
+                    {!isOpen && <TouchableOpacity
+                        onPress={onOpen}
                     >
                         <View
                             p={10}
@@ -204,11 +196,23 @@ const Home = () => {
                     </TouchableOpacity>}
                 </View>
             </View>
-            <CreatePublicationSheet
-                onOpenChange={(value) => setIsEditorOpen(value)}
-                open={isEditorOpen} 
-
-            />
+            <BaseContentSheet
+                open={isOpen}
+                onOpenChange={onToggle}
+                snapPoints={[100]}
+            >
+                <View
+                    flex={1}
+                    h="100%"
+                    pt={insets.top}
+                    pb={insets.bottom}
+                >
+                    <PublicationEditor
+                        publicationType={1}
+                        onClose={onClose}
+                    />
+                </View>
+            </BaseContentSheet>
         </View>
 
     )

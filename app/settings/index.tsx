@@ -1,10 +1,19 @@
 import { View, Text } from 'react-native'
 import React from 'react'
+import delegateManager from '../../lib/delegate-manager'
+import { Button } from 'tamagui'
 
 const Settings = () => {
+    const nuke = async () => {
+        await delegateManager.nuke()
+    }
     return (
         <View>
-            <Text>Settings</Text>
+            <Button
+                onPress={nuke}
+            >
+                Nuke Stuff
+            </Button>
         </View>
     )
 }
