@@ -1,4 +1,4 @@
-import { View, Text, Heading, Input, TextArea, Button, Image, Avatar } from 'tamagui'
+import { View, Text, Heading, Input, TextArea, Button, Image, Avatar, Spinner } from 'tamagui'
 import React, { useState } from 'react'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { ChevronRight, Plus } from '@tamagui/lucide-icons'
@@ -13,9 +13,13 @@ import uploadManager from '../../../lib/upload-manager'
 import account from '../../../contract/modules/account'
 import { aptos } from '../../../contract'
 import * as SecureStorage from 'expo-secure-store'
+import client from '../../../data/apollo'
+import { GET_MY_PROFILE } from '../../../utils/queries'
 
 const Profile = () => {
     const [image, setImage] = useState<ImagePicker.ImagePickerAsset | null>(null)
+    const [uploading, setUploading] = useState(false)
+    const [submitting, setSubmitting] = useState(false)
     const insets = useSafeAreaInsets()
 
     const router = useRouter()
@@ -50,7 +54,7 @@ const Profile = () => {
     }
 
     const handleSubmit = async (values: TPROFILE) => {
-        console.log(values)
+        setSubmitting(true)
         let new_file_url = ''
         try {
             const upload_url = await uploadManager.uploadFile(values.pfp, {
@@ -64,39 +68,25 @@ const Profile = () => {
         }
         catch (e) {
             console.log(`SOMETHING WENT WRONG:: ${e}`)
+            setSubmitting(false)
             // TODO: toast error
             return
         }
 
         try {
-            const txn = await account.updateProfile({
+            await account.updateProfile({
                 display_name: values.display_name,
                 bio: values.bio,
                 pfp: new_file_url
             })
 
-            console.log("TXN:: ", txn)
-
-            console.log("TXN HASH:: ", txn.hash)
-
-            const response = await aptos.transaction.waitForTransaction({
-                transactionHash: txn.hash
-            })
-
-            if (response.success) {
-                console.log("PROFILE UPDATED")
-                SecureStorage.setItem('profile', JSON.stringify({
-                    ...values,
-                    pfp: new_file_url
-                }))
-                goToNext()
-            }
-            else {
-                console.log("FAILED TO UPDATE PROFILE")
-            }
+            goToNext()
         }
         catch (e) {
             console.log(`SOMETHING WENT WRONG:: ${e}`)
+        }
+        finally {
+            setSubmitting(false)
         }
     }
 
@@ -191,7 +181,14 @@ const Profile = () => {
             </View>
 
             <Button onPress={form.handleSubmit(handleSubmit)} >
-                Save Profile
+                {
+                    submitting ? <View flexDirection='row' columnGap={10} >
+                        <Text >
+                            Creating...
+                        </Text>
+                        <Spinner />
+                    </View> : "Create Profile"
+                }
             </Button>
 
         </View>

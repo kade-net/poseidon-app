@@ -5,21 +5,25 @@ import { Button, View } from 'tamagui'
 import petra from '../../../lib/wallets/petra'
 import delegateManager from '../../../lib/delegate-manager'
 import { User } from '@tamagui/lucide-icons'
+import account from '../../../contract/modules/account'
 
 
 const WelcomeScreen = () => {
     const insets = useSafeAreaInsets()
     const rounter = useRouter()
-    const goToNext = async () => {
-        router.push('/onboard/kade-connect/scan')
-        // try {
-        //     await petra.connect()
-        // }
-        // catch (e) {
-        //     console.log(`SOMETHING WENT WRONG:: ${e}`)
-        // }
-        // await petra.connect()
-    }
+
+    useEffect(() => {
+        const nextScreen =
+            account.isProfileRegistered ? '/(tabs)/feed/home' :
+                account.isAccountRegistered ? '/onboard/profile' :
+                    delegateManager.isDeligateRegistered ? '/onboard/profile' :
+                        undefined
+
+        if (nextScreen) {
+            router.push(nextScreen)
+        }
+
+    }, [])
 
     const goToCreateAccount = () => {
         router.push('/onboard/username')

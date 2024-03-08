@@ -20,6 +20,8 @@ type TSchema = z.infer<typeof schema>
 
 const PickUserName = () => {
     const [isAvailable, setIsAvailable] = useState(false)
+    const [checking, setChecking] = useState(false)
+    const [claiming, setClaiming] = useState(false)
     const insets = useSafeAreaInsets()
     const form = useForm<TSchema>({
         resolver: zodResolver(schema)
@@ -40,6 +42,7 @@ const PickUserName = () => {
     }
 
     const checkUsername = async (values: TSchema) => {
+        setChecking(true)
         console.log(`CHECKING USERNAME:: ${values.username}`)
         try {
             const available = await usernames.checkUsernameAvailability(values.username)
@@ -50,11 +53,15 @@ const PickUserName = () => {
         catch (e) {
             console.log(`SOMETHING WENT WRONG:: ${e}`)
         }
+        finally {
+            setChecking(false)
+        }
     }
 
     const claimUsernameAndCreateAccount = async (values: TSchema) => {
         const username = values.username
         delegateManager.setUsername(username)
+        setClaiming(true)
         try {
             const txn = await account.setupWithSelfDelegate()
             console.log(`ACCOUNT SETUP TXN:: ${txn}`)
@@ -69,9 +76,11 @@ const PickUserName = () => {
             if (resp.success) {
                 await account.markAsRegistered()
                 if (account.isImported) {
+                    setClaiming(false)
                     goToProfile()
                     return
                 }
+                setClaiming(false)
                 goToNext()
                 return
             }
@@ -79,6 +88,9 @@ const PickUserName = () => {
         }
         catch (e) {
             console.log(`SOMETHING WENT WRONG:: ${e}`)
+        }
+        finally {
+            setClaiming(false)
         }
 
     }
@@ -120,7 +132,11 @@ const PickUserName = () => {
             </View>
             <Button onPress={form.handleSubmit(isAvailable ? claimUsernameAndCreateAccount : checkUsername)} >
                 {
-                    isAvailable ? 'Continue' : 'Check Availability'
+                    isAvailable ? <View>
+                        {claiming ? <Text>Claiming...</Text> : <Text>Claim username</Text>}
+                    </View> : <View>
+                        {checking ? <Text>Checking...</Text> : <Text>Check availability</Text>}
+                    </View>
                 }
             </Button>
         </View>
