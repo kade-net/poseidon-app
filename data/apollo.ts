@@ -39,9 +39,8 @@ function publicationRead(existing: Array<Reference> = [], { readField, field }: 
             ref
         }
     })
-    console.log("unsorted", unsorted)
     const sorted = uniqBy(unsorted.sort((a, b) => (b.timestamp ?? 0) - (a.timestamp ?? 0)), (item) => item.publication_ref)
-    console.log(sorted)
+
     const refs = sorted.map((pub) => pub.ref)
 
     return refs
@@ -66,7 +65,7 @@ const cache = new InMemoryCache({
         Query: {
             fields: {
                 publications: {
-                    keyArgs: ["type"],
+                    keyArgs: ["type", "address", "creator_address", "types"], // TODO: Not sure if its creator_address or address
                     merge: publicationMerge,
                     read: publicationRead
                 },

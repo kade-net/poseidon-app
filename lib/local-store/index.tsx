@@ -2,11 +2,14 @@ import '../../global'
 import 'react-native-get-random-values'
 import { Publication, PublicationViewerStats } from "../../__generated__/graphql";
 import storage from "../storage";
-import { TPUBLICATION } from '../../schema';
+import { TPROFILE, TPUBLICATION } from '../../schema';
 import client from '../../data/apollo';
-import { GET_HOME_FEED, GET_MY_PROFILE, GET_PUBLICATION, GET_PUBLICATION_COMMENTS, GET_PUBLICATION_INTERACTIONS_BY_VIEWER, GET_PUBLICATION_STATS } from '../../utils/queries';
+import { GET_PUBLICATIONS, GET_MY_PROFILE, GET_PUBLICATION, GET_PUBLICATION_COMMENTS, GET_PUBLICATION_INTERACTIONS_BY_VIEWER, GET_PUBLICATION_STATS } from '../../utils/queries';
 import delegateManager from '../delegate-manager';
 import { gql } from '../../__generated__';
+import usernames from '../../contract/modules/usernames';
+
+// TODO: for now we will ignore caching of quotes and anything that will not be seen directly in the home page
 
 interface PUB {
     publication: TPUBLICATION | null,
@@ -245,8 +248,8 @@ class LocalStore {
 
         try {
             const prev = client.cache.readQuery({
-                query: GET_HOME_FEED, variables: {
-                    type: 1,
+                query: GET_PUBLICATIONS, variables: {
+                    types: [1, 2],
                     page: 0,
                     size: 20
                 }
@@ -273,9 +276,9 @@ class LocalStore {
             })
 
             client.cache.writeQuery({
-                query: GET_HOME_FEED,
+                query: GET_PUBLICATIONS,
                 variables: {
-                    type: 1,
+                    types: [1, 2],
                     page: 0,
                     size: 20
                 },
@@ -395,12 +398,24 @@ class LocalStore {
 
         }
 
-        const existing = client.readQuery({ query: GET_HOME_FEED }) ?? [] as any
+        const existing = client.readQuery({
+            query: GET_PUBLICATIONS, // TODO: not sure if this will work in instances where the publication isn;t part of the first 50
+            variables: {
+                types: [1, 2],
+                page: 0,
+                size: 20
+            }
+        }) ?? [] as any
 
         const newPublications = existing.publications.filter((pub: Publication) => pub.publication_ref !== ref)
 
         client.writeQuery({
-            query: GET_HOME_FEED,
+            query: GET_PUBLICATIONS,
+            variables: {
+                types: [1, 2],
+                page: 0,
+                size: 20
+            },
             data: {
                 publications: newPublications
             }
@@ -523,72 +538,83 @@ class LocalStore {
 
     }
 
-
-    async getPublicationLocalStats(publication_ref: string) {
-        const stats = {
-            quote_count: 0,
-            quoted: false,
-            comment_count: 0,
-            commented: false,
-            repost_count: 0,
-            reposted: false,
-            reactions: 0,
-            reacted: false
-        }
-        try {
-            const userSavedPublications = await storage.getAllDataForKey<PUB>("publications")
-            const children = userSavedPublications.filter((pub) => pub.parent_ref === publication_ref)
-            const quote = getLast(children, 2)
-            const comment = getLast(children, 3)
-            const repost = getLast(children, 4)
-
-            if (quote) {
-                stats.quoted = true
-                stats.quote_count = quote.current_count
+    async updateProfile(profile: TPROFILE) {
+        // WE CAN SAFELY ASSUME THE DELEGATE MANAGER IS SET
+        const currentProfile = client.readQuery({
+            query: GET_MY_PROFILE,
+            variables: {
+                address: delegateManager.owner!
             }
+        })
 
-            if (comment) {
-                stats.commented = true
-                stats.comment_count = comment.current_count
+        let username = currentProfile?.account?.username?.username ?? delegateManager?.username
+
+        if (!username) {
+            try {
+
+                username = await usernames.getUsername()
             }
-
-            if (repost) {
-                stats.reposted = true
-                stats.repost_count = repost.current_count
+            catch (e) {
+                // SILENTLY FAIL
+                console.log("Error getting username", e, delegateManager.owner)
             }
-
-
-
-
-        }
-        catch (e) {
-            // Possibly a not found error
         }
 
-        try {
-            const reaction = await storage.load({
-                key: "reactions",
-                id: publication_ref
-            })
-            stats.reacted = true
-            stats.reactions = reaction.reaction
-        }
-        catch (e) {
-            // Possibly a not found error
-        }
-
-        return stats
+        client.writeQuery({
+            query: GET_MY_PROFILE,
+            data: {
+                ...(currentProfile ? currentProfile : {
+                }),
+                account: {
+                    ...(currentProfile?.account ? currentProfile.account : {}),
+                    profile: {
+                        ...profile,
+                        __typename: "Profile"
+                    },
+                    username: {
+                        username: username ?? "_u38",
+                    },
+                    id: currentProfile?.account?.id ?? Date.now(),
+                    __typename: "Account",
+                    timestamp: currentProfile?.account?.timestamp ?? Date.now(),
+                    stats: currentProfile?.account?.stats ?? {
+                        __typename: "AccountStats",
+                        followers: 0,
+                        following: 0,
+                        posts: 0,
+                        comments: 0,
+                        quotes: 0,
+                        reactions: 0,
+                        reposts: 0,
+                        delegates: 0
+                    }
+                },
+            },
+            variables: {
+                address: delegateManager.owner!
+            }
+        })
     }
+
+    async removeProfile() {
+        client.writeQuery({
+            query: GET_MY_PROFILE,
+            data: {
+                account: null
+            },
+            variables: {
+                address: delegateManager.owner!
+            }
+        })
+
+    }
+
 
 
 
     // !!! IMPORTANT !!! - this is for dev purpouses only and should never be used in production
     async nuke() {
-        await storage.clearMapForKey("publications")
-        await storage.clearMapForKey("likedPublications")
-        await storage.clearMapForKey("repostedPublications")
-        await storage.clearMapForKey("quotedPublications")
-        await storage.clearMapForKey("commentedPublications")
+        await client.resetStore()
     }
 }
 

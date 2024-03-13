@@ -229,6 +229,8 @@ class DelegateManager {
             }
         })
 
+        console.log(this.owner)
+
 
     }
 

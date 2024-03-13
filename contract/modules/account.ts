@@ -10,6 +10,7 @@ import { TPROFILE, profileSchema } from "../../schema";
 import * as SecureStore from 'expo-secure-store'
 import client from '../../data/apollo';
 import { GET_MY_PROFILE } from '../../utils/queries';
+import localStore from '../../lib/local-store';
 
 class AccountContract {
 
@@ -41,6 +42,8 @@ class AccountContract {
         if (!delegateManager.signer) {
             throw new Error("No account found")
         }
+
+        await localStore.updateProfile(profile)
 
         const parsed = profileSchema.safeParse(profile)
         if (!parsed.success) {
@@ -79,7 +82,17 @@ class AccountContract {
             feePayerAuthenticator: signature_deserialized
         })
 
-        return commited_txn
+        const status = await aptos.transaction.waitForTransaction({
+            transactionHash: commited_txn.hash
+        })
+
+        if (status.success) {
+            await this.markProfileAsRegistered()
+        }
+        else {
+            await localStore.removeProfile()
+            throw new Error("Transaction failed")
+        }
     }
 
     async setupWithSelfDelegate() {

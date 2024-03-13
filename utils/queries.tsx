@@ -1,13 +1,14 @@
 import { gql } from "../__generated__";
 
 
-export const GET_HOME_FEED = gql(/* GraphQL */`
-    query Feed($page: Int!, $size: Int!, $type: Int){
-        publications(pagination: { page: $page, size: $size }, type: $type) {
+export const GET_PUBLICATIONS = gql(/* GraphQL */`
+    query Publications($page: Int!, $size: Int!, $type: Int, $address: String, $types: [Int!]){
+        publications(pagination: { page: $page, size: $size }, type: $type, creator_address: $address, types: $types) {
             __typename
             id,
             timestamp
             content
+            type
             stats {
                 comments
                 quotes
@@ -26,27 +27,75 @@ export const GET_HOME_FEED = gql(/* GraphQL */`
                 }
                 id
             },
-            publication_ref
+            publication_ref,
+            parent {
+                __typename
+                id,
+                timestamp
+                content
+                type
+                creator {
+                    address
+                    profile {
+                        pfp
+                        bio
+                        display_name
+                    }
+                    username {
+                        username
+                    }
+                    id
+                },
+                publication_ref,
+                stats {
+                    comments
+                    quotes
+                    reposts
+                    reactions
+                }
+            }
         }
     }
 `)
 
 
 export const GET_MY_PROFILE = gql(/* GraphQL */`
-    query MyProfile ($address: String!){
-        account(address: $address){
-            id
-            profile {
-                display_name,
-                bio,
-                pfp,
-
-            },
-            username {
-                username
-            }
+    query MyProfile($address: String!) {
+    account(address: $address) {
+        id
+        profile {
+            display_name
+            bio
+            pfp
+        }
+        username {
+            username
+        }
+        timestamp
+        stats {
+            followers
+            following
+            posts
+            delegates
+            reposts
+            quotes
+            comments
+            reactions
         }
     }
+}
+`)
+
+export const GET_ACCOUNT_VIEWER_STATS = gql(/* GraphQL */`
+    query AccountViewerStats($accountAddress: String!, $viewerAddress: String!) {
+    accountViewerStats(
+        accountAddress: $accountAddress
+        viewerAddress: $viewerAddress
+    ) {
+        follows
+        followed
+    }
+}
 `)
 
 

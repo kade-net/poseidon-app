@@ -2,7 +2,7 @@ import { View, Text, Avatar, Heading, ButtonIcon, useTheme, Separator, Sheet, Bu
 import React, { useCallback, useState } from 'react'
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context'
 import { ImagePlus, MessageCirclePlus, Settings } from '@tamagui/lucide-icons'
-import { Animated, FlatList, KeyboardAvoidingView, ListRenderItem, TouchableOpacity } from 'react-native'
+import { Animated, FlatList, KeyboardAvoidingView, ListRenderItem, Platform, TouchableOpacity } from 'react-native'
 import { feed } from './data'
 import BaseContentContainer from '../../../../components/ui/feed/base-content-container'
 import { useRouter } from 'expo-router'
@@ -10,7 +10,7 @@ const IMAGE = "https://images.unsplash.com/photo-1517849845537-4d257902454a?q=80
 import * as ImagePicker from 'expo-image-picker'
 import FeedImage from '../../../../components/ui/feed/image'
 import { useQuery } from '@apollo/client'
-import { GET_HOME_FEED, GET_MY_PROFILE } from '../../../../utils/queries'
+import { GET_PUBLICATIONS, GET_MY_PROFILE } from '../../../../utils/queries'
 import delegateManager from '../../../../lib/delegate-manager'
 import CreatePublicationSheet from './create-publication-sheet'
 import client from '../../../../data/apollo'
@@ -18,15 +18,16 @@ import { Publication } from '../../../../__generated__/graphql'
 import BaseContentSheet from '../../../../components/ui/action-sheets/base-content-sheet'
 import useDisclosure from '../../../../components/hooks/useDisclosure'
 import PublicationEditor from '../../../../components/ui/editor/publication-editor'
+import useSingleScrollManager from '../../../../components/hooks/useSingleScrollManager'
 
 
 const Home = () => {
     const [currentPage, setCurrentPage] = useState(0)
-    const { data, fetchMore, loading } = useQuery(GET_HOME_FEED, {
+    const { data, fetchMore, loading } = useQuery(GET_PUBLICATIONS, {
         variables: {
             page: 0,
             size: 20,
-            type: 1
+            types: [1, 2, 4] // TODO: only show reposts if the user is following the original creator
         },
         fetchPolicy: 'cache-and-network'
     })
@@ -43,7 +44,7 @@ const Home = () => {
     const theme = useTheme()
     const router = useRouter()
     const insets = useSafeAreaInsets()
-    const scrollY = new Animated.Value(0)
+    const { scrollY } = useSingleScrollManager()
     const diffClamp = Animated.diffClamp(scrollY, 0, 150)
     const translateY = diffClamp.interpolate({
         inputRange: [0, 150],
@@ -55,7 +56,7 @@ const Home = () => {
     }
 
     const goToProfile = () => {
-        router.push('/profiles/1/' as any) // TODO: update with a dynamic userid
+        router.push(`/profiles/${delegateManager.owner}` as any)
     }
 
     const handleFetchMore = async () => {
@@ -124,7 +125,7 @@ const Home = () => {
                 width: '100%',
                 paddingHorizontal: 20,
                 borderBottomWidth: 2,
-                borderBottomColor: theme.gray1.val
+                borderBottomColor: theme.gray1.val,
             }} >
                 <TouchableOpacity onPress={goToProfile} >
                     <Avatar circular  >
@@ -144,16 +145,41 @@ const Home = () => {
                     <Settings />
                 </TouchableOpacity>
             </Animated.View>
-            <View flex={1} position='relative' >
-                <FlatList
-                    contentContainerStyle={{
-                        paddingTop: loading ? 0 : 80
-                    }}
-                    onScroll={(e) => {
-                        scrollY.setValue(e.nativeEvent.contentOffset.y)
-                    }}
-                    refreshing={loading}
+            <Animated.View style={{
+                flex: 1,
+                position: "relative",
+                height: "100%",
 
+            }} >
+                <Animated.FlatList
+                    onScroll={Animated.event(
+                        [{ nativeEvent: { contentOffset: { y: scrollY } } }],
+                        { useNativeDriver: true }
+                    )}
+                    refreshing={loading}
+                    contentContainerStyle={Platform.select({
+                        ios: {
+                            flexGrow: 1,
+                            paddingBottom: 40
+                        },
+                        android: {
+                            flexGrow: 1,
+                            paddingBottom: 40,
+                            paddingTop: 80
+                        },
+
+                    })}
+                    contentOffset={Platform.select({
+                        ios: {
+                            y: -80,
+                            x: 0
+                        }
+                    })}
+                    contentInset={Platform.select({
+                        ios: {
+                            top: 80
+                        }
+                    })}
                     onRefresh={handleFetchTop}
                     onEndReached={handleFetchMore}
                     onEndReachedThreshold={1}
@@ -173,6 +199,7 @@ const Home = () => {
                             </>}
                         </View>
                     }}
+
                 />
                 <View
                     position='absolute'
@@ -195,7 +222,7 @@ const Home = () => {
                         </View>
                     </TouchableOpacity>}
                 </View>
-            </View>
+            </Animated.View>
             <BaseContentSheet
                 open={isOpen}
                 onOpenChange={onToggle}

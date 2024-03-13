@@ -1,15 +1,18 @@
 import { View, Text, Spinner } from 'tamagui'
-import React, { useCallback, useState } from 'react'
+import React, { memo, useCallback, useState } from 'react'
 import { useQuery } from '@apollo/client'
 import { GET_PUBLICATION_COMMENTS } from '../../../../utils/queries'
 import BaseContentContainer from '../../../../components/ui/feed/base-content-container'
 import { FlatList } from 'react-native'
+import { PublicationsQuery } from '../../../../__generated__/graphql'
+import PublicationContent from './publication-content'
 
 interface Props {
     publication_ref: string
+    data: PublicationsQuery
 }
 
-const PublicationComments = (props: Props) => {
+const Publication = (props: Props) => {
     const [currentPage, setCurrentPage] = useState(0)
     const commentsQuery = useQuery(GET_PUBLICATION_COMMENTS, {
         variables: {
@@ -86,8 +89,9 @@ const PublicationComments = (props: Props) => {
                 </View> : null
             }
             <FlatList
+                ListHeaderComponent={<PublicationContent data={props.data} />}
                 refreshing={commentsQuery?.loading}
-                scrollEnabled={false}
+                // scrollEnabled={false}
                 onRefresh={handleFetchTop}
                 onEndReached={handleFetchMore}
                 onEndReachedThreshold={0.3}
@@ -102,4 +106,4 @@ const PublicationComments = (props: Props) => {
     )
 }
 
-export default PublicationComments
+export default memo(Publication)

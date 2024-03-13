@@ -85,7 +85,7 @@ class UsernamesContract {
                 "variables": {
                     "where_condition": {
                         "owner_address": {
-                            "_eq": delegateManager.account?.address()?.toString()
+                            "_eq": delegateManager.owner
                         },
                         "current_token_data": {
                             "collection_id": {
@@ -101,7 +101,7 @@ class UsernamesContract {
         )
 
         const name = response.data.data.current_token_ownerships_v2?.at(0)?.current_token_data.token_name
-        return name
+        return name as string
     }
 
 }
