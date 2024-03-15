@@ -4,7 +4,7 @@ import { useQuery } from '@apollo/client'
 import { GET_ACCOUNT_VIEWER_STATS, GET_MY_PROFILE } from '../../utils/queries'
 import delegateManager from '../../lib/delegate-manager'
 import { NavigationState, SceneRendererProps, TabView } from 'react-native-tab-view'
-import { Animated, Platform, TouchableOpacity, useWindowDimensions } from 'react-native'
+import { Animated, Platform, TouchableOpacity, useColorScheme, useWindowDimensions } from 'react-native'
 import { clone } from 'lodash'
 import { SceneProps } from './tabs/common'
 import PostsTab from './tabs/posts'
@@ -13,12 +13,15 @@ import LikesTab from './tabs/likes'
 import NftsTab from './tabs/nfts'
 import { useMultiScrollManager } from '../../components/hooks/useMultiScrollManager'
 import TabNavbar from './tab-navbar'
+import account from '../../contract/modules/account'
 
 interface Props {
     address: string
 }
 
 const ProfileDetails = (props: Props) => {
+    const tamaguiTheme = useTheme()
+
     const { address } = props
     const theme = useTheme()
     const layout = useWindowDimensions()
@@ -99,6 +102,15 @@ const ProfileDetails = (props: Props) => {
         skip: !address || IS_SAME_ACCOUNT
     })
 
+    const handleFollowToggle = async () => {
+        const following = accountViewerStats?.data?.accountViewerStats?.follows
+        if (following) {
+            await account.unFollowAccount(address)
+        } else {
+            await account.followAccount(address)
+        }
+    }
+
 
 
 
@@ -134,7 +146,7 @@ const ProfileDetails = (props: Props) => {
                         translateY
                     }
                 ],
-                backgroundColor: 'black'
+                backgroundColor: tamaguiTheme.background.val
             }} onLayout={(event) => {
                 const layout = clone(event?.nativeEvent?.layout)
                 setTopSectionHeight((layout?.height ?? 0)) // Add the tabbar height as well
@@ -150,12 +162,12 @@ const ProfileDetails = (props: Props) => {
                             />
                         </Avatar>
                         <YStack>
-                            <Text fontWeight="bold" >
+                            <Text fontWeight="bold" color={"$text"}>
                                 {
                                     profileQuery.data?.account?.profile?.display_name
                                 }
                             </Text>
-                            <Text color="gray" >
+                            <Text color="$sideText" >
                                 @{
                                     profileQuery.data?.account?.username?.username
                                 }
@@ -163,7 +175,7 @@ const ProfileDetails = (props: Props) => {
                         </YStack>
                     </XStack>
                     <XStack>
-                        <Text>
+                        <Text color={"$text"}>
                             {
                                 profileQuery.data?.account?.profile?.bio
                             }
@@ -172,32 +184,32 @@ const ProfileDetails = (props: Props) => {
                 </YStack>
                 <XStack px={10} w="100%" alignItems='center' columnGap={5} py={10} >
                     <XStack columnGap={5} >
-                        <Text fontWeight={"bold"} >
+                        <Text fontWeight={"bold"} color={"$text"}>
                             {
                                 profileQuery.data?.account?.stats?.following
                             }
                         </Text>
-                        <Text color="gray" >
+                        <Text color="$sideText" >
                             Following
                         </Text>
                     </XStack>
                     <XStack columnGap={5} >
-                        <Text fontWeight={"bold"} >
+                        <Text fontWeight={"bold"} color={"$text"}>
                             {
                                 profileQuery.data?.account?.stats?.followers
                             }
                         </Text>
-                        <Text color="gray" >
+                        <Text color="$sideText" >
                             Followers
                         </Text>
                     </XStack>
                 </XStack>
                 {!IS_SAME_ACCOUNT && <XStack px={10} w="100%" alignItems='center' columnGap={5} py={10} >
-                    <Button w="100%" variant={
-                        accountViewerStats?.data?.accountViewerStats?.followed ? "outlined" : undefined
+                    <Button w="100%" onPress={handleFollowToggle} variant={
+                        accountViewerStats?.data?.accountViewerStats?.follows ? "outlined" : undefined
                     } >
                         {
-                            accountViewerStats?.data?.accountViewerStats?.followed ? "Following" : "Follow"
+                            accountViewerStats?.data?.accountViewerStats?.follows ? "Following" : "Follow"
                         }
                     </Button>
                 </XStack>}
@@ -209,6 +221,14 @@ const ProfileDetails = (props: Props) => {
                         index: currentTabIndex,
                         routes: tabRoutes
                     }}
+                    style={
+                        [
+                            {
+                                backgroundColor: tamaguiTheme.background.val,
+                                
+                            }
+                        ]
+                    }
                     onIndexChange={handleCurrentTabIndexChange}
                     renderScene={renderScene}
                     initialLayout={{ width: layout.width }}

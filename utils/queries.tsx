@@ -2,8 +2,8 @@ import { gql } from "../__generated__";
 
 
 export const GET_PUBLICATIONS = gql(/* GraphQL */`
-    query Publications($page: Int!, $size: Int!, $type: Int, $address: String, $types: [Int!]){
-        publications(pagination: { page: $page, size: $size }, type: $type, creator_address: $address, types: $types) {
+    query Publications($page: Int!, $size: Int!, $type: Int, $address: String, $types: [Int!], $reaction: Int){
+        publications(pagination: { page: $page, size: $size }, type: $type, creator_address: $address, types: $types, reaction: $reaction) {
             __typename
             id,
             timestamp
@@ -53,6 +53,10 @@ export const GET_PUBLICATIONS = gql(/* GraphQL */`
                     reposts
                     reactions
                 }
+            }
+            community {
+                name
+                image
             }
         }
     }
@@ -179,6 +183,153 @@ export const GET_PUBLICATION_COMMENTS = gql(/* GraphQL */`
                     username
                 }
                 id
+            }
+        }
+    }
+`)
+
+
+export const SEARCH_COMMUNITIES = gql(/* GraphQL */`
+    query Communities($search: String, $page: Int!, $size: Int!) {
+        communities(search: $search, pagination: {page: $page, size: $size}) {
+            id
+            name
+            description
+            image
+            timestamp
+        }
+    }
+`)
+
+
+export const COMMUNITY_QUERY = gql(/* GraphQL */`
+    query Community($name: String!){
+        community(name: $name) {
+            id
+            name
+            description
+            image
+            timestamp
+            creator {
+                address
+                username {
+                    username
+                }        
+            } 
+            stats {
+                members
+                publications
+            }
+        }
+    }
+`)
+
+
+export const GET_COMMUNITY_PUBLICATIONS = gql(/* GraphQL */`
+    query CommunityPublications($page: Int!, $size: Int!, $communityName: String!) {
+        communityPublications(
+            pagination: { page: $page, size: $size }
+            communityName: $communityName
+        ) {
+            __typename
+            id
+            timestamp
+            content
+            type
+            stats {
+                comments
+                quotes
+                reposts
+                reactions
+            }
+            creator {
+                address
+                profile {
+                    pfp
+                    bio
+                    display_name
+                }
+                username {
+                    username
+                }
+                id
+            }
+            publication_ref
+            parent {
+                __typename
+                id
+                timestamp
+                content
+                type
+                creator {
+                    address
+                    profile {
+                        pfp
+                        bio
+                        display_name
+                    }
+                    username {
+                        username
+                    }
+                    id
+                }
+                publication_ref
+                stats {
+                    comments
+                    quotes
+                    reposts
+                    reactions
+                }
+            }
+            community {
+                name
+                image
+            }
+        }
+    }
+
+`)
+
+
+export const GET_MEMBERSHIP = gql(/* GraphQL */`
+    query Membership ($communityName: String!, $userAddress: String!) {
+        membership(communityName: $communityName, userAddress: $userAddress) {
+            id
+            community_id 
+            type 
+            user_kid
+            timestamp
+            is_active
+        }
+    }
+`)
+
+
+export const ACCOUNTS_SEARCH_QUERY = gql(/* GraphQL */`
+    query Accounts($search: String, $page: Int!, $size: Int!) {
+        accounts(search: $search, pagination: {page: $page, size: $size}) {
+            id
+            address
+            timestamp
+            profile {
+                pfp
+                bio
+                display_name
+            }
+            username {
+                username
+            }
+        }
+    }
+`)
+
+
+export const GET_FOLLOW_ACCOUNT = gql(/* GraphQL */`
+    query FollowAccount($address: String!, $viewer: String!) {
+        account(address: $address) {
+            viewer(address: $viewer) {
+                followed
+                follows
             }
         }
     }

@@ -11,6 +11,7 @@ import * as SecureStore from 'expo-secure-store'
 import client from '../../data/apollo';
 import { GET_MY_PROFILE } from '../../utils/queries';
 import localStore from '../../lib/local-store';
+import { getAuthenticatorsAndRawTransaction } from './helpers';
 
 class AccountContract {
 
@@ -131,6 +132,92 @@ class AccountContract {
         })
 
         return commited_txn
+    }
+
+    async followAccount(following_address: string, search?: string) {
+        if (!delegateManager.signer) {
+            throw new Error("No account found")
+        }
+
+        await localStore.addFollow(following_address, search)
+
+        try {
+            const txn_details = await getAuthenticatorsAndRawTransaction(`${APP_SUPPORT_API}/contract/account/follow`, {
+                following_address,
+                delegate_address: delegateManager.account?.address()?.toString()
+            })
+
+            const { raw_txn_desirialized, sender_signature, fee_payer_signature } = txn_details
+
+            const commited_txn = await aptos.transaction.submit.simple({
+                senderAuthenticator: sender_signature,
+                transaction: {
+                    rawTransaction: raw_txn_desirialized,
+                    feePayerAddress: AccountAddress.from(KADE_ACCOUNT_ADDRESS)
+                },
+                feePayerAuthenticator: fee_payer_signature
+            })
+
+            const status = await aptos.transaction.waitForTransaction({
+                transactionHash: commited_txn.hash
+            })
+
+            if (status.success) {
+                return true
+            }
+            else {
+                await localStore.removeFollow(following_address)
+                throw new Error("Transaction failed")
+            }
+
+        }
+        catch (e) {
+            await localStore.removeFollow(following_address)
+            throw e
+        }
+    }
+
+    async unFollowAccount(unfollowing_address: string, search?: string) {
+        if (!delegateManager.signer) {
+            throw new Error("No account found")
+        }
+        localStore.removeFollow(unfollowing_address, search)
+
+        try {
+            const txn_details = await getAuthenticatorsAndRawTransaction(`${APP_SUPPORT_API}/contract/account/unfollow`, {
+                unfollowing_address,
+                delegate_address: delegateManager.account?.address()?.toString()
+            })
+
+            const { raw_txn_desirialized, sender_signature, fee_payer_signature } = txn_details
+
+            const commited_txn = await aptos.transaction.submit.simple({
+                senderAuthenticator: sender_signature,
+                transaction: {
+                    rawTransaction: raw_txn_desirialized,
+                    feePayerAddress: AccountAddress.from(KADE_ACCOUNT_ADDRESS)
+                },
+                feePayerAuthenticator: fee_payer_signature
+            })
+
+
+            const status = await aptos.transaction.waitForTransaction({
+                transactionHash: commited_txn.hash
+            })
+
+            if (status.success) {
+                return true
+            }
+            else {
+                await localStore.addFollow(unfollowing_address)
+                throw new Error("Transaction failed")
+            }
+
+        }
+        catch (e) {
+            await localStore.addFollow(unfollowing_address)
+            throw e
+        }
     }
 
 

@@ -1,14 +1,17 @@
-import { View, Text, Separator, Button, Heading, H4, Spinner } from 'tamagui'
+import { View, Text, Separator, Button, Heading, H4, Spinner, useTheme } from 'tamagui'
 import React from 'react'
 import { Stack, useGlobalSearchParams, useRouter } from 'expo-router'
 import { useQuery } from '@apollo/client'
 import { GET_MY_PROFILE } from '../../../utils/queries'
-import { TouchableOpacity } from 'react-native'
+import { TouchableOpacity, useColorScheme } from 'react-native'
 import { ArrowLeft, MoreVertical } from '@tamagui/lucide-icons'
 import { SafeAreaView } from 'react-native-safe-area-context'
 
 const _layout = () => {
     const params = useGlobalSearchParams()
+    const colorScheme = useColorScheme()
+    const tamaguiTheme = useTheme()
+
     const userAddress = params['address'] as string ?? null
 
     const profileQuery = useQuery(GET_MY_PROFILE, {
@@ -27,7 +30,8 @@ const _layout = () => {
             style={{
                 flex: 1,
                 width: '100%',
-                height: '100%'
+                height: '100%',
+                backgroundColor: tamaguiTheme.background.val,
             }}
         >
             <Stack>
@@ -37,7 +41,7 @@ const _layout = () => {
                         header(props) {
                             if (profileQuery.loading) return null
                             return (
-                                <View bg="black" w="100%" >
+                                <View bg="$background" w="100%" >
                                     <View flexDirection='row' w="100%" alignItems='center' justifyContent='space-between' py={5} px={10} >
                                         <TouchableOpacity
                                             style={{

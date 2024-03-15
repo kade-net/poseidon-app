@@ -25,12 +25,15 @@ const SignIn = () => {
             pb={insets.bottom}
             flex={1}
             w="100%"
+            backgroundColor={"$background"}
         >
             <View w="100%" >
                 <Button
                     onPress={goBack}
                     icon={<ChevronLeft />}
                     w={100}
+                    backgroundColor={"$button"}
+                    color="$buttonText"
                 >
                     Back
                 </Button>
@@ -42,16 +45,16 @@ const SignIn = () => {
                 px={20}
                 rowGap={40}
             >
-                <Heading textAlign='center' >
+                <Heading textAlign='center' color={"$text"}>
                     How would you like to sign in?
                 </Heading>
                 <View
                     rowGap={20}
                 >
-                    <Button onPress={goToKadeConnect} iconAfter={<MonitorUp />} >
+                    <Button onPress={goToKadeConnect} iconAfter={<MonitorUp />} backgroundColor={"$button"} color="$buttonText">
                         Sign in with Kade Connect
                     </Button>
-                    <Button onPress={goToSeedPhrase} iconAfter={<KeySquare />} >
+                    <Button onPress={goToSeedPhrase} iconAfter={<KeySquare />} backgroundColor={"$button"} color="$buttonText">
                         Sign in with Seed Phrase
                     </Button>
                 </View>

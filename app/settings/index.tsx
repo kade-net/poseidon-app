@@ -1,21 +1,20 @@
-import { View, Text } from 'react-native'
+import { View, Text, TouchableOpacity } from 'react-native'
 import React from 'react'
 import delegateManager from '../../lib/delegate-manager'
-import { Button } from 'tamagui'
+import { Button, H4, XStack, YStack } from 'tamagui'
+import { SafeAreaView } from 'react-native-safe-area-context'
+import Settings from '../../screens/settings'
+import { Stack, useRouter } from 'expo-router'
+import { ArrowLeft } from '@tamagui/lucide-icons'
 
-const Settings = () => {
-    const nuke = async () => {
-        await delegateManager.nuke()
-    }
+const SettingsScreen = () => {
+
     return (
-        <View>
-            <Button
-                onPress={nuke}
-            >
-                Nuke Stuff
-            </Button>
-        </View>
+        <YStack>
+
+            <Settings />
+        </YStack>
     )
 }
 
-export default Settings
+export default SettingsScreen

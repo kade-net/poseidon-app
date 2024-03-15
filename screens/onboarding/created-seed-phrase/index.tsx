@@ -5,6 +5,7 @@ import { ChevronLeft, Copy } from '@tamagui/lucide-icons'
 import * as Clipboard from 'expo-clipboard'
 import delegateManager from '../../../lib/delegate-manager'
 import { useRouter } from 'expo-router'
+import { Utils } from '../../../utils'
 
 const CreatedSeedPhrase = () => {
     const insets = useSafeAreaInsets()
@@ -29,10 +30,12 @@ const CreatedSeedPhrase = () => {
 
     return (
         <View
-            pt={insets.top}
-            pb={insets.bottom}
+            pt={Utils.dynamicHeight(3)}
+            pb={Utils.dynamicHeight(3)}
+            px={Utils.dynamicWidth(5)}
             flex={1}
             w="100%"
+            backgroundColor={"$background"}
         >
             <View
                 flex={1}
@@ -45,13 +48,14 @@ const CreatedSeedPhrase = () => {
                             placeholder='Your seed phrase should be here...'
                             value={delegateManager.mnemonic ?? ""}
                             disabled
+                            backgroundColor={"$colorTransparent"}
                         />
-                        <Text>
+                        <Text color={"$text"} fontFamily={"$body"} fontSize={"$md"} marginVertical={Utils.dynamicHeight(1)}>
                             Please write down your seed phrase and keep it safe. You will need it to recover your account.
                         </Text>
                     </View>
                     <View w="100%" alignItems='flex-end' >
-                        <Button icon={<Copy />} onPress={copySeedPhrase} >
+                        <Button icon={<Copy />} onPress={copySeedPhrase} color={"$buttonText"} backgroundColor={"$button"}>
                             Copy
                         </Button>
                     </View>
@@ -59,6 +63,7 @@ const CreatedSeedPhrase = () => {
                 <View w="100%" >
                     <Button
                         onPress={goToNext}
+                        color={"$buttonText"} backgroundColor={"$button"}
                     >
                         Continue
                     </Button>

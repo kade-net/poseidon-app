@@ -1,9 +1,11 @@
-import { Bell, Home, Mail, Search } from '@tamagui/lucide-icons'
+import { Bell, Home, Mail, Search, Users } from '@tamagui/lucide-icons'
 import { Link, Tabs } from 'expo-router'
-import { Pressable } from 'react-native'
-import { Text } from 'tamagui'
+import { Pressable, useColorScheme } from 'react-native'
+import { Text, useTheme } from 'tamagui'
 
 export default function TabLayout() {
+
+  const tamaguiTheme = useTheme()
   return (
     <Tabs
       screenOptions={{
@@ -11,23 +13,43 @@ export default function TabLayout() {
         tabBarShowLabel: false,
       }}
       initialRouteName='feed'
+      sceneContainerStyle={
+        [
+          {
+            backgroundColor : tamaguiTheme.background.val
+          }
+        ]
+      }
+      
     >
       <Tabs.Screen
         name="feed"
         options={{
-          tabBarIcon: ({ focused }) => <Home />
+          tabBarIcon: ({ focused }) => <Home color={"$text"} />,
+          tabBarActiveBackgroundColor: tamaguiTheme.background.val,
+          tabBarInactiveBackgroundColor : tamaguiTheme.background.val
         }}
       />
       <Tabs.Screen
         name="search"
         options={{
-          tabBarIcon: ({ focused }) => <Search />
+          tabBarIcon: ({ focused }) => <Search color={"$text"} />,
+          tabBarActiveBackgroundColor: tamaguiTheme.background.val,
+          tabBarInactiveBackgroundColor : tamaguiTheme.background.val
+        }}
+      />
+      <Tabs.Screen
+        name="communities"
+        options={{
+          tabBarIcon: ({ focused }) => <Users />
         }}
       />
       <Tabs.Screen
         name="notifications"
         options={{
-          tabBarIcon: ({ focused }) => <Bell />
+          tabBarIcon: ({ focused }) => <Bell color={"$text"} />,
+          tabBarActiveBackgroundColor: tamaguiTheme.background.val,
+          tabBarInactiveBackgroundColor : tamaguiTheme.background.val
         }}
       />
 
@@ -35,7 +57,9 @@ export default function TabLayout() {
       <Tabs.Screen
         name="direct-messages"
         options={{
-          tabBarIcon: ({ focused }) => <Mail /> 
+          tabBarIcon: ({ focused }) => <Mail color={"$text"} />,
+          tabBarActiveBackgroundColor: tamaguiTheme.background.val,
+          tabBarInactiveBackgroundColor : tamaguiTheme.background.val
         }}
       />
     </Tabs>

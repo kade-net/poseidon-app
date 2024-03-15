@@ -65,7 +65,7 @@ const cache = new InMemoryCache({
         Query: {
             fields: {
                 publications: {
-                    keyArgs: ["type", "address", "creator_address", "types"], // TODO: Not sure if its creator_address or address
+                    keyArgs: ["type", "address", "creator_address", "types", "reaction"], // TODO: Not sure if its creator_address or address
                     merge: publicationMerge,
                     read: publicationRead
                 },
@@ -78,6 +78,10 @@ const cache = new InMemoryCache({
                         }
                         return publicationRead(existing, options)
                     }
+                },
+                accounts: {
+                    keyArgs: ["search", "viewer"],
+                    merge: publicationMerge
                 }
 
             }

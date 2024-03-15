@@ -1,8 +1,8 @@
-import { Animated, Platform, TouchableOpacity } from 'react-native'
+import { Animated, Platform, TouchableOpacity, useColorScheme } from 'react-native'
 import React, { useEffect, useMemo, useRef, useState } from 'react'
 import { SceneRendererProps, NavigationState } from 'react-native-tab-view';
 import { ScrollManager } from './tabs/common';
-import { XStack, Text } from 'tamagui';
+import { XStack, Text, useTheme } from 'tamagui';
 import { clone } from 'lodash';
 
 interface Props extends SceneRendererProps {
@@ -24,6 +24,10 @@ const TabNavbar = (props: Props) => {
   const [tabLayoutDetails, setTabLayoutDetails] = useState({} as { [key: string]: { width: number, x: number } })
 
   const TAB_SLIDER_X = useRef(new Animated.Value(0)).current
+
+  const tamaguiTheme = useTheme()
+
+
 
   useEffect(() => {
     Animated.timing(TAB_SLIDER_X, {
@@ -61,7 +65,7 @@ const TabNavbar = (props: Props) => {
         position='relative'
         w="100%"
         justifyContent='space-between'
-        bg="black"
+        bg={'$background'}
       >
         {
           props.navigationState.routes.map((route, index) => {
@@ -103,7 +107,7 @@ const TabNavbar = (props: Props) => {
             position: "absolute",
             bottom: 0,
             height: 2,
-            backgroundColor: 'white',
+            backgroundColor: tamaguiTheme.sideText.val,
             width: tabLayoutDetails[props.navigationState.routes[currentTabIndex].key]?.width,
             left: 0,
             transform: [

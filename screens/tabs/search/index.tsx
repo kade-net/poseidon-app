@@ -1,79 +1,88 @@
 import { View, Text, Avatar, Input, Separator, Tabs, SizableText, Heading } from 'tamagui'
-import React from 'react'
+import React, { useState } from 'react'
 import { FlatList, TouchableOpacity } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import ProfileCard from '../../../components/ui/profile/profile-card'
 import { profiles } from './data'
-const IMAGE = "https://images.unsplash.com/photo-1517849845537-4d257902454a?q=80&w=1935&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+import PeopleSearch from './tabs/people'
+import { GET_MY_PROFILE } from '../../../utils/queries'
+import { useQuery } from '@apollo/client'
+import delegateManager from '../../../lib/delegate-manager'
+import { Link } from 'expo-router'
+import CommunitiesSearch from './tabs/communities'
+import { Utils } from '../../../utils'
+
+
 const Search = () => {
+    const profileQuery = useQuery(GET_MY_PROFILE, {
+        variables: {
+            address: delegateManager.owner!
+        }
+    })
     const insets = useSafeAreaInsets()
+
+    const [search, setSearch] = useState('')
     return (
-        <View pt={insets.top} pb={insets.bottom} flex={1}  >
+        <View pt={insets.top} pb={insets.bottom} flex={1} backgroundColor={"$background"}>
             <View
                 flexDirection='row'
                 alignItems='center'
                 columnGap={20}
-                px={20}
+                px={Utils.dynamicWidth(5)}
                 pb={20}
             >
-                <TouchableOpacity>
+                <Link asChild href={{
+                    pathname: '/profiles/[address]/',
+                    params: {
+                        address: delegateManager.owner!
+                    }
+                }}>
+
                     <Avatar circular  >
                         <Avatar.Image
                             accessibilityLabel='Profile Picture'
-                            src={IMAGE}
+                            src={profileQuery?.data?.account?.profile?.pfp ?? ""}
+                            alt='Profile Picture'
                         />
                         <Avatar.Fallback
                             backgroundColor={'$pink10'}
                         />
                     </Avatar>
-                </TouchableOpacity>
+                </Link>
+
                 <View
                     flex={1}
                 >
                     <Input
+                        onChangeText={setSearch}
                         placeholder='Search'
                     />
                 </View>
             </View>
             <Tabs flexDirection='column' orientation='horizontal' defaultValue='people' flex={1} width="100%" height="100%" >
                 <Tabs.List disablePassBorderRadius="bottom" w="100%" >
-                    <Tabs.Tab flex={1} value='people' >
-                        <SizableText size="$3" >
+                    <Tabs.Tab tabIndex={"people"} flex={1} value='people' >
+                        <Text >
                             People
-                        </SizableText>
+                        </Text>
                     </Tabs.Tab>
-                    <Tabs.Tab flex={1} value='communities' >
-                        <SizableText size="$3" >
+                    <Tabs.Tab tabIndex={"communities"} flex={1} value='communities' >
+                        <Text >
                             Communities
-                        </SizableText>
+                        </Text>
                     </Tabs.Tab>
                 </Tabs.List>
                 <Separator w="100%" />
-                <Tabs.Content value='people' >
-
-                    <FlatList
-                        data={profiles}
-                        showsVerticalScrollIndicator={false}
-                        keyExtractor={(item) => item.id.toString()}
-                        renderItem={({ item }) => {
-                            return (
-                                <View>
-
-                                    <ProfileCard
-                                        {...item}
-                                    />
-                                    <Separator w="100%" />
-                                </View>
-                            )
-                        }}
+                <Tabs.Content tabIndex={"people"} value='people' py={5} >
+                    <PeopleSearch
+                        search={search ?? ''}
                     />
+
                 </Tabs.Content>
-                <Tabs.Content value='communities' >
-                    <View flex={1} justifyContent='center' alignItems='center' >
-                        <Heading size="$5" >
-                            Still cooking!
-                        </Heading>
-                    </View>
+                <Tabs.Content tabIndex={"communities"} value='communities' >
+                    <CommunitiesSearch
+                        search={search ?? ''}
+                    />
                 </Tabs.Content>
             </Tabs>
         </View>

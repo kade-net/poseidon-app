@@ -1,4 +1,4 @@
-import { View, Text, Button, Separator, ScrollView, TextArea, Spinner, Avatar } from 'tamagui'
+import { View, Text, Button, Separator, ScrollView, TextArea, Spinner, Avatar, XStack, YStack } from 'tamagui'
 import React, { memo, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { TPUBLICATION, publicationSchema } from '../../../schema'
@@ -12,11 +12,14 @@ import FeedImage from '../feed/image'
 import { useQuery } from '@apollo/client'
 import { GET_MY_PROFILE } from '../../../utils/queries'
 import delegateManager from '../../../lib/delegate-manager'
+import ChooseCommunityBottomSheet from '../action-sheets/choose-community'
+import { Community } from '../../../__generated__/graphql'
 
 interface Props {
     onClose: () => void
     publicationType: 1 | 2 | 3 | 4
     parentPublicationRef?: string
+    defaultCommunity?: Partial<Community>
 }
 
 const PublicationEditor = (props: Props) => {
@@ -26,13 +29,16 @@ const PublicationEditor = (props: Props) => {
         },
         skip: !delegateManager.owner
     })
-    const { onClose, publicationType, parentPublicationRef } = props
+    const { onClose, publicationType, parentPublicationRef, defaultCommunity } = props
 
     const [images, setImages] = useState<Array<ImagePicker.ImagePickerAsset>>([])
     const [uploading, setUploading] = useState(false)
     const [publishing, setPublishing] = useState(false)
     const form = useForm<TPUBLICATION>({
-        resolver: zodResolver(publicationSchema)
+        resolver: zodResolver(publicationSchema),
+        defaultValues: {
+            community: defaultCommunity?.name,
+        }
     })
 
     const handleChooseImage = async () => {
@@ -88,6 +94,7 @@ const PublicationEditor = (props: Props) => {
     }
 
     const handlePublish = async (values: TPUBLICATION) => {
+        console.log("Values ::", values)
         if (publishing) {
             return
         }
@@ -116,7 +123,7 @@ const PublicationEditor = (props: Props) => {
         }
     }
     return (
-        <View flex={1} w="100%" h="100%" >
+        <View flex={1} w="100%" h="100%" backgroundColor={"$background"}>
             <View
                 flexDirection='row'
                 alignItems='center'
@@ -126,11 +133,11 @@ const PublicationEditor = (props: Props) => {
             >
                 <Button
                     onPress={onClose}
-                    w={100} variant='outlined' >
+                    w={100} variant='outlined' color={"$text"}>
                     Cancel
                 </Button>
 
-                <Button disabled={uploading || publishing} onPress={form.handleSubmit(handlePublish, console.log)} w={100} >
+                <Button disabled={uploading || publishing}  backgroundColor={(uploading || publishing) ? "$disabledButton" : "$button"} color={"$buttonText"} onPress={form.handleSubmit(handlePublish, console.log)} w={100} >
                     {
                         publishing ? <View flexDirection='row' rowGap={5} >
                             <Text>
@@ -169,6 +176,7 @@ const PublicationEditor = (props: Props) => {
                             render={({ field }) => {
                                 return (
                                     <TextArea
+                                        backgroundColor={"$colorTransparent"}
                                         outlineWidth={0}
                                         borderWidth={0}
                                         placeholder='What is on your mind?'
@@ -217,23 +225,42 @@ const PublicationEditor = (props: Props) => {
                 }}
             >
 
-                <View
-                    w="100%"
-                    flexDirection='row'
-                    justifyContent='space-between'
-                    px={20}
-                    py={5}
-                    bg={'$gray1'}
-                >
-                    <TouchableOpacity
-                        onPress={handleChooseImage}
+                <YStack>
+                    <Separator />
+                    <View
+                        w="100%"
+                        flexDirection='row'
+                        justifyContent='space-between'
+                        px={20}
+                        py={20}
+                        bg={'$background'}
                     >
-                        <ImagePlus />
-                    </TouchableOpacity>
-                    {
-                        uploading ? <Text>Uploading...</Text> : null
-                    }
-                </View>
+                        <XStack columnGap={20} alignItems='center' >
+                            {publicationType == 1 && <ChooseCommunityBottomSheet
+                                defaultCommunity={defaultCommunity}
+                                onCommunitySelect={(community) => {
+                                    if (community.name) {
+                                        if (community.name != "home") {
+                                            form.setValue("community", community.name)
+                                        } else {
+                                            console.log("Setting up the community ::", community)
+                                            form.setValue("community", undefined)
+                                        }
+                                    }
+                                }}
+                            />}
+                            <TouchableOpacity
+                                onPress={handleChooseImage}
+                            >
+                                <ImagePlus />
+                            </TouchableOpacity>
+
+                        </XStack>
+                        {
+                            uploading ? <Text>Uploading...</Text> : null
+                        }
+                    </View>
+                </YStack>
             </KeyboardAvoidingView>
         </View>
 

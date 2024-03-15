@@ -1,62 +1,15 @@
 import '../../global'
 import 'react-native-get-random-values'
-import { Publication, PublicationViewerStats } from "../../__generated__/graphql";
+import { Account, Community, Publication, PublicationViewerStats } from "../../__generated__/graphql";
 import storage from "../storage";
 import { TPROFILE, TPUBLICATION } from '../../schema';
 import client from '../../data/apollo';
-import { GET_PUBLICATIONS, GET_MY_PROFILE, GET_PUBLICATION, GET_PUBLICATION_COMMENTS, GET_PUBLICATION_INTERACTIONS_BY_VIEWER, GET_PUBLICATION_STATS } from '../../utils/queries';
+import { GET_PUBLICATIONS, GET_MY_PROFILE, GET_PUBLICATION, GET_PUBLICATION_COMMENTS, GET_PUBLICATION_INTERACTIONS_BY_VIEWER, GET_PUBLICATION_STATS, COMMUNITY_QUERY, GET_ACCOUNT_VIEWER_STATS, ACCOUNTS_SEARCH_QUERY, GET_FOLLOW_ACCOUNT, GET_MEMBERSHIP } from '../../utils/queries';
 import delegateManager from '../delegate-manager';
 import { gql } from '../../__generated__';
 import usernames from '../../contract/modules/usernames';
 
 // TODO: for now we will ignore caching of quotes and anything that will not be seen directly in the home page
-
-interface PUB {
-    publication: TPUBLICATION | null,
-    timestamp: number,
-    type: number,
-    parent_ref: string
-    current_count: number
-}
-
-interface REACTION {
-    reaction: number,
-    new_count: number
-}
-
-function getLast(arr: Array<PUB>, type: number) {
-    const last = arr.filter((pub) => pub.type === type).sort((a, b) => b.timestamp - a.timestamp)
-    return last[0] ?? null
-
-}
-
-const PUBLICATION_FRAGMENT = gql(/* GraphQL */`
-fragment NewPublication on Publication {
-    id
-    timestamp
-    content
-    creator {
-        profile {
-            display_name
-            pfp
-            bio
-        }
-        username {
-            username
-        }
-        id
-        address
-    }
-    stats {
-        comments
-        quotes
-        reposts
-        reactions
-    }
-    publication_ref
-}
-`)
-
 class LocalStore {
 
     constructor() {
@@ -89,6 +42,21 @@ class LocalStore {
             })
             profile = data.data
         }
+
+        let community: Partial<Community> | null = null
+        if (publication?.community) {
+            const data = await client.query({
+                query: COMMUNITY_QUERY,
+                variables: {
+                    name: publication?.community
+                }
+            })
+
+            console.log("Community Data ::", data)
+            // @ts-expect-error - ignoring the type error for now
+            community = data?.data?.community ?? null
+        }
+
         const timestamp = new Date().getTime()
 
         const newPub = {
@@ -110,7 +78,12 @@ class LocalStore {
             timestamp,
             type,
             __typename: "Publication" as const,
-            is_new: true // TODO: for easier resolution in merge functions
+            is_new: true, // TODO: for easier resolution in merge functions
+            ...(
+                community ? {
+                    community
+                } : type == 1 ? { community: null } : {}
+            )
         }
 
         if (type !== 1) {
@@ -278,7 +251,7 @@ class LocalStore {
             client.cache.writeQuery({
                 query: GET_PUBLICATIONS,
                 variables: {
-                    types: [1, 2],
+                    types: [1, 2, 4],
                     page: 0,
                     size: 20
                 },
@@ -292,6 +265,7 @@ class LocalStore {
                                 reactions: 0,
                                 reposts: 0,
                             },
+                            parent: null
                         },
                         ...prev.publications
                     ]
@@ -401,7 +375,7 @@ class LocalStore {
         const existing = client.readQuery({
             query: GET_PUBLICATIONS, // TODO: not sure if this will work in instances where the publication isn;t part of the first 50
             variables: {
-                types: [1, 2],
+                types: [1, 2, 4],
                 page: 0,
                 size: 20
             }
@@ -412,7 +386,7 @@ class LocalStore {
         client.writeQuery({
             query: GET_PUBLICATIONS,
             variables: {
-                types: [1, 2],
+                types: [1, 2, 4],
                 page: 0,
                 size: 20
             },
@@ -609,7 +583,309 @@ class LocalStore {
 
     }
 
+    async addFollow(following_address: string, search?: string) {
+        const prevState = client.readQuery({
+            query: GET_ACCOUNT_VIEWER_STATS,
+            variables: {
+                accountAddress: following_address,
+                viewerAddress: delegateManager.owner!
+            }
+        })
 
+        if (!prevState) {
+            const queryData = client.readQuery({
+                query: GET_FOLLOW_ACCOUNT,
+                variables: {
+                    address: following_address,
+                    viewer: delegateManager.owner!
+                }
+            })
+
+            if (queryData) {
+                client.writeQuery({
+                    query: GET_FOLLOW_ACCOUNT,
+                    variables: {
+                        address: following_address,
+                        viewer: delegateManager.owner!
+                    },
+                    data: {
+                        account: {
+                            __typename: "Account",
+                            viewer: {
+                                followed: queryData.account?.viewer?.followed ?? false,
+                                follows: true,
+                            }
+                        }
+                    }
+                })
+            }
+
+            return
+        }
+        client.writeQuery({
+            query: GET_ACCOUNT_VIEWER_STATS,
+            variables: {
+                accountAddress: following_address,
+                viewerAddress: delegateManager.owner!
+            },
+            data: {
+                ...prevState,
+                accountViewerStats: {
+                    __typename: "AccountViewerStats",
+                    follows: true,
+                    followed: prevState?.accountViewerStats?.follows ?? false,
+                }
+            }
+        })
+
+        const prevFollowingAccountState = client.readQuery({
+            query: GET_MY_PROFILE,
+            variables: {
+                address: following_address
+            }
+        })
+
+        console.log("Following Account State ::", prevFollowingAccountState)
+
+        const prevUserAccountState = client.readQuery({
+            query: GET_MY_PROFILE,
+            variables: {
+                address: delegateManager.owner!
+            }
+        })
+
+        client.writeQuery({
+            query: GET_MY_PROFILE,
+            variables: {
+                address: following_address
+            },
+            data: {
+                account: {
+                    ...prevFollowingAccountState?.account,
+                    // @ts-expect-error - ignoring the type error for now
+                    stats: {
+                        ...prevFollowingAccountState?.account?.stats,
+                        followers: (prevFollowingAccountState?.account?.stats?.followers ?? 0) + 1
+                    }
+                }
+            }
+        })
+
+        client.writeQuery({
+            query: GET_MY_PROFILE,
+            variables: {
+                address: delegateManager.owner!
+            },
+            data: {
+                account: {
+                    ...prevUserAccountState?.account,
+                    // @ts-expect-error - ignoring the type error for now
+                    stats: {
+                        ...prevUserAccountState?.account?.stats,
+                        following: (prevUserAccountState?.account?.stats?.following ?? 0) + 1,
+                    }
+                }
+            }
+        })
+    }
+
+    async removeFollow(unfollowing_address: string, search?: string) {
+        console.log("Searching::", search)
+        const prevState = client.readQuery({
+            query: GET_ACCOUNT_VIEWER_STATS,
+            variables: {
+                accountAddress: unfollowing_address,
+                viewerAddress: delegateManager.owner!
+            }
+        })
+
+        if (!prevState) {
+
+            const queryData = client.readQuery({
+                query: GET_FOLLOW_ACCOUNT,
+                variables: {
+                    address: unfollowing_address,
+                    viewer: delegateManager.owner!
+                }
+            })
+
+            if (queryData) {
+                client.writeQuery({
+                    query: GET_FOLLOW_ACCOUNT,
+                    variables: {
+                        address: unfollowing_address,
+                        viewer: delegateManager.owner!
+                    },
+                    data: {
+                        account: {
+                            __typename: "Account",
+                            viewer: {
+                                followed: queryData.account?.viewer?.followed ?? false,
+                                follows: false,
+                            }
+                        }
+                    }
+                })
+            }
+
+            return
+        }
+
+        client.writeQuery({
+            query: GET_ACCOUNT_VIEWER_STATS,
+            variables: {
+                accountAddress: unfollowing_address,
+                viewerAddress: delegateManager.owner!
+            },
+            data: {
+                ...prevState,
+                accountViewerStats: {
+                    __typename: "AccountViewerStats",
+                    follows: false,
+                    followed: prevState?.accountViewerStats?.follows ?? false,
+                }
+            }
+        })
+
+        const prevFollowingAccountState = client.readQuery({
+            query: GET_MY_PROFILE,
+            variables: {
+                address: unfollowing_address
+            }
+        })
+
+        const prevUserAccountState = client.readQuery({
+            query: GET_MY_PROFILE,
+            variables: {
+                address: delegateManager.owner!
+            }
+        })
+
+        client.writeQuery({
+            query: GET_MY_PROFILE,
+            variables: {
+                address: unfollowing_address
+            },
+            data: {
+                account: {
+                    ...prevFollowingAccountState?.account,
+                    // @ts-expect-error - ignoring the type error for now
+                    stats: {
+                        ...prevFollowingAccountState?.account?.stats,
+                        followers: (prevFollowingAccountState?.account?.stats?.followers ?? 0) - 1
+                    }
+                }
+            }
+        })
+
+        client.writeQuery({
+            query: GET_MY_PROFILE,
+            variables: {
+                address: delegateManager.owner!
+            },
+            data: {
+                account: {
+                    ...prevUserAccountState?.account,
+                    // @ts-expect-error - ignoring the type error for now
+                    stats: {
+                        ...prevUserAccountState?.account?.stats,
+                        following: (prevUserAccountState?.account?.stats?.following ?? 0) - 1
+                    }
+                }
+            }
+        })
+
+    }
+
+    async addMembership(communityName: string) {
+
+        client.writeQuery({
+            query: GET_MEMBERSHIP,
+            variables: {
+                communityName: communityName,
+                userAddress: delegateManager.owner!
+            },
+            data: {
+                membership: {
+                    community_id: 0,
+                    id: Date.now(),
+                    is_active: true,
+                    timestamp: Date.now(),
+                    type: 2,
+                    user_kid: 1,
+                    __typename: "Membership",
+                }
+            }
+        })
+
+        const prevCommunityQuery = client.readQuery({
+            query: COMMUNITY_QUERY,
+            variables: {
+                name: communityName
+            }
+        })
+
+        if (prevCommunityQuery?.community) {
+            client.writeQuery({
+                query: COMMUNITY_QUERY,
+                variables: {
+                    name: communityName
+                },
+                data: {
+                    community: {
+                        __typename: "Community",
+                        ...prevCommunityQuery.community,
+                        stats: {
+                            ...prevCommunityQuery.community.stats,
+                            members: (prevCommunityQuery.community.stats.members ?? 0) + 1,
+                            __typename: "CommunityStats"
+                        }
+                    }
+                }
+            })
+        }
+    }
+
+
+    async removeMembership(communityName: string) {
+        client.writeQuery({
+            query: GET_MEMBERSHIP,
+            variables: {
+                communityName: communityName,
+                userAddress: delegateManager.owner!
+            },
+            data: {
+                membership: null
+            }
+        })
+
+        const prevCommunityQuery = client.readQuery({
+            query: COMMUNITY_QUERY,
+            variables: {
+                name: communityName
+            }
+        })
+
+        if (prevCommunityQuery?.community) {
+            client.writeQuery({
+                query: COMMUNITY_QUERY,
+                variables: {
+                    name: communityName
+                },
+                data: {
+                    community: {
+                        __typename: "Community",
+                        ...prevCommunityQuery.community,
+                        stats: {
+                            ...prevCommunityQuery.community.stats,
+                            members: (prevCommunityQuery.community.stats.members ?? 0) - 1,
+                            __typename: "CommunityStats"
+                        }
+                    }
+                }
+            })
+        }
+    }
 
 
     // !!! IMPORTANT !!! - this is for dev purpouses only and should never be used in production

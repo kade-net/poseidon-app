@@ -16,17 +16,19 @@ import { isNull } from "lodash";
 import { Link, useRouter } from "expo-router";
 import PublicationReactions from "./reactions";
 import ContentPreviewContainer from "./content-preview-container";
+import { Utils } from "../../../utils";
 
 dayjs.extend(relativeTime)
 
 interface BaseContentContainerProps {
     data: Partial<Publication & {
         stats: PublicationStats
-    }>,
+    }>, 
+    inCommunityFeed?: boolean
 }
 
 function BaseContentContainer(props: BaseContentContainerProps) {
-    const { data: _data } = props
+    const { data: _data, inCommunityFeed } = props
     const data = _data?.type == 4 ? _data?.parent : _data
     const theme = useTheme()
     const router = useRouter()
@@ -36,12 +38,12 @@ function BaseContentContainer(props: BaseContentContainerProps) {
 
 
     return (
-        <YStack w="100%" borderBottomWidth={1} borderColor={'$gray1'} py={5} pb={10} >
+        <YStack w="100%" borderBottomWidth={1} borderColor={'$blue2Dark'} py={9} px={Utils.dynamicWidth(4)} pb={10} >
 
             {
                 _data?.type == 4 && <View flexDirection="row" alignItems="center" pb={10} columnGap={10} >
-                    <Repeat2 size={10} />
-                    <Text color="gray" fontSize={10} >
+                    <Repeat2 size={"$1"} />
+                    <Text color="gray" fontSize={"$xxs"} >
                         @{data?.creator?.username?.username} Reposted
                     </Text>
                 </View>
@@ -54,7 +56,7 @@ function BaseContentContainer(props: BaseContentContainerProps) {
                     </Text>
                 </View>
             }
-            <View w="100%" flexDirection="row" columnGap={2}  >
+            <View w="100%" flexDirection="row" columnGap={6}  >
                 <Link
                     asChild
                     href={{
@@ -89,14 +91,14 @@ function BaseContentContainer(props: BaseContentContainerProps) {
                         >
                             <View flexDirection="row" alignItems="flex-start" columnGap={10}>
                                 <View>
-                                    <Text>
+                                    <Text fontSize={"$xs"}>
                                         {data?.creator?.profile?.display_name}
                                     </Text>
-                                    <Text fontSize={'$1'} color={'$gray10'} >
+                                    <Text color={'$sideText'} fontSize={"$xxs"}>
                                         @{data?.creator?.username?.username}
                                     </Text>
                                 </View>
-                                <Text color={'$gray10'} >
+                                <Text fontSize={'$xxs'} color={'$sideText'} >
                                     {dayjs(data?.timestamp).fromNow()}
                                 </Text>
                             </View>
@@ -105,8 +107,8 @@ function BaseContentContainer(props: BaseContentContainerProps) {
                     </View>
                     {
                         data?.type == 4 && <XStack w="100%" alignItems="center" columnGap={5} >
-                            <Repeat2 />
-                            <Text>
+                            <Repeat2/>
+                            <Text fontFamily={"$heading"}>
                                 Reposted
                             </Text>
                         </XStack>
@@ -125,7 +127,7 @@ function BaseContentContainer(props: BaseContentContainerProps) {
                     >
                         {/* Content */}
                         <View w="100%">
-                            <Text
+                            <Text fontFamily={"$body"} fontSize={"$sm"} lineHeight={"$sm"}
                                 mb={
                                     ((data?.content?.media?.length ?? 0) > 0) ? 20 : 0
                                 }
@@ -151,6 +153,27 @@ function BaseContentContainer(props: BaseContentContainerProps) {
                             <ContentPreviewContainer data={data?.parent} />
                         </View>
                     }
+                    {!inCommunityFeed && <XStack w="100%" >
+                        {data?.community &&
+                            <Link asChild href={{
+                                pathname: '/(tabs)/feed/communities/[name]/',
+                                params: {
+                                    "name": data?.community?.name
+                                }
+                            }} >
+                                <XStack columnGap={10} borderRadius={5} px={4} py={2} borderWidth={1} borderColor={"$blue10"} >
+                                    <Avatar circular size={"$1"} >
+                                        <Avatar.Image src={data?.community?.image} />
+                                        <Avatar.Fallback bg="$pink10" />
+                                    </Avatar>
+                                    <Text color="$blue10" fontSize={12} >
+                                        /{data?.community?.name}
+                                    </Text>
+                                </XStack>
+                            </Link>
+
+                        }
+                    </XStack>}
 
                     <View flexDirection="row" columnGap={20} w="100%" >
                         <PublicationReactions

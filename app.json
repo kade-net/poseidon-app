@@ -1,11 +1,11 @@
 {
   "expo": {
-    "name": "expo-router-example",
-    "slug": "expo-router-example",
-    "version": "1.0.0",
+    "name": "kadetest",
+    "slug": "kadetest",
+    "version": "0.0.1",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "myapp",
+    "scheme": "kadetest",
     "userInterfaceStyle": "automatic",
     "splash": {
       "image": "./assets/images/splash.png",
@@ -16,13 +16,15 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.dduke.kadetest"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.dduke.kadetest"
     },
     "web": {
       "bundler": "metro",
@@ -36,6 +38,14 @@
     ],
     "experiments": {
       "typedRoutes": true
+    },
+    "extra": {
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "4ab9f120-4f60-4510-a7cf-ac71a8833dbd"
+      }
     }
   }
 }

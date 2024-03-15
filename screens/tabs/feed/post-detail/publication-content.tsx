@@ -9,6 +9,7 @@ import relativeTime from 'dayjs/plugin/relativeTime'
 import FeedImage from '../../../../components/ui/feed/image'
 import PublicationStats from '../../../../components/ui/feed/publication-stats'
 import Reactions from '../../../../components/ui/feed/reactions'
+import { Utils } from '../../../../utils'
 dayjs.extend(relativeTime)
 
 interface Props {
@@ -30,14 +31,14 @@ const PublicationContent = (props: Props) => {
                     <ArrowLeft />
                 </TouchableOpacity>
                 <Heading
-                    size={"$6"}
+                    size={"$md"}
                 >
                     Conversation
                 </Heading>
             </View>
             <View w="100%">
 
-                <View w="100%" flexDirection='row' justifyContent='space-between' >
+                <View w="100%" flexDirection='row' justifyContent='space-between'  px={Utils.dynamicWidth(3)}>
                     <View
                         flexDirection='row'
                         columnGap={10}
@@ -52,18 +53,18 @@ const PublicationContent = (props: Props) => {
                             />
                         </Avatar>
                         <View>
-                            <Text fontWeight={"900"} >
+                            <Text fontFamily={"$heading"} fontWeight={"$4"} fontSize={"$sm"}  color={"$text"}>
                                 {data?.publication?.creator?.profile?.display_name}
                             </Text>
                             <View flexDirection='row' alignItems='center' columnGap={1} >
 
-                                <Text fontSize={"$3"} color={"$gray11"} >
+                                <Text  color={"$sideText"} fontFamily={"$heading"} fontSize={"$sm"} >
                                     @{data?.publication?.creator?.username?.username}
                                 </Text>
                                 <Dot
-                                    color={'$gray11'}
+                                    color={'$sideText'}
                                 />
-                                <Text fontSize={"$3"} color={"$gray11"} >
+                                <Text color={"$sideText"} >
                                     {
                                         dayjs(data?.publication?.timestamp).fromNow()
                                     }
@@ -75,8 +76,8 @@ const PublicationContent = (props: Props) => {
                         <MoreHorizontal />
                     </TouchableOpacity>
                 </View>
-                <View w="100%" py={10} >
-                    <Text
+                <View w="100%" py={10}  px={Utils.dynamicWidth(3)}>
+                    <Text fontFamily={"$body"} fontSize={"$sm"} lineHeight={"$sm"}
                         mb={
                             ((data?.publication?.content?.media?.length ?? 0) > 0) ? 20 : 0
                         }
@@ -97,7 +98,7 @@ const PublicationContent = (props: Props) => {
                     </View>
                 </View>
 
-                <View rowGap={10} px={10} >
+                <View rowGap={10}>
 
                     <Separator />
                     <PublicationStats
@@ -107,7 +108,7 @@ const PublicationContent = (props: Props) => {
                         } : undefined}
                         publication_ref={data.publication?.publication_ref!}
                     />
-                    <Separator />
+                    <Separator  width={Utils.dynamicWidth(100)}/>
                     <Reactions
                         showNumbers={false}
                         initialStats={data.publication?.stats ? {

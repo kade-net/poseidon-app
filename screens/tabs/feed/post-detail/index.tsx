@@ -23,7 +23,7 @@ const PostDetail = (props: Props) => {
     const { data } = props
 
     return (
-        <YStack h="100%" w="100%" flex={1} >
+        <YStack h="100%" w="100%" flex={1} backgroundColor={"$background"} >
             <Publication
                 data={data}
                 publication_ref={data.publication?.publication_ref!}

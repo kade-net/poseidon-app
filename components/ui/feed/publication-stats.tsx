@@ -41,35 +41,35 @@ const PublicationStats = (props: Props) => {
             columnGap={10}
         >
             <View flexDirection='row' columnGap={10} >
-                <Text fontWeight={"600"} >
+                <Text fontWeight={"600"} color={'$sideText'}>
                     {
                         publicationStatsQuery?.data?.publicationStats?.reposts ?? initialStats?.reposts ?? 0
                     }
                 </Text>
-                <Text color={'$gray10'} >
+                <Text color={'$sideText'} >
                     Reposts
                 </Text>
             </View>
 
             <View flexDirection='row' columnGap={10} >
-                <Text fontWeight={"600"} >
+                <Text fontWeight={"600"} color={'$sideText'}>
                     {
                         publicationStatsQuery?.data?.publicationStats?.quotes ?? initialStats?.quotes ?? 0
                     }
                 </Text>
-                <Text color={'$gray10'} >
+                <Text color={'$sideText'} >
                     Quotes
                 </Text>
             </View>
 
 
             <View flexDirection='row' columnGap={10} >
-                <Text fontWeight={"600"}  >
+                <Text fontWeight={"600"}  color={'$sideText'}>
                     {
                         publicationStatsQuery?.data?.publicationStats?.comments ?? initialStats?.comments ?? 0
                     }
                 </Text>
-                <Text color={'$gray10'} >
+                <Text color={'$sideText'} >
                     Comments
                 </Text>
 
@@ -77,12 +77,12 @@ const PublicationStats = (props: Props) => {
 
 
             <View flexDirection='row' columnGap={10} >
-                <Text fontWeight={"600"}  >
+                <Text fontWeight={"600"} color={'$sideText'}>
                     {
                         publicationStatsQuery?.data?.publicationStats?.reactions ?? initialStats?.reactions ?? 0
                     }
                 </Text>
-                <Text color={'$gray10'} >
+                <Text color={'$sideText'} >
                     Likes
                 </Text>
             </View>

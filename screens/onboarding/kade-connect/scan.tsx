@@ -94,12 +94,15 @@ const Scan = () => {
     }
 
     return (
-        <View pt={insets.top} pb={insets.bottom} flex={1} >
+        <View pt={insets.top} pb={insets.bottom} flex={1}  backgroundColor={"$background"}>
             <View w="100%" >
                 <Button
                     onPress={goBack}
-                    width={100}
+                    width={110}
                     icon={<ChevronLeft />}
+                    backgroundColor={"$button"}
+                    color="$buttonText"
+                    fontSize={"$md"}
                 >
                     Back
                 </Button>
@@ -107,18 +110,18 @@ const Scan = () => {
             <View justifyContent='center' flex={1} >
                 <View w="100%" alignItems='center' rowGap={20} >
                     <View alignItems='center' rowGap={10} >
-                        <Heading >
+                        <Heading color={"$text"} >
                             Step 1
                         </Heading>
-                        <Text textAlign='center' >
-                            go to <Text color={"lightgray"} >connect.kade.network</Text> on your desktop browser.
+                        <Text textAlign='center' color={"$text"} >
+                            go to <Text color={"$COAText"} >connect.kade.network</Text> on your desktop browser.
                         </Text>
                     </View>
                     <View alignItems='center' rowGap={10} >
-                        <Heading >
+                        <Heading color={"$text"}>
                             Step 2
                         </Heading>
-                        <Text textAlign='center' >
+                        <Text textAlign='center' color={"$text"} >
                             Scan the QR Code.
                         </Text>
                         <View w={300} h={300} borderRadius={30} overflow='hidden' >
@@ -129,10 +132,10 @@ const Scan = () => {
                         </View>
                     </View>
                     <View alignItems='center' rowGap={10} >
-                        <Heading >
+                        <Heading color={"$text"}>
                             Step 3
                         </Heading>
-                        <Text textAlign='center' >
+                        <Text textAlign='center' color={"$text"}>
                             Approve connection.
                         </Text>
                     </View>

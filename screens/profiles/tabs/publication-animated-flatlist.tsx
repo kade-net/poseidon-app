@@ -10,7 +10,8 @@ import { useGlobalSearchParams } from 'expo-router'
 
 
 const PublicationAnimatedFlatList = (props: ProfileTabsProps & {
-  types?: number[]
+  types?: number[],
+  reaction?: number
 }) => {
   const params = useGlobalSearchParams()
   const address = params['address'] as string
@@ -19,7 +20,8 @@ const PublicationAnimatedFlatList = (props: ProfileTabsProps & {
       page: 0,
       size: 20,
       address: address,
-      types: props.types ?? [1, 3]
+      types: props.types ?? [1, 3],
+      reaction: props.reaction
     },
     fetchPolicy: 'cache-and-network',
     skip: !address

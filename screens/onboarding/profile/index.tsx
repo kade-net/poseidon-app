@@ -15,6 +15,7 @@ import { aptos } from '../../../contract'
 import * as SecureStorage from 'expo-secure-store'
 import client from '../../../data/apollo'
 import { GET_MY_PROFILE } from '../../../utils/queries'
+import { Utils } from '../../../utils'
 
 const Profile = () => {
     const [image, setImage] = useState<ImagePicker.ImagePickerAsset | null>(null)
@@ -98,17 +99,18 @@ const Profile = () => {
     return (
         <View
             pt={insets.top}
-            pb={insets.bottom}
+            pb={Utils.dynamicHeight(3)}
             flex={1}
             justifyContent='space-between'
-            px={20}
+            px={Utils.dynamicWidth(5)}
+            backgroundColor={"$background"}
         >
             <View>
                 <View flexDirection='row' w="100%" justifyContent='space-between' >
-                    <Heading size="$8" >
+                    <Heading size={"$md"} color={"$text"} >
                         Create Profile
                     </Heading>
-                    <Button iconAfter={<ChevronRight />} onPress={handleProfileSkip} >
+                    <Button iconAfter={<ChevronRight />} onPress={handleProfileSkip} backgroundColor={"$button"} color={"$buttonText"}>
                         Skip
                     </Button>
                 </View>
@@ -122,7 +124,7 @@ const Profile = () => {
                                     style={{
                                         padding: 50,
                                         borderWidth: 1,
-                                        borderColor: 'white',
+                                        borderColor: 'rgb(151,151,156)',
                                         alignItems: 'center',
                                         justifyContent: 'center',
                                         borderRadius: 100,
@@ -130,7 +132,7 @@ const Profile = () => {
                                         overflow: 'hidden'
                                     }} >
                                     <Plus
-                                        color="white"
+                                        color="rgb(151,151,156)"
                                     />
                                 </TouchableOpacity>}
                                 {value && <TouchableOpacity onPress={addProfileImage} >
@@ -157,6 +159,7 @@ const Profile = () => {
                         render={({ field: { onChange, value } }) => {
                             return (
                                 <Input
+                                    backgroundColor={"$colorTransparent"}
                                     placeholder='Display Name'
                                     value={value}
                                     onChangeText={onChange}
@@ -170,6 +173,7 @@ const Profile = () => {
                         render={({ field: { onChange, value } }) => {
                             return (
                                 <TextArea
+                                    backgroundColor={"$colorTransparent"}
                                     placeholder='Tell us about yourself'
                                     value={value}
                                     onChangeText={onChange}
@@ -180,7 +184,7 @@ const Profile = () => {
                 </View>
             </View>
 
-            <Button onPress={form.handleSubmit(handleSubmit)} >
+            <Button onPress={form.handleSubmit(handleSubmit)} backgroundColor={"$button"} color={"$buttonText"} >
                 {
                     submitting ? <View flexDirection='row' columnGap={10} >
                         <Text >

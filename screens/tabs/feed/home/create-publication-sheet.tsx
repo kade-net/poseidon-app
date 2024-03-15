@@ -132,6 +132,7 @@ const CreatePublicationSheet = (props: Props) => {
                   value={field.value}
                   onChangeText={field.onChange}
                 />
+
               )
 
             }}

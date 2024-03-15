@@ -9,6 +9,9 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import account from '../../../contract/modules/account'
 import delegateManager from '../../../lib/delegate-manager'
 import usernames from '../../../contract/modules/usernames'
+import { Utils } from '../../../utils'
+import client from '../../../data/apollo'
+import { GET_MY_PROFILE } from '../../../utils/queries'
 
 // The seed phrase will be a list of 12 words each separated by a space
 const schema = z.object({
@@ -75,6 +78,17 @@ const SeedPhrase = () => {
                     return
                 }
 
+                const profile = await client.query({
+                    query: GET_MY_PROFILE,
+                    variables: {
+                        address: delegateManager.owner!
+                    }
+                })
+
+                if (profile.data.account) {
+                    await account.markProfileAsRegistered()
+                }
+
                 await account.markAsRegistered()
 
                 if (account.isProfileRegistered) {
@@ -97,12 +111,14 @@ const SeedPhrase = () => {
     }
 
     return (
-        <View pt={insets.top} pb={insets.bottom} flex={1} >
+        <View pt={insets.top} px={Utils.dynamicWidth(5)} pb={Utils.dynamicHeight(3)} flex={1} backgroundColor={"$background"}>
             <View w="100%" columnGap={20} >
                 <Button
                     icon={<ChevronLeft />}
                     w={100}
                     onPress={goBack}
+                    backgroundColor={"$button"}
+                    color="$buttonText"
                 >
                     Back
                 </Button>
@@ -114,7 +130,7 @@ const SeedPhrase = () => {
                 justifyContent='space-between'
             >
                 <View w="100%" rowGap={10} >
-                    <Heading>
+                    <Heading color={"$text"}>
                         Seed Phrase
                     </Heading>
                     <Controller
@@ -123,6 +139,7 @@ const SeedPhrase = () => {
                         render={({ field }) => {
                             return (
                                 <TextArea
+                                    backgroundColor={"$colorTransparent"}
                                     onChangeText={field.onChange}
                                     value={field.value}
                                     numberOfLines={20}
@@ -134,7 +151,7 @@ const SeedPhrase = () => {
                         }}
                     />
                 </View>
-                <Button onPress={form.handleSubmit(handleSubmit)} w="100%" >
+                <Button onPress={form.handleSubmit(handleSubmit)} w="100%" backgroundColor={"$button"} color="$buttonText">
                     Done
                 </Button>
             </View>

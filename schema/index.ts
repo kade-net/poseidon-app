@@ -14,7 +14,17 @@ export const publicationSchema = z.object({
     media: z.array(z.object({
         type: z.string(),
         url: z.string()
-    })).optional()
+    })).optional(),
+    community: z.string().optional()
 })
 
 export type TPUBLICATION = z.infer<typeof publicationSchema>
+
+
+export const communitySchema = z.object({
+    name: z.string(),
+    description: z.string(),
+    image: z.string()
+})
+
+export type COMMUNITY = z.infer<typeof communitySchema>

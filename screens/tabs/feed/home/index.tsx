@@ -19,7 +19,7 @@ import BaseContentSheet from '../../../../components/ui/action-sheets/base-conte
 import useDisclosure from '../../../../components/hooks/useDisclosure'
 import PublicationEditor from '../../../../components/ui/editor/publication-editor'
 import useSingleScrollManager from '../../../../components/hooks/useSingleScrollManager'
-
+import { useColorScheme } from 'react-native'
 
 const Home = () => {
     const [currentPage, setCurrentPage] = useState(0)
@@ -31,6 +31,8 @@ const Home = () => {
         },
         fetchPolicy: 'cache-and-network'
     })
+    const tamaguiTheme = useTheme()
+    
 
     const profileQuery = useQuery(GET_MY_PROFILE, {
         variables: {
@@ -115,7 +117,7 @@ const Home = () => {
                 alignItems: 'center',
                 justifyContent: 'space-between',
                 height: 80,
-                backgroundColor: 'black',
+                backgroundColor: tamaguiTheme.background.val,
                 transform: [{ translateY }],
                 position: 'absolute',
                 top: 0,
@@ -123,12 +125,12 @@ const Home = () => {
                 zIndex: 1,
                 elevation: 4,
                 width: '100%',
-                paddingHorizontal: 20,
+                paddingHorizontal: 12,
                 borderBottomWidth: 2,
                 borderBottomColor: theme.gray1.val,
             }} >
                 <TouchableOpacity onPress={goToProfile} >
-                    <Avatar circular  >
+                    <Avatar circular size={"$4"} >
                         <Avatar.Image
                             accessibilityLabel='Profile Picture'
                             src={profileQuery?.data?.account?.profile?.pfp as string}
@@ -138,7 +140,7 @@ const Home = () => {
                         />
                     </Avatar>
                 </TouchableOpacity>
-                <Heading size="$6" >
+                <Heading fontFamily={"$heading"} fontWeight={"$3"} fontSize={"$lg"} >
                     Home
                 </Heading>
                 <TouchableOpacity onPress={goToSettings} >
@@ -152,6 +154,13 @@ const Home = () => {
 
             }} >
                 <Animated.FlatList
+                    style={
+                        [
+                            {
+                                backgroundColor: tamaguiTheme.background.val
+                            }
+                        ]
+                    }
                     onScroll={Animated.event(
                         [{ nativeEvent: { contentOffset: { y: scrollY } } }],
                         { useNativeDriver: true }
@@ -213,12 +222,12 @@ const Home = () => {
                         <View
                             p={10}
                             borderRadius={100}
-                            backgroundColor={"$blue11"}
+                            backgroundColor={"$button"}
                             alignItems='center'
                             justifyContent='center'
 
                         >
-                            <MessageCirclePlus />
+                            <MessageCirclePlus color={"$buttonText"} borderColor={'$buttonText'}/>
                         </View>
                     </TouchableOpacity>}
                 </View>
