@@ -14,6 +14,7 @@ import { GET_MY_PROFILE } from '../../../utils/queries'
 import delegateManager from '../../../lib/delegate-manager'
 import ChooseCommunityBottomSheet from '../action-sheets/choose-community'
 import { Community } from '../../../__generated__/graphql'
+import UnstyledButton from '../buttons/unstyled-button'
 
 interface Props {
     onClose: () => void
@@ -131,11 +132,7 @@ const PublicationEditor = (props: Props) => {
                 py={5}
                 px={10}
             >
-                <Button
-                    onPress={onClose}
-                    w={100} variant='outlined' color={"$text"}>
-                    Cancel
-                </Button>
+                <UnstyledButton callback={onClose} label={'Cancel'}/> 
 
                 <Button disabled={uploading || publishing}  backgroundColor={(uploading || publishing) ? "$disabledButton" : "$button"} color={"$buttonText"} onPress={form.handleSubmit(handlePublish, console.log)} w={100} >
                     {

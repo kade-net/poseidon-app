@@ -28,3 +28,13 @@ export const communitySchema = z.object({
 })
 
 export type COMMUNITY = z.infer<typeof communitySchema>
+
+export const updateSchema = z.object({
+    community: z.string(),
+    description: z.string().optional(),
+    display_name: z.string().optional(),
+    image: z.string().optional()
+})
+
+
+export type UpdateCommunitySchema = z.infer<typeof updateSchema>

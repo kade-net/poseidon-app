@@ -6,6 +6,7 @@ import { useQuery } from '@apollo/client'
 import { GET_FOLLOW_ACCOUNT } from '../../../utils/queries'
 import delegateManager from '../../../lib/delegate-manager'
 import { Link } from 'expo-router'
+import { Utils } from '../../../utils'
 
 
 interface Props {
@@ -39,11 +40,12 @@ const ProfileCard = (props: Props) => {
 
 
     return (
-        <YStack w="100%" >
+        <YStack w="100%">
             <View
                 flexDirection='row'
                 columnGap={10}
                 p={10}
+                paddingHorizontal={Utils.dynamicWidth(4)}
             >
                 <Link asChild href={{
                     pathname: '/profiles/[address]/',
@@ -88,7 +90,7 @@ const ProfileCard = (props: Props) => {
 
                         </View>
                         <View>
-                            <Button onPress={handleFollowToggle} size={'$2'}
+                            <Button onPress={handleFollowToggle} size={"$3"} backgroundColor={"$button"} color={"$buttonText"}
                                 variant={queryData?.data?.account?.viewer?.follows ? "outlined" : undefined}
                             >
                                 {

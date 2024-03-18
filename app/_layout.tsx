@@ -16,6 +16,7 @@ import client from '../data/apollo'
 import localStore from '../lib/local-store'
 import { GET_MY_PROFILE } from '../utils/queries'
 import { QueryClient, QueryClientProvider } from 'react-query'
+import anchors from '../contract/modules/anchors'
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -37,9 +38,9 @@ SplashScreen.preventAutoHideAsync();
 //   await localStore.nuke()
 //   console.log("DONE NUKING")
 // })();
-delegateManager.init().then(() => {
-  console.log("DELEGATE INITIALIZED")
 
+delegateManager.init().then(async () => {
+  console.log("DELEGATE INITIALIZED")
 }).catch((e) => {
   console.error("UNABLE TO INITIALIZE DELEGATE", e)
 })
@@ -82,6 +83,7 @@ function RootLayoutNav() {
                 state: console.log
               }}
             >
+              <Stack.Screen name="index" options={{ headerShown: false }} />
               <Stack.Screen name="onboard" options={{ headerShown: false }} />
               <Stack.Screen name="connect" options={{ headerShown: false }} />
               <Stack.Screen name="profiles" options={{ headerShown: false }} />

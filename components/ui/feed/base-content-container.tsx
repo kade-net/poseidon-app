@@ -38,7 +38,7 @@ function BaseContentContainer(props: BaseContentContainerProps) {
 
 
     return (
-        <YStack w="100%" borderBottomWidth={1} borderColor={'$blue2Dark'} py={9} px={Utils.dynamicWidth(4)} pb={10} >
+        <YStack w="100%" borderBottomWidth={1} borderColor={'$borderColor'} py={9} px={Utils.dynamicWidth(4)} pb={10} >
 
             {
                 _data?.type == 4 && <View flexDirection="row" alignItems="center" pb={10} columnGap={10} >

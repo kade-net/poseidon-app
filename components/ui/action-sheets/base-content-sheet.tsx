@@ -36,7 +36,7 @@ const BaseContentSheet = (props: Props) => {
                 bg={showOverlay == false ? '$colorTransparent' : undefined}
             />
 
-            <Sheet.Frame>
+            <Sheet.Frame backgroundColor={"$bottomSheet"}>
                 {children}
             </Sheet.Frame>
         </Sheet>

@@ -21,7 +21,7 @@ const WelcomeScreen = () => {
         router.push('/onboard/signin')
     }
     return (
-        <View w="100%" backgroundColor={"$background"} alignItems='center' justifyContent='space-between' flex={1} px={Utils.dynamicWidth(5)} pb={Utils.dynamicHeight(3)}>
+        <View w="100%" backgroundColor={"$background"} alignItems='center' justifyContent='space-between' flex={1} px={Utils.dynamicWidth(5)} pb={insets.bottom}>
             <View h="80%" w="100%" alignItems='center' justifyContent='center' >
                 <View w="$1" h="$1" bg="$red10" transform={[
                     {
@@ -36,7 +36,7 @@ const WelcomeScreen = () => {
                 <Button icon={<User />} w="100%" variant='outlined' onPress={goToSignIn}  >
                     <SizableText>Sign In</SizableText>
                 </Button>
-                <Button w="100%" onPress={goToCreateAccount} backgroundColor={"$button"}>
+                <Button w="100%" onPress={goToCreateAccount} backgroundColor={"$button"} marginBottom={Utils.dynamicHeight(5)}>
                     <SizableText color={"$buttonText"} >Create Account</SizableText>
                 </Button>
 

@@ -95,7 +95,7 @@ const TabNavbar = (props: Props) => {
                   })
                 }}
               >
-                <Text color={'$gray10'} numberOfLines={1} >
+                <Text color={'$text'} numberOfLines={1} >
                   {route.title}
                 </Text>
               </TouchableOpacity>

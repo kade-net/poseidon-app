@@ -18,6 +18,7 @@ interface Props {
 const CommunityFeed = (props: Props) => {
     const insets = useSafeAreaInsets()
     const { name } = props
+    console.log('COMMUNITY NAME', name)
     const membershipQuery = useQuery(GET_MEMBERSHIP, {
         variables: {
             communityName: name,
@@ -91,7 +92,7 @@ const CommunityFeed = (props: Props) => {
 
 
     return (
-        <YStack w="100%" flex={1} >
+        <YStack w="100%" flex={1} backgroundColor={"$background"} >
             <View style={{
                 flex: 1,
                 position: "relative",

@@ -12,6 +12,7 @@ import usernames from '../../../contract/modules/usernames'
 import { Utils } from '../../../utils'
 import client from '../../../data/apollo'
 import { GET_MY_PROFILE } from '../../../utils/queries'
+import UnstyledButton from '../../../components/ui/buttons/unstyled-button'
 
 // The seed phrase will be a list of 12 words each separated by a space
 const schema = z.object({
@@ -111,18 +112,9 @@ const SeedPhrase = () => {
     }
 
     return (
-        <View pt={insets.top} px={Utils.dynamicWidth(5)} pb={Utils.dynamicHeight(3)} flex={1} backgroundColor={"$background"}>
+        <View pt={insets.top} px={Utils.dynamicWidth(5)} pb={insets.bottom} flex={1} backgroundColor={"$background"}>
             <View w="100%" columnGap={20} >
-                <Button
-                    icon={<ChevronLeft />}
-                    w={100}
-                    onPress={goBack}
-                    backgroundColor={"$button"}
-                    color="$buttonText"
-                >
-                    Back
-                </Button>
-
+                <UnstyledButton callback={goBack} icon={<ChevronLeft/>} label={"Back"}/>
             </View>
             <View
                 flex={1}
@@ -151,7 +143,7 @@ const SeedPhrase = () => {
                         }}
                     />
                 </View>
-                <Button onPress={form.handleSubmit(handleSubmit)} w="100%" backgroundColor={"$button"} color="$buttonText">
+                <Button onPress={form.handleSubmit(handleSubmit)} w="100%" backgroundColor={"$button"} color="$buttonText" marginBottom={Utils.dynamicHeight(5)}>
                     Done
                 </Button>
             </View>

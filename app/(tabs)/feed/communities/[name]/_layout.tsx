@@ -1,6 +1,6 @@
 import { Dimensions, TouchableOpacity } from 'react-native'
 import React from 'react'
-import { Stack, useLocalSearchParams } from 'expo-router'
+import { Link, Stack, useLocalSearchParams } from 'expo-router'
 import { useQuery } from '@apollo/client'
 import { COMMUNITY_QUERY, GET_MEMBERSHIP } from '../../../../../utils/queries'
 import { SafeAreaView } from 'react-native-safe-area-context'
@@ -57,32 +57,32 @@ const _layout = () => {
                 options={{
                     header(props) {
                         return (
-                            <YStack w="100%" pos="relative" >
+                            <YStack w="100%" pos="relative" backgroundColor={"$background"}>
                                 <XStack w="100%" py={10} alignItems='center' columnGap={10} px={10} >
 
                                     <TouchableOpacity onPress={props.navigation.goBack} >
                                         <ArrowLeft />
                                     </TouchableOpacity>
                                     <TouchableOpacity onPress={onToggle} >
-                                        <XStack columnGap={5} >
+                                        <XStack columnGap={10} alignItems='center' >
                                             <Avatar circular size={"$2"} >
                                                 <Avatar.Image source={{ uri: communityQuery.data?.community?.image }} alt="community" />
                                                 <Avatar.Fallback bg="lightgray" />
                                             </Avatar>
-                                            <Text mr={20} >
+                                            <Text mr={20}  color={"$text"}>
                                                 /{communityQuery.data?.community?.name}
                                             </Text>
                                             {
-                                                isOpen ? <ChevronUp /> : <ChevronDown />
+                                                isOpen ? <ChevronUp size={16} /> : <ChevronDown size={16} />
                                             }
                                         </XStack>
                                     </TouchableOpacity>
                                 </XStack>
                                 <Separator />
                                 {isOpen && <YStack pos="absolute" top={48} flex={1} height={DROPDOWN_HEIGHT} w="100%" zIndex={5} elevation={4} >
-                                    <YStack w="100%" px={10} py={20} bg="black" >
-                                        <XStack w="100%" >
-                                            <XStack columnGap={10} >
+                                    <YStack w="100%" px={10} py={20} bg="$background" >
+                                        <XStack columnGap={10} w="100%" >
+                                            <XStack  >
                                                 <Avatar circular size={"$5"} >
                                                     <Avatar.Image source={{ uri: communityQuery.data?.community?.image }} alt="community" />
                                                     <Avatar.Fallback bg="lightgray" />
@@ -90,34 +90,42 @@ const _layout = () => {
                                             </XStack>
                                             <YStack>
                                                 <Text fontSize={'$5'} >
-                                                    {communityQuery.data?.community?.name}
+                                                    {communityQuery.data?.community?.display_name ?? communityQuery?.data?.community?.name}
                                                 </Text>
-                                                <Text fontSize={'$3'} color={'$gray10'} >
+                                                <Text fontSize={'$3'} color={'$sideText'} >
                                                     /{communityQuery.data?.community?.name}
                                                 </Text>
                                             </YStack>
                                         </XStack>
-                                        <Text w="100%" py={20} >
+                                        <Text w="100%" py={20} color={"$text"} fontFamily={"$body"} fontSize={"$sm"}>
                                             {
                                                 communityQuery.data?.community?.description
                                             }
                                         </Text>
                                         <XStack alignItems='center' columnGap={20} w="100%" >
+
                                             {
-                                                membershipQuery.data?.membership?.type == 0 ? <Button iconAfter={<Edit3 />} flex={1} >
-                                                    Edit
-                                                </Button> :
-                                                    membershipQuery.data?.membership ? <Button variant='outlined' onPress={handleFollowToggle} flex={1} >
+                                                membershipQuery.data?.membership?.type == 0 ? <Link asChild href={{
+                                                    pathname: '/(tabs)/feed/communities/[name]/edit/',
+                                                    params: {
+                                                        name: communityQuery.data?.community?.name!
+                                                    }
+                                                }} >
+                                                    <Button backgroundColor={"$button"} color={"$buttonText"} iconAfter={<Edit3 />} flex={1} >
+                                                        Edit
+                                                    </Button>
+                                                </Link> :
+                                                    membershipQuery.data?.membership ? <Button backgroundColor={"$button"} color={"$buttonText"} variant='outlined' onPress={handleFollowToggle} flex={1} >
                                                         Following
                                                     </Button> :
-                                                        <Button onPress={handleFollowToggle} flex={1} >
+                                                        <Button backgroundColor={"$button"} color={"$buttonText"} onPress={handleFollowToggle} flex={1} >
                                                             Follow
                                                         </Button>
                                             }
                                         </XStack>
                                         <XStack py={10} alignItems='center' columnGap={10} >
-                                            <Users color={'gray'} size={12} />
-                                            <Text color={'gray'} fontSize={12} >
+                                            <Users color={'$sideText'} size={"$xxs"} />
+                                            <Text color={'$sideText'} fontSize={"$xxs"} >
                                                 {communityQuery.data?.community?.stats?.members} Members
                                             </Text>
                                         </XStack>
@@ -139,6 +147,9 @@ const _layout = () => {
                     }
                 }}
             />
+            <Stack.Screen name="edit" options={{
+                headerShown: false
+            }} />
         </Stack>
     )
 }

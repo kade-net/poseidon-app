@@ -1,4 +1,4 @@
-import { View, Text, YStack, Avatar, Input, TextArea, Spinner, Button } from 'tamagui'
+import { View, Text, YStack, Avatar, Input, TextArea, Spinner, Button, XStack } from 'tamagui'
 import React, { useState } from 'react'
 import { z } from 'zod'
 import { Controller, useForm } from 'react-hook-form'
@@ -76,49 +76,57 @@ const CreateCommunity = () => {
     return (
         <YStack w="100%" flex={1} alignItems='center' justifyContent='space-between' p={20} >
             <YStack flex={1} w="100%" alignItems='center' >
-                <Controller
-                    control={form.control}
-                    name="image"
-                    render={({ field: { value } }) => {
-                        return (
-                            <View py={30} alignItems='center' justifyContent='center' w="100%" >
+                <YStack w="100%" rowGap={20} alignItems='center' padding={20} >
+                    <Controller
+                        control={form.control}
+                        name="image"
+                        render={({ field: { value } }) => {
+                            return (
+                                <View py={30} alignItems='center' justifyContent='center' w="100%" >
 
-                                {!value && <TouchableOpacity onPress={addProfileImage}
-                                    style={{
-                                        padding: 50,
-                                        borderWidth: 1,
-                                        borderColor: 'white',
-                                        alignItems: 'center',
-                                        justifyContent: 'center',
-                                        borderRadius: 100,
-                                        position: "relative",
-                                        overflow: 'hidden'
-                                    }} >
-                                    {!uploading && <Plus
-                                        color="white"
-                                    />}
-                                    {
-                                        uploading && <Spinner />
-                                    }
-                                </TouchableOpacity>}
-                                {value && <TouchableOpacity onPress={addProfileImage} >
-                                    <Avatar
-                                        size={"$10"}
-                                        circular
-                                    >
-                                        <Avatar.Image source={{ uri: value }} />
-                                        <Avatar.Fallback
-                                            bg="lightgray"
+                                    {!value && <TouchableOpacity onPress={addProfileImage}
+                                        style={{
+                                            padding: 50,
+                                            borderWidth: 1,
+                                            borderColor: 'white',
+                                            alignItems: 'center',
+                                            justifyContent: 'center',
+                                            borderRadius: 100,
+                                            position: "relative",
+                                            overflow: 'hidden'
+                                        }} >
+                                        {!uploading && <Plus
+                                            color="white"
+                                        />}
+                                        {
+                                            uploading && <Spinner />
+                                        }
+                                    </TouchableOpacity>}
+                                    {value && <TouchableOpacity onPress={addProfileImage} >
+                                        <Avatar
+                                            size={"$10"}
+                                            circular
+                                        >
+                                            <Avatar.Image source={{ uri: value }} />
+                                            <Avatar.Fallback
+                                                bg="lightgray"
 
-                                        />
-                                    </Avatar>
-                                </TouchableOpacity>}
+                                            />
+                                        </Avatar>
+                                    </TouchableOpacity>}
 
 
-                            </View>
-                        )
-                    }}
-                />
+                                </View>
+                            )
+                        }}
+                    />
+                    {uploading && <XStack columnGap={20} >
+                        <Spinner />
+                        <Text>
+                            Uploading...
+                        </Text>
+                    </XStack>}
+                </YStack>
 
                 <View w="100%" rowGap={10} >
                     <Controller

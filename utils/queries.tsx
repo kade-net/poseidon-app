@@ -67,6 +67,7 @@ export const GET_MY_PROFILE = gql(/* GraphQL */`
     query MyProfile($address: String!) {
     account(address: $address) {
         id
+        address
         profile {
             display_name
             bio
@@ -190,13 +191,14 @@ export const GET_PUBLICATION_COMMENTS = gql(/* GraphQL */`
 
 
 export const SEARCH_COMMUNITIES = gql(/* GraphQL */`
-    query Communities($search: String, $page: Int!, $size: Int!) {
-        communities(search: $search, pagination: {page: $page, size: $size}) {
+    query Communities($search: String, $page: Int!, $size: Int!, $member: String) {
+        communities(search: $search, pagination: {page: $page, size: $size}, memberAddress: $member) {
             id
             name
             description
             image
             timestamp
+            display_name
         }
     }
 `)
@@ -210,6 +212,7 @@ export const COMMUNITY_QUERY = gql(/* GraphQL */`
             description
             image
             timestamp
+            display_name
             creator {
                 address
                 username {
@@ -330,6 +333,24 @@ export const GET_FOLLOW_ACCOUNT = gql(/* GraphQL */`
             viewer(address: $viewer) {
                 followed
                 follows
+            }
+        }
+    }
+`)
+
+
+export const COMMUNITY_MEMBERS_SEARCH = gql(/* GraphQL */`
+    query Memberships($communityName: String!, $search: String) {
+        memberships(communityName: $communityName, search: $search) {
+            id
+            address
+            profile {
+                pfp
+                display_name
+                bio
+            }
+            username {
+                username
             }
         }
     }

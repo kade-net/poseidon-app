@@ -8,6 +8,8 @@ import delegateManager from '../../../lib/delegate-manager'
 import { useRouter } from 'expo-router'
 import { ChevronLeft } from '@tamagui/lucide-icons'
 import account from '../../../contract/modules/account'
+import { Utils } from '../../../utils'
+import UnstyledButton from '../../../components/ui/buttons/unstyled-button'
 
 const Scan = () => {
     const insets = useSafeAreaInsets()
@@ -94,18 +96,9 @@ const Scan = () => {
     }
 
     return (
-        <View pt={insets.top} pb={insets.bottom} flex={1}  backgroundColor={"$background"}>
+        <View pt={insets.top} pb={insets.bottom} flex={1}  backgroundColor={"$background"} paddingHorizontal={Utils.dynamicWidth(5)}>
             <View w="100%" >
-                <Button
-                    onPress={goBack}
-                    width={110}
-                    icon={<ChevronLeft />}
-                    backgroundColor={"$button"}
-                    color="$buttonText"
-                    fontSize={"$md"}
-                >
-                    Back
-                </Button>
+                <UnstyledButton callback={goBack} icon={<ChevronLeft/>} label={"Back"}/>
             </View>
             <View justifyContent='center' flex={1} >
                 <View w="100%" alignItems='center' rowGap={20} >

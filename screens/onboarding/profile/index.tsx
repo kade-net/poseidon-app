@@ -16,6 +16,7 @@ import * as SecureStorage from 'expo-secure-store'
 import client from '../../../data/apollo'
 import { GET_MY_PROFILE } from '../../../utils/queries'
 import { Utils } from '../../../utils'
+import UnstyledButton from '../../../components/ui/buttons/unstyled-button'
 
 const Profile = () => {
     const [image, setImage] = useState<ImagePicker.ImagePickerAsset | null>(null)
@@ -99,20 +100,18 @@ const Profile = () => {
     return (
         <View
             pt={insets.top}
-            pb={Utils.dynamicHeight(3)}
+            pb={insets.bottom}
             flex={1}
             justifyContent='space-between'
             px={Utils.dynamicWidth(5)}
             backgroundColor={"$background"}
         >
             <View>
-                <View flexDirection='row' w="100%" justifyContent='space-between' >
+                <View flexDirection='row' w="100%" justifyContent='space-between' alignItems='center'>
                     <Heading size={"$md"} color={"$text"} >
                         Create Profile
                     </Heading>
-                    <Button iconAfter={<ChevronRight />} onPress={handleProfileSkip} backgroundColor={"$button"} color={"$buttonText"}>
-                        Skip
-                    </Button>
+                    <UnstyledButton label='Skip' icon={<ChevronRight/>} after={true} callback={handleProfileSkip}/>
                 </View>
                 <Controller
                     control={form.control}
@@ -184,7 +183,7 @@ const Profile = () => {
                 </View>
             </View>
 
-            <Button onPress={form.handleSubmit(handleSubmit)} backgroundColor={"$button"} color={"$buttonText"} >
+            <Button onPress={form.handleSubmit(handleSubmit)} backgroundColor={"$button"} color={"$buttonText"} marginBottom={Utils.dynamicHeight(5)}>
                 {
                     submitting ? <View flexDirection='row' columnGap={10} >
                         <Text >

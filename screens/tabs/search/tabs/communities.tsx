@@ -53,6 +53,7 @@ const CommunitiesSearch = (props: Props) => {
                 refreshing={communitiesQuery.loading}
                 onRefresh={handleFetchTop}
                 onEndReached={handleFetchMore}
+                showsVerticalScrollIndicator={false}
                 onEndReachedThreshold={1}
                 ListFooterComponent={() => {
                     return (

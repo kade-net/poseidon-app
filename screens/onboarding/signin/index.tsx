@@ -3,6 +3,8 @@ import React from 'react'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { ChevronLeft, KeySquare, MonitorUp } from '@tamagui/lucide-icons'
 import { useRouter } from 'expo-router'
+import { Utils } from '../../../utils'
+import UnstyledButton from '../../../components/ui/buttons/unstyled-button'
 
 const SignIn = () => {
     const insets = useSafeAreaInsets()
@@ -26,17 +28,10 @@ const SignIn = () => {
             flex={1}
             w="100%"
             backgroundColor={"$background"}
+            paddingHorizontal={Utils.dynamicWidth(5)}
         >
             <View w="100%" >
-                <Button
-                    onPress={goBack}
-                    icon={<ChevronLeft />}
-                    w={100}
-                    backgroundColor={"$button"}
-                    color="$buttonText"
-                >
-                    Back
-                </Button>
+                <UnstyledButton callback={goBack} icon={<ChevronLeft/>} label={"Back"}/>  
             </View>
             <View
                 flex={1}

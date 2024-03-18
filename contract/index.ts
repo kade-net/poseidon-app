@@ -4,7 +4,7 @@ export const USERNAMES_COLLECTION_ADDRESS = '0x32464b70d881e7847f49c7826145bca69
 
 export const MODULE_ADDRESS = '0xe519b74fd94be761a4879e5db5e6e1ea113697c69be5664eb053123a00a03334'
 
-export const COMMUNITY_MODULE_ADDRESS = '0x3df401e14e282835d6c2e5cae4db40d6e36e3781b0f622f24382c5a03b566f44'
+export const COMMUNITY_MODULE_ADDRESS = '0x3cb811325b7a3e40231ecda6ba74bb0deb97196d2f0353123825a398861db95f' as const;
 
 export const ACCOUNTS_RESOURCE_ADDRESS = '0x149e9a5f5dc3179720f0f5ddece23fdfda209fbaa6e24ee604a844e614425715';
 
@@ -18,7 +18,8 @@ export const PUBLICATION_CONTRACT = `${MODULE_ADDRESS}::publications`
 
 export const USERNAME_CONTRACT = `${MODULE_ADDRESS}::usernames`
 
-export const COMMUNITY_MODULE = `${COMMUNITY_MODULE_ADDRESS}::community`
+export const COMMUNITY_MODULE = `${COMMUNITY_MODULE_ADDRESS}::community` as const
+export const ANCHORS_MODULE = `${COMMUNITY_MODULE_ADDRESS}::anchor` as const
 
 
 export const ACCOUNT_ENTRY_FUNCTIONS = {
@@ -56,6 +57,10 @@ export const USERNAME_VIEW_FUNCTIONS = {
 
 export const USERNAME_ENTRY_FUNCTIONS = {
     claim_username: `${USERNAME_CONTRACT}::claim_username`,
+}
+
+export const ANCHORS_VIEW_FUNCTIONS = {
+    get_balance: `${ANCHORS_MODULE}::get_balance` as const
 }
 
 

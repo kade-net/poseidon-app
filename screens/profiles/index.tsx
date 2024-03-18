@@ -140,7 +140,7 @@ const ProfileDetails = (props: Props) => {
                 top: 0,
                 left: 0,
                 zIndex: 1,
-                elevation: 4,
+                elevation: 0,
                 transform: [
                     {
                         translateY

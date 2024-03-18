@@ -82,8 +82,15 @@ const cache = new InMemoryCache({
                 accounts: {
                     keyArgs: ["search", "viewer"],
                     merge: publicationMerge
+                },
+                communityPublications: {
+                    keyArgs: ["communityName"],
+                    merge: publicationMerge,
+                },
+                communities: {
+                    keyArgs: ["search", "member"],
+                    merge: publicationMerge
                 }
-
             }
         }
     }

@@ -12,6 +12,7 @@ import delegateManager from '../../../lib/delegate-manager'
 import account from '../../../contract/modules/account'
 import { aptos } from '../../../contract'
 import { Utils } from '../../../utils'
+import UnstyledButton from '../../../components/ui/buttons/unstyled-button'
 
 const schema = z.object({
     username: z.string().min(3).max(20)
@@ -43,7 +44,6 @@ const PickUserName = () => {
     }
 
     const checkUsername = async (values: TSchema) => {
-        goToNext();
         setChecking(true)
         console.log(`CHECKING USERNAME:: ${values.username}`)
         try {
@@ -61,7 +61,6 @@ const PickUserName = () => {
     }
 
     const claimUsernameAndCreateAccount = async (values: TSchema) => {
-        goToNext()
         const username = values.username
         delegateManager.setUsername(username)
         setClaiming(true)
@@ -99,18 +98,9 @@ const PickUserName = () => {
     }
 
     return (
-        <View pt={insets.top} backgroundColor={"$background"} flex={1} justifyContent='space-between' px={Utils.dynamicWidth(5)} pb={Utils.dynamicHeight(3)}>
+        <View pt={insets.top} backgroundColor={"$background"} flex={1} justifyContent='space-between' px={Utils.dynamicWidth(5)} pb={insets.bottom}>
             <View w="100%" rowGap={20}>
-                <Button
-                    icon={<ChevronLeft />}
-                    w={110}
-                    onPress={goBack}
-                    color={"$buttonText"}
-                    backgroundColor={"$button"}
-                    fontSize={"$md"}
-                >
-                    Back
-                </Button>
+                <UnstyledButton callback={goBack} icon={<ChevronLeft/>} label={"Back"}/>
                 <View w="100%" rowGap={10} >
                     <Heading color={"$text"} size="$lg" >
                         Pick a username
@@ -137,7 +127,7 @@ const PickUserName = () => {
                     />
                 </View>
             </View>
-            <Button backgroundColor={"$button"} color={"$buttonText"} onPress={form.handleSubmit(isAvailable ? claimUsernameAndCreateAccount : checkUsername)} >
+            <Button backgroundColor={"$button"} color={"$buttonText"} onPress={form.handleSubmit(isAvailable ? claimUsernameAndCreateAccount : checkUsername)} marginBottom={Utils.dynamicHeight(5)}>
                 {
                     isAvailable ? <View>
                         {claiming ? <Text>Claiming...</Text> : <Text>Claim username</Text>}

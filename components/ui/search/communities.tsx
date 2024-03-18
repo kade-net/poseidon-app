@@ -8,6 +8,8 @@ import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { CheckCircle, Home } from '@tamagui/lucide-icons'
 import { Community } from '../../../__generated__/graphql'
+import { useSafeAreaInsets } from 'react-native-safe-area-context'
+import delegateManager from '../../../lib/delegate-manager'
 
 interface Props {
     search: string
@@ -21,15 +23,18 @@ const schema = z.object({
 type SCHEMA = z.infer<typeof schema>
 
 const Communities = (props: Props) => {
+    const insets = useSafeAreaInsets()
     const { search, onSelect } = props
     const searchDeffered = useDeferredValue(search)
     const communityQuery = useQuery(SEARCH_COMMUNITIES, {
         variables: {
             search: searchDeffered,
             page: 0,
-            size: 20
+            size: 20,
+            member: delegateManager.owner
         }
     })
+
 
     const form = useForm<SCHEMA>({
         resolver: zodResolver(schema)
@@ -52,24 +57,28 @@ const Communities = (props: Props) => {
 
 
     return (
-        <YStack w="100%" >
+        <YStack w="100%" pb={insets.bottom} >
             <Controller
                 control={form.control}
                 name="community"
                 render={({ field }) => {
                     return (
                         <FlatList
+
                             data={[{
                                 __typename: "Community",
                                 id: 0,
                                 name: "home",
                                 description: "",
                                 image: "",
+                                display_name: "Home"
                             }, ...(communityQuery?.data?.communities ?? [])]}
                             keyExtractor={(item) => item?.id?.toString()}
                             contentContainerStyle={{
-                                rowGap: 10
+                                rowGap: 10,
+                                paddingBottom: insets.bottom
                             }}
+                            showsVerticalScrollIndicator={false}
                             renderItem={({ item }) => {
                                 return (
                                     <TouchableOpacity onPress={() => {
@@ -98,9 +107,16 @@ const Communities = (props: Props) => {
                                                         </Avatar>
 
                                                 }
-                                                <Text>
-                                                    {item.name}
-                                                </Text>
+                                                <YStack>
+                                                    <Text>
+                                                        {
+                                                            item.display_name ?? item?.name
+                                                        }
+                                                    </Text>
+                                                    <Text color="gray" >
+                                                        /{item.name}
+                                                    </Text>
+                                                </YStack>
                                             </XStack>
                                             {
                                                 field.value == item.name && <CheckCircle

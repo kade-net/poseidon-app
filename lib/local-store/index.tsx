@@ -2,9 +2,9 @@ import '../../global'
 import 'react-native-get-random-values'
 import { Account, Community, Publication, PublicationViewerStats } from "../../__generated__/graphql";
 import storage from "../storage";
-import { TPROFILE, TPUBLICATION } from '../../schema';
+import { TPROFILE, TPUBLICATION, UpdateCommunitySchema } from '../../schema';
 import client from '../../data/apollo';
-import { GET_PUBLICATIONS, GET_MY_PROFILE, GET_PUBLICATION, GET_PUBLICATION_COMMENTS, GET_PUBLICATION_INTERACTIONS_BY_VIEWER, GET_PUBLICATION_STATS, COMMUNITY_QUERY, GET_ACCOUNT_VIEWER_STATS, ACCOUNTS_SEARCH_QUERY, GET_FOLLOW_ACCOUNT, GET_MEMBERSHIP } from '../../utils/queries';
+import { GET_PUBLICATIONS, GET_MY_PROFILE, GET_PUBLICATION, GET_PUBLICATION_COMMENTS, GET_PUBLICATION_INTERACTIONS_BY_VIEWER, GET_PUBLICATION_STATS, COMMUNITY_QUERY, GET_ACCOUNT_VIEWER_STATS, ACCOUNTS_SEARCH_QUERY, GET_FOLLOW_ACCOUNT, GET_MEMBERSHIP, SEARCH_COMMUNITIES, GET_COMMUNITY_PUBLICATIONS } from '../../utils/queries';
 import delegateManager from '../delegate-manager';
 import { gql } from '../../__generated__';
 import usernames from '../../contract/modules/usernames';
@@ -220,6 +220,38 @@ class LocalStore {
 
 
         try {
+
+            if (community) {
+                const prevCommunityPublications = client.readQuery({
+                    query: GET_COMMUNITY_PUBLICATIONS,
+                    variables: {
+                        communityName: community.name! ?? "", // Safe to assume the community name is set
+                        page: 0,
+                        size: 20
+                    }
+                })
+
+                client.writeQuery({
+                    query: GET_COMMUNITY_PUBLICATIONS,
+                    variables: {
+                        communityName: community.name! ?? "", // Safe to assume the community name is set
+                        page: 0,
+                        size: 20
+                    },
+                    data: {
+                        communityPublications: [{
+                            ...newPub,
+                            stats: {
+                                comments: 0,
+                                quotes: 0,
+                                reactions: 0,
+                                reposts: 0,
+                            },
+                            parent: null
+                        } as any, ...prevCommunityPublications?.communityPublications ?? []]
+                    }
+                })
+            }
             const prev = client.cache.readQuery({
                 query: GET_PUBLICATIONS, variables: {
                     types: [1, 2],
@@ -546,6 +578,7 @@ class LocalStore {
                         __typename: "Profile"
                     },
                     username: {
+                        __typename: "Username",
                         username: username ?? "_u38",
                     },
                     id: currentProfile?.account?.id ?? Date.now(),
@@ -561,7 +594,8 @@ class LocalStore {
                         reactions: 0,
                         reposts: 0,
                         delegates: 0
-                    }
+                    },
+                    address: delegateManager.owner!
                 },
             },
             variables: {
@@ -887,6 +921,149 @@ class LocalStore {
         }
     }
 
+    async updateCommunity(data: UpdateCommunitySchema) {
+        const prevCommunityQuery = client.readQuery({
+            query: COMMUNITY_QUERY,
+            variables: {
+                name: data.community
+            }
+        })
+
+        console.log("Prev Community Query ::", prevCommunityQuery)
+
+        if (prevCommunityQuery?.community) {
+            client.writeQuery({
+                query: COMMUNITY_QUERY,
+                variables: {
+                    name: data.community
+                },
+                data: {
+                    community: {
+                        __typename: "Community",
+                        ...prevCommunityQuery.community,
+                        ...data
+                    }
+                }
+            })
+        }
+    }
+
+    async changeMembershipType(communityName: string, member_address: string, type: number) {
+        const prevMembershipQuery = client.readQuery({
+            query: GET_MEMBERSHIP,
+            variables: {
+                communityName: communityName,
+                userAddress: member_address
+            }
+        })
+
+        if (prevMembershipQuery?.membership) {
+            client.writeQuery({
+                query: GET_MEMBERSHIP,
+                variables: {
+                    communityName: communityName,
+                    userAddress: member_address
+                },
+                data: {
+                    membership: {
+                        __typename: "Membership",
+                        ...prevMembershipQuery.membership,
+                        type
+                    }
+                }
+            })
+        }
+
+    }
+
+
+
+    async createCommunity(name: string, description: string, image: string) {
+        const profile = client.readQuery({
+            query: GET_MY_PROFILE,
+            variables: {
+                address: delegateManager.owner!
+            }
+        })
+        const timestamp = Date.now()
+        client.writeQuery({
+            query: COMMUNITY_QUERY,
+            variables: {
+                name
+            },
+            data: {
+                community: {
+                    __typename: "Community",
+                    creator: profile?.account! as any,
+                    description,
+                    id: timestamp,
+                    image,
+                    name,
+                    stats: {
+                        __typename: "CommunityStats",
+                        members: 1,
+                        publications: 0
+                    },
+                    timestamp,
+                    display_name: name
+                }
+            }
+        })
+
+        client.writeQuery({
+            query: GET_MEMBERSHIP,
+            variables: {
+                communityName: name,
+                userAddress: delegateManager.owner!
+            },
+            data: {
+                membership: {
+                    __typename: "Membership",
+                    community_id: timestamp,
+                    id: timestamp,
+                    is_active: true,
+                    timestamp,
+                    type: 0,
+                    user_kid: profile?.account?.id!,
+                }
+            }
+        })
+
+        const prevCommunitySearches = client.readQuery({
+            query: SEARCH_COMMUNITIES,
+            variables: {
+                page: 0,
+                size: 20,
+                member: delegateManager.owner,
+                search: ''
+            }
+        })
+
+
+        client.writeQuery({
+            query: SEARCH_COMMUNITIES,
+            variables: {
+                page: 0,
+                size: 20,
+                member: delegateManager.owner,
+                search: ''
+            },
+            data: {
+                communities: [
+                    {
+                        __typename: "Community",
+                        description,
+                        id: timestamp,
+                        image,
+                        name,
+                        timestamp,
+                        display_name: name
+                    },
+                    ...(prevCommunitySearches?.communities ?? [])
+                ]
+            }
+        })
+    }
 
     // !!! IMPORTANT !!! - this is for dev purpouses only and should never be used in production
     async nuke() {

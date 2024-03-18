@@ -47,7 +47,10 @@ export const config = createTamagui({
       button:'rgb(12,114,183)',
       disabledButton:'rgba(12,114,183,0.5)',
       buttonText:'rgb(250,250,250)',
-      COAText:"rgb(12,114,183)"
+      COAText:"rgb(12,114,183)",
+      colourlessButton: 'rgb(12,18,34)',
+      borderColor: 'rgba(151,151,156,0.4)',
+      bottomSheet: 'rgb(20, 29, 54)',
       
     },
     light: {
@@ -65,7 +68,11 @@ export const config = createTamagui({
       button:'rgb(12,114,183)',
       disabledButton:'rgba(12,114,183,0.5)',
       buttonText:'rgb(250,250,250)',
-      COAText:"rgb(12,114,183)"
+      COAText:"rgb(12,114,183)",
+      colourlessButton: 'rgb(250,250,250)',
+      borderColor: 'rgba(151,151,156,0.4)',
+      bottomSheet: 'rgb(237, 230, 230)',
+
 
     }
   },

@@ -1,11 +1,14 @@
-import { View, Text, Separator, Button, Heading, H4, Spinner, useTheme } from 'tamagui'
+import { View, Text, Separator, Button, Heading, H4, Spinner, useTheme, YStack } from 'tamagui'
 import React from 'react'
 import { Stack, useGlobalSearchParams, useRouter } from 'expo-router'
 import { useQuery } from '@apollo/client'
 import { GET_MY_PROFILE } from '../../../utils/queries'
 import { TouchableOpacity, useColorScheme } from 'react-native'
-import { ArrowLeft, MoreVertical } from '@tamagui/lucide-icons'
+import { ArrowLeft, Edit3, MoreVertical } from '@tamagui/lucide-icons'
 import { SafeAreaView } from 'react-native-safe-area-context'
+import BaseContentSheet from '../../../components/ui/action-sheets/base-content-sheet'
+import useDisclosure from '../../../components/hooks/useDisclosure'
+import delegateManager from '../../../lib/delegate-manager'
 
 const _layout = () => {
     const params = useGlobalSearchParams()
@@ -13,6 +16,7 @@ const _layout = () => {
     const tamaguiTheme = useTheme()
 
     const userAddress = params['address'] as string ?? null
+    const { isOpen, onOpen, onClose, onToggle } = useDisclosure()
 
     const profileQuery = useQuery(GET_MY_PROFILE, {
         variables: {
@@ -23,6 +27,16 @@ const _layout = () => {
     const router = useRouter()
     const goBack = () => {
         router.back()
+    }
+
+    const goToEditProfile = () => {
+        onClose()
+        router.navigate({
+            pathname: '/profiles/[address]/edit',
+            params: {
+                address: userAddress
+            }
+        })
     }
 
     return (
@@ -59,7 +73,7 @@ const _layout = () => {
                                             </H4>}
                                         </TouchableOpacity>
                                         <View>
-                                            <Button variant='outlined' icon={<MoreVertical />} />
+                                            <Button onPress={onOpen} variant='outlined' icon={<MoreVertical />} />
                                         </View>
                                     </View>
                                     <Separator />
@@ -68,7 +82,25 @@ const _layout = () => {
                         }
                     }}
                 />
+                <Stack.Screen
+                    name="edit"
+                    options={{
+                        headerShown: false
+                    }}
+                />
             </Stack>
+            <BaseContentSheet
+                open={isOpen}
+                onOpenChange={onToggle}
+                snapPoints={[30]}
+                showOverlay
+            >
+                <YStack w="100%" p={20} >
+                    {userAddress == delegateManager.owner && <Button onPress={goToEditProfile} variant='outlined' icon={<Edit3 />} >
+                        Edit Profile
+                    </Button>}
+                </YStack>
+            </BaseContentSheet>
         </SafeAreaView>
     )
 }

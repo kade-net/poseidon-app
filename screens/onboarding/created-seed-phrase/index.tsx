@@ -30,8 +30,8 @@ const CreatedSeedPhrase = () => {
 
     return (
         <View
-            pt={Utils.dynamicHeight(3)}
-            pb={Utils.dynamicHeight(3)}
+            pt={insets.top}
+            pb={insets.bottom}
             px={Utils.dynamicWidth(5)}
             flex={1}
             w="100%"
@@ -64,6 +64,7 @@ const CreatedSeedPhrase = () => {
                     <Button
                         onPress={goToNext}
                         color={"$buttonText"} backgroundColor={"$button"}
+                        marginBottom={Utils.dynamicHeight(5)}
                     >
                         Continue
                     </Button>

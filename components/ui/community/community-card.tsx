@@ -5,6 +5,7 @@ import { GET_MEMBERSHIP } from '../../../utils/queries';
 import delegateManager from '../../../lib/delegate-manager';
 import communityModule from '../../../contract/modules/community';
 import { Link } from 'expo-router';
+import { Utils } from '../../../utils';
 interface COMMUNITY {
     __typename?: "Community" | undefined;
     id: number;
@@ -43,8 +44,8 @@ const CommunityCard = (props: Props) => {
     }
 
     return (
-        <YStack w="100%" p={10} >
-            <XStack columnGap={5} w="100%" >
+        <YStack w="100%" >
+            <XStack columnGap={5} w="100%" p={10} paddingHorizontal={Utils.dynamicWidth(2)}>
                 <Link asChild href={{
                     pathname: '/(tabs)/feed/communities/[name]/',
                     params: {
@@ -74,15 +75,15 @@ const CommunityCard = (props: Props) => {
                             }
                         }} >
                             <YStack>
-                                <Text>
+                                <Text color={"$text"}>
                                     {community?.name}
                                 </Text>
-                                <Text fontSize={'$1'} color={'$gray10'} >
+                                <Text fontSize={'$1'} color={'$sideText'} >
                                     /{community?.name}
                                 </Text>
                             </YStack>
                         </Link>
-                        {membershipQuery?.data?.membership?.type !== 0 && <Button onPress={handleToggleFollow} size='$2' >
+                        {membershipQuery?.data?.membership?.type !== 0 && <Button backgroundColor={"$button"} color={"$buttonText"} onPress={handleToggleFollow} size='$3' >
                             {
                                 membershipQuery?.data?.membership ? "Following" : "Follow"
                             }
