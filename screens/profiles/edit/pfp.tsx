@@ -14,6 +14,7 @@ import * as ImagePicker from 'expo-image-picker'
 import uploadManager from '../../../lib/upload-manager'
 import { Plus } from '@tamagui/lucide-icons'
 import { useRouter } from 'expo-router'
+import { Utils } from '../../../utils'
 
 const Pfp = () => {
     const [saving, setSaving] = React.useState(false)
@@ -88,7 +89,7 @@ const Pfp = () => {
 
 
     return (
-        <YStack flex={1} w="100%" h="100%" p={20} justifyContent='space-between' >
+        <YStack flex={1} w="100%" h="100%" px={Utils.dynamicWidth(5)} justifyContent='space-between' backgroundColor={"$background"}>
             <YStack flex={1} w="100%" alignItems='center' rowGap={20} >
 
                 <Controller
@@ -141,7 +142,7 @@ const Pfp = () => {
                     </XStack>
                 }
             </YStack>
-            <Button disabled={saving} onPress={form.handleSubmit(handleSubmit)} w="100%" >
+            <Button disabled={saving} onPress={form.handleSubmit(handleSubmit)} w="100%" backgroundColor={"$button"} color={"$buttonText"} marginBottom={Utils.dynamicHeight(5)}>
                 {
                     saving ? <XStack columnGap={10} >
                         <Spinner />

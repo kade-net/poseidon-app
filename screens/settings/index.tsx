@@ -6,6 +6,7 @@ import { Link, useRouter } from 'expo-router'
 import account from '../../contract/modules/account'
 import delegateManager from '../../lib/delegate-manager'
 import localStore from '../../lib/local-store'
+import { Utils } from '../../utils'
 
 const Settings = () => {
     const [loggingOut, setLoggingOut] = useState(false)
@@ -30,7 +31,8 @@ const Settings = () => {
         <YStack
             w="100%"
             h="100%"
-            py={20}
+            py={Utils.dynamicWidth(5)}
+            backgroundColor={"$background"}
         >
             <YStack w="100%" flex={1} >
                 <Link
@@ -92,7 +94,7 @@ const Settings = () => {
                 </Link>
             </YStack>
             <XStack alignItems='center' justifyContent='center' p={20} >
-                <Button onPress={handleLogout} w="100%" backgroundColor={'$button'} color={'$buttonText'} >
+                <Button onPress={handleLogout} w="100%" backgroundColor={'$button'} color={'$buttonText'} fontSize={"$md"} >
                     {
                         loggingOut ? <XStack columnGap={10} >
                             <Spinner />

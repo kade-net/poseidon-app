@@ -41,7 +41,9 @@ export default function TabLayout() {
       <Tabs.Screen
         name="communities"
         options={{
-          tabBarIcon: ({ focused }) => <SquareSlash />
+          tabBarIcon: ({ focused }) => <SquareSlash />,
+          tabBarActiveBackgroundColor: tamaguiTheme.background.val,
+          tabBarInactiveBackgroundColor : tamaguiTheme.background.val
         }}
       />
       <Tabs.Screen

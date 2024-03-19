@@ -49,7 +49,7 @@ const CommunitiesScreen = () => {
                 showOverlay
             >
                 <YStack w="100%" p={20} rowGap={20}  >
-                    <Text fontSize={18} >
+                    <Text fontSize={"$md"} >
                         You need at least 2,500 ANCHORS to create a community.
                     </Text>
                     <Link
@@ -58,6 +58,9 @@ const CommunitiesScreen = () => {
                         onPress={onClose}
                     >
                         <Button
+                            backgroundColor={"$button"}
+                            color={"$buttonText"}
+                            fontSize={"$md"}
 
                         >
                             Get Anchors

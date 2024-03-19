@@ -1,5 +1,5 @@
 import '../../../global'
-import { View, Text, YStack, XStack, H4, H5, Button, Separator, H6, Avatar, Spinner } from 'tamagui'
+import { View, Text, YStack, XStack, H4, H5, Button, Separator, H6, Avatar, Spinner, useTheme } from 'tamagui'
 import React from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { Plus, PlusSquare } from '@tamagui/lucide-icons'
@@ -10,6 +10,8 @@ import community from '../../../contract/modules/community'
 import UserMembership from './membership'
 // TODO: if user has no anchors show bottom sheet leading them to buy some
 const Communities = () => {
+    const tamaguiTheme = useTheme()
+    
     const communitiesQuery = useQuery({
         queryKey: ['memberships'],
         queryFn: community.getCommunities
@@ -19,11 +21,18 @@ const Communities = () => {
     return (
 
             <Animated.FlatList
-                data={communitiesQuery.data}
-                keyExtractor={(item) => item.id}
-                contentContainerStyle={{
-                    width: '100%',
-                }}
+            style={
+                [
+                    {
+                        backgroundColor: tamaguiTheme.background.val
+                    }
+                ]
+            }
+            data={communitiesQuery.data}
+            keyExtractor={(item) => item.id}
+            contentContainerStyle={{
+                width: '100%',
+            }}
             onStartReached={() => communitiesQuery?.refetch()}
             onEndReached={() => communitiesQuery?.refetch()}
             onEndReachedThreshold={1}

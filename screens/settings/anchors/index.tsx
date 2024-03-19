@@ -6,6 +6,7 @@ import { Link } from 'expo-router'
 import { useQuery } from 'react-query'
 import axios from 'axios'
 import delegateManager from '../../../lib/delegate-manager'
+import { Utils } from '../../../utils'
 
 const CONNECT_URL = "https://anchor-connect.vercel.app"
 
@@ -38,7 +39,7 @@ const Anchors = () => {
         }
     })
     return (
-        <YStack alignItems='center' flex={1} w="100%" h="100%" px={20} py={20} >
+        <YStack alignItems='center' flex={1} w="100%" h="100%" px={Utils.dynamicWidth(5)} py={Utils.dynamicHeight(3)} backgroundColor={"$background"}>
             <XStack w="100%" justifyContent='flex-end' >
                 <TouchableOpacity
                     onPress={() => anchorsQuery.refetch()}
@@ -50,17 +51,17 @@ const Anchors = () => {
             <View w="100%" alignItems='center' justifyContent='center' pb={10} >
                 <Anchor size={100} />
             </View>
-            <H3 w="100%" textAlign='center' >
+            <H3 w="100%" textAlign='center' color={"$text"} >
                 {Intl.NumberFormat().format(anchorsQuery?.data?.total_amount ?? 0)} Anchors
             </H3>
-            <Text w="80%" textAlign='center' color={'gray'} >
+            <Text w="85%" textAlign='center' color={'$text'} fontFamily={"$body"} fontSize={"$sm"} my={Utils.dynamicHeight(1)}>
                 Anchors can be used to perform a variety of onchain and Kade specific actions.
             </Text>
             <Link
                 href={"/app-connect/store"}
                 asChild
             >
-                <Button variant='outlined' mt={20}  >
+                <Button variant='outlined' mt={20} backgroundColor={"$button"} color={"$buttonText"} my={Utils.dynamicHeight(1)}>
                     Get Anchors
                 </Button>
             </Link>

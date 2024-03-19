@@ -45,20 +45,21 @@ const DisplayName = () => {
 
 
     return (
-        <YStack flex={1} w="100%" h="100%" p={20} justifyContent='space-between' >
+        <YStack flex={1} w="100%" h="100%" p={20} justifyContent='space-between'  backgroundColor={"$background"}>
             <Controller
                 control={form.control}
                 name='display_name'
                 render={({ field }) => {
                     return (
                         <Input
+                            backgroundColor={"$colorTransparent"}
                             onChangeText={field.onChange}
                             value={field.value}
                             placeholder='Display name'
                         />
                     )
                 }} />
-            <Button disabled={saving} onPress={form.handleSubmit(handleSubmit)} w="100%" >
+            <Button disabled={saving} onPress={form.handleSubmit(handleSubmit)} w="100%" backgroundColor={"$button"} color={"$buttonText"}>
                 {
                     saving ? <XStack columnGap={10} >
                         <Spinner />

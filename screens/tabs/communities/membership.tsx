@@ -53,7 +53,7 @@ const UserMembership = (props: Props) => {
                                         <Text color={'gold'} >owner</Text> :
                                         <Text
                                             color={
-                                                data?.type === 2 ? 'green' : data?.type === 1 ? 'blue' : 'gray'
+                                                data?.type === 2 ? 'rgb(127,88,153)' : data?.type === 1 ? 'rgb(253,33,85)' : 'gray'
                                             }
                                         >
                                             {

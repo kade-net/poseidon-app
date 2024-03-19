@@ -54,6 +54,7 @@ const Search = () => {
                     flex={1}
                 >
                     <Input
+                        backgroundColor={"$colorTransparent"}
                         onChangeText={setSearch}
                         placeholder='Search'
                     />

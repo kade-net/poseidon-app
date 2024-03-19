@@ -134,12 +134,13 @@ const CommunityFeed = (props: Props) => {
                         <View
                             p={10}
                             borderRadius={100}
-                            backgroundColor={"$blue11"}
+                            backgroundColor={"$button"} 
+                            // color={"$buttonText"}
                             alignItems='center'
                             justifyContent='center'
 
                         >
-                            <MessageCirclePlus />
+                            <MessageCirclePlus color={"$buttonText"} />
                         </View>
                     </TouchableOpacity>}
                 </View>

@@ -12,7 +12,7 @@ const PfpScreen = () => {
                     header(props) {
                         return <TopBarWithBack
                             navigation={props.navigation}
-                            title='Display Name'
+                            title='Profile Picture'
                         />
                     }
                 }}

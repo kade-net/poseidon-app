@@ -8,7 +8,7 @@ import delegateManager from '../../../lib/delegate-manager'
 const Edit = () => {
     return (
 
-        <YStack p={20} flex={1} w="100%" h="100%" >
+        <YStack flex={1} w="100%" h="100%" backgroundColor={"$background"}>
             <Link asChild href={{
                 pathname: '/profiles/[address]/edit/display-name',
                 params: {

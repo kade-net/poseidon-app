@@ -4,15 +4,17 @@ import { CameraView } from 'expo-camera/next'
 import { useCameraPermissions } from 'expo-image-picker'
 import React, { useEffect } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
-import { Button, Heading, View, YStack, Text, Spinner } from 'tamagui'
+import { Button, Heading, View, YStack, Text, Spinner, useTheme } from 'tamagui'
 import appConnectManager from '../../lib/app-connect-manager'
 import { useRouter } from 'expo-router'
+import { Utils } from '../../utils'
 
 const StoreConnectScreen = () => {
     const [permission, requestPermission] = useCameraPermissions()
     const [data, setData] = React.useState<null | any>(null)
     const [loading, setLoading] = React.useState(false)
     const router = useRouter()
+    const tamaguiTheme = useTheme()
     useEffect(() => {
         (async () => {
             try {
@@ -50,7 +52,8 @@ const StoreConnectScreen = () => {
             style={{
                 flex: 1,
                 width: "100%",
-                height: "100%"
+                height: "100%",
+                backgroundColor: tamaguiTheme.background.val
             }}
         >
 
@@ -58,23 +61,25 @@ const StoreConnectScreen = () => {
                 flex={1}
                 alignItems='center'
                 justifyContent='center'
+                backgroundColor={"$background"}
+                px={Utils.dynamicWidth(4)}
             >
                 <View flex={1} >
                     <View justifyContent='center' flex={1} >
                         <View w="100%" alignItems='center' rowGap={20} >
                             <View alignItems='center' rowGap={10} >
-                                <Heading >
+                                <Heading color={"$text"}>
                                     Step 1
                                 </Heading>
-                                <Text textAlign='center' >
-                                    go to <Text color={"lightgray"} >anchors.kade.network</Text> on your desktop browser.
+                                <Text textAlign='center' color={"$text"} fontSize={"$md"}>
+                                    go to <Text color={"$COAText"} >anchors.kade.network</Text> on your desktop browser.
                                 </Text>
                             </View>
                             <View alignItems='center' rowGap={10} >
-                                <Heading >
+                                <Heading color={"$text"} >
                                     Step 2
                                 </Heading>
-                                <Text textAlign='center' >
+                                <Text textAlign='center' color={"$text"} fontSize={"$md"}>
                                     Scan the QR Code.
                                 </Text>
                                 <View w={300} h={300} borderRadius={30} overflow='hidden' >
