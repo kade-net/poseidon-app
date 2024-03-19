@@ -56,8 +56,8 @@ const PublicationEditor = (props: Props) => {
     const handleChooseImage = async () => {
         const result = await ImagePicker.launchImageLibraryAsync({
             mediaTypes: ImagePicker.MediaTypeOptions.Images, // TODO: Add support for videos
-            allowsEditing: true,
-            quality: 1
+            quality: 1,
+            aspect: [4, 3]
         })
 
 
@@ -254,7 +254,7 @@ const PublicationEditor = (props: Props) => {
                         >
                             <HighlightMentions form={form} />
                         </TextArea>
-                        <View w="100%" flexDirection='row' flexWrap='wrap' px={20} rowGap={5} columnGap={5} >
+                        <View w="100%" height={'100%'} flexDirection='row' flexWrap='wrap' px={20} rowGap={5} columnGap={5} >
                             {
                                 images.map((image, index) => {
                                     return (
@@ -268,10 +268,9 @@ const PublicationEditor = (props: Props) => {
                                         >
                                             <FeedImage
                                                 image={image.uri}
-                                                editable
+                                                editable={!uploading}
                                                 id={index}
                                                 onRemove={(id) => {
-                                                    console.log('removing', id, index)
                                                     setImages((prev) => {
                                                         return prev.filter((_, i) => i !== id)
                                                     })
@@ -322,8 +321,13 @@ const PublicationEditor = (props: Props) => {
                             />}
                             <TouchableOpacity
                                 onPress={handleChooseImage}
+                                disabled={uploading || images.length > 0}
                             >
-                                <ImagePlus />
+                                <ImagePlus
+                                    color={
+                                        (uploading || images.length > 0) ? "$disabledButton" : "$blue10"
+                                    }
+                                />
                             </TouchableOpacity>
 
                         </XStack>

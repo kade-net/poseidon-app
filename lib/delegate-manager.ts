@@ -219,7 +219,7 @@ class DelegateManager {
         this.private_key = pk
 
         if (!this.owner) {
-            this.setOwner(this.account.address().toString())
+            this.setOwner(this.account?.address()?.toString())
         }
 
         console.log('Owner::', this.owner)
@@ -227,7 +227,7 @@ class DelegateManager {
         await client.query({
             query: GET_MY_PROFILE,
             variables: {
-                address: this.account.address.toString()
+                address: this.account?.address?.toString()
             }
         })
 

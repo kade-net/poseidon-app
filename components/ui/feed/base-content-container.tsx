@@ -10,7 +10,7 @@ import FeedImage from "./image";
 import { TouchableOpacity } from "react-native";
 import publications from "../../../contract/modules/publications";
 // import localStore from "../../../lib/local-store";
-import { memo, useEffect, useState } from "react";
+import { memo, useEffect, useMemo, useState } from "react";
 import localStore from "../../../lib/local-store";
 import { isNull } from "lodash";
 import { Link, useRouter } from "expo-router";
@@ -19,6 +19,7 @@ import ContentPreviewContainer from "./content-preview-container";
 import { Utils } from "../../../utils";
 import HighlightMentions from "./highlight-mentions";
 import PublicationAction from "./publication-action";
+import LinkResolver from "./link-resolver";
 
 dayjs.extend(relativeTime)
 
@@ -29,9 +30,22 @@ interface BaseContentContainerProps {
     inCommunityFeed?: boolean
 }
 
+const extractLinks = (content: string) => {
+    const regex = /(?:^|\s)(?:https?|ftp):\/\/[^\s/$.?#].[^\s]*/g
+    return content.match(regex)
+
+}
+
 function BaseContentContainer(props: BaseContentContainerProps) {
     const { data: _data, inCommunityFeed } = props
     const data = _data?.type == 4 ? _data?.parent : _data
+
+    const contentLinks = useMemo(() => {
+        return extractLinks(data?.content?.content ?? "") ?? []
+
+    }, [, data?.content?.content])
+
+    console.log('contentLinks', contentLinks)
 
     return (
         <YStack w="100%" borderBottomWidth={1} borderColor={'$borderColor'} py={9} px={Utils.dynamicWidth(4)} pb={10} >
@@ -133,12 +147,23 @@ function BaseContentContainer(props: BaseContentContainerProps) {
                                     ((data?.content?.media?.length ?? 0) > 0) ? 20 : 0
                                 }
                             >
+
                                 <Text>
                                     <HighlightMentions
                                         content={`${data?.content?.content} ${__DEV__ ? data?.id : ''}`}
                                         tags={data?.content?.tags}
                                     />
                                 </Text>
+                                {
+                                    contentLinks?.map((link, i) => {
+                                        return (
+                                            <LinkResolver
+                                                link={link}
+                                                key={i}
+                                            />
+                                        )
+                                    })
+                                }
                             </YStack>
                             <View flexDirection="row" flexWrap="wrap" w="100%" columnGap={10} rowGap={10} >
                                 {

@@ -108,7 +108,7 @@ const CommunityFeed = (props: Props) => {
                     data={data?.communityPublications ?? []}
                     maxToRenderPerBatch={20}
                     initialNumToRender={20}
-                    keyExtractor={(item) => item.id.toString()}
+                    keyExtractor={(item) => item?.id?.toString()}
                     renderItem={renderPublication}
                     ListFooterComponent={() => {
                         return <View w="100%" flexDirection='row' alignItems='center' justifyContent='center' columnGap={10} >

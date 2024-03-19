@@ -21,4 +21,6 @@ export namespace Utils {
 
 
   export const mentionRegex = /@\w+/g;
+
+  export const urlRegex = /https?:\/\/[^\s]+/g;
 }

@@ -99,7 +99,7 @@ const Publication = (props: Props) => {
                 data={commentsQuery?.data?.publicationComments ?? []}
                 maxToRenderPerBatch={20}
                 initialNumToRender={20}
-                keyExtractor={(item) => item.id.toString()}
+                keyExtractor={(item) => item.id?.toString()}
                 renderItem={renderPublication}
             />
         </View>

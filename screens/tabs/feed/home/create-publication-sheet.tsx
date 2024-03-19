@@ -28,7 +28,6 @@ const CreatePublicationSheet = (props: Props) => {
   const handleChooseImage = async () => {
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images, // TODO: Add support for videos
-      allowsEditing: true,
       quality: 1
     })
 

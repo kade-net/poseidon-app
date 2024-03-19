@@ -1,8 +1,8 @@
 import { View, Text, Image } from 'tamagui'
-import React, { memo } from 'react'
+import React, { memo, useEffect } from 'react'
 import { TouchableOpacity } from 'react-native'
 import { Cross, X } from '@tamagui/lucide-icons'
-import { isUndefined } from 'lodash'
+import { head, isUndefined } from 'lodash'
 
 interface FeedImageProps {
     editable?: boolean
@@ -11,17 +11,42 @@ interface FeedImageProps {
     id?: string | number
 }
 
+
+
 const FeedImage = (props: FeedImageProps) => {
     const { image, editable = false, id, onRemove } = props
+    const [aspectRatio, setAspectRatio] = React.useState(16 / 9)
+
+    const getSize = async () => {
+        return new Promise<{ width: number, height: number }>((res, rej) => {
+            Image.getSize(image, (width, height) => {
+                res({ width, height })
+            }, (error) => {
+                rej(error)
+            })
+        })
+    }
+
+    useEffect(() => {
+        if (image) {
+            getSize().then((size) => {
+                // console.log('size', size) 
+                const aspectRatio = size.width / size.height
+                setAspectRatio(aspectRatio)
+            }).catch((error) => {
+                // console.log('error', error)
+            })
+        }
+    }, [image])
     return (
         <View
             position='relative'
             flex={1}
-            aspectRatio={1}
+            aspectRatio={aspectRatio}
             width={"100%"}
-            borderRadius={20}
+            height={"100%"}
+            borderRadius={5}
             overflow='hidden'
-            backgroundColor={'$gray1'}
         >
             {editable && <TouchableOpacity
                 style={{
@@ -40,11 +65,13 @@ const FeedImage = (props: FeedImageProps) => {
             </TouchableOpacity>}
 
             <Image
+                resizeMode='contain'
                 source={{ uri: image }}
                 style={{
                     width: '100%',
                     height: '100%'
                 }}
+                aspectRatio={aspectRatio}
             />
 
         </View>
