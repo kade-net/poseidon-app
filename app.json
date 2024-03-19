@@ -2,7 +2,7 @@
   "expo": {
     "name": "kadetest",
     "slug": "kadetest",
-    "version": "0.0.4",
+    "version": "0.0.6",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "kadetest",
