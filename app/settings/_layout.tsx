@@ -30,10 +30,11 @@ const _layout = () => {
                         header(props) {
                             return (
                                 <TouchableOpacity onPress={handleBack} >
-                                    <XStack w="100%" alignItems='center' px={20} columnGap={20} >
+                                    <XStack w="100%" alignItems='center' p={20} columnGap={20} >
                                         <ArrowLeft />
                                         <H4 textTransform='none' >Settings</H4>
                                     </XStack>
+                                    <Separator />
                                 </TouchableOpacity>
                             )
                         }
@@ -45,9 +46,39 @@ const _layout = () => {
                         header(props) {
                             return (
                                 <TouchableOpacity onPress={handleBack} >
-                                    <XStack w="100%" alignItems='center' px={20} columnGap={20} >
+                                    <XStack w="100%" alignItems='center' p={20} columnGap={20} >
                                         <ArrowLeft />
                                         <H4 textTransform='none' >Anchors</H4>
+                                    </XStack>
+                                </TouchableOpacity>
+                            )
+                        }
+                    }}
+                />
+                <Stack.Screen
+                    name="codes"
+                    options={{
+                        header(props) {
+                            return (
+                                <TouchableOpacity onPress={handleBack} >
+                                    <XStack w="100%" alignItems='center' p={20} columnGap={20} >
+                                        <ArrowLeft />
+                                        <H4 textTransform='none' >Account Details</H4>
+                                    </XStack>
+                                </TouchableOpacity>
+                            )
+                        }
+                    }}
+                />
+                <Stack.Screen
+                    name="notifications"
+                    options={{
+                        header(props) {
+                            return (
+                                <TouchableOpacity onPress={handleBack} >
+                                    <XStack w="100%" alignItems='center' p={20} columnGap={20} >
+                                        <ArrowLeft />
+                                        <H4 textTransform='none' >Notifications</H4>
                                     </XStack>
                                 </TouchableOpacity>
                             )

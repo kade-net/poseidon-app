@@ -1,20 +1,26 @@
 import { View, Text, Button, Separator, ScrollView, TextArea, Spinner, Avatar, XStack, YStack } from 'tamagui'
-import React, { memo, useState } from 'react'
-import { Controller, useForm } from 'react-hook-form'
+import React, { memo, useCallback, useEffect, useState } from 'react'
+import { Controller, ControllerRenderProps, useForm } from 'react-hook-form'
 import { TPUBLICATION, publicationSchema } from '../../../schema'
 import { zodResolver } from '@hookform/resolvers/zod'
 import * as ImagePicker from 'expo-image-picker'
 import uploadManager from '../../../lib/upload-manager'
 import publications from '../../../contract/modules/publications'
-import { KeyboardAvoidingView, TouchableOpacity } from 'react-native'
+import { KeyboardAvoidingView, Platform, TextInput, TouchableOpacity } from 'react-native'
 import { ImagePlus } from '@tamagui/lucide-icons'
 import FeedImage from '../feed/image'
 import { useQuery } from '@apollo/client'
-import { GET_MY_PROFILE } from '../../../utils/queries'
+import { ACCOUNTS_SEARCH_QUERY, GET_MY_PROFILE } from '../../../utils/queries'
 import delegateManager from '../../../lib/delegate-manager'
 import ChooseCommunityBottomSheet from '../action-sheets/choose-community'
 import { Community } from '../../../__generated__/graphql'
 import UnstyledButton from '../buttons/unstyled-button'
+import { Utils } from '../../../utils'
+import useDisclosure from '../../hooks/useDisclosure'
+import BaseContentSheet from '../action-sheets/base-content-sheet'
+import UserMentionsSearch from './user-mentions-search'
+import HighlightMentions from './highlight-mentions'
+import { uniq } from 'lodash'
 
 interface Props {
     onClose: () => void
@@ -23,14 +29,19 @@ interface Props {
     defaultCommunity?: Partial<Community>
 }
 
+
+
 const PublicationEditor = (props: Props) => {
+    const [currentMention, setCurrentMention] = useState('')
     const profileQuery = useQuery(GET_MY_PROFILE, {
         variables: {
             address: delegateManager.owner!
         },
         skip: !delegateManager.owner
     })
+
     const { onClose, publicationType, parentPublicationRef, defaultCommunity } = props
+    const { isOpen: userMentionsOpen, onClose: closeUserMentions, onOpen: openUserMentions, onToggle: toggleUserMentions } = useDisclosure()
 
     const [images, setImages] = useState<Array<ImagePicker.ImagePickerAsset>>([])
     const [uploading, setUploading] = useState(false)
@@ -123,6 +134,70 @@ const PublicationEditor = (props: Props) => {
             onClose()
         }
     }
+
+    const handleAddMention = (username: string) => {
+        const prevTags = form.getValues('tags') ?? []
+        const prevContent = form.getValues('content') ?? ""
+        const newTags = uniq([...prevTags, username])
+        const lastMention = prevTags?.at(-1)
+        const newContent = lastMention ? prevContent.split(`@${lastMention}`)?.at(1) ?? "" : prevContent
+        const mention = newContent.match(Utils.mentionRegex)?.at(0)
+
+        if (mention) {
+            form.setValue('content', prevContent.replace(mention, `@${username} `))
+            form.setValue('tags', newTags)
+        }
+        closeUserMentions()
+    }
+
+
+    useEffect(() => {
+        const subscription = form.watch((watched) => {
+            const content = watched.content ?? ""
+            const prevTags = watched.tags ?? []
+            const lastMention = prevTags?.at(-1)
+
+
+            const newContent = lastMention ? content.split(`@${lastMention}`)?.at(1) ?? "" : content
+            let mention;
+            if (newContent.length > 0) {
+
+                mention = newContent.match(Utils.mentionRegex)?.at(0)
+
+                if (mention) {
+                    const anythingAfterMention = newContent.split(mention)?.at(1)
+                    if (anythingAfterMention && anythingAfterMention?.length > 0) {
+                        if (userMentionsOpen) {
+                            closeUserMentions()
+                        }
+                    } else {
+                        setCurrentMention(mention)
+
+                        if (!userMentionsOpen) {
+                            openUserMentions()
+                        }
+                    }
+                } else {
+                    if (userMentionsOpen) {
+                        closeUserMentions()
+                    }
+                }
+            } else {
+                if (lastMention && !content.includes(`@${lastMention}`)) {
+                    const newTags = (prevTags.filter((tag) => tag !== lastMention && tag !== undefined) ?? [])
+                    form.setValue('tags', newTags as any)
+
+                }
+            }
+
+        })
+
+        return () => {
+            subscription.unsubscribe()
+        }
+    }, [form.watch, userMentionsOpen])
+
+
     return (
         <View flex={1} w="100%" h="100%" backgroundColor={"$background"}>
             <View
@@ -154,7 +229,10 @@ const PublicationEditor = (props: Props) => {
             <ScrollView flex={1} w="100%" rowGap={20} px={10} >
                 <View rowGap={5} w="100%" h="100%" flexDirection='row' >
                     <View
-                        pt={30}
+                        pt={Platform.select({
+                            ios: 10,
+                            android: 30
+                        })}
                     >
                         <Avatar circular size={"$3"} >
                             <Avatar.Image
@@ -167,23 +245,15 @@ const PublicationEditor = (props: Props) => {
                         </Avatar>
                     </View>
                     <View flex={1} h="100%" >
-                        <Controller
-                            control={form.control}
-                            name='content'
-                            render={({ field }) => {
-                                return (
-                                    <TextArea
-                                        backgroundColor={"$colorTransparent"}
-                                        outlineWidth={0}
-                                        borderWidth={0}
-                                        placeholder='What is on your mind?'
-                                        value={field.value}
-                                        onChangeText={field.onChange}
-                                    />
-                                )
-
-                            }}
-                        />
+                        <TextArea
+                            backgroundColor={"$colorTransparent"}
+                            outlineWidth={0}
+                            borderWidth={0}
+                            placeholder={`What's on your mind?`}
+                            onChangeText={(text) => form.setValue('content', text)}
+                        >
+                            <HighlightMentions form={form} />
+                        </TextArea>
                         <View w="100%" flexDirection='row' flexWrap='wrap' px={20} rowGap={5} columnGap={5} >
                             {
                                 images.map((image, index) => {
@@ -216,12 +286,16 @@ const PublicationEditor = (props: Props) => {
                     </View>
                 </View>
             </ScrollView>
+
             <KeyboardAvoidingView
                 style={{
                     width: '100%',
                 }}
             >
-
+                {userMentionsOpen && <UserMentionsSearch
+                    search={currentMention}
+                    onSelect={handleAddMention}
+                />}
                 <YStack>
                     <Separator />
                     <View
@@ -259,6 +333,8 @@ const PublicationEditor = (props: Props) => {
                     </View>
                 </YStack>
             </KeyboardAvoidingView>
+
+
         </View>
 
     )

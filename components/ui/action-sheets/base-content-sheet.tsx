@@ -9,14 +9,15 @@ interface Props {
     children: React.ReactNode
     showOverlay?: boolean
     animation?: 'quick' | 'lazy' | 'medium' | 'none' | 'slow'
+    dismissOnOverlayPress?: boolean
 }
 const BaseContentSheet = (props: Props) => {
-    const { open, onOpenChange, snapPoints, level = 1, children, showOverlay = true, animation } = props
+    const { open, onOpenChange, snapPoints, level = 1, children, showOverlay = true, animation, dismissOnOverlayPress = true } = props
 
     return (
         <Sheet
             snapPoints={snapPoints ?? [100]}
-            dismissOnOverlayPress
+            dismissOnOverlayPress={dismissOnOverlayPress}
             animationConfig={{
                 type: 'timing',
                 duration: 400

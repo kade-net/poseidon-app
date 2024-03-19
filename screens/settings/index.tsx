@@ -1,35 +1,96 @@
-import { View, Text, YStack, XStack, Separator } from 'tamagui'
+import { View, Text, YStack, XStack, Separator, H4, Button } from 'tamagui'
 import React from 'react'
 import { TouchableOpacity } from 'react-native'
-import { Anchor, ArrowRight, ChevronRight } from '@tamagui/lucide-icons'
-import { Link } from 'expo-router'
+import { Anchor, ArrowRight, Bell, ChevronRight, KeySquare } from '@tamagui/lucide-icons'
+import { Link, useRouter } from 'expo-router'
+import account from '../../contract/modules/account'
+import delegateManager from '../../lib/delegate-manager'
+import localStore from '../../lib/local-store'
 
 const Settings = () => {
+    const router = useRouter()
+    const handleLogout = async () => {
+        try {
+            await account.nuke()//💥
+            await delegateManager.nuke() //💥
+            await localStore.nuke() //💥
+            router.push('/')
+        }
+        catch (e) {
+            console.log("Error logging out", e)
+        }
+    }
+
     return (
         <YStack
             w="100%"
             h="100%"
-            py={10}
+            py={20}
         >
-            <Link
-                href="/settings/anchors"
-                asChild
-            >
-                <TouchableOpacity style={{
-                    width: "100%",
-                }} >
-                    <XStack w="100%" py={10} px={10} justifyContent='space-between' >
-                        <XStack columnGap={20} >
-                            <Anchor size={18} />
-                            <Text>
-                                Anchors
-                            </Text>
+            <YStack w="100%" flex={1} >
+                <Link
+                    href="/settings/anchors"
+                    asChild
+                >
+                    <YStack style={{
+                        width: "100%",
+                    }} >
+                        <XStack w="100%" p={20} justifyContent='space-between' >
+                            <XStack columnGap={20} >
+                                <Anchor />
+                                <H4 textTransform='none' >
+                                    Anchors
+                                </H4>
+                            </XStack>
+                            <ChevronRight />
                         </XStack>
-                        <ChevronRight />
-                    </XStack>
-                    <Separator />
-                </TouchableOpacity>
-            </Link>
+                        <Separator />
+                    </YStack>
+                </Link>
+                <Link
+                    href="/settings/codes"
+                    asChild
+                >
+                    <YStack style={{
+                        width: "100%",
+                    }} >
+                        <XStack w="100%" p={20} justifyContent='space-between' >
+                            <XStack columnGap={20} >
+                                <KeySquare />
+                                <H4 textTransform='none' >
+                                    Recovery Phrase
+                                </H4>
+                            </XStack>
+                            <ChevronRight />
+                        </XStack>
+                        <Separator />
+                    </YStack>
+                </Link>
+                <Link
+                    href="/settings/notifications"
+                    asChild
+                >
+                    <YStack style={{
+                        width: "100%",
+                    }} >
+                        <XStack w="100%" p={20} justifyContent='space-between' >
+                            <XStack columnGap={20} >
+                                <Bell />
+                                <H4 textTransform='none' >
+                                    Notifications
+                                </H4>
+                            </XStack>
+                            <ChevronRight />
+                        </XStack>
+                        <Separator />
+                    </YStack>
+                </Link>
+            </YStack>
+            <XStack alignItems='center' justifyContent='center' p={20} >
+                <Button onPress={handleLogout} w="100%" backgroundColor={'$button'} color={'$buttonText'} >
+                    Logout
+                </Button>
+            </XStack>
         </YStack>
     )
 }

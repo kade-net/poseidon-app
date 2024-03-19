@@ -8,6 +8,9 @@ import { isNumber, isString } from "lodash";
 import { getAuthenticatorsAndRawTransaction } from "./helpers";
 import uploadManager from "../../lib/upload-manager";
 import localStore from "../../lib/local-store";
+import storage from "../../lib/storage";
+import client from "../../data/apollo";
+import { GET_PUBLICATIONS } from "../../utils/queries";
 
 
 class PublicationsContract {
@@ -331,7 +334,51 @@ class PublicationsContract {
     }
 
 
+    async removeFromFeed(publication_ref: string) {
+        if (!isString(publication_ref)) {
+            throw new Error("Invalid publication id")
+        }
 
+        let ref = publication_ref?.includes("_") ? publication_ref.split("_")[1] : publication_ref
+
+        client.refetchQueries({
+            include: [GET_PUBLICATIONS]
+        })
+
+        await storage.save({
+            key: 'removedFromFeed',
+            id: ref,
+            data: {
+                removed: true,
+                publication_ref
+            }
+        })
+    }
+
+    async isRemovedFromFeed(publication_ref: string) {
+        try {
+            const ref = publication_ref?.includes("_") ? publication_ref.split("_")[1] : publication_ref
+            const pub = await storage.load({
+                key: 'removedFromFeed',
+                id: ref
+            })
+            console.log("Pub::", pub)
+            return pub.removed
+        }
+        catch (e) {
+            return false
+        }
+    }
+
+    async getRemovedFromFeed() {
+        try {
+            const pubs = await storage.getAllDataForKey<{ removed: boolean, }>('removedFromFeed')
+            return pubs
+        }
+        catch (e) {
+            return []
+        }
+    }
 
 
 

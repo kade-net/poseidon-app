@@ -1,4 +1,4 @@
-import { Bell, Home, Mail, Search, Users } from '@tamagui/lucide-icons'
+import { Bell, Home, Mail, Search, SquareSlash, Users } from '@tamagui/lucide-icons'
 import { Link, Tabs } from 'expo-router'
 import { Pressable, useColorScheme } from 'react-native'
 import { Text, useTheme } from 'tamagui'
@@ -41,7 +41,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="communities"
         options={{
-          tabBarIcon: ({ focused }) => <Users />
+          tabBarIcon: ({ focused }) => <SquareSlash />
         }}
       />
       <Tabs.Screen

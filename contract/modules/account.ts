@@ -12,6 +12,7 @@ import client from '../../data/apollo';
 import { GET_MY_PROFILE } from '../../utils/queries';
 import localStore from '../../lib/local-store';
 import { getAuthenticatorsAndRawTransaction } from './helpers';
+import storage from '../../lib/storage';
 
 class AccountContract {
 
@@ -264,6 +265,47 @@ class AccountContract {
 
     async markAsImported() {
         SecureStore.setItem('imported', 'true')
+    }
+
+    async nuke() {
+        await SecureStore.deleteItemAsync('account')
+        await SecureStore.deleteItemAsync('profile')
+        await SecureStore.deleteItemAsync('imported')
+        await SecureStore.deleteItemAsync('username')
+    }
+
+    async muteUser(userAddress: string) {
+        storage.save({
+            key: 'muted',
+            id: userAddress,
+            data: {
+                muted: true,
+                userAddress,
+                at: Date.now()
+            }
+        })
+    }
+
+    async unMuteUser(userAddress: string) {
+        storage.remove({
+            key: 'muted',
+            id: userAddress
+        })
+    }
+
+    async isMuted(userAddress: string) {
+        try {
+            const muted = await storage.load({
+                key: 'muted',
+                id: userAddress
+            })
+
+            return muted?.muted ?? false
+
+        }
+        catch (e) {
+            return false
+        }
     }
 
 }

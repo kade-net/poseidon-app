@@ -1,5 +1,5 @@
 import { View, Text, Avatar, Heading, ButtonIcon, useTheme, Separator, Sheet, Button, TextArea, ScrollView, Spinner } from 'tamagui'
-import React, { useCallback, useState } from 'react'
+import React, { useCallback, useMemo, useState } from 'react'
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context'
 import { ImagePlus, MessageCirclePlus, Settings } from '@tamagui/lucide-icons'
 import { Animated, FlatList, KeyboardAvoidingView, ListRenderItem, Platform, TouchableOpacity } from 'react-native'
@@ -20,6 +20,8 @@ import useDisclosure from '../../../../components/hooks/useDisclosure'
 import PublicationEditor from '../../../../components/ui/editor/publication-editor'
 import useSingleScrollManager from '../../../../components/hooks/useSingleScrollManager'
 import { useColorScheme } from 'react-native'
+import account from '../../../../contract/modules/account'
+import publications from '../../../../contract/modules/publications'
 
 const Home = () => {
     const [currentPage, setCurrentPage] = useState(0)

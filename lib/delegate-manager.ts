@@ -321,7 +321,7 @@ class DelegateManager {
     }
 
 
-    // !!! IMPORTANT !!! - This is only for use in dev 
+    // !!! IMPORTANT !!! - This is only for use in dev and internally for logout
     async nuke() {
         await SecureStore.deleteItemAsync('mnemonic')
         await SecureStore.deleteItemAsync('private_key')

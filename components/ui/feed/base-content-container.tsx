@@ -17,6 +17,8 @@ import { Link, useRouter } from "expo-router";
 import PublicationReactions from "./reactions";
 import ContentPreviewContainer from "./content-preview-container";
 import { Utils } from "../../../utils";
+import HighlightMentions from "./highlight-mentions";
+import PublicationAction from "./publication-action";
 
 dayjs.extend(relativeTime)
 
@@ -30,12 +32,6 @@ interface BaseContentContainerProps {
 function BaseContentContainer(props: BaseContentContainerProps) {
     const { data: _data, inCommunityFeed } = props
     const data = _data?.type == 4 ? _data?.parent : _data
-    const theme = useTheme()
-    const router = useRouter()
-
-
-
-
 
     return (
         <YStack w="100%" borderBottomWidth={1} borderColor={'$borderColor'} py={9} px={Utils.dynamicWidth(4)} pb={10} >
@@ -103,7 +99,12 @@ function BaseContentContainer(props: BaseContentContainerProps) {
                                 </Text>
                             </View>
                         </Link>
-                        <MoreHorizontal />
+                        {/* <MoreHorizontal /> */}
+                        <PublicationAction
+                            publicationId={data?.id ?? 0}
+                            publicationRef={data?.publication_ref ?? ""}
+                            userAddress={data?.creator?.address ?? ""}
+                        />
                     </View>
                     {
                         data?.type == 4 && <XStack w="100%" alignItems="center" columnGap={5} >
@@ -127,13 +128,18 @@ function BaseContentContainer(props: BaseContentContainerProps) {
                     >
                         {/* Content */}
                         <View w="100%">
-                            <Text fontFamily={"$body"} fontSize={"$sm"} lineHeight={"$sm"}
+                            <YStack w="100%"
                                 mb={
                                     ((data?.content?.media?.length ?? 0) > 0) ? 20 : 0
                                 }
                             >
-                                {data?.content?.content} {__DEV__ ? data?.id : null}
-                            </Text>
+                                <Text>
+                                    <HighlightMentions
+                                        content={`${data?.content?.content} ${__DEV__ ? data?.id : ''}`}
+                                        tags={data?.content?.tags}
+                                    />
+                                </Text>
+                            </YStack>
                             <View flexDirection="row" flexWrap="wrap" w="100%" columnGap={10} rowGap={10} >
                                 {
                                     data?.content?.media?.filter((media: Entities.Media) => media?.type?.includes("image"))?.map((media: Entities.Media) => {

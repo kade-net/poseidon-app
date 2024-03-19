@@ -18,4 +18,7 @@ export namespace Utils {
         
         return (deviceHeight * percentage) / 100;
     }
+
+
+  export const mentionRegex = /@\w+/g;
 }

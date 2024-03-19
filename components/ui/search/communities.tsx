@@ -26,13 +26,15 @@ const Communities = (props: Props) => {
     const insets = useSafeAreaInsets()
     const { search, onSelect } = props
     const searchDeffered = useDeferredValue(search)
+    console.log('Delegate manager::', delegateManager.owner)
     const communityQuery = useQuery(SEARCH_COMMUNITIES, {
         variables: {
             search: searchDeffered,
             page: 0,
             size: 20,
             member: delegateManager.owner
-        }
+        },
+        onCompleted: console.log
     })
 
 
