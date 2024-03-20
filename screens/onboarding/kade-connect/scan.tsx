@@ -19,11 +19,11 @@ const Scan = () => {
     const router = useRouter()
 
     const goToProfile = () => {
-        router.push('/onboard/profile')
+        router.replace('/onboard/profile')
     }
 
     const goToFeed = () => {
-        router.push('/(tabs)/feed/home')
+        router.replace('/(tabs)/feed/home')
     }
 
     useEffect(() => {
@@ -92,7 +92,7 @@ const Scan = () => {
     }
 
     const goBack = () => {
-        router.back()
+        router.replace('/onboard/signin')
     }
 
     return (

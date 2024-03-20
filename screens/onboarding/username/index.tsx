@@ -32,15 +32,15 @@ const PickUserName = () => {
     const router = useRouter()
 
     const goToNext = () => {
-        router.push('/onboard/created-seed-phrase/')
+        router.replace('/onboard/created-seed-phrase/')
     }
 
     const goToProfile = () => {
-        router.push('/onboard/profile')
+        router.replace('/onboard/profile')
     }
 
     const goBack = () => {
-        router.back()
+        router.replace('/onboard/')
     }
 
     const checkUsername = async (values: TSchema) => {

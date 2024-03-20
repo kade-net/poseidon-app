@@ -14,11 +14,11 @@ const SignIn = () => {
     }
 
     const goToSeedPhrase = () => {
-        router.push('/onboard/seed-phrase/')
+        router.replace('/onboard/seed-phrase/')
     }
 
     const goToKadeConnect = () => {
-        router.push('/onboard/kade-connect/scan')
+        router.replace('/onboard/kade-connect/scan')
     }
 
     return (

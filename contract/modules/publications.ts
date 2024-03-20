@@ -15,6 +15,8 @@ import { GET_PUBLICATIONS } from "../../utils/queries";
 
 class PublicationsContract {
 
+    hiddenPublications: Array<string> = []
+
     async createPublication(publication: TPUBLICATION | null, publication_type: 1 | 2 | 3 | 4 = 1, reference_kid?: number, parent_ref?: string, count?: number) {
 
         const account = delegateManager.account
@@ -341,9 +343,9 @@ class PublicationsContract {
 
         let ref = publication_ref?.includes("_") ? publication_ref.split("_")[1] : publication_ref
 
-        client.refetchQueries({
-            include: [GET_PUBLICATIONS]
-        })
+        // client.refetchQueries({
+        //     include: [GET_PUBLICATIONS]
+        // })
 
         await storage.save({
             key: 'removedFromFeed',
@@ -353,6 +355,8 @@ class PublicationsContract {
                 publication_ref
             }
         })
+
+        this.hiddenPublications.push(publication_ref)
     }
 
     async isRemovedFromFeed(publication_ref: string) {
@@ -362,7 +366,6 @@ class PublicationsContract {
                 key: 'removedFromFeed',
                 id: ref
             })
-            console.log("Pub::", pub)
             return pub.removed
         }
         catch (e) {
@@ -377,6 +380,16 @@ class PublicationsContract {
         }
         catch (e) {
             return []
+        }
+    }
+
+    async loadRemovedFromFeed() {
+        try {
+            const pubs = await storage.getAllDataForKey<{ removed: boolean, publication_ref: string }>('removedFromFeed')
+            this.hiddenPublications = pubs.map((pub) => pub.publication_ref)
+        }
+        catch (e) {
+            this.hiddenPublications = []
         }
     }
 

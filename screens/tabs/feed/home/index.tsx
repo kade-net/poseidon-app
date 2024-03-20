@@ -22,6 +22,8 @@ import useSingleScrollManager from '../../../../components/hooks/useSingleScroll
 import { useColorScheme } from 'react-native'
 import account from '../../../../contract/modules/account'
 import publications from '../../../../contract/modules/publications'
+import { isEmpty } from 'lodash'
+import { getMutedUsers, getRemovedFromFeed } from '../../../../contract/modules/store-getters'
 
 const Home = () => {
     const [currentPage, setCurrentPage] = useState(0)
@@ -29,7 +31,9 @@ const Home = () => {
         variables: {
             page: 0,
             size: 20,
-            types: [1, 2, 4] // TODO: only show reposts if the user is following the original creator
+            types: [1, 2], // TODO: only show reposts if the user is following the original creator
+            muted: isEmpty(account.mutedUsers) ? undefined : account.mutedUsers,
+            hide: isEmpty(publications.hiddenPublications) ? undefined : publications.hiddenPublications
         },
         fetchPolicy: 'cache-and-network'
     })

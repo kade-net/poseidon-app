@@ -2,8 +2,8 @@ import { gql } from "../__generated__";
 
 
 export const GET_PUBLICATIONS = gql(/* GraphQL */`
-    query Publications($page: Int!, $size: Int!, $type: Int, $address: String, $types: [Int!], $reaction: Int){
-        publications(pagination: { page: $page, size: $size }, type: $type, creator_address: $address, types: $types, reaction: $reaction) {
+    query Publications($page: Int!, $size: Int!, $type: Int, $address: String, $types: [Int!], $reaction: Int, $hide: [String!], $muted: [Int!]){
+        publications(pagination: { page: $page, size: $size }, type: $type, creator_address: $address, types: $types, reaction: $reaction, hide: $hide, muted: $muted) {
             __typename
             id,
             timestamp
@@ -166,8 +166,8 @@ export const GET_PUBLICATION_INTERACTIONS_BY_VIEWER = gql(/* GraphQL */`
 
 
 export const GET_PUBLICATION_COMMENTS = gql(/* GraphQL */`
-    query PublicationComments($publication_ref: String!, $page: Int!, $size: Int!) {
-        publicationComments(ref: $publication_ref, pagination: { page: $page, size: $size }) {
+    query PublicationComments($publication_ref: String!, $page: Int!, $size: Int!, $hide: [String!], $muted: [Int!]) {
+        publicationComments(ref: $publication_ref, pagination: { page: $page, size: $size }, hide: $hide, muted: $muted) {
             id
             content
             type
@@ -229,10 +229,12 @@ export const COMMUNITY_QUERY = gql(/* GraphQL */`
 
 
 export const GET_COMMUNITY_PUBLICATIONS = gql(/* GraphQL */`
-    query CommunityPublications($page: Int!, $size: Int!, $communityName: String!) {
+    query CommunityPublications($page: Int!, $size: Int!, $communityName: String!, $hide: [String!], $muted: [Int!]) {
         communityPublications(
             pagination: { page: $page, size: $size }
-            communityName: $communityName
+            communityName: $communityName,
+            hide: $hide,
+            muted: $muted
         ) {
             __typename
             id

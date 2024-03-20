@@ -27,7 +27,7 @@ const Profile = () => {
     const router = useRouter()
 
     const goToNext = () => {
-        router.push('/(tabs)/feed/home')
+        router.replace('/(tabs)/feed/home')
     }
 
     const form = useForm<TPROFILE>({

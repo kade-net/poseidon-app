@@ -7,6 +7,9 @@ import delegateManager from '../../../lib/delegate-manager'
 import { Spinner, Text, View, XStack } from 'tamagui'
 import BaseContentContainer from '../../../components/ui/feed/base-content-container'
 import { useGlobalSearchParams } from 'expo-router'
+import { isEmpty } from 'lodash'
+import account from '../../../contract/modules/account'
+import publications from '../../../contract/modules/publications'
 
 
 const PublicationAnimatedFlatList = (props: ProfileTabsProps & {
@@ -21,7 +24,9 @@ const PublicationAnimatedFlatList = (props: ProfileTabsProps & {
       size: 20,
       address: address,
       types: props.types ?? [1, 3],
-      reaction: props.reaction
+      reaction: props.reaction,
+      muted: isEmpty(account.mutedUsers) ? undefined : account.mutedUsers,
+      hide: isEmpty(publications.hiddenPublications) ? undefined : publications.hiddenPublications
     },
     fetchPolicy: 'cache-and-network',
     skip: !address

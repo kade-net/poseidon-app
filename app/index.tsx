@@ -12,6 +12,7 @@ function index() {
                 delegateManager.isDeligateRegistered ? '/onboard/profile' :
                     '/onboard'
 
+    console.log("Next Screen :: ", nextScreen)
     return (
         <Redirect
             href={nextScreen as any}

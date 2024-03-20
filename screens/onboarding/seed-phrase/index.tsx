@@ -33,19 +33,19 @@ const SeedPhrase = () => {
     })
 
     const goBack = () => {
-        router.back()
+        router.replace('/onboard/signin')
     }
 
     const goToUsername = () => { // IF USER DOESN'T HAVE A USERNAME YET
-        router.push('/onboard/username')
+        router.replace('/onboard/username')
     }
 
     const goToProfile = () => {
-        router.push('/onboard/profile')
+        router.replace('/onboard/profile')
     }
 
     const goToFeed = () => {
-        router.push('/(tabs)/feed/home')
+        router.replace('/(tabs)/feed/home')
     }
 
     const handleSubmit = async (values: TSchema) => {

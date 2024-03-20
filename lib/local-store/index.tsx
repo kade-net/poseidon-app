@@ -6,8 +6,8 @@ import { TPROFILE, TPUBLICATION, UpdateCommunitySchema } from '../../schema';
 import client from '../../data/apollo';
 import { GET_PUBLICATIONS, GET_MY_PROFILE, GET_PUBLICATION, GET_PUBLICATION_COMMENTS, GET_PUBLICATION_INTERACTIONS_BY_VIEWER, GET_PUBLICATION_STATS, COMMUNITY_QUERY, GET_ACCOUNT_VIEWER_STATS, ACCOUNTS_SEARCH_QUERY, GET_FOLLOW_ACCOUNT, GET_MEMBERSHIP, SEARCH_COMMUNITIES, GET_COMMUNITY_PUBLICATIONS } from '../../utils/queries';
 import delegateManager from '../delegate-manager';
-import { gql } from '../../__generated__';
 import usernames from '../../contract/modules/usernames';
+import { getMutedUsers, getRemovedFromFeed } from '../../contract/modules/store-getters';
 
 // TODO: for now we will ignore caching of quotes and anything that will not be seen directly in the home page
 class LocalStore {
@@ -256,7 +256,9 @@ class LocalStore {
                 query: GET_PUBLICATIONS, variables: {
                     types: [1, 2],
                     page: 0,
-                    size: 20
+                    size: 20,
+                    muted: getMutedUsers(),
+                    hide: getRemovedFromFeed()
                 }
             }) ?? [] as any
 
@@ -283,9 +285,11 @@ class LocalStore {
             client.cache.writeQuery({
                 query: GET_PUBLICATIONS,
                 variables: {
-                    types: [1, 2, 4],
+                    types: [1, 2],
                     page: 0,
-                    size: 20
+                    size: 20,
+                    muted: getMutedUsers(),
+                    hide: getRemovedFromFeed()
                 },
                 data: {
                     publications: [
@@ -407,9 +411,11 @@ class LocalStore {
         const existing = client.readQuery({
             query: GET_PUBLICATIONS, // TODO: not sure if this will work in instances where the publication isn;t part of the first 50
             variables: {
-                types: [1, 2, 4],
+                types: [1, 2],
                 page: 0,
-                size: 20
+                size: 20,
+                muted: getMutedUsers(),
+                hide: getRemovedFromFeed()
             }
         }) ?? [] as any
 
@@ -418,9 +424,11 @@ class LocalStore {
         client.writeQuery({
             query: GET_PUBLICATIONS,
             variables: {
-                types: [1, 2, 4],
+                types: [1, 2],
                 page: 0,
-                size: 20
+                size: 20,
+                muted: getMutedUsers(),
+                hide: getRemovedFromFeed()
             },
             data: {
                 publications: newPublications

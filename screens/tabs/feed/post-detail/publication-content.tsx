@@ -1,5 +1,5 @@
 import { View, Text, YStack, Heading, Avatar, Separator } from 'tamagui'
-import React, { memo } from 'react'
+import React, { memo, useMemo } from 'react'
 import { PublicationQuery } from '../../../../__generated__/graphql'
 import { useRouter } from 'expo-router'
 import { TouchableOpacity } from 'react-native'
@@ -10,13 +10,28 @@ import FeedImage from '../../../../components/ui/feed/image'
 import PublicationStats from '../../../../components/ui/feed/publication-stats'
 import Reactions from '../../../../components/ui/feed/reactions'
 import { Utils } from '../../../../utils'
+import HighlightMentions from '../../../../components/ui/feed/highlight-mentions'
+import publication from './publication'
+import LinkResolver from '../../../../components/ui/feed/link-resolver'
 dayjs.extend(relativeTime)
 
 interface Props {
     data: PublicationQuery
 }
+
+const extractLinks = (content: string) => {
+    const regex = /(?:^|\s)(?:https?|ftp):\/\/[^\s/$.?#].[^\s]*/g
+    return content.match(regex)
+
+}
+
 const PublicationContent = (props: Props) => {
     const { data } = props
+
+    const contentLinks = useMemo(() => {
+        return extractLinks(data?.publication?.content?.content ?? "") ?? []
+
+    }, [, data?.publication?.content?.content])
 
     const router = useRouter()
 
@@ -72,18 +87,30 @@ const PublicationContent = (props: Props) => {
                             </View>
                         </View>
                     </View>
-                    <TouchableOpacity>
-                        <MoreHorizontal />
-                    </TouchableOpacity>
                 </View>
                 <View w="100%" py={10}  px={Utils.dynamicWidth(3)}>
-                    <Text fontFamily={"$body"} fontSize={"$sm"} lineHeight={"$sm"}
+                    <YStack
                         mb={
                             ((data?.publication?.content?.media?.length ?? 0) > 0) ? 20 : 0
                         }
                     >
-                        {data?.publication?.content?.content}
-                    </Text>
+                        <Text>
+                            <HighlightMentions
+                                content={`${data?.publication?.content?.content} ${__DEV__ ? data?.publication?.id : ''}`}
+                                tags={data?.publication?.content?.tags}
+                            />
+                        </Text>
+                        {
+                            contentLinks?.map((link, i) => {
+                                return (
+                                    <LinkResolver
+                                        link={link}
+                                        key={i}
+                                    />
+                                )
+                            })
+                        }
+                    </YStack>
                     <View flexDirection="row" flexWrap="wrap" w="100%" columnGap={10} rowGap={10} >
                         {
                             data?.publication?.content?.media?.filter((media: Entities.Media) => media?.type?.includes("image"))?.map((media: Entities.Media) => {

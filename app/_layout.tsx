@@ -17,6 +17,8 @@ import localStore from '../lib/local-store'
 import { GET_MY_PROFILE } from '../utils/queries'
 import { QueryClient, QueryClientProvider } from 'react-query'
 import anchors from '../contract/modules/anchors'
+import publications from '../contract/modules/publications'
+import account from '../contract/modules/account'
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -41,6 +43,8 @@ SplashScreen.preventAutoHideAsync();
 
 delegateManager.init().then(async () => {
   console.log("DELEGATE INITIALIZED")
+  await publications.loadRemovedFromFeed()
+  await account.loadMutedUsers()
 }).catch((e) => {
   console.error("UNABLE TO INITIALIZE DELEGATE", e)
 })

@@ -10,6 +10,7 @@ import BaseContentSheet from '../../../../components/ui/action-sheets/base-conte
 import PublicationEditor from '../../../../components/ui/editor/publication-editor'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import delegateManager from '../../../../lib/delegate-manager'
+import { getMutedUsers, getRemovedFromFeed } from '../../../../contract/modules/store-getters'
 
 interface Props {
     name: string
@@ -18,7 +19,7 @@ interface Props {
 const CommunityFeed = (props: Props) => {
     const insets = useSafeAreaInsets()
     const { name } = props
-    console.log('COMMUNITY NAME', name)
+
     const membershipQuery = useQuery(GET_MEMBERSHIP, {
         variables: {
             communityName: name,
@@ -29,9 +30,12 @@ const CommunityFeed = (props: Props) => {
         variables: {
             communityName: name,
             page: 0,
-            size: 20
+            size: 20,
+            hide: getRemovedFromFeed(),
+            muted: getMutedUsers()
         },
-        skip: !name
+        skip: !name,
+        onError: console.log
     })
     const communityQuery = useQuery(COMMUNITY_QUERY, {
         variables: {

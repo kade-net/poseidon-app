@@ -12,13 +12,13 @@ import { Utils } from '../../../utils'
 
 const WelcomeScreen = () => {
     const insets = useSafeAreaInsets()
-    const rounter = useRouter()
+    const router = useRouter()
     const goToCreateAccount = () => {
-        router.push('/onboard/username')
+        router.replace('/onboard/username')
     }
 
     const goToSignIn = () => {
-        router.push('/onboard/signin')
+        router.replace('/onboard/signin')
     }
     return (
         <View w="100%" backgroundColor={"$background"} alignItems='center' justifyContent='space-between' flex={1} px={Utils.dynamicWidth(5)} pb={insets.bottom}>

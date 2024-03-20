@@ -10,7 +10,7 @@ import FeedImage from "./image";
 import { TouchableOpacity } from "react-native";
 import publications from "../../../contract/modules/publications";
 // import localStore from "../../../lib/local-store";
-import { memo, useEffect, useMemo, useState } from "react";
+import { memo, useCallback, useEffect, useMemo, useState } from "react";
 import localStore from "../../../lib/local-store";
 import { isNull } from "lodash";
 import { Link, useRouter } from "expo-router";
@@ -20,6 +20,7 @@ import { Utils } from "../../../utils";
 import HighlightMentions from "./highlight-mentions";
 import PublicationAction from "./publication-action";
 import LinkResolver from "./link-resolver";
+import { getMutedUsers, getRemovedFromFeed } from "../../../contract/modules/store-getters";
 
 dayjs.extend(relativeTime)
 
@@ -39,17 +40,22 @@ const extractLinks = (content: string) => {
 function BaseContentContainer(props: BaseContentContainerProps) {
     const { data: _data, inCommunityFeed } = props
     const data = _data?.type == 4 ? _data?.parent : _data
+    const [hide, setHide] = useState(false)
+    const triggerHide = useCallback(() => {
+        setHide(true)
+    }, [])
 
     const contentLinks = useMemo(() => {
         return extractLinks(data?.content?.content ?? "") ?? []
 
     }, [, data?.content?.content])
 
-    console.log('contentLinks', contentLinks)
+    if (hide) return null
+    if (getMutedUsers()?.includes(data?.creator?.id!)) return null
+    if (getRemovedFromFeed()?.includes(data?.publication_ref!)) return null
 
     return (
         <YStack w="100%" borderBottomWidth={1} borderColor={'$borderColor'} py={9} px={Utils.dynamicWidth(4)} pb={10} >
-
             {
                 _data?.type == 4 && <View flexDirection="row" alignItems="center" pb={10} columnGap={10} >
                     <Repeat2 size={"$1"} />
@@ -118,6 +124,9 @@ function BaseContentContainer(props: BaseContentContainerProps) {
                             publicationId={data?.id ?? 0}
                             publicationRef={data?.publication_ref ?? ""}
                             userAddress={data?.creator?.address ?? ""}
+                            userId={data?.creator?.id ?? 0} // OPtimistically making the assumption a value will always be present
+                            triggerHide={triggerHide}
+                            publication_type={data?.type ?? 1}
                         />
                     </View>
                     {

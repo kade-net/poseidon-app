@@ -9,12 +9,16 @@ import { HexString } from "aptos";
 import { TPROFILE, profileSchema } from "../../schema";
 import * as SecureStore from 'expo-secure-store'
 import client from '../../data/apollo';
-import { GET_MY_PROFILE } from '../../utils/queries';
+import { GET_MY_PROFILE, GET_PUBLICATION, GET_PUBLICATIONS } from '../../utils/queries';
 import localStore from '../../lib/local-store';
 import { getAuthenticatorsAndRawTransaction } from './helpers';
 import storage from '../../lib/storage';
 
 class AccountContract {
+
+    mutedUsers: Array<number> = []
+
+
 
     get isImported() {
         const imported = SecureStore.getItem('imported')
@@ -274,37 +278,43 @@ class AccountContract {
         await SecureStore.deleteItemAsync('username')
     }
 
-    async muteUser(userAddress: string) {
+    async muteUser(id: number, address: string) {
         storage.save({
             key: 'muted',
-            id: userAddress,
+            id: id.toString(),
             data: {
                 muted: true,
-                userAddress,
+                userAddress: address,
+                id: id,
                 at: Date.now()
             }
         })
-    }
 
-    async unMuteUser(userAddress: string) {
-        storage.remove({
-            key: 'muted',
-            id: userAddress
+        this.mutedUsers.push(id)
+
+        client.refetchQueries({
+            include: [GET_PUBLICATIONS]
         })
     }
 
-    async isMuted(userAddress: string) {
-        try {
-            const muted = await storage.load({
-                key: 'muted',
-                id: userAddress
-            })
+    async unMuteUser(id: number) {
+        storage.remove({
+            key: 'muted',
+            id: id.toString()
+        })
 
-            return muted?.muted ?? false
+        this.mutedUsers = this.mutedUsers.filter((muted) => muted !== id)
+    }
+
+
+    async loadMutedUsers() {
+        try {
+            const muted = await storage.getAllDataForKey('muted')
+            this.mutedUsers = muted.map((muted) => muted.id)
 
         }
         catch (e) {
-            return false
+            this.mutedUsers = []
         }
     }
 

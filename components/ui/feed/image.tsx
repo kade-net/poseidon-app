@@ -13,23 +13,23 @@ interface FeedImageProps {
 
 
 
+const getSize = async (image: string) => {
+    return new Promise<{ width: number, height: number }>((res, rej) => {
+        Image.getSize(image, (width, height) => {
+            res({ width, height })
+        }, (error) => {
+            rej(error)
+        })
+    })
+}
 const FeedImage = (props: FeedImageProps) => {
     const { image, editable = false, id, onRemove } = props
     const [aspectRatio, setAspectRatio] = React.useState(16 / 9)
 
-    const getSize = async () => {
-        return new Promise<{ width: number, height: number }>((res, rej) => {
-            Image.getSize(image, (width, height) => {
-                res({ width, height })
-            }, (error) => {
-                rej(error)
-            })
-        })
-    }
 
     useEffect(() => {
         if (image) {
-            getSize().then((size) => {
+            getSize(image).then((size) => {
                 // console.log('size', size) 
                 const aspectRatio = size.width / size.height
                 setAspectRatio(aspectRatio)

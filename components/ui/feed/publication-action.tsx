@@ -1,5 +1,5 @@
-import { View, Text, YStack, Button } from 'tamagui'
-import React, { memo } from 'react'
+import { View, Text, YStack, Button, Spinner } from 'tamagui'
+import React, { memo, useState } from 'react'
 import { TouchableOpacity } from 'react-native'
 import { Ban, MoreHorizontal, Trash2 } from '@tamagui/lucide-icons'
 import useDisclosure from '../../hooks/useDisclosure'
@@ -12,44 +12,65 @@ interface Props {
     userAddress: string
     publicationId: number
     publicationRef: string
+    userId: number
+    publication_type: number
+    triggerHide?: () => void
 }
 const PublicationActions = (props: Props) => {
-    const { userAddress, publicationId, publicationRef } = props
+    const { userAddress, publicationId, publicationRef, userId, triggerHide, publication_type } = props
     const IS_MY_PUBLICATION = userAddress === delegateManager.owner
     const { isOpen, onOpen, onClose, onToggle } = useDisclosure()
+    const [deleting, setDeleting] = useState(false)
 
     const handleRemoveFromFeed = async () => {
         await publications.removeFromFeed(publicationRef)
         onClose()
+        triggerHide && triggerHide()
     }
 
     const handleBanUser = async () => {
-        await account.muteUser(userAddress)
+        await account.muteUser(userId, userAddress)
         onClose()
+        triggerHide && triggerHide()
     }
 
-    const handleDeletePublication = () => {
-
+    const handleDeletePublication = async () => {
+        setDeleting(true)
+        try {
+            triggerHide && triggerHide()
+            await publications.removePublicationWithRef(publicationRef, publication_type as any)
+            setDeleting(false)
+            onClose()
+        }
+        catch (e) {
+            console.error("Error deleting publication", e)
+            setDeleting(false)
+        }
+        finally {
+            setDeleting(false)
+        }
     }
 
     return (
         <>
-            <TouchableOpacity onPress={onOpen} >
+            <TouchableOpacity style={{ paddingHorizontal: 10 }} onPress={onOpen} >
                 <MoreHorizontal />
             </TouchableOpacity>
-            <BaseContentSheet
+            {isOpen && <BaseContentSheet
                 open={isOpen}
-                onOpenChange={onToggle}
+                onOpenChange={onClose}
                 snapPoints={[30]}
                 showOverlay={true}
             >
                 {IS_MY_PUBLICATION && <YStack w="100%" p={20} rowGap={20} >
                     <Button
                         variant='outlined'
-                        icon={<Trash2 />}
+                        icon={deleting ? <Spinner /> : <Trash2 />}
                         onPress={handleDeletePublication}
                     >
-                        Delete
+                        {
+                            deleting ? 'Deleting...' : 'Delete'
+                        }
                     </Button>
                 </YStack>}
                 {!IS_MY_PUBLICATION && <YStack w="100%" p={20} rowGap={20} >
@@ -68,7 +89,7 @@ const PublicationActions = (props: Props) => {
                         Mute User
                     </Button>
                 </YStack>}
-            </BaseContentSheet>
+            </BaseContentSheet>}
         </>
     )
 }
