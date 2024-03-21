@@ -5,14 +5,8 @@ import { Avatar, Text, View, XStack, YStack, useTheme } from "tamagui";
 import dayjs from "dayjs";
 import relativeTime from 'dayjs/plugin/relativeTime'
 import { Publication, PublicationStats } from "../../../__generated__/graphql";
-import { media } from "@tamagui/config";
 import FeedImage from "./image";
-import { TouchableOpacity } from "react-native";
-import publications from "../../../contract/modules/publications";
-// import localStore from "../../../lib/local-store";
 import { memo, useCallback, useEffect, useMemo, useState } from "react";
-import localStore from "../../../lib/local-store";
-import { isNull } from "lodash";
 import { Link, useRouter } from "expo-router";
 import PublicationReactions from "./reactions";
 import ContentPreviewContainer from "./content-preview-container";
@@ -21,6 +15,7 @@ import HighlightMentions from "./highlight-mentions";
 import PublicationAction from "./publication-action";
 import LinkResolver from "./link-resolver";
 import { getMutedUsers, getRemovedFromFeed } from "../../../contract/modules/store-getters";
+import ErrorBoundary from "../../helpers/error-boundary";
 
 dayjs.extend(relativeTime)
 
@@ -158,10 +153,12 @@ function BaseContentContainer(props: BaseContentContainerProps) {
                             >
 
                                 <Text>
-                                    <HighlightMentions
-                                        content={`${data?.content?.content} ${__DEV__ ? data?.id : ''}`}
-                                        tags={data?.content?.tags}
-                                    />
+                                    <ErrorBoundary>
+                                        <HighlightMentions
+                                            content={data?.content?.content ?? ""}
+                                            tags={data?.content?.tags ?? []}
+                                        />
+                                    </ErrorBoundary>
                                 </Text>
                                 {
                                     contentLinks?.map((link, i) => {

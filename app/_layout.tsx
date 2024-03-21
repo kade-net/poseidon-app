@@ -5,20 +5,14 @@ import { SplashScreen, Stack } from 'expo-router'
 import { useColorScheme } from 'react-native'
 import { TamaguiProvider } from 'tamagui'
 import '../tamagui-web.css'
-import { Theme } from 'tamagui'
 import { config } from '../tamagui.config'
 import { useFonts } from 'expo-font'
 import { useEffect } from 'react'
 import delegateManager from '../lib/delegate-manager'
-import * as SecureStore from 'expo-secure-store'
 import { ApolloProvider } from '@apollo/client'
 import client from '../data/apollo'
-import localStore from '../lib/local-store'
-import { GET_MY_PROFILE } from '../utils/queries'
 import { QueryClient, QueryClientProvider } from 'react-query'
-import anchors from '../contract/modules/anchors'
-import publications from '../contract/modules/publications'
-import account from '../contract/modules/account'
+import selfModeration from '../lib/self-moderation'
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -42,9 +36,8 @@ SplashScreen.preventAutoHideAsync();
 // })();
 
 delegateManager.init().then(async () => {
-  console.log("DELEGATE INITIALIZED")
-  await publications.loadRemovedFromFeed()
-  await account.loadMutedUsers()
+  await selfModeration?.loadMutedUsers()
+  await selfModeration?.loadRemovedFromFeed()
 }).catch((e) => {
   console.error("UNABLE TO INITIALIZE DELEGATE", e)
 })

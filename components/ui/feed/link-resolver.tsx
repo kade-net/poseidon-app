@@ -26,15 +26,23 @@ const LINK_WHITELIST = [
 ]
 
 const LinkResolver = (props: Props) => {
-    const { link } = props
+    const { link = '' } = props
 
     const linkMetaQuery = useQuery({
         queryKey: ['link', link],
-        queryFn: (): Promise<Array<OGData>> => OpenGraphParser.extractMeta(link),
-        enabled: !!link
+        queryFn: async (): Promise<OGData[]> => {
+            try {
+                const data = await OpenGraphParser?.extractMeta?.(link?.trim() ?? "")
+
+                return data
+            }
+            catch (e) {
+                console.log("Something went wrong", e)
+                return []
+            }
+        },
+        enabled: !!link?.trim()
     })
-    const theme = useTheme()
-    const mode = useColorScheme()
 
     const handleOpenUrl = () => {
         const _link = link.trim()
@@ -48,7 +56,9 @@ const LinkResolver = (props: Props) => {
         })
     }
 
-    if (!link) return null
+    if (!link || link.length === 0 || !linkMetaQuery.data?.[0] || !linkMetaQuery.data?.[0]?.url || !linkMetaQuery.data?.[0]?.title || !linkMetaQuery.data?.[0]?.description) {
+        return <XStack w={0} h={0} />
+    }
 
     return (
         <TouchableWithoutFeedback

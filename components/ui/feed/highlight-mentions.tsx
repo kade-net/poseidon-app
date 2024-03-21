@@ -15,7 +15,7 @@ const isLink = (text: string) => {
 
 const HighlightMentions = (props: Props) => {
     const { content = '', tags = [] } = props
-    const parts = content.split(/(@\w+)|(\b(?:https?|ftp):\/\/\S+\b)/g) // Split by mentions and links
+    const parts = content?.split(/(@\w+)|(\b(?:https?|ftp):\/\/\S+\b)/g) ?? [] // Split by mentions and links
 
     return parts.map((part, index) => {
         if (Utils.mentionRegex.test(part) && tags?.includes(part.replace('@', ''))) {

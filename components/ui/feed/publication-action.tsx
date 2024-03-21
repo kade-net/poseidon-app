@@ -5,8 +5,8 @@ import { Ban, MoreHorizontal, Trash2 } from '@tamagui/lucide-icons'
 import useDisclosure from '../../hooks/useDisclosure'
 import BaseContentSheet from '../action-sheets/base-content-sheet'
 import delegateManager from '../../../lib/delegate-manager'
-import account from '../../../contract/modules/account'
 import publications from '../../../contract/modules/publications'
+import selfModeration from '../../../lib/self-moderation'
 
 interface Props {
     userAddress: string
@@ -23,13 +23,13 @@ const PublicationActions = (props: Props) => {
     const [deleting, setDeleting] = useState(false)
 
     const handleRemoveFromFeed = async () => {
-        await publications.removeFromFeed(publicationRef)
+        await selfModeration.removeFromFeed(publicationRef)
         onClose()
         triggerHide && triggerHide()
     }
 
     const handleBanUser = async () => {
-        await account.muteUser(userId, userAddress)
+        await selfModeration.muteUser(userId, userAddress)
         onClose()
         triggerHide && triggerHide()
     }

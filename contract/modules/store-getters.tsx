@@ -1,17 +1,16 @@
 import { isEmpty } from "lodash";
-import publications from "./publications";
-import account from "./account";
+import selfModeration from '../../lib/self-moderation'
 
 
 export function getRemovedFromFeed() {
-    const removed = publications.hiddenPublications
+    const removed = selfModeration.hiddenPublications
 
     return isEmpty(removed) ? undefined : removed
 }
 
 
 export function getMutedUsers() {
-    const muted = account.mutedUsers
+    const muted = selfModeration.mutedUsers
 
     return isEmpty(muted) ? undefined : muted
 }

@@ -29,7 +29,7 @@ const FeedImage = (props: FeedImageProps) => {
 
     useEffect(() => {
         if (image) {
-            getSize(image).then((size) => {
+            getSize?.(image).then((size) => {
                 // console.log('size', size) 
                 const aspectRatio = size.width / size.height
                 setAspectRatio(aspectRatio)
