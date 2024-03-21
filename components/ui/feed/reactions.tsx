@@ -115,14 +115,14 @@ const PublicationReactions = (props: Props) => {
                 setCurrentPublicationType(3)
                 onOpen()
             }} style={styles.action_container} >
-                <MessageSquare size={14} mr={10} color={userInteractions.data?.publicationInteractionsByViewer?.commented ? "$background" : "$reactionBorderColor"}
+                <MessageSquare size={15} mr={10} color={userInteractions.data?.publicationInteractionsByViewer?.commented ? "$activeReaction" : "$reactionBorderColor"}
                     fill={
                         userInteractions.data?.publicationInteractionsByViewer?.commented ? theme.activeReaction.val : theme.background.val
                     }
                 />
-                {showNumbers && <Text
+                {showNumbers && <Text fontSize={"$sm"}
                     color={
-                        userInteractions.data?.publicationInteractionsByViewer?.commented ? '$pink10' : '$reactionTextColor'
+                        userInteractions.data?.publicationInteractionsByViewer?.commented ? '$activeReaction' : '$reactionTextColor'
                     }
                 >
                     {
@@ -131,7 +131,7 @@ const PublicationReactions = (props: Props) => {
                 </Text>}
             </TouchableOpacity>
             <TouchableOpacity onPress={openRepost} style={styles.action_container} >
-                <Repeat size={14} mr={10} color={(userInteractions.data?.publicationInteractionsByViewer?.reposted
+                <Repeat size={15} mr={10} color={(userInteractions.data?.publicationInteractionsByViewer?.reposted
                             || userInteractions.data?.publicationInteractionsByViewer?.quoted
                         )?"$activeReaction":"$reactionBorderColor"}
                     fill={
@@ -140,7 +140,7 @@ const PublicationReactions = (props: Props) => {
                         ) ? theme.activeReaction.val : theme.background.val
                     }
                 />
-                {showNumbers && <Text
+                {showNumbers && <Text fontSize={"$sm"}
                     color={
                         (userInteractions.data?.publicationInteractionsByViewer?.reposted
                             || userInteractions.data?.publicationInteractionsByViewer?.quoted
@@ -155,13 +155,13 @@ const PublicationReactions = (props: Props) => {
             </TouchableOpacity>
 
             <TouchableOpacity onPress={handleReact} style={styles.action_container} >
-                <Heart size={14} mr={10} color={userInteractions.data?.publicationInteractionsByViewer?.reacted ? "$background" : "$reactionBorderColor"} borderStyle='dotted'
+                <Heart size={15} mr={10} color={userInteractions.data?.publicationInteractionsByViewer?.reacted ? "$activeReaction" : "$reactionBorderColor"} borderStyle='dotted'
                     fill={
                         userInteractions.data?.publicationInteractionsByViewer?.reacted ? theme.activeReaction.val : theme.background.val
                     }
 
                 />
-                {showNumbers && <Text
+                {showNumbers && <Text fontSize={"$sm"}
                     color={
                         userInteractions.data?.publicationInteractionsByViewer?.reacted ? '$activeReaction' : '$reactionTextColor'
                     }

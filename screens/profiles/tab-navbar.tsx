@@ -27,7 +27,7 @@ const TabNavbar = (props: Props) => {
 
   const tamaguiTheme = useTheme()
 
-
+  const [currentTitle, setCurrentTitle] = useState( props.navigationState.routes[0].title)
 
   useEffect(() => {
     Animated.timing(TAB_SLIDER_X, {
@@ -79,6 +79,7 @@ const TabNavbar = (props: Props) => {
                   justifyContent: "center"
                 }}
                 onPress={() => {
+                  setCurrentTitle(route.title)
                   props.jumpTo(route.key)
                 }}
                 onLayout={(event) => {
@@ -95,7 +96,7 @@ const TabNavbar = (props: Props) => {
                   })
                 }}
               >
-                <Text color={'$text'} numberOfLines={1} >
+                <Text color={currentTitle===route.title?'$text':"$sideText"} fontWeight={"$5"} fontSize={"$xs"} numberOfLines={1} >
                   {route.title}
                 </Text>
               </TouchableOpacity>

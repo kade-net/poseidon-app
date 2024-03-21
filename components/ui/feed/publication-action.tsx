@@ -6,6 +6,7 @@ import useDisclosure from '../../hooks/useDisclosure'
 import BaseContentSheet from '../action-sheets/base-content-sheet'
 import delegateManager from '../../../lib/delegate-manager'
 import publications from '../../../contract/modules/publications'
+import { Utils } from '../../../utils'
 import selfModeration from '../../../lib/self-moderation'
 
 interface Props {
@@ -59,7 +60,7 @@ const PublicationActions = (props: Props) => {
             {isOpen && <BaseContentSheet
                 open={isOpen}
                 onOpenChange={onClose}
-                snapPoints={[30]}
+                snapPoints={[20]}
                 showOverlay={true}
             >
                 {IS_MY_PUBLICATION && <YStack w="100%" p={20} rowGap={20} >
@@ -73,11 +74,13 @@ const PublicationActions = (props: Props) => {
                         }
                     </Button>
                 </YStack>}
-                {!IS_MY_PUBLICATION && <YStack w="100%" p={20} rowGap={20} >
+                {!IS_MY_PUBLICATION && <YStack w="100%" py={Utils.dynamicHeight(3)} rowGap={10} alignItems='flex-start'>
                     <Button
                         variant='outlined'
                         icon={<Trash2 />}
                         onPress={handleRemoveFromFeed}
+                        fontSize={"$md"}
+                        fontWeight={"$2"}
                     >
                         Remove from feed
                     </Button>
@@ -85,6 +88,9 @@ const PublicationActions = (props: Props) => {
                         variant='outlined'
                         icon={<Ban />}
                         onPress={handleBanUser}
+                        fontSize={"$md"}
+                        fontWeight={"$2"}
+
                     >
                         Mute User
                     </Button>

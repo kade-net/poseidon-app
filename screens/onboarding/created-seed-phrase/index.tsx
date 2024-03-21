@@ -45,12 +45,14 @@ const CreatedSeedPhrase = () => {
                 <View w="100%" rowGap={20} >
                     <View w="100%" rowGap={10} >
                         <TextArea
+                            fontWeight={"$2"}
+                            fontSize={"$sm"}
                             placeholder='Your seed phrase should be here...'
                             value={delegateManager.mnemonic ?? ""}
                             disabled
                             backgroundColor={"$colorTransparent"}
                         />
-                        <Text color={"$text"} fontFamily={"$body"} fontSize={"$md"} marginVertical={Utils.dynamicHeight(1)}>
+                        <Text color={"$text"} fontFamily={"$body"} fontSize={"$sm"} marginVertical={Utils.dynamicHeight(1)}>
                             Please write down your seed phrase and keep it safe. You will need it to recover your account.
                         </Text>
                     </View>

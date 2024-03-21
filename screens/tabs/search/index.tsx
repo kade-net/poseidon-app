@@ -54,6 +54,7 @@ const Search = () => {
                     flex={1}
                 >
                     <Input
+                        fontWeight={"$2"}
                         backgroundColor={"$colorTransparent"}
                         onChangeText={setSearch}
                         placeholder='Search'
@@ -63,12 +64,12 @@ const Search = () => {
             <Tabs flexDirection='column' orientation='horizontal' defaultValue='people' flex={1} width="100%" height="100%" >
                 <Tabs.List disablePassBorderRadius="bottom" w="100%" >
                     <Tabs.Tab tabIndex={"people"} flex={1} value='people' >
-                        <Text >
+                        <Text fontWeight={"$5"} fontSize={"$md"}>
                             People
                         </Text>
                     </Tabs.Tab>
                     <Tabs.Tab tabIndex={"communities"} flex={1} value='communities' >
-                        <Text >
+                        <Text fontWeight={"$5"} fontSize={"$md"}>
                             Communities
                         </Text>
                     </Tabs.Tab>

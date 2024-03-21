@@ -155,19 +155,19 @@ const ProfileDetails = (props: Props) => {
                     px={10}
                 >
                     <XStack w="100%" py={10} columnGap={10} >
-                        <Avatar circular size={50} >
+                        <Avatar circular size={"$6"} >
                             <Avatar.Image source={{ uri: profileQuery.data?.account?.profile?.pfp ?? undefined }} />
                             <Avatar.Fallback
                                 bg="lightgray"
                             />
                         </Avatar>
                         <YStack>
-                            <Text fontWeight="bold" color={"$text"}>
+                            <Text fontWeight="bold" color={"$text"} fontSize={"$md"}>
                                 {
                                     profileQuery.data?.account?.profile?.display_name
                                 }
                             </Text>
-                            <Text color="$sideText" >
+                            <Text color="$sideText" fontSize={"$sm"}>
                                 @{
                                     profileQuery.data?.account?.username?.username
                                 }
@@ -175,14 +175,14 @@ const ProfileDetails = (props: Props) => {
                         </YStack>
                     </XStack>
                     <XStack>
-                        <Text color={"$text"}>
+                        <Text color={"$text"} fontSize={"$sm"}>
                             {
                                 profileQuery.data?.account?.profile?.bio
                             }
                         </Text>
                     </XStack>
                 </YStack>
-                <XStack px={10} w="100%" alignItems='center' columnGap={5} py={10} >
+                <XStack px={10} w="100%" alignItems='center' columnGap={10} py={10} >
                     <XStack columnGap={5} >
                         <Text fontWeight={"bold"} color={"$text"}>
                             {

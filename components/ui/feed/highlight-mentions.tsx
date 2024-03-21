@@ -19,11 +19,11 @@ const HighlightMentions = (props: Props) => {
 
     return parts.map((part, index) => {
         if (Utils.mentionRegex.test(part) && tags?.includes(part.replace('@', ''))) {
-            return <Text fontFamily={"$body"} fontSize={"$sm"} lineHeight={"$sm"} key={index} color={'coral'}>{part}</Text>
+            return <Text fontFamily={"$body"} fontSize={"$sm"} lineHeight={"$sm"} fontWeight={"$3"} key={index} color={"$COAText"}>{part}</Text>
         } else if (Utils.urlRegex.test(part)) {
-            return <Text fontFamily={"$body"} fontSize={"$sm"} lineHeight={"$sm"} key={index} color={'lightblue'}>{part}</Text>
+            return <Text fontFamily={"$body"} fontSize={"$sm"} lineHeight={"$sm"} fontWeight={"$3"} key={index} color={'$COAText'}>{part}</Text>
         }
-        return <Text fontFamily={"$body"} fontSize={"$sm"} lineHeight={"$sm"} key={index}>{part}</Text>
+        return <Text fontFamily={"$body"} fontSize={"$sm"} lineHeight={"$sm"} fontWeight={"$3"} color={'$text'} key={index}>{part}</Text>
     })
 }
 

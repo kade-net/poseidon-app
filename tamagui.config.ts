@@ -7,7 +7,7 @@ const roboto = createFont({
       xxs: 12,
       xs: 14,
       sm: 16,
-      md: 17,
+      md: 18,
       lg: 21,
       xl: 24,
       '2xl': 27,
@@ -18,9 +18,10 @@ const roboto = createFont({
       1: "300",
       2: "400",
       3: "500",
-      true:"500",
-      4: "700",
-      5: "900"
+      true:"400",
+      4: "600",
+      5: "700",
+      6:"800"
   },
   lineHeight:{
     sm:20

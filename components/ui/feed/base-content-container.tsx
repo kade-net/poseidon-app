@@ -89,7 +89,7 @@ function BaseContentContainer(props: BaseContentContainerProps) {
                         </Avatar>
                     </View>
                 </Link>
-                <View w="90%" rowGap={20} >
+                <View w="90%" rowGap={10} >
                     <View flexDirection="row" alignItems="center" justifyContent="space-between" >
                         <Link
                             href={{
@@ -102,7 +102,7 @@ function BaseContentContainer(props: BaseContentContainerProps) {
                         >
                             <View flexDirection="row" alignItems="flex-start" columnGap={10}>
                                 <View>
-                                    <Text fontSize={"$xs"}>
+                                    <Text fontSize={"$sm"} fontWeight={"$5"}>
                                         {data?.creator?.profile?.display_name}
                                     </Text>
                                     <Text color={'$sideText'} fontSize={"$xxs"}>
@@ -148,17 +148,15 @@ function BaseContentContainer(props: BaseContentContainerProps) {
                         <View w="100%">
                             <YStack w="100%"
                                 mb={
-                                    ((data?.content?.media?.length ?? 0) > 0) ? 20 : 0
+                                    ((data?.content?.media?.length ?? 0) > 0) ? 8 : 0
                                 }
                             >
 
-                                <Text>
-                                    <ErrorBoundary>
-                                        <HighlightMentions
-                                            content={data?.content?.content ?? ""}
-                                            tags={data?.content?.tags ?? []}
-                                        />
-                                    </ErrorBoundary>
+                                <Text color={"$text"}>
+                                    <HighlightMentions
+                                        content={`${data?.content?.content} ${__DEV__ ? data?.id : ''}`}
+                                        tags={data?.content?.tags}
+                                    />
                                 </Text>
                                 {
                                     contentLinks?.map((link, i) => {
@@ -198,7 +196,7 @@ function BaseContentContainer(props: BaseContentContainerProps) {
                                     "name": data?.community?.name
                                 }
                             }} >
-                                <XStack columnGap={10} borderRadius={5} px={4} py={2} borderWidth={1} borderColor={"$blue10"} >
+                                <XStack columnGap={10} borderRadius={5} px={4} py={1} borderWidth={1} borderColor={"$blue10"} >
                                     <Avatar circular size={"$1"} >
                                         <Avatar.Image src={data?.community?.image} />
                                         <Avatar.Fallback bg="$pink10" />

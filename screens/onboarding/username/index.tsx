@@ -102,7 +102,7 @@ const PickUserName = () => {
             <View w="100%" rowGap={20}>
                 <UnstyledButton callback={goBack} icon={<ChevronLeft/>} label={"Back"}/>
                 <View w="100%" rowGap={10} >
-                    <Heading color={"$text"} size="$lg" >
+                    <Heading color={"$text"} size="$md" >
                         Pick a username
                     </Heading>
                     <Controller
@@ -111,6 +111,8 @@ const PickUserName = () => {
                         render={({ field }) => {
                             return (
                                 <Input
+                                    fontWeight={"$2"}
+                                    fontSize={"$sm"}
                                     backgroundColor={"$colorTransparent"}
                                     placeholder='Enter username'
                                     onChangeText={(value) => {

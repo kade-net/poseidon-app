@@ -135,6 +135,8 @@ const SeedPhrase = () => {
                                     onChangeText={field.onChange}
                                     value={field.value}
                                     numberOfLines={20}
+                                    fontWeight={"$2"}
+                                    fontSize={"$sm"}
                                     height={100}
                                     w={'100%'}
                                     placeholder='Enter your seed phrase here...'

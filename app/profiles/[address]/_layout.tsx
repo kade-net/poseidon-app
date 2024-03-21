@@ -9,6 +9,7 @@ import { SafeAreaView } from 'react-native-safe-area-context'
 import BaseContentSheet from '../../../components/ui/action-sheets/base-content-sheet'
 import useDisclosure from '../../../components/hooks/useDisclosure'
 import delegateManager from '../../../lib/delegate-manager'
+import { Utils } from '../../../utils'
 
 const _layout = () => {
     const params = useGlobalSearchParams()
@@ -92,11 +93,11 @@ const _layout = () => {
             <BaseContentSheet
                 open={isOpen}
                 onOpenChange={onToggle}
-                snapPoints={[30]}
+                snapPoints={[20]}
                 showOverlay
             >
-                <YStack w="100%" p={20} >
-                    {userAddress == delegateManager.owner && <Button onPress={goToEditProfile} variant='outlined' icon={<Edit3 />} >
+                <YStack w="100%" py={Utils.dynamicHeight(3)} rowGap={10} alignItems='flex-start' >
+                    {userAddress == delegateManager.owner && <Button fontSize={"$md"} fontWeight={"$2"} onPress={goToEditProfile} variant='outlined' icon={<Edit3 />} >
                         Edit Profile
                     </Button>}
                 </YStack>

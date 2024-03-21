@@ -44,8 +44,8 @@ const ProfileCard = (props: Props) => {
             <View
                 flexDirection='row'
                 columnGap={10}
-                p={10}
-                paddingHorizontal={Utils.dynamicWidth(4)}
+                paddingHorizontal={Utils.dynamicWidth(3)}
+                paddingVertical={Utils.dynamicHeight(1)}
             >
                 <Link asChild href={{
                     pathname: '/profiles/[address]/',
@@ -79,10 +79,10 @@ const ProfileCard = (props: Props) => {
                                 }
                             }} >
                                 <View>
-                                    <Text>
+                                    <Text fontWeight={"$5"} fontSize={"$sm"}>
                                         {data?.profile?.display_name}
                                     </Text>
-                                    <Text fontSize={'$1'} color={'$gray10'} >
+                                    <Text fontSize={'$xs'} color={'$sideText'} >
                                         @{data?.username?.username}
                                     </Text>
                                 </View>
@@ -90,7 +90,7 @@ const ProfileCard = (props: Props) => {
 
                         </View>
                         <View>
-                            <Button onPress={handleFollowToggle} size={"$3"} backgroundColor={"$button"} color={"$buttonText"}
+                            <Button onPress={handleFollowToggle} size={"$3"} backgroundColor={"$button"} color={"$buttonText"} mr={10}
                                 variant={queryData?.data?.account?.viewer?.follows ? "outlined" : undefined}
                             >
                                 {
@@ -100,8 +100,8 @@ const ProfileCard = (props: Props) => {
                         </View>
                     </View>
                     {/* Bio */}
-                    <View w="100%" >
-                        <Text>
+                    <View w="100%" marginTop={8}>
+                        <Text fontSize={"$sm"}>
                             {data?.profile?.bio}
                         </Text>
                     </View>

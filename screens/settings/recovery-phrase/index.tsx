@@ -38,6 +38,7 @@ const RecoveryPhrase = () => {
                     </Text>
                     <TextArea
                         fontWeight={"$2"}
+                        fontSize={"$sm"}
                         backgroundColor={"$colorTransparent"}
                         my={Utils.dynamicHeight(1)}
                         multiline
@@ -57,6 +58,7 @@ const RecoveryPhrase = () => {
                     </Text>
                     <TextArea
                         fontWeight={"$2"}
+                        fontSize={"$sm"}
                         backgroundColor={"$colorTransparent"}
                         my={Utils.dynamicHeight(1)}
                         multiline
@@ -74,8 +76,9 @@ const RecoveryPhrase = () => {
                     <Text color={"$text"} fontSize={"$md"}>
                         Delegate Private Key
                     </Text>
-                    <Input
+                    <TextArea
                         fontWeight={"$2"}
+                        fontSize={"$sm"}
                         backgroundColor={"$colorTransparent"}
                         my={Utils.dynamicHeight(1)}
                         multiline
@@ -96,6 +99,7 @@ const RecoveryPhrase = () => {
                     </Text>
                     <TextArea
                         fontWeight={"$2"}
+                        fontSize={"$sm"}
                         backgroundColor={"$colorTransparent"}
                         my={Utils.dynamicHeight(1)}
                         multiline
