@@ -1,7 +1,7 @@
 import { View, Text, YStack, Heading, Avatar, Separator } from 'tamagui'
 import React, { memo, useMemo } from 'react'
 import { PublicationQuery } from '../../../../__generated__/graphql'
-import { useRouter } from 'expo-router'
+import { Link, useRouter } from 'expo-router'
 import { TouchableOpacity } from 'react-native'
 import { ArrowLeft, Dot, MoreHorizontal } from '@tamagui/lucide-icons'
 import dayjs from 'dayjs'
@@ -58,34 +58,52 @@ const PublicationContent = (props: Props) => {
                         flexDirection='row'
                         columnGap={10}
                     >
-                        <Avatar circular  >
-                            <Avatar.Image
-                                accessibilityLabel='Profile Picture'
-                                src={data?.publication?.creator?.profile?.pfp as string}
-                            />
-                            <Avatar.Fallback
-                                backgroundColor={'$pink10'}
-                            />
-                        </Avatar>
-                        <View>
-                            <Text fontFamily={"$heading"} fontWeight={"$4"} fontSize={"$sm"}  color={"$text"}>
-                                {data?.publication?.creator?.profile?.display_name}
-                            </Text>
-                            <View flexDirection='row' alignItems='center' columnGap={1} >
-
-                                <Text  color={"$sideText"} fontFamily={"$heading"} fontSize={"$sm"} >
-                                    @{data?.publication?.creator?.username?.username}
-                                </Text>
-                                <Dot
-                                    color={'$sideText'}
+                        <Link asChild
+                            href={{
+                                pathname: '/profiles/[address]/',
+                                params: {
+                                    address: data?.publication?.creator?.address!
+                                }
+                            }}
+                        >
+                            <Avatar circular  >
+                                <Avatar.Image
+                                    accessibilityLabel='Profile Picture'
+                                    src={data?.publication?.creator?.profile?.pfp as string}
                                 />
-                                <Text color={"$sideText"} >
-                                    {
-                                        dayjs(data?.publication?.timestamp).fromNow()
-                                    }
+                                <Avatar.Fallback
+                                    backgroundColor={'$pink10'}
+                                />
+                            </Avatar>
+                        </Link>
+                        <Link asChild
+                            href={{
+                                pathname: '/profiles/[address]/',
+                                params: {
+                                    address: data?.publication?.creator?.address!
+                                }
+                            }}
+                        >
+                            <View>
+                                <Text fontFamily={"$heading"} fontWeight={"$4"} fontSize={"$sm"} color={"$text"}>
+                                    {data?.publication?.creator?.profile?.display_name}
                                 </Text>
+                                <View flexDirection='row' alignItems='center' columnGap={1} >
+
+                                    <Text color={"$sideText"} fontFamily={"$heading"} fontSize={"$sm"} >
+                                        @{data?.publication?.creator?.username?.username}
+                                    </Text>
+                                    <Dot
+                                        color={'$sideText'}
+                                    />
+                                    <Text color={"$sideText"} >
+                                        {
+                                            dayjs(data?.publication?.timestamp).fromNow()
+                                        }
+                                    </Text>
+                                </View>
                             </View>
-                        </View>
+                        </Link>
                     </View>
                 </View>
                 <View w="100%" py={10}  px={Utils.dynamicWidth(3)}>
