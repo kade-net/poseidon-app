@@ -31,7 +31,7 @@ const UserMembership = (props: Props) => {
                 width: '100%',
             }}>
                 <YStack w="100%" >
-                    <XStack columnGap={10} w="100%" px={20} py={10}  >
+                    <XStack columnGap={10} w="100%" px={10} py={10}  >
                         <Avatar circular >
                             <Avatar.Image source={{ uri: data?.community?.image }} alt="community" />
                             <Avatar.Fallback
@@ -41,10 +41,10 @@ const UserMembership = (props: Props) => {
                         <YStack flex={1} rowGap={10}  >
                             <XStack justifyContent='space-between' w="100%" >
                                 <YStack>
-                                    <Text fontSize={'$5'} >
+                                    <Text fontWeight={"$5"} fontSize={"$sm"}>
                                         {data?.community?.name}
                                     </Text>
-                                    <Text fontSize={'$3'} color={'$gray10'} >
+                                    <Text fontSize={'$xs'} color={'$sideText'} >
                                         /{data?.community?.name}
                                     </Text>
                                 </YStack>
@@ -62,7 +62,7 @@ const UserMembership = (props: Props) => {
                                         </Text>
                                 }
                             </XStack>
-                            <Text w="100%" >
+                            <Text w="100%" fontSize={"$sm"} >
                                 {
                                     data?.community?.description
                                 }

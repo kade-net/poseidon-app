@@ -122,7 +122,7 @@ const Home = () => {
                 flexDirection: 'row',
                 alignItems: 'center',
                 justifyContent: 'space-between',
-                height: 80,
+                height: 50,
                 backgroundColor: tamaguiTheme.background.val,
                 transform: [{ translateY }],
                 position: 'absolute',
@@ -146,7 +146,7 @@ const Home = () => {
                         />
                     </Avatar>
                 </TouchableOpacity>
-                <Heading fontFamily={"$heading"} fontWeight={"$3"} fontSize={"$lg"} >
+                <Heading fontFamily={"$heading"} fontWeight={"$5"} fontSize={"$lg"} >
                     Home
                 </Heading>
                 <TouchableOpacity onPress={goToSettings} >

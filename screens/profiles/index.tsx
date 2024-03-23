@@ -14,6 +14,7 @@ import NftsTab from './tabs/nfts'
 import { useMultiScrollManager } from '../../components/hooks/useMultiScrollManager'
 import TabNavbar from './tab-navbar'
 import account from '../../contract/modules/account'
+import  OutlinedButton  from '../../components/ui/buttons/outlined-button' 
 
 interface Props {
     address: string
@@ -205,16 +206,16 @@ const ProfileDetails = (props: Props) => {
                     </XStack>
                 </XStack>
                 {!IS_SAME_ACCOUNT && <XStack px={10} w="100%" alignItems='center' columnGap={5} py={10} >
-                    <Button backgroundColor={"$button"} color={"$buttonText"} w="100%" onPress={handleFollowToggle} variant={
+                    <Button backgroundColor={ accountViewerStats?.data?.accountViewerStats?.follows? "$colourlessButton":"$button"} color={"$buttonText"} borderWidth={accountViewerStats?.data?.accountViewerStats?.follows? 1 : 0} borderColor={"$button"} w="100%" onPress={handleFollowToggle} variant={
                         accountViewerStats?.data?.accountViewerStats?.follows ? "outlined" : undefined
                     } >
                         {
                             accountViewerStats?.data?.accountViewerStats?.follows ? "Following" : "Follow"
                         }
                     </Button>
+                    
                 </XStack>}
             </Animated.View>
-
             <YStack flex={1} w="100%" h="100%" >
                 <TabView
                     navigationState={{

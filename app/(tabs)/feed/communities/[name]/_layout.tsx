@@ -115,7 +115,7 @@ const _layout = () => {
                                                         Edit
                                                     </Button>
                                                 </Link> :
-                                                    membershipQuery.data?.membership ? <Button backgroundColor={"$button"} color={"$buttonText"} variant='outlined' onPress={handleFollowToggle} flex={1} >
+                                                    membershipQuery.data?.membership ? <Button backgroundColor={"$colourlessButton"} borderWidth={1} borderColor={"$button"}  color={"$buttonText"} onPress={handleFollowToggle} flex={1} >
                                                         Following
                                                     </Button> :
                                                         <Button backgroundColor={"$button"} color={"$buttonText"} onPress={handleFollowToggle} flex={1} >

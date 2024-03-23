@@ -81,6 +81,9 @@ const PublicationActions = (props: Props) => {
                         onPress={handleRemoveFromFeed}
                         fontSize={"$md"}
                         fontWeight={"$2"}
+                        borderWidth={1} 
+                        borderColor={"$button"}
+                        w={"100%"}
                     >
                         Remove from feed
                     </Button>
@@ -90,6 +93,9 @@ const PublicationActions = (props: Props) => {
                         onPress={handleBanUser}
                         fontSize={"$md"}
                         fontWeight={"$2"}
+                        borderWidth={1} 
+                        borderColor={"$button"}
+                        w={"100%"}
 
                     >
                         Mute User

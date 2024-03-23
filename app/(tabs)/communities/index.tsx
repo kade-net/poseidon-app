@@ -28,7 +28,7 @@ const CommunitiesScreen = () => {
                         return (
                             <YStack w="100%" >
                                 <XStack py={20} w="100%" alignItems='center' justifyContent='space-between' px={20} >
-                                    <Text >
+                                    <Text fontFamily={"$heading"} fontSize={"$sm"}>
                                         Your Communities
                                     </Text>
                                     <TouchableOpacity onPress={handleCreateCommunity} >

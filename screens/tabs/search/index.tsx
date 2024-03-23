@@ -11,7 +11,7 @@ import delegateManager from '../../../lib/delegate-manager'
 import { Link } from 'expo-router'
 import CommunitiesSearch from './tabs/communities'
 import { Utils } from '../../../utils'
-
+import { SlideTab } from '../../../components/ui/tabs'
 
 const Search = () => {
     const profileQuery = useQuery(GET_MY_PROFILE, {
@@ -61,32 +61,18 @@ const Search = () => {
                     />
                 </View>
             </View>
-            <Tabs flexDirection='column' orientation='horizontal' defaultValue='people' flex={1} width="100%" height="100%" >
-                <Tabs.List disablePassBorderRadius="bottom" w="100%" >
-                    <Tabs.Tab tabIndex={"people"} flex={1} value='people' >
-                        <Text fontWeight={"$5"} fontSize={"$md"}>
-                            People
-                        </Text>
-                    </Tabs.Tab>
-                    <Tabs.Tab tabIndex={"communities"} flex={1} value='communities' >
-                        <Text fontWeight={"$5"} fontSize={"$md"}>
-                            Communities
-                        </Text>
-                    </Tabs.Tab>
-                </Tabs.List>
-                <Separator w="100%" />
-                <Tabs.Content tabIndex={"people"} value='people' py={5} >
+            <SlideTab.Root>
+                <SlideTab.Section label='People'>
                     <PeopleSearch
-                        search={search ?? ''}
-                    />
-
-                </Tabs.Content>
-                <Tabs.Content tabIndex={"communities"} value='communities' >
+                            search={search ?? ''}
+                        />
+                </SlideTab.Section> 
+                <SlideTab.Section label='Communities'>
                     <CommunitiesSearch
                         search={search ?? ''}
                     />
-                </Tabs.Content>
-            </Tabs>
+                </SlideTab.Section>
+            </SlideTab.Root>
         </View>
     )
 }

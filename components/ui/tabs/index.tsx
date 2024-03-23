@@ -3,12 +3,14 @@ import { ReactNode } from 'react'
 import { Dimensions } from 'react-native'
 import { useState } from 'react'
 import type { StackProps, TabLayout, TabsTabProps } from 'tamagui'
-import {AnimatePresence, SizableText, Tabs, YStack,styled} from 'tamagui'
+import {AnimatePresence, SizableText, Tabs, Text, YStack,styled} from 'tamagui'
 
 export const Tab = ({...props}) => {
     const deviceWidth: number = Dimensions.get('window').width
 
     const numberTabs: number = React.Children.count(props.children)
+
+    const [activeTab, setactiveTab] = useState(props.children[0].props.label)
 
     const [tabState, setTabState] = useState<{
             currentTab: string
@@ -74,8 +76,9 @@ export const Tab = ({...props}) => {
                                             minWidth={deviceWidth/numberTabs} 
                                             value={label}
                                             onInteraction={handleOnInteraction}
+                                            onPress={()=>setactiveTab(label)}
                                             >
-                                            <SizableText> { label } </SizableText>
+                                            <Text fontWeight={"$5"} fontSize={"$md"} color={activeTab===label?"$text":"$sideText"}> { label } </Text>
                                         </Tabs.Tab>
                                     )
                                 }

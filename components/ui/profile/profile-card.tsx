@@ -90,7 +90,7 @@ const ProfileCard = (props: Props) => {
 
                         </View>
                         <View>
-                            <Button onPress={handleFollowToggle} size={"$3"} backgroundColor={"$button"} color={"$buttonText"} mr={10}
+                            <Button onPress={handleFollowToggle} size={"$3"}  backgroundColor={ queryData?.data?.account?.viewer?.follows ? "$colourlessButton":"$button"} borderWidth={ queryData?.data?.account?.viewer?.follows ? 1 : 0} borderColor={"$button"}  color={"$buttonText"} mr={10}
                                 variant={queryData?.data?.account?.viewer?.follows ? "outlined" : undefined}
                             >
                                 {

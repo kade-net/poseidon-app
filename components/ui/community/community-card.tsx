@@ -53,7 +53,7 @@ const CommunityCard = (props: Props) => {
                     }
                 }} >
 
-                    <Avatar circular size={"$3"} >
+                    <Avatar circular size={"$3"} mr={5}>
                         <Avatar.Image
                             src={community?.image! ?? ""}
                             accessibilityLabel="Community Picture"
@@ -75,7 +75,7 @@ const CommunityCard = (props: Props) => {
                             }
                         }} >
                             <YStack>
-                                <Text color={"$text"}>
+                                <Text color={"$text"} fontWeight={"$5"} fontSize={"$sm"}>
                                     {community?.name}
                                 </Text>
                                 <Text fontSize={'$1'} color={'$sideText'} >
@@ -83,13 +83,13 @@ const CommunityCard = (props: Props) => {
                                 </Text>
                             </YStack>
                         </Link>
-                        {membershipQuery?.data?.membership?.type !== 0 && <Button backgroundColor={"$button"} color={"$buttonText"} onPress={handleToggleFollow} size='$3' >
+                        {membershipQuery?.data?.membership?.type !== 0 && <Button backgroundColor={ membershipQuery?.data?.membership ? "$colourlessButton":"$button"} borderWidth={ membershipQuery?.data?.membership ? 1 : 0} borderColor={"$button"} color={"$buttonText"} onPress={handleToggleFollow} size='$3' >
                             {
                                 membershipQuery?.data?.membership ? "Following" : "Follow"
                             }
                         </Button>}
                     </XStack>
-                    <Text pb={20} >
+                    <Text pb={10} fontSize={"$sm"}>
                         {community?.description}
                     </Text>
                 </YStack>

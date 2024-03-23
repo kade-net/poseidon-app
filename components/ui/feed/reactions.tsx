@@ -208,12 +208,14 @@ const PublicationReactions = (props: Props) => {
                     >
                         <Button
                             variant='outlined'
-                            icon={<Repeat />}
+                            icon={<Repeat size={15}/>}
                             onPress={handleRepost}
+                            borderWidth={1} 
+                            borderColor={"$button"}
                         >
                             {
                                 repostLoading ? <Spinner /> :
-                                    <Text>
+                                    <Text fontSize={"$md"} fontWeight={"$2"}>
                                         {
                                             userInteractions.data?.publicationInteractionsByViewer?.reposted ? "Remove Repost" : "Repost"
                                         }
@@ -222,12 +224,14 @@ const PublicationReactions = (props: Props) => {
                         </Button>
                         <Button
                             variant='outlined'
-                            icon={<MessageSquarePlus />}
+                            icon={<MessageSquarePlus size={15} />}
                             onPress={handleQuote}
+                            borderWidth={1} 
+                            borderColor={"$button"}
                         >
                             {
                                 quoteLoading ? <Spinner /> :
-                                    <Text>
+                                    <Text fontSize={"$md"} fontWeight={"$2"}>
 
                                         {
                                             userInteractions.data?.publicationInteractionsByViewer?.quoted ? "Remove Quote" : "Quote"
