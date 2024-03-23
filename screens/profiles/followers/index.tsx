@@ -44,7 +44,7 @@ const Followers = (props: Props) => {
   }
 
   return (
-    <YStack flex={1} >
+    <YStack backgroundColor={'$background'} flex={1} >
       <FlatList
         data={followersQuery?.data?.followers}
         keyExtractor={(item) => item?.address}

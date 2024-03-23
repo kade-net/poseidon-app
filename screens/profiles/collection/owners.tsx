@@ -70,7 +70,7 @@ const CollectionOwners = (props: Props) => {
 
 
     return (
-        <YStack w="100%" flex={1} >
+        <YStack backgroundColor={'$background'} w="100%" flex={1} >
             <YStack w="100%" p={20} >
                 <H2 textTransform='capitalize' >
                     {collection?.data?.collection_name ?? 'Untitled'}

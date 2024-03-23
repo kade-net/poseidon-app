@@ -47,6 +47,7 @@ const Collection = () => {
     return (
         <YStack
             flex={1}
+            backgroundColor={'$background'}
         >
 
             <CollectionImage image={collection.data?.first_uri!} name={collection?.data?.collection_name ?? 'Untitled'} />

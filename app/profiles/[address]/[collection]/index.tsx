@@ -26,7 +26,7 @@ const index = () => {
             return (
               <TouchableOpacity onPress={props.navigation.goBack} style={{ width: "100%" }} >
 
-                <XStack p={20} py={20} columnGap={20} alignItems='center' >
+                <XStack backgroundColor={'$background'} p={20} py={20} columnGap={20} alignItems='center' >
                   <ArrowLeft />
                   <H4 textTransform='none' >
                     {collection?.data?.collection_name ?? 'Untitled'}
