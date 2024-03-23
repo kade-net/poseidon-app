@@ -1,4 +1,4 @@
-import { View, Text, Separator, Button, Heading, H4, Spinner, useTheme, YStack } from 'tamagui'
+import { View, Text, Separator, Button, Heading, H4, Spinner, useTheme, YStack, XStack } from 'tamagui'
 import React from 'react'
 import { Stack, useGlobalSearchParams, useRouter } from 'expo-router'
 import { useQuery } from '@apollo/client'
@@ -10,6 +10,7 @@ import BaseContentSheet from '../../../components/ui/action-sheets/base-content-
 import useDisclosure from '../../../components/hooks/useDisclosure'
 import delegateManager from '../../../lib/delegate-manager'
 import { Utils } from '../../../utils'
+import TopBarWithBack from '../../../components/ui/navigation/top-bar-with-back'
 
 const _layout = () => {
     const params = useGlobalSearchParams()
@@ -87,6 +88,34 @@ const _layout = () => {
                     name="edit"
                     options={{
                         headerShown: false
+                    }}
+                />
+                <Stack.Screen
+                    name="[collection]"
+                    options={{
+                        headerShown: false
+                    }}
+                />
+                <Stack.Screen
+                    name="followers"
+                    options={{
+                        header(props) {
+                            return <TopBarWithBack
+                                navigation={props.navigation}
+                                title='Followers'
+                            />
+                        }
+                    }}
+                />
+                <Stack.Screen
+                    name="following"
+                    options={{
+                        header(props) {
+                            return <TopBarWithBack
+                                navigation={props.navigation}
+                                title='Following'
+                            />
+                        }
                     }}
                 />
             </Stack>

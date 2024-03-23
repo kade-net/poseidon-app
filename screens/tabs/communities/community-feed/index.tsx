@@ -50,7 +50,7 @@ const CommunityFeed = (props: Props) => {
     const handleFetchMore = async () => {
         try {
             const totalPublications = data?.communityPublications?.length ?? 0
-            const nextPage = Math.floor(totalPublications / 20) + 1
+            const nextPage = (Math.floor(totalPublications / 20) - 1) + 1
             console.log("Next page", nextPage)
             const results = await fetchMore({
                 variables: {

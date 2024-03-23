@@ -11,6 +11,7 @@
     "web": "expo start --web",
     "test": "jest --watchAll",
     "compile": "graphql-codegen",
+    "compile:barnicle": "graphql-codegen --config ./support-gql-clients/barnicle.codegen.ts",
     "watch": "graphql-codegen -w"
   },
   "jest": {

@@ -11,6 +11,7 @@ export type TPROFILE = z.infer<typeof profileSchema>
 export const publicationSchema = z.object({
     content: z.string(),
     tags: z.array(z.string()).optional(),
+    mentions: z.record(z.string()).optional(),
     media: z.array(z.object({
         type: z.string(),
         url: z.string()

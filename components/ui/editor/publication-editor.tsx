@@ -6,7 +6,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import * as ImagePicker from 'expo-image-picker'
 import uploadManager from '../../../lib/upload-manager'
 import publications from '../../../contract/modules/publications'
-import { KeyboardAvoidingView, Platform, TextInput, TouchableOpacity } from 'react-native'
+import { BackHandler, KeyboardAvoidingView, Platform, TextInput, TouchableOpacity } from 'react-native'
 import { ImagePlus } from '@tamagui/lucide-icons'
 import FeedImage from '../feed/image'
 import { useQuery } from '@apollo/client'
@@ -21,6 +21,7 @@ import BaseContentSheet from '../action-sheets/base-content-sheet'
 import UserMentionsSearch from './user-mentions-search'
 import HighlightMentions from './highlight-mentions'
 import { uniq } from 'lodash'
+import { useFocusEffect } from 'expo-router'
 
 interface Props {
     onClose: () => void
@@ -135,7 +136,7 @@ const PublicationEditor = (props: Props) => {
         }
     }
 
-    const handleAddMention = (username: string) => {
+    const handleAddMention = (username: string, address: string) => {
         const prevTags = form.getValues('tags') ?? []
         const prevContent = form.getValues('content') ?? ""
         const newTags = uniq([...prevTags, username])
@@ -146,6 +147,11 @@ const PublicationEditor = (props: Props) => {
         if (mention) {
             form.setValue('content', prevContent.replace(mention, `@${username} `))
             form.setValue('tags', newTags)
+            const prevMentions = form.getValues('mentions') ?? {}
+            form.setValue('mentions', {
+                ...prevMentions,
+                [username]: address
+            })
         }
         closeUserMentions()
     }
@@ -186,7 +192,9 @@ const PublicationEditor = (props: Props) => {
                 if (lastMention && !content.includes(`@${lastMention}`)) {
                     const newTags = (prevTags.filter((tag) => tag !== lastMention && tag !== undefined) ?? [])
                     form.setValue('tags', newTags as any)
-
+                    const prevMentions = form.getValues('mentions') ?? {}
+                    delete prevMentions[lastMention]
+                    form.setValue('mentions', prevMentions)
                 }
             }
 
@@ -197,6 +205,21 @@ const PublicationEditor = (props: Props) => {
         }
     }, [form.watch, userMentionsOpen])
 
+    // back handler
+    useFocusEffect(
+        useCallback(() => {
+            const onBackPress = () => {
+                onClose()
+                return true
+            }
+
+            const subscription = BackHandler.addEventListener('hardwareBackPress', onBackPress)
+
+            return () => {
+                subscription.remove()
+            }
+        }, [])
+    )
 
     return (
         <View flex={1} w="100%" h="100%" backgroundColor={"$background"}>
@@ -291,10 +314,7 @@ const PublicationEditor = (props: Props) => {
                     width: '100%',
                 }}
             >
-                {userMentionsOpen && <UserMentionsSearch
-                    search={currentMention}
-                    onSelect={handleAddMention}
-                />}
+
                 <YStack>
                     <Separator />
                     <View
@@ -338,7 +358,13 @@ const PublicationEditor = (props: Props) => {
                 </YStack>
             </KeyboardAvoidingView>
 
-
+            {
+                userMentionsOpen &&
+                <UserMentionsSearch
+                    search={currentMention}
+                    onSelect={handleAddMention}
+                />
+            }
         </View>
 
     )

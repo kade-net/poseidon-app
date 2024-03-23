@@ -14,7 +14,7 @@ import NftsTab from './tabs/nfts'
 import { useMultiScrollManager } from '../../components/hooks/useMultiScrollManager'
 import TabNavbar from './tab-navbar'
 import account from '../../contract/modules/account'
-import  OutlinedButton  from '../../components/ui/buttons/outlined-button' 
+import { Link } from 'expo-router'
 
 interface Props {
     address: string
@@ -190,9 +190,16 @@ const ProfileDetails = (props: Props) => {
                                 profileQuery.data?.account?.stats?.following
                             }
                         </Text>
-                        <Text color="$sideText" >
-                            Following
-                        </Text>
+                        <Link asChild href={{
+                            pathname: '/profiles/[address]/following',
+                            params: {
+                                address: address
+                            }
+                        }}>
+                            <Text color="$blue10" >
+                                Following
+                            </Text>
+                        </Link>
                     </XStack>
                     <XStack columnGap={5} >
                         <Text fontWeight={"bold"} color={"$text"}>
@@ -200,9 +207,16 @@ const ProfileDetails = (props: Props) => {
                                 profileQuery.data?.account?.stats?.followers
                             }
                         </Text>
-                        <Text color="$sideText" >
-                            Followers
-                        </Text>
+                        <Link asChild href={{
+                            pathname: '/profiles/[address]/followers',
+                            params: {
+                                address: address
+                            }
+                        }}>
+                            <Text color="$blue10"  >
+                                Followers
+                            </Text>
+                        </Link>
                     </XStack>
                 </XStack>
                 {!IS_SAME_ACCOUNT && <XStack px={10} w="100%" alignItems='center' columnGap={5} py={10} >

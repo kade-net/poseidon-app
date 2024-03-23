@@ -10,53 +10,10 @@ const IMAGE = "https://images.unsplash.com/photo-1517849845537-4d257902454a?q=80
 const Notifications = () => {
   const insets = useSafeAreaInsets()
   return (
-    <View flex={1} pt={Utils.dynamicHeight(3)} pb={Utils.dynamicHeight(3)} backgroundColor={"$background"}>
-      <View flexDirection='row' w="100%" alignItems='center' justifyContent='space-between' px={20} py={10} >
-        <TouchableOpacity>
-          <Avatar circular  >
-            <Avatar.Image
-              accessibilityLabel='Profile Picture'
-              src={IMAGE}
-            />
-            <Avatar.Fallback
-              backgroundColor={'$pink10'}
-            />
-          </Avatar>
-        </TouchableOpacity>
-        <Heading size="$md" color={"$text"}>
-          Home
-        </Heading>
-        <TouchableOpacity>
-          <Settings />
-        </TouchableOpacity>
-      </View>
-      <View flex={1} >
-        <Tabs flexDirection='column' orientation='horizontal' defaultValue='people' flex={1} width="100%" height="100%" >
-          <Tabs.List disablePassBorderRadius="bottom" w="100%" >
-            <Tabs.Tab flex={1} value='people' >
-              <SizableText size="$md" color={"$text"}>
-                All
-              </SizableText>
-            </Tabs.Tab>
-            <Tabs.Tab flex={1} value='communities' >
-              <SizableText size="$md" color={"$text"} >
-                Mentions
-              </SizableText>
-            </Tabs.Tab>
-          </Tabs.List>
-          <Separator w="100%" />
-          <Tabs.Content value='people' >
-            <View flex={1} justifyContent='center' alignItems='center' >
-
-            </View>
-          </Tabs.Content>
-          <Tabs.Content value='communities' >
-            <View flex={1} justifyContent='center' alignItems='center' >
-
-            </View>
-          </Tabs.Content>
-        </Tabs>
-      </View>
+    <View flex={1} alignItems='center' justifyContent='center' backgroundColor={"$background"} >
+      <Heading color={"$text"}>
+        🏗️ Under Construction 🏗️
+      </Heading>
     </View>
   )
 }

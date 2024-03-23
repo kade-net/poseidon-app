@@ -156,6 +156,7 @@ function BaseContentContainer(props: BaseContentContainerProps) {
                                     <HighlightMentions
                                         content={`${data?.content?.content} ${__DEV__ ? data?.id : ''}`}
                                         tags={data?.content?.tags}
+                                        mentions={data?.content?.mentions}
                                     />
                                 </Text>
                                 {

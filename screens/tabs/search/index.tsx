@@ -22,8 +22,14 @@ const Search = () => {
     const insets = useSafeAreaInsets()
 
     const [search, setSearch] = useState('')
+    const [activeTab, setActiveTab] = useState('People')
+    const handleActiveTab = (tab: string) => {
+        setSearch('')
+        setActiveTab(tab)
+    }
+
     return (
-        <View pt={insets.top} pb={insets.bottom} flex={1} backgroundColor={"$background"}>
+        <View pt={insets.top} pb={insets.bottom + 60} flex={1} backgroundColor={"$background"}>
             <View
                 flexDirection='row'
                 alignItems='center'
@@ -58,19 +64,22 @@ const Search = () => {
                         backgroundColor={"$colorTransparent"}
                         onChangeText={setSearch}
                         placeholder='Search'
+                        value={search}
                     />
                 </View>
             </View>
-            <SlideTab.Root>
+            <SlideTab.Root
+                onActiveTab={handleActiveTab}
+            >
                 <SlideTab.Section label='People'>
-                    <PeopleSearch
+                    {activeTab == 'People' && <PeopleSearch
                             search={search ?? ''}
-                        />
+                    />}
                 </SlideTab.Section> 
                 <SlideTab.Section label='Communities'>
-                    <CommunitiesSearch
+                    {activeTab == 'Communities' && <CommunitiesSearch
                         search={search ?? ''}
-                    />
+                    />}
                 </SlideTab.Section>
             </SlideTab.Root>
         </View>
