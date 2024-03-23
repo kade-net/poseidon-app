@@ -21,13 +21,13 @@ const CommunitiesSearch = (props: Props) => {
 
 
     const handleFetchMore = async () => {
-        const nextPage = Math.ceil(
-            ((communitiesQuery?.data?.communities?.length ?? 0) / 20) + 1
+        const currentPage = Math.floor(
+            ((communitiesQuery?.data?.communities?.length ?? 0) / 20) - 1
         )
 
         await communitiesQuery.fetchMore({
             variables: {
-                page: nextPage,
+                page: currentPage + 1,
                 search,
                 size: 20
             }

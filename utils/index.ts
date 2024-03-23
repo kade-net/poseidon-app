@@ -23,4 +23,24 @@ export namespace Utils {
   export const mentionRegex = /@\w+/g;
 
   export const urlRegex = /https?:\/\/[^\s]+/g;
+
+  export const validateImageUri = async (uri: string) => {
+    if (!uri || uri.length === 0) return false
+    try {
+      const resp = await fetch(uri, { method: 'HEAD' })
+
+      const contentType = resp.headers.get('content-type')
+
+      if (!contentType || !contentType.startsWith('image')) {
+        return false
+      }
+
+      return true
+
+    }
+    catch (e) {
+      return false
+    }
+  }
+
 }

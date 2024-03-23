@@ -1,4 +1,4 @@
-import { View, Text, Avatar, YStack, Separator, Button } from 'tamagui'
+import { View, Text, Avatar, YStack, Separator, Button, Spinner } from 'tamagui'
 import React from 'react'
 import { Account } from '../../../__generated__/graphql'
 import account from '../../../contract/modules/account'
@@ -37,6 +37,8 @@ const ProfileCard = (props: Props) => {
             console.log("Error: ", e)
         }
     }
+
+    if (data?.address === delegateManager.owner) return null
 
 
     return (
@@ -90,13 +92,13 @@ const ProfileCard = (props: Props) => {
 
                         </View>
                         <View>
-                            <Button onPress={handleFollowToggle} size={"$3"}  backgroundColor={ queryData?.data?.account?.viewer?.follows ? "$colourlessButton":"$button"} borderWidth={ queryData?.data?.account?.viewer?.follows ? 1 : 0} borderColor={"$button"}  color={"$buttonText"} mr={10}
+                            {queryData?.loading ? <Spinner /> : <Button onPress={handleFollowToggle} size={"$3"} backgroundColor={queryData?.data?.account?.viewer?.follows ? "$colourlessButton" : "$button"} borderWidth={queryData?.data?.account?.viewer?.follows ? 1 : 0} borderColor={"$button"} color={"$buttonText"} mr={10}
                                 variant={queryData?.data?.account?.viewer?.follows ? "outlined" : undefined}
                             >
                                 {
                                     queryData?.data?.account?.viewer?.follows ? "Following" : "Follow"
                                 }
-                            </Button>
+                            </Button>}
                         </View>
                     </View>
                     {/* Bio */}

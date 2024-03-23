@@ -1,5 +1,5 @@
-import { Link, router, useRouter } from 'expo-router'
-import React, { useEffect } from 'react'
+import { Link, router, useFocusEffect, useRouter } from 'expo-router'
+import React, { useCallback, useEffect } from 'react'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { Button, SizableText, View } from 'tamagui'
 import petra from '../../../lib/wallets/petra'
@@ -8,11 +8,29 @@ import { User } from '@tamagui/lucide-icons'
 import { Text } from 'tamagui'
 import account from '../../../contract/modules/account'
 import { Utils } from '../../../utils'
+import { BackHandler } from 'react-native'
 
 
 const WelcomeScreen = () => {
     const insets = useSafeAreaInsets()
     const router = useRouter()
+
+    // back handler
+    useFocusEffect(
+        useCallback(() => {
+            const onBackPress = () => {
+
+                return true
+            }
+
+            const subscription = BackHandler.addEventListener('hardwareBackPress', onBackPress)
+
+            return () => {
+                subscription.remove()
+            }
+        }, [])
+    )
+
     const goToCreateAccount = () => {
         router.replace('/onboard/username')
     }

@@ -13,7 +13,6 @@ interface Props {
 }
 
 const Publication = (props: Props) => {
-    const [currentPage, setCurrentPage] = useState(0)
     const commentsQuery = useQuery(GET_PUBLICATION_COMMENTS, {
         variables: {
             publication_ref: props.publication_ref,
@@ -24,6 +23,7 @@ const Publication = (props: Props) => {
     })
 
     const handleFetchMore = async () => {
+        const currentPage = Math.floor(((commentsQuery.data?.publicationComments?.length ?? 0) / 20)) - 1
         if ((commentsQuery.data?.publicationComments?.length ?? 0) < 20) {
             console.log("No more publications")
             return
@@ -43,8 +43,6 @@ const Publication = (props: Props) => {
             }
 
             console.log("Fetched more")
-
-            setCurrentPage((prev) => prev + 1)
         }
         catch (e) {
             console.log("Error fetching more", e)
@@ -60,7 +58,6 @@ const Publication = (props: Props) => {
                     size: 20
                 }
             })
-            setCurrentPage(0)
         }
         catch (e) {
             console.log("Error fetching more", e)

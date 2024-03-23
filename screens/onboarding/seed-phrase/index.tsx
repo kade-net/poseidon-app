@@ -1,4 +1,4 @@
-import { View, Text, Button, Heading, TextArea } from 'tamagui'
+import { View, Text, Button, Heading, TextArea, XStack, Spinner } from 'tamagui'
 import React from 'react'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { ChevronLeft } from '@tamagui/lucide-icons'
@@ -27,6 +27,7 @@ type TSchema = z.infer<typeof schema>
 const SeedPhrase = () => {
     const insets = useSafeAreaInsets()
     const router = useRouter()
+    const [loading, setLoading] = React.useState(false)
 
     const form = useForm<TSchema>({
         resolver: zodResolver(schema)
@@ -50,7 +51,7 @@ const SeedPhrase = () => {
 
     const handleSubmit = async (values: TSchema) => {
         const seedPhrase = values.seedPhrase
-
+        setLoading(true)
         try {
             await delegateManager.fromMnemonic(seedPhrase)
             console.log(delegateManager.owner)
@@ -61,6 +62,7 @@ const SeedPhrase = () => {
                 const username = await usernames.getUsername()
 
                 if (!username) {
+                    setLoading(false)
                     goToUsername()
                     return
                 }
@@ -75,6 +77,9 @@ const SeedPhrase = () => {
                     }
                     catch (e) {
                         console.log(`SOMETHING WENT WRONG:: ${e}`)
+                    }
+                    finally {
+                        setLoading(false)
                     }
                     return
                 }
@@ -93,21 +98,26 @@ const SeedPhrase = () => {
                 await account.markAsRegistered()
 
                 if (account.isProfileRegistered) {
+                    setLoading(false)
                     goToFeed()
                     return
-                }
-
+                }   
+                setLoading(false)
                 goToProfile()
                 return
 
 
             }
             catch (e) {
+                setLoading(false)
                 console.log(`SOMETHING WENT WRONG:: ${e}`)
             }
         }
         catch (e) {
             console.log(`SOMETHING WENT WRONG:: ${e}`)
+        }
+        finally {
+            setLoading(false)
         }
     }
 
@@ -145,8 +155,13 @@ const SeedPhrase = () => {
                         }}
                     />
                 </View>
-                <Button onPress={form.handleSubmit(handleSubmit)} w="100%" backgroundColor={"$button"} color="$buttonText" marginBottom={Utils.dynamicHeight(5)}>
-                    Done
+                <Button disabled={loading} onPress={form.handleSubmit(handleSubmit)} w="100%" backgroundColor={"$button"} color="$buttonText" marginBottom={Utils.dynamicHeight(5)}>
+                    {
+                        loading ? <XStack columnGap={20} >
+                            <Spinner />
+                            <Text>Veryfying...</Text>
+                        </XStack> : "Done"
+                    }
                 </Button>
             </View>
         </View>

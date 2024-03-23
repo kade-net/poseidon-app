@@ -35,7 +35,7 @@ const PublicationAnimatedFlatList = (props: ProfileTabsProps & {
   const handleFetchMore = async () => {
     try {
       const totalPublications = postsQuery?.data?.publications?.length ?? 0
-      const nextPage = Math.floor(totalPublications / 20) + 1
+      const nextPage = (Math.floor(totalPublications / 20) - 1) + 1
       console.log("Next page", nextPage)
       const results = await postsQuery.fetchMore({
         variables: {

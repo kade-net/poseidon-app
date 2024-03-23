@@ -6,6 +6,7 @@ import type { StackProps, TabLayout, TabsTabProps } from 'tamagui'
 import {AnimatePresence, SizableText, Tabs, Text, YStack,styled} from 'tamagui'
 
 export const Tab = ({...props}) => {
+    const { onActiveTab } = props
     const deviceWidth: number = Dimensions.get('window').width
 
     const numberTabs: number = React.Children.count(props.children)
@@ -76,7 +77,10 @@ export const Tab = ({...props}) => {
                                             minWidth={deviceWidth/numberTabs} 
                                             value={label}
                                             onInteraction={handleOnInteraction}
-                                            onPress={()=>setactiveTab(label)}
+                                            onPress={() => {
+                                                setactiveTab(label)
+                                                onActiveTab(label)
+                                            }}
                                             >
                                             <Text fontWeight={"$5"} fontSize={"$md"} color={activeTab===label?"$text":"$sideText"}> { label } </Text>
                                         </Tabs.Tab>

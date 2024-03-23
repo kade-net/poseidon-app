@@ -20,7 +20,7 @@ const PeopleSearch = (props: Props) => {
       size: 20
     },
     skip: !delegateManager.owner,
-    onCompleted: console.log,
+    onCompleted: (data) => console.log("Users::", data.accounts?.length),
     onError: console.log
   })
 
@@ -38,18 +38,22 @@ const PeopleSearch = (props: Props) => {
     await peopleSearchQuery.fetchMore({
       variables: {
         page: 0,
-        size: 20
+        size: 20,
+        search: defferedSearchValue
       }
     })
   }
 
   const handleFetchMore = async () => {
     if (peopleSearchQuery.loading) return null
-    const next = Math.ceil(((peopleSearchQuery.data?.accounts?.length ?? 0) / 20) + 1)
+    const currentPage = Math.floor(((peopleSearchQuery.data?.accounts?.length ?? 0) / 20) - 1)
+    const next = currentPage + 1
+    console.log(next)
     await peopleSearchQuery.fetchMore({
       variables: {
         page: next,
-        size: 20
+        size: 20,
+        search: defferedSearchValue
       }
     })
   }

@@ -47,6 +47,25 @@ function publicationRead(existing: Array<Reference> = [], { readField, field }: 
 
 }
 
+function simpleMerge(existing: Array<Reference> = [], incoming: Array<Reference> = [], options: any) {
+    const cloned = cloneDeep(existing)
+    const offset = (options?.args?.pagination?.page ?? 0) * (options?.args?.pagination?.size ?? 20)
+    for (let i = 0; i < incoming.length; i++) {
+        const toBeAdded = incoming[i]
+        const indexToReplace = offset + i
+        if (toBeAdded) {
+            if (cloned[indexToReplace]) {
+                cloned[indexToReplace] = toBeAdded
+            }
+            else {
+                cloned.push(toBeAdded)
+            }
+        }
+    }
+
+    return cloned
+}
+
 const cache = new InMemoryCache({
     dataIdFromObject: (object: Record<string, any>) => {
         switch (object.__typename) {
@@ -81,7 +100,16 @@ const cache = new InMemoryCache({
                 },
                 accounts: {
                     keyArgs: ["search", "viewer"],
+
                     merge: publicationMerge
+                },
+                followers: {
+                    keyArgs: ["accountAddress"],
+                    merge: simpleMerge
+                },
+                following: {
+                    keyArgs: ["accountAddress"],
+                    merge: simpleMerge
                 },
                 communityPublications: {
                     keyArgs: ["communityName"],
@@ -104,3 +132,19 @@ const client = new ApolloClient({
 })
 
 export default client
+
+export const barnicleClient = new ApolloClient({
+    cache: new InMemoryCache({
+        typePolicies: {
+            Query: {
+                fields: {
+                    collectors: {
+                        keyArgs: ["collection_address"],
+                        merge: publicationMerge
+                    }
+                }
+            }
+        }
+    }),
+    uri: "https://barnicle-production.up.railway.app"
+})

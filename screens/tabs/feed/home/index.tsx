@@ -2,10 +2,10 @@ import { View, Text, Avatar, Heading, ButtonIcon, useTheme, Separator, Sheet, Bu
 import React, { useCallback, useMemo, useState } from 'react'
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context'
 import { ImagePlus, MessageCirclePlus, Settings } from '@tamagui/lucide-icons'
-import { Animated, FlatList, KeyboardAvoidingView, ListRenderItem, Platform, TouchableOpacity } from 'react-native'
+import { Animated, BackHandler, FlatList, KeyboardAvoidingView, ListRenderItem, Platform, TouchableOpacity } from 'react-native'
 import { feed } from './data'
 import BaseContentContainer from '../../../../components/ui/feed/base-content-container'
-import { useRouter } from 'expo-router'
+import { useFocusEffect, useRouter } from 'expo-router'
 const IMAGE = "https://images.unsplash.com/photo-1517849845537-4d257902454a?q=80&w=1935&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
 import * as ImagePicker from 'expo-image-picker'
 import FeedImage from '../../../../components/ui/feed/image'
@@ -26,7 +26,6 @@ import { isEmpty } from 'lodash'
 import { getMutedUsers, getRemovedFromFeed } from '../../../../contract/modules/store-getters'
 
 const Home = () => {
-    const [currentPage, setCurrentPage] = useState(0)
     const { data, fetchMore, loading } = useQuery(GET_PUBLICATIONS, {
         variables: {
             page: 0,
@@ -38,7 +37,22 @@ const Home = () => {
         fetchPolicy: 'cache-and-network'
     })
     const tamaguiTheme = useTheme()
-    
+
+    useFocusEffect(
+        useCallback(() => {
+            const onBackPress = () => {
+
+                return true
+            }
+
+            const subscription = BackHandler.addEventListener('hardwareBackPress', onBackPress)
+
+            return () => {
+                subscription.remove()
+            }
+        }, [])
+    )
+
 
     const profileQuery = useQuery(GET_MY_PROFILE, {
         variables: {
@@ -69,8 +83,8 @@ const Home = () => {
 
     const handleFetchMore = async () => {
         try {
-            const totalPublications = data?.publications?.length ?? 0
-            const nextPage = Math.floor(totalPublications / 20) + 1
+            const totalPublications = data?.publications?.length ?? 0 
+            const nextPage = (Math.floor(totalPublications / 20) - 1) + 1
             console.log("Next page", nextPage)
             const results = await fetchMore({
                 variables: {
@@ -78,9 +92,6 @@ const Home = () => {
                     size: 20
                 }
             })
-
-
-            setCurrentPage((prev) => nextPage)
         }
         catch (e) {
             console.log("Error fetching more", e)
@@ -96,7 +107,6 @@ const Home = () => {
                     size: 20
                 }
             })
-            setCurrentPage(0)
         }
         catch (e) {
             console.log("Error fetching more", e)
@@ -122,7 +132,7 @@ const Home = () => {
                 flexDirection: 'row',
                 alignItems: 'center',
                 justifyContent: 'space-between',
-                height: 50,
+                height: 80,
                 backgroundColor: tamaguiTheme.background.val,
                 transform: [{ translateY }],
                 position: 'absolute',

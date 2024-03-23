@@ -6,7 +6,7 @@ import { FlatList, TouchableOpacity } from 'react-native'
 
 interface Props {
     search: string
-    onSelect: (username: string) => void
+    onSelect: (username: string, address: string) => void
 }
 const UserMentionsSearch = (props: Props) => {
     const currentMention = useDeferredValue(props.search?.replace("@", '') ?? "")
@@ -20,13 +20,13 @@ const UserMentionsSearch = (props: Props) => {
         skip: currentMention?.length < 1
     })
 
-    const handleSelect = (username: string) => {
-        props?.onSelect?.(username)
+    const handleSelect = (username: string, address: string) => {
+        props?.onSelect?.(username, address)
     }
 
     const renderItem = useCallback(({ item }: any) => {
         return (
-            <TouchableOpacity onPress={() => handleSelect(item?.username?.username)} >
+            <TouchableOpacity onPress={() => handleSelect(item?.username?.username, item?.address)} >
                 <XStack w="100%" columnGap={10} p={20} >
                     <Avatar circular size={"$3"} >
                         <Avatar.Image src={item?.profile?.pfp ?? ''} />

@@ -340,6 +340,44 @@ export const GET_FOLLOW_ACCOUNT = gql(/* GraphQL */`
     }
 `)
 
+export const GET_ACCOUNT_FOLLOWERS = gql(/* GraphQL */`
+    query Followers($accountAddress: String!, $page: Int!, $size: Int!) {
+        followers(
+            accountAddress: $accountAddress
+            pagination: { page: $page, size: $size }
+        ) {
+            address
+            profile {
+                pfp
+                bio
+                display_name
+            }
+            username {
+                username
+            }
+        }
+    }
+`)
+
+export const GET_ACCOUNT_FOLLOWING = gql(/* GraphQL */`
+    query Following($accountAddress: String!, $page: Int!, $size: Int!) {
+        following(
+            accountAddress: $accountAddress
+            pagination: { page: $page, size: $size }
+        ) {
+            address
+            profile {
+                pfp
+                bio
+                display_name
+            }
+            username {
+                username
+            }
+        }
+    }
+`)
+
 
 export const COMMUNITY_MEMBERS_SEARCH = gql(/* GraphQL */`
     query Memberships($communityName: String!, $search: String) {
