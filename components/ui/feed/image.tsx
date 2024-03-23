@@ -1,8 +1,9 @@
-import { View, Text, Image } from 'tamagui'
+import { View, Text, Image, Spinner } from 'tamagui'
 import React, { memo, useEffect } from 'react'
 import { TouchableOpacity } from 'react-native'
 import { Cross, X } from '@tamagui/lucide-icons'
 import { head, isUndefined } from 'lodash'
+import { useQuery } from 'react-query'
 
 interface FeedImageProps {
     editable?: boolean
@@ -24,20 +25,38 @@ const getSize = async (image: string) => {
 }
 const FeedImage = (props: FeedImageProps) => {
     const { image, editable = false, id, onRemove } = props
-    const [aspectRatio, setAspectRatio] = React.useState(16 / 9)
+    const { data: aspectRatio, isLoading } = useQuery({
+        queryKey: ['aspectRatio:feed', image],
+        queryFn: async () => {
+            try {
+                const { width, height } = await getSize(image)
+                console.log(width, height)
+                return width / height
+            }
+            catch (e) {
+                console.log(e)
+                return 16 / 9
+            }
+        },
+        initialData: 16 / 9
+    })
 
+    if (isLoading) {
+        return (
+            <View
+                position='relative'
+                flex={1}
+                aspectRatio={16 / 9}
+                width={"100%"}
+                height={"100%"}
+                borderRadius={5}
+                overflow='hidden'
+            >
+                <Spinner />
+            </View>
+        )
+    }
 
-    useEffect(() => {
-        if (image) {
-            getSize?.(image).then((size) => {
-                // console.log('size', size) 
-                const aspectRatio = size.width / size.height
-                setAspectRatio(aspectRatio)
-            }).catch((error) => {
-                // console.log('error', error)
-            })
-        }
-    }, [image])
     return (
         <View
             position='relative'
