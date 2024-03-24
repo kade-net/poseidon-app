@@ -395,3 +395,100 @@ export const COMMUNITY_MEMBERS_SEARCH = gql(/* GraphQL */`
         }
     }
 `)
+
+
+export const POST_COMMUNITY_SEARCH = gql(/* GraphQL */`
+    query CommunitiesSearch($search: String!, $memberAddress: String!) {
+        communitiesSearch(search: $search, memberAddress: $memberAddress) {
+            id
+            name
+            description
+            image
+            timestamp
+            display_name
+        }
+    }
+`)
+
+export const MENTION_USER_SEARCH = gql(/* GraphQL */`
+query AccountsSearch($search: String!, $userAddress: String!) {
+    accountsSearch(search: $search, userAddress: $userAddress) {
+        address
+        id
+        profile {
+            pfp
+            bio
+            display_name
+        }
+        username {
+            username
+        }
+    }
+}
+`)
+
+
+export const USER_NOTIFICATIONS = gql(/* GraphQL */`
+    query UserNotifications($accountAddress: String!, $page: Int!, $size: Int!) {
+        userNotifications(
+            accountAddress: $accountAddress,
+            pagination: { page: $page, size: $size }
+        ) {
+            referenceUserId
+            type
+            timestamp
+            referenceDataId
+            referenceUser {
+                address
+                username {
+                    username
+                }
+                profile {
+                    pfp
+                    display_name
+                }
+            }
+            follow {
+                follower {
+                    address
+                    profile {
+                        pfp
+                        display_name
+                    }
+                }
+            }
+            publication {
+                content
+                type
+                creator {
+                    profile {
+                        pfp
+                        display_name
+                    }
+                }
+                publication_ref
+                parent {
+                    content
+                    type
+                }
+            }
+            reaction {
+                publication_id
+                reaction
+                publication {
+                    content
+                }
+                creator {
+                    profile {
+                        display_name
+                        pfp
+
+                    },
+                    username {
+                        username
+                    }   
+                }
+            }
+        }
+    }
+`)

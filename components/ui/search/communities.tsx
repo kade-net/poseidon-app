@@ -1,7 +1,7 @@
 import { View, Text, YStack, XStack, Avatar } from 'tamagui'
 import React, { useDeferredValue, useEffect } from 'react'
 import { useQuery } from '@apollo/client'
-import { SEARCH_COMMUNITIES } from '../../../utils/queries'
+import { POST_COMMUNITY_SEARCH, SEARCH_COMMUNITIES } from '../../../utils/queries'
 import { FlatList, TouchableOpacity } from 'react-native'
 import { Controller, useForm } from 'react-hook-form'
 import { z } from 'zod'
@@ -26,13 +26,11 @@ const Communities = (props: Props) => {
     const insets = useSafeAreaInsets()
     const { search, onSelect } = props
     const searchDeffered = useDeferredValue(search)
-    console.log('Delegate manager::', delegateManager.owner)
-    const communityQuery = useQuery(SEARCH_COMMUNITIES, {
+
+    const communityQuery = useQuery(POST_COMMUNITY_SEARCH, {
         variables: {
             search: searchDeffered,
-            page: 0,
-            size: 20,
-            member: delegateManager.owner
+            memberAddress: delegateManager.owner!
         },
         onCompleted: console.log
     })
@@ -46,7 +44,7 @@ const Communities = (props: Props) => {
 
     useEffect(() => {
         if (chosenCommunity) {
-            const community = communityQuery?.data?.communities?.find((community) => community.name == chosenCommunity) ?? {
+            const community = communityQuery?.data?.communitiesSearch?.find((community) => community.name == chosenCommunity) ?? {
                 __typename: "Community",
                 id: 0,
                 name: "home",
@@ -74,7 +72,7 @@ const Communities = (props: Props) => {
                                 description: "",
                                 image: "",
                                 display_name: "Home"
-                            }, ...(communityQuery?.data?.communities ?? [])]}
+                            }, ...(communityQuery?.data?.communitiesSearch ?? [])]}
                             keyExtractor={(item) => item?.id?.toString()}
                             contentContainerStyle={{
                                 rowGap: 10,

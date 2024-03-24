@@ -111,7 +111,7 @@ const Profile = () => {
                     <Heading size={"$md"} color={"$text"} >
                         Create Profile
                     </Heading>
-                    <UnstyledButton label='Skip' icon={<ChevronRight/>} after={true} callback={handleProfileSkip}/>
+                    {/* <UnstyledButton label='Skip' icon={<ChevronRight/>} after={true} callback={handleProfileSkip}/> */}
                 </View>
                 <Controller
                     control={form.control}

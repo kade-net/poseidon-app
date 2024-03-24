@@ -16,6 +16,12 @@ const CommunitiesSearch = (props: Props) => {
             search,
             page: 0,
             size: 20
+        },
+        onError: (error) => {
+            console.error(error)
+        },
+        onCompleted: (data) => {
+            console.log(`Data::`, data)
         }
     })
 
@@ -46,7 +52,7 @@ const CommunitiesSearch = (props: Props) => {
     }
 
     return (
-        <YStack>
+        <YStack  >
             <FlatList
                 data={communitiesQuery?.data?.communities ?? []}
                 keyExtractor={(item) => item.name}

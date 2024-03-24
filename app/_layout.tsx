@@ -2,7 +2,7 @@ import '../global'
 import 'react-native-get-random-values'
 import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native'
 import { SplashScreen, Stack } from 'expo-router'
-import { useColorScheme } from 'react-native'
+import { Platform, useColorScheme } from 'react-native'
 import { TamaguiProvider } from 'tamagui'
 import '../tamagui-web.css'
 import { config } from '../tamagui.config'
@@ -13,6 +13,7 @@ import { ApolloProvider } from '@apollo/client'
 import client from '../data/apollo'
 import { QueryClient, QueryClientProvider } from 'react-query'
 import selfModeration from '../lib/self-moderation'
+import * as Navigator from 'expo-navigation-bar'
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -65,6 +66,12 @@ export default function RootLayout() {
 
 function RootLayoutNav() {
   const colorScheme = useColorScheme()
+
+  useEffect(() => {
+    if (Platform.OS === 'android') {
+      Navigator.setBackgroundColorAsync(colorScheme === 'dark' ? 'rgb(12,18,34)' : 'rgb(250,250,250)')
+    }
+  }, [colorScheme])
 
   return (
     <ApolloProvider client={client}>

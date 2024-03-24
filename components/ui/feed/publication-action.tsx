@@ -63,7 +63,7 @@ const PublicationActions = (props: Props) => {
                 snapPoints={[20]}
                 showOverlay={true}
             >
-                {IS_MY_PUBLICATION && <YStack w="100%" p={20} rowGap={20} >
+                {IS_MY_PUBLICATION && <YStack flex={1} backgroundColor={'$background'} w="100%" p={20} rowGap={20} >
                     <Button
                         variant='outlined'
                         icon={deleting ? <Spinner /> : <Trash2 />}
@@ -74,7 +74,7 @@ const PublicationActions = (props: Props) => {
                         }
                     </Button>
                 </YStack>}
-                {!IS_MY_PUBLICATION && <YStack w="100%" py={Utils.dynamicHeight(3)} rowGap={10} alignItems='flex-start'>
+                {!IS_MY_PUBLICATION && <YStack backgroundColor={'$background'} flex={1} p={20} w="100%" rowGap={10} alignItems='flex-start'>
                     <Button
                         variant='outlined'
                         icon={<Trash2 />}

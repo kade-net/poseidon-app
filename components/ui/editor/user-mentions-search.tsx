@@ -1,8 +1,9 @@
 import { View, Text, YStack, XStack, Avatar, Spinner, Separator } from 'tamagui'
 import React, { useCallback, useDeferredValue } from 'react'
-import { ACCOUNTS_SEARCH_QUERY } from '../../../utils/queries'
+import { ACCOUNTS_SEARCH_QUERY, MENTION_USER_SEARCH } from '../../../utils/queries'
 import { useQuery } from '@apollo/client'
 import { FlatList, TouchableOpacity } from 'react-native'
+import delegateManager from '../../../lib/delegate-manager'
 
 interface Props {
     search: string
@@ -11,11 +12,10 @@ interface Props {
 const UserMentionsSearch = (props: Props) => {
     const currentMention = useDeferredValue(props.search?.replace("@", '') ?? "")
 
-    const mentionsQuery = useQuery(ACCOUNTS_SEARCH_QUERY, {
+    const mentionsQuery = useQuery(MENTION_USER_SEARCH, {
         variables: {
             search: currentMention,
-            page: 0,
-            size: 5
+            userAddress: delegateManager.owner!
         },
         skip: currentMention?.length < 1
     })
@@ -45,7 +45,7 @@ const UserMentionsSearch = (props: Props) => {
     return (
         <YStack w="100%" >
             <FlatList
-                data={mentionsQuery?.data?.accounts}
+                data={mentionsQuery?.data?.accountsSearch ?? []}
                 keyExtractor={(item) => item?.address}
                 refreshing={mentionsQuery?.loading}
 

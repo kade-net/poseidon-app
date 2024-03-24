@@ -3,8 +3,8 @@ import 'react-native-get-random-values'
 import { Account, Community, Publication, PublicationViewerStats } from "../../__generated__/graphql";
 import storage from "../storage";
 import { TPROFILE, TPUBLICATION, UpdateCommunitySchema } from '../../schema';
-import client from '../../data/apollo';
-import { GET_PUBLICATIONS, GET_MY_PROFILE, GET_PUBLICATION, GET_PUBLICATION_COMMENTS, GET_PUBLICATION_INTERACTIONS_BY_VIEWER, GET_PUBLICATION_STATS, COMMUNITY_QUERY, GET_ACCOUNT_VIEWER_STATS, ACCOUNTS_SEARCH_QUERY, GET_FOLLOW_ACCOUNT, GET_MEMBERSHIP, SEARCH_COMMUNITIES, GET_COMMUNITY_PUBLICATIONS } from '../../utils/queries';
+import client, { barnicleClient } from '../../data/apollo';
+import { GET_PUBLICATIONS, GET_MY_PROFILE, GET_PUBLICATION, GET_PUBLICATION_COMMENTS, GET_PUBLICATION_INTERACTIONS_BY_VIEWER, GET_PUBLICATION_STATS, COMMUNITY_QUERY, GET_ACCOUNT_VIEWER_STATS, ACCOUNTS_SEARCH_QUERY, GET_FOLLOW_ACCOUNT, GET_MEMBERSHIP, SEARCH_COMMUNITIES, GET_COMMUNITY_PUBLICATIONS, POST_COMMUNITY_SEARCH } from '../../utils/queries';
 import delegateManager from '../delegate-manager';
 import usernames from '../../contract/modules/usernames';
 import { getMutedUsers, getRemovedFromFeed } from '../../contract/modules/store-getters';
@@ -1071,11 +1071,44 @@ class LocalStore {
                 ]
             }
         })
+
+        const post_community_search = client.readQuery({
+            query: POST_COMMUNITY_SEARCH,
+            variables: {
+                search: '',
+                memberAddress: delegateManager.owner!
+            }
+        })
+
+
+
+        client.writeQuery({
+            query: POST_COMMUNITY_SEARCH,
+            variables: {
+                search: '',
+                memberAddress: delegateManager.owner!
+            },
+            data: {
+                communitiesSearch: [
+                    {
+                        __typename: "Community",
+                        description,
+                        id: timestamp,
+                        image,
+                        name,
+                        timestamp,
+                        display_name: name
+                    },
+                    ...(post_community_search?.communitiesSearch ?? [])
+                ]
+            }
+        })
     }
 
     // !!! IMPORTANT !!! - this is for dev purpouses only and should never be used in production
     async nuke() {
         await client.resetStore()
+        await barnicleClient.resetStore()
     }
 }
 

@@ -5,6 +5,7 @@ import { H5, H4, Separator, XStack, useTheme } from 'tamagui'
 import { ArrowLeft } from '@tamagui/lucide-icons'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { Utils } from '../../utils'
+import TopBarWithBack from '../../components/ui/navigation/top-bar-with-back'
 
 const _layout = () => {
     const tamaguiTheme = useTheme()
@@ -78,12 +79,10 @@ const _layout = () => {
                     options={{
                         header(props) {
                             return (
-                                <TouchableOpacity onPress={handleBack} >
-                                    <XStack w="100%" alignItems='center' p={20} columnGap={20} >
-                                        <ArrowLeft />
-                                        <H5 fontFamily={'$body'} textTransform='none' >Notifications</H5>
-                                    </XStack>
-                                </TouchableOpacity>
+                                <TopBarWithBack
+                                    title={'Notifications'}
+                                    navigation={props.navigation}
+                                />
                             )
                         }
                     }}

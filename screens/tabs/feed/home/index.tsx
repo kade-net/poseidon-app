@@ -1,4 +1,4 @@
-import { View, Text, Avatar, Heading, ButtonIcon, useTheme, Separator, Sheet, Button, TextArea, ScrollView, Spinner } from 'tamagui'
+import { View, Text, Avatar, Heading, ButtonIcon, useTheme, Separator, Sheet, Button, TextArea, ScrollView, Spinner, XStack } from 'tamagui'
 import React, { useCallback, useMemo, useState } from 'react'
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context'
 import { ImagePlus, MessageCirclePlus, Settings } from '@tamagui/lucide-icons'
@@ -26,7 +26,7 @@ import { isEmpty } from 'lodash'
 import { getMutedUsers, getRemovedFromFeed } from '../../../../contract/modules/store-getters'
 
 const Home = () => {
-    const { data, fetchMore, loading } = useQuery(GET_PUBLICATIONS, {
+    const publicationsQuery = useQuery(GET_PUBLICATIONS, {
         variables: {
             page: 0,
             size: 20,
@@ -36,6 +36,8 @@ const Home = () => {
         },
         fetchPolicy: 'cache-and-network'
     })
+    const { data, fetchMore, loading } = publicationsQuery
+
     const tamaguiTheme = useTheme()
 
     useFocusEffect(
@@ -214,14 +216,23 @@ const Home = () => {
                     initialNumToRender={20}
                     keyExtractor={(item) => item.id?.toString()}
                     renderItem={renderPublication}
+                    ListHeaderComponent={() => {
+                        if (publicationsQuery.loading) return null
+                        return <XStack w="100%" p={10} alignItems='center' justifyContent='center' >
+                            <Text>
+                                Pull down to refresh
+                            </Text>
+                        </XStack>
+                    }}
                     ListFooterComponent={() => {
-                        return <View w="100%" flexDirection='row' alignItems='center' justifyContent='center' columnGap={10} >
-                            {loading && <>
+                        if (!publicationsQuery.loading) return null
+                        return <View w="100%" flexDirection='row' alignItems='center' p={20} justifyContent='center' columnGap={10} >
+
+                            <Spinner />
                                 <Text color="$gray9" >
                                     Loading...
                                 </Text>
-                                <Spinner />
-                            </>}
+
                         </View>
                     }}
 
