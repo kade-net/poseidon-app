@@ -45,6 +45,7 @@ const UserMentionsSearch = (props: Props) => {
     return (
         <YStack w="100%" >
             <FlatList
+                scrollEnabled={false}
                 data={mentionsQuery?.data?.accountsSearch ?? []}
                 keyExtractor={(item) => item?.address}
                 refreshing={mentionsQuery?.loading}

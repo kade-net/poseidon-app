@@ -277,6 +277,17 @@ const PublicationEditor = (props: Props) => {
                         >
                             <HighlightMentions form={form} />
                         </TextArea>
+                        {
+                            userMentionsOpen &&
+                            <KeyboardAvoidingView
+
+                            >
+                                <UserMentionsSearch
+                                    search={currentMention}
+                                    onSelect={handleAddMention}
+                                />
+                            </KeyboardAvoidingView>
+                        }
                         <View w="100%" height={'100%'} flexDirection='row' flexWrap='wrap' px={20} rowGap={5} columnGap={5} >
                             {
                                 images.map((image, index) => {
@@ -358,13 +369,7 @@ const PublicationEditor = (props: Props) => {
                 </YStack>
             </KeyboardAvoidingView>
 
-            {
-                userMentionsOpen &&
-                <UserMentionsSearch
-                    search={currentMention}
-                    onSelect={handleAddMention}
-                />
-            }
+
         </View>
 
     )
