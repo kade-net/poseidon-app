@@ -8,12 +8,13 @@ import { User } from '@tamagui/lucide-icons'
 import { Text } from 'tamagui'
 import account from '../../../contract/modules/account'
 import { Utils } from '../../../utils'
-import { BackHandler } from 'react-native'
+import { BackHandler, useColorScheme } from 'react-native'
 
 
 const WelcomeScreen = () => {
     const insets = useSafeAreaInsets()
     const router = useRouter()
+    const colorSchem = useColorScheme()
 
     // back handler
     useFocusEffect(
@@ -46,9 +47,9 @@ const WelcomeScreen = () => {
                     w={80}
                 >
                     <Image
-                        source={require('../../../assets/images/adaptive-icon.png')}
-                        width={80}
-                        height={80}
+                        source={colorSchem == 'dark' ? require('../../../assets/brand/logomark/PNG/Kade Logotype_white.png') : require('../../../assets/brand/logomark/PNG/Kade Logotype_black.png')}
+                        width={100}
+                        height={100}
                     />
                 </View>
             </View>

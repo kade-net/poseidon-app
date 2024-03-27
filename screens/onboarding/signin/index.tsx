@@ -10,7 +10,7 @@ const SignIn = () => {
     const insets = useSafeAreaInsets()
     const router = useRouter()
     const goBack = () => {
-        router.back()
+        router.replace('/')
     }
 
     const goToSeedPhrase = () => {
