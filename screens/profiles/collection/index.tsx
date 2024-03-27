@@ -11,6 +11,7 @@ import { GET_COLLECTION_DETAILS } from '../../../support-gql-clients/queries/bar
 import { barnicleClient } from '../../../data/apollo'
 import delegateManager from '../../../lib/delegate-manager'
 import { GET_MY_PROFILE } from '../../../utils/queries'
+import { Utils } from '../../../utils'
 
 
 
@@ -48,6 +49,7 @@ const Collection = () => {
         <YStack
             flex={1}
             backgroundColor={'$background'}
+            px={Utils.dynamicWidth(3)}
         >
 
             <CollectionImage image={collection.data?.first_uri!} name={collection?.data?.collection_name ?? 'Untitled'} />
@@ -59,13 +61,13 @@ const Collection = () => {
                             tokenQuery?.data?.at(0)?.current_token_data?.token_name ?? 'Untitled'
                         }
                     </H3>
-                    {collectionDetailsQuery?.data && <Text>
+                    {collectionDetailsQuery?.data && <Text fontSize={"$sm"}>
                         {collectionDetailsQuery?.data?.collection?.description ?? 'No description'}
                     </Text>}
-                    {collectionDetailsQuery?.data && <Text>
+                    {collectionDetailsQuery?.data && <Text fontSize={"$sm"}>
                         Owned by {
                             address == delegateManager.owner ? 'you' : profileQuery?.data?.account?.profile?.display_name ?? 'this user'
-                        } and <Text color={'palegreen'} >
+                        } and <Text color={"$COAText"} >
                             {(collectionDetailsQuery?.data?.collection?.kade_collectors_count ?? 1) - 1} others on the network
                         </Text>
                     </Text>}
@@ -81,7 +83,7 @@ const Collection = () => {
                         }
                     }}
                 >
-                    <Button iconAfter={<ArrowRight />} >
+                    <Button iconAfter={<ArrowRight />} backgroundColor={"$button"} color={"$buttonText"} fontSize={"$sm"}>
                         View Other Owners
                     </Button>
                 </Link>

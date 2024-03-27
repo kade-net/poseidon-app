@@ -25,18 +25,14 @@ const getSize = async (image: string) => {
 }
 const FeedImage = (props: FeedImageProps) => {
     const { image, editable = false, id, onRemove } = props
-    const { data: aspectRatio, isLoading } = useQuery({
+    const { data: aspectRatio, isLoading, error } = useQuery({
         queryKey: ['aspectRatio:feed', image],
         queryFn: async () => {
-            try {
+
                 const { width, height } = await getSize(image)
                 console.log(width, height)
                 return width / height
-            }
-            catch (e) {
-                console.log(e)
-                return 16 / 9
-            }
+
         },
         initialData: 16 / 9
     })
@@ -56,6 +52,8 @@ const FeedImage = (props: FeedImageProps) => {
             </View>
         )
     }
+
+    if (error) return null
 
     return (
         <View

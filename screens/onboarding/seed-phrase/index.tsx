@@ -13,6 +13,7 @@ import { Utils } from '../../../utils'
 import client from '../../../data/apollo'
 import { GET_MY_PROFILE } from '../../../utils/queries'
 import UnstyledButton from '../../../components/ui/buttons/unstyled-button'
+import Toast from 'react-native-toast-message'
 
 // The seed phrase will be a list of 12 words each separated by a space
 const schema = z.object({
@@ -109,12 +110,22 @@ const SeedPhrase = () => {
 
             }
             catch (e) {
+                Toast.show({
+                    type: 'error',
+                    text1: 'Unable to get username',
+                    text2: 'Failed to get username'
+                })
                 setLoading(false)
                 console.log(`SOMETHING WENT WRONG:: ${e}`)
             }
         }
         catch (e) {
             console.log(`SOMETHING WENT WRONG:: ${e}`)
+            Toast.show({
+                type: 'error',
+                text1: 'Error',
+                text2: 'Failed to verify seed phrase'
+            })
         }
         finally {
             setLoading(false)

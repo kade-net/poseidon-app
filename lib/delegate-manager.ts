@@ -200,11 +200,11 @@ class DelegateManager {
         return this.private_key
     }
 
-    async init() {
+    async init(reset?: boolean) {
 
         let pk = await SecureStore.getItemAsync('private_key')
 
-        if (!pk) {
+        if (!pk || reset) {
             const private_key = await this.createDelegate()
             await SecureStore.setItemAsync('private_key', private_key)
 
@@ -218,7 +218,7 @@ class DelegateManager {
         })
         this.private_key = pk
 
-        if (!this.owner) {
+        if (!this.owner || reset) {
             this.setOwner(this.account?.address()?.toString())
         }
 
@@ -330,6 +330,7 @@ class DelegateManager {
         await SecureStore.deleteItemAsync('deligate')
         await SecureStore.deleteItemAsync('account')
         await SecureStore.deleteItemAsync('profile')
+        await this.init(true)
 
         this._owner = null
         this.private_key = null

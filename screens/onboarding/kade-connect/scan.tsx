@@ -10,6 +10,8 @@ import { ChevronLeft } from '@tamagui/lucide-icons'
 import account from '../../../contract/modules/account'
 import { Utils } from '../../../utils'
 import UnstyledButton from '../../../components/ui/buttons/unstyled-button'
+import client from '../../../data/apollo'
+import { GET_MY_PROFILE } from '../../../utils/queries'
 
 const Scan = () => {
     const insets = useSafeAreaInsets()
@@ -52,6 +54,12 @@ const Scan = () => {
             if (account.isAccountRegistered) {
 
                 if (account.isProfileRegistered) {
+                    const profileData = await client.query({
+                        query: GET_MY_PROFILE,
+                        variables: {
+                            address: delegateManager.owner!
+                        }
+                    })
                     goToFeed()
                     return
                 }
@@ -61,6 +69,12 @@ const Scan = () => {
             account.markAsRegistered()
 
             if (account.isProfileRegistered) {
+                const profileData = await client.query({
+                    query: GET_MY_PROFILE,
+                    variables: {
+                        address: delegateManager.owner!
+                    }
+                })
                 goToFeed()
                 return
             }

@@ -860,12 +860,15 @@ class LocalStore {
             }
         })
 
-        const prevCommunityQuery = client.readQuery({
+        const query = await client.query({
             query: COMMUNITY_QUERY,
             variables: {
                 name: communityName
             }
         })
+
+        const prevCommunityQuery = query.data
+
 
         if (prevCommunityQuery?.community) {
             client.writeQuery({
@@ -886,6 +889,39 @@ class LocalStore {
                 }
             })
         }
+
+        const prevPostCommunitySearches = client.readQuery({
+            query: POST_COMMUNITY_SEARCH,
+            variables: {
+                memberAddress: delegateManager.owner!,
+                search: ''
+            }
+        })
+
+        client.writeQuery({
+            query: POST_COMMUNITY_SEARCH,
+            variables: {
+                memberAddress: delegateManager.owner!,
+                search: ''
+            },
+            data: {
+                __typename: "Query",
+                communitiesSearch: [
+                    ...(
+                        prevPostCommunitySearches?.communitiesSearch ?? []
+                    ),
+                    {
+                        description: prevCommunityQuery?.community?.description ?? "",
+                        id: Date.now(),
+                        image: prevCommunityQuery?.community?.image ?? "",
+                        name: prevCommunityQuery?.community?.name ?? "",
+                        timestamp: Date.now(),
+                        display_name: prevCommunityQuery?.community?.display_name ?? "",
+                        __typename: "Community"
+                    }
+                ]
+            }
+        })
     }
 
 
@@ -927,6 +963,31 @@ class LocalStore {
                 }
             })
         }
+
+        const prevPostCommunitySearches = client.readQuery({
+            query: POST_COMMUNITY_SEARCH,
+            variables: {
+                memberAddress: delegateManager.owner!,
+                search: ''
+            }
+        })
+
+        client.writeQuery({
+            query: POST_COMMUNITY_SEARCH,
+            variables: {
+                memberAddress: delegateManager.owner!,
+                search: ''
+            },
+            data: {
+                __typename: "Query",
+                communitiesSearch: [
+                    ...(
+                        prevPostCommunitySearches?.communitiesSearch ?? []
+                    ).filter((c) => c.name !== communityName)
+                ]
+            }
+        })
+
     }
 
     async updateCommunity(data: UpdateCommunitySchema) {
@@ -1107,8 +1168,8 @@ class LocalStore {
 
     // !!! IMPORTANT !!! - this is for dev purpouses only and should never be used in production
     async nuke() {
-        await client.resetStore()
-        await barnicleClient.resetStore()
+        await client.clearStore()
+        await barnicleClient.clearStore()
     }
 }
 

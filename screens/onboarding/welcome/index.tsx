@@ -54,11 +54,11 @@ const WelcomeScreen = () => {
             </View>
 
             <View w="100%" rowGap={20}  >
-                <Button icon={<User />} w="100%" variant='outlined' onPress={goToSignIn}  >
-                    <SizableText>Sign In</SizableText>
+                <Button icon={<User size={20}/>} w="100%" variant='outlined' onPress={goToSignIn}  >
+                    <SizableText fontSize={"$sm"}>Sign In</SizableText>
                 </Button>
                 <Button w="100%" onPress={goToCreateAccount} backgroundColor={"$button"} marginBottom={Utils.dynamicHeight(5)}>
-                    <SizableText color={"$buttonText"} >Create Account</SizableText>
+                    <SizableText fontSize={"$sm"} color={"$buttonText"} >Create Account</SizableText>
                 </Button>
 
             </View>

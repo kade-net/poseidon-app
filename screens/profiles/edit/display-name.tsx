@@ -10,6 +10,7 @@ import { values } from 'lodash'
 import account from '../../../contract/modules/account'
 import { Button, Input, Spinner, TextArea, XStack, YStack, Text } from 'tamagui'
 import { useRouter } from 'expo-router'
+import Toast from 'react-native-toast-message'
 
 const DisplayName = () => {
     const [saving, setSaving] = React.useState(false)
@@ -29,6 +30,12 @@ const DisplayName = () => {
     })
 
     const handleSubmit = async (values: TPROFILE) => {
+
+        if (values.display_name === profile?.data?.account?.profile?.display_name) {
+            router.back()
+            return
+        }
+
         setSaving(true)
 
         try {
@@ -43,23 +50,36 @@ const DisplayName = () => {
         }
     }
 
+    const handleError = async () => {
+        Toast.show({
+            type: 'error',
+            text1: 'Error',
+            text2: 'Your display name cannot be empty.'
+        })
+    }
+
 
     return (
         <YStack flex={1} w="100%" h="100%" p={20} justifyContent='space-between'  backgroundColor={"$background"}>
             <Controller
                 control={form.control}
                 name='display_name'
-                render={({ field }) => {
+                render={({ field, formState, fieldState }) => {
                     return (
-                        <Input
-                            backgroundColor={"$colorTransparent"}
-                            onChangeText={field.onChange}
-                            value={field.value}
-                            placeholder='Display name'
-                        />
+                        <YStack>
+                            <Input
+                                backgroundColor={"$colorTransparent"}
+                                onChangeText={field.onChange}
+                                value={field.value}
+                                placeholder='Display name'
+                            />
+                            {
+                                fieldState.invalid && <Text color={"red"} fontSize={'$xxs'} >Display name cannot be empty.</Text>
+                            }
+                        </YStack>
                     )
                 }} />
-            <Button disabled={saving} onPress={form.handleSubmit(handleSubmit)} w="100%" backgroundColor={"$button"} color={"$buttonText"}>
+            <Button disabled={saving} onPress={form.handleSubmit(handleSubmit, handleError)} w="100%" backgroundColor={"$button"} color={"$buttonText"}>
                 {
                     saving ? <XStack columnGap={10} >
                         <Spinner />

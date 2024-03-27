@@ -17,7 +17,7 @@ interface COMMUNITY {
 interface Props {
     community?: COMMUNITY
 }
-const CommunityCard = (props: Props) => {
+const CommunityChoiceCard = (props: Props) => {
     const { community } = props
 
     const membershipQuery = useQuery(GET_MEMBERSHIP, {
@@ -46,12 +46,7 @@ const CommunityCard = (props: Props) => {
     return (
         <YStack w="100%" >
             <XStack columnGap={5} w="100%" p={10} paddingHorizontal={Utils.dynamicWidth(2)}>
-                <Link asChild href={{
-                    pathname: '/(tabs)/feed/communities/[name]/',
-                    params: {
-                        name: community?.name!
-                    }
-                }} >
+                <View >
 
                     <Avatar circular size={"$3"} mr={5}>
                         <Avatar.Image
@@ -62,18 +57,13 @@ const CommunityCard = (props: Props) => {
                             backgroundColor="$pink10"
                         />
                     </Avatar>
-                </Link>
+                </View>
                 <YStack
                     flex={1}
                     rowGap={5}
                 >
                     <XStack w="100%" justifyContent='space-between' >
-                        <Link asChild href={{
-                            pathname: '/(tabs)/feed/communities/[name]/',
-                            params: {
-                                name: community?.name!
-                            }
-                        }} >
+                        <View >
                             <YStack>
                                 <Text color={"$text"} fontWeight={"$5"} fontSize={"$sm"}>
                                     {community?.name}
@@ -82,14 +72,9 @@ const CommunityCard = (props: Props) => {
                                     /{community?.name}
                                 </Text>
                             </YStack>
-                        </Link>
-                        {membershipQuery?.data?.membership?.type !== 0 && <Button backgroundColor={ membershipQuery?.data?.membership ? "$colourlessButton":"$button"} borderWidth={ membershipQuery?.data?.membership ? 1 : 0} borderColor={"$button"} color={membershipQuery?.data?.membership ?  "$text" : "$buttonText"} onPress={handleToggleFollow} size='$3' >
-                            {
-                                membershipQuery?.data?.membership ? "Following" : "Follow"
-                            }
-                        </Button>}
+                        </View>
                     </XStack>
-                    <Text pb={10} fontSize={"$sm"}>
+                    <Text pb={5} fontSize={"$sm"}>
                         {community?.description}
                     </Text>
                 </YStack>
@@ -99,4 +84,4 @@ const CommunityCard = (props: Props) => {
     )
 }
 
-export default CommunityCard
+export default CommunityChoiceCard

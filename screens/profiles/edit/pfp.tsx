@@ -117,18 +117,26 @@ const Pfp = () => {
                                         uploading && <Spinner />
                                     }
                                 </TouchableOpacity>}
-                                {value && <TouchableOpacity onPress={addImage} >
-                                    <Avatar
-                                        size={"$10"}
-                                        circular
-                                    >
-                                        <Avatar.Image source={{ uri: value }} />
-                                        <Avatar.Fallback
-                                            bg="lightgray"
+                                <XStack alignItems='flex-end' >
+                                    {value && <TouchableOpacity onPress={addImage} >
+                                        <Avatar
+                                            size={"$10"}
+                                            circular
+                                        >
+                                            <Avatar.Image source={{ uri: value }} />
+                                            <Avatar.Fallback
+                                                bg="lightgray"
 
-                                        />
-                                    </Avatar>
-                                </TouchableOpacity>}
+                                            />
+                                        </Avatar>
+                                    </TouchableOpacity>}
+                                    <TouchableOpacity onPress={addImage} >
+                                        <XStack borderRadius={20} padding={2} borderWidth={1} borderColor={'$borderColor'}  >
+                                            <Plus size='$1' color={'$borderColor'} />
+                                        </XStack>
+                                    </TouchableOpacity>
+
+                                </XStack>
 
 
                             </View>

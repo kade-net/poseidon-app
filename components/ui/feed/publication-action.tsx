@@ -60,7 +60,7 @@ const PublicationActions = (props: Props) => {
             {isOpen && <BaseContentSheet
                 open={isOpen}
                 onOpenChange={onClose}
-                snapPoints={[20]}
+                snapPoints={[30]}
                 showOverlay={true}
             >
                 {IS_MY_PUBLICATION && <YStack flex={1} backgroundColor={'$background'} w="100%" p={20} rowGap={20} >

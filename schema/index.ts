@@ -1,9 +1,9 @@
 import { z } from "zod";
 
 export const profileSchema = z.object({
-    pfp: z.string().default(""),
-    bio: z.string().default(""),
-    display_name: z.string().default(""),
+    pfp: z.string().min(5),
+    bio: z.string().min(1),
+    display_name: z.string().min(1),
 })
 
 export type TPROFILE = z.infer<typeof profileSchema>

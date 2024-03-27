@@ -15,7 +15,7 @@ const roboto = createFont({
       true: 17
   },
   weight: {
-      1: "300",
+    1: "300",
       2: "400",
       3: "500",
       true:"400",

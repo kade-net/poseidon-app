@@ -1,4 +1,4 @@
-import { View, Text, YStack, H2, Separator } from 'tamagui'
+import { View, Text, YStack, H2, Separator, ScrollView } from 'tamagui'
 import React from 'react'
 import { useQuery } from 'react-query'
 import { useQuery as useApolloQuery } from '@apollo/client'
@@ -7,6 +7,7 @@ import { GET_COLLECTION_COLLECTORS } from '../../../support-gql-clients/queries/
 import { FlatList } from 'react-native'
 import ProfileCard from '../../../components/ui/profile/profile-card'
 import { barnicleClient } from '../../../data/apollo'
+import { Utils } from '../../../utils'
 
 interface Props {
     collection_id: string
@@ -71,11 +72,11 @@ const CollectionOwners = (props: Props) => {
 
     return (
         <YStack backgroundColor={'$background'} w="100%" flex={1} >
-            <YStack w="100%" p={20} >
+            <YStack w="100%" px={Utils.dynamicWidth(3)} py={10}>
                 <H2 textTransform='capitalize' >
                     {collection?.data?.collection_name ?? 'Untitled'}
                 </H2>
-                <Text>
+                <Text fontSize={"$sm"}>
                     {collection?.data?.description ?? 'No description'}
                 </Text>
             </YStack>

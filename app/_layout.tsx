@@ -14,6 +14,7 @@ import client from '../data/apollo'
 import { QueryClient, QueryClientProvider } from 'react-query'
 import selfModeration from '../lib/self-moderation'
 import * as Navigator from 'expo-navigation-bar'
+import Toast from 'react-native-toast-message'
 import * as Notifications from 'expo-notifications'
 
 Notifications.setNotificationHandler({
@@ -116,6 +117,9 @@ function RootLayoutNav() {
               <Stack.Screen name="profiles" options={{ headerShown: false }} />
               <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
             </Stack>
+            <Toast
+              autoHide
+            />
           </ThemeProvider> 
         </TamaguiProvider>
       </QueryClientProvider>

@@ -122,11 +122,11 @@ const _layout = () => {
             <BaseContentSheet
                 open={isOpen}
                 onOpenChange={onToggle}
-                snapPoints={[20]}
+                snapPoints={[30]}
                 showOverlay
             >
-                <YStack w="100%" py={Utils.dynamicHeight(3)} rowGap={10} alignItems='flex-start' >
-                    {userAddress == delegateManager.owner && <Button fontSize={"$md"} fontWeight={"$2"} onPress={goToEditProfile} variant='outlined' icon={<Edit3 />} >
+                <YStack p={20} w="100%" py={Utils.dynamicHeight(3)} rowGap={10} alignItems='flex-start' >
+                    {userAddress == delegateManager.owner && <Button onPress={goToEditProfile} variant='outlined' fontSize={"$md"} fontWeight={"$2"} borderWidth={1} borderColor={"$button"} w={"100%"} icon={<Edit3 />} >
                         Edit Profile
                     </Button>}
                 </YStack>

@@ -6,6 +6,7 @@ import * as Clipboard from 'expo-clipboard'
 import delegateManager from '../../../lib/delegate-manager'
 import { useRouter } from 'expo-router'
 import { Utils } from '../../../utils'
+import Toast from 'react-native-toast-message'
 
 const CreatedSeedPhrase = () => {
     const insets = useSafeAreaInsets()
@@ -20,6 +21,11 @@ const CreatedSeedPhrase = () => {
             }
             catch (e) {
                 console.log(`SOMETHING WENT WRONG:: ${e}`)
+                Toast.show({
+                    type: 'error',
+                    text1: 'Error',
+                    text2: 'Failed to copy seed phrase'
+                })
             }
         }
     }
@@ -67,6 +73,7 @@ const CreatedSeedPhrase = () => {
                         onPress={goToNext}
                         color={"$buttonText"} backgroundColor={"$button"}
                         marginBottom={Utils.dynamicHeight(5)}
+                        fontSize={"$sm"}
                     >
                         Continue
                     </Button>

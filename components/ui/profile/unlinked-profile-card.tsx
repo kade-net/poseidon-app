@@ -5,7 +5,6 @@ import account from '../../../contract/modules/account'
 import { useQuery } from '@apollo/client'
 import { GET_FOLLOW_ACCOUNT } from '../../../utils/queries'
 import delegateManager from '../../../lib/delegate-manager'
-import { Link } from 'expo-router'
 import { Utils } from '../../../utils'
 
 
@@ -49,12 +48,6 @@ const ProfileCard = (props: Props) => {
                 paddingHorizontal={Utils.dynamicWidth(3)}
                 paddingVertical={Utils.dynamicHeight(1)}
             >
-                <Link asChild href={{
-                    pathname: '/profiles/[address]/',
-                    params: {
-                        address: data?.address!
-                    }
-                }} >
 
                     <View
                         h="100%"
@@ -70,16 +63,9 @@ const ProfileCard = (props: Props) => {
                             />
                         </Avatar>
                     </View>
-                </Link>
                 <View w="90%" rowGap={5} >
                     <View flexDirection="row" alignItems="center" justifyContent="space-between" >
                         <View flexDirection="row" alignItems="flex-start" columnGap={10}>
-                            <Link asChild href={{
-                                pathname: '/profiles/[address]/',
-                                params: {
-                                    address: data?.address!
-                                }
-                            }} >
                                 <View>
                                     <Text fontWeight={"$5"} fontSize={"$sm"}>
                                         {data?.profile?.display_name}
@@ -88,8 +74,6 @@ const ProfileCard = (props: Props) => {
                                         @{data?.username?.username}
                                     </Text>
                                 </View>
-                            </Link>
-
                         </View>
                         <View>
                             {queryData?.loading ? <Spinner /> : <Button onPress={handleFollowToggle} size={"$3"} backgroundColor={queryData?.data?.account?.viewer?.follows ? "$colourlessButton" : "$button"} borderWidth={queryData?.data?.account?.viewer?.follows ? 1 : 0} borderColor={"$button"} color={queryData?.data?.account?.viewer?.follows ? "$text" : "$buttonText"} mr={10}

@@ -17,6 +17,7 @@ import client from '../../../data/apollo'
 import { GET_MY_PROFILE } from '../../../utils/queries'
 import { Utils } from '../../../utils'
 import UnstyledButton from '../../../components/ui/buttons/unstyled-button'
+import Toast from 'react-native-toast-message'
 
 const Profile = () => {
     const [image, setImage] = useState<ImagePicker.ImagePickerAsset | null>(null)
@@ -27,7 +28,7 @@ const Profile = () => {
     const router = useRouter()
 
     const goToNext = () => {
-        router.replace('/(tabs)/feed/home')
+        router.replace('/onboard/interests/users/')
     }
 
     const form = useForm<TPROFILE>({
@@ -90,6 +91,14 @@ const Profile = () => {
         finally {
             setSubmitting(false)
         }
+    }
+
+    const handleError = async () => {
+        Toast.show({
+            text1: 'Please fill out all fields',
+            text2: 'All fields are required',
+            type: 'error',
+        })
     }
 
     const handleProfileSkip = async () => {
@@ -183,13 +192,13 @@ const Profile = () => {
                 </View>
             </View>
 
-            <Button onPress={form.handleSubmit(handleSubmit)} backgroundColor={"$button"} color={"$buttonText"} marginBottom={Utils.dynamicHeight(5)}>
+            <Button disabled={submitting} onPress={form.handleSubmit(handleSubmit, handleError)} backgroundColor={"$button"} color={"$buttonText"} marginBottom={Utils.dynamicHeight(5)} fontSize={"$sm"}>
                 {
                     submitting ? <View flexDirection='row' columnGap={10} >
-                        <Text >
+                        <Spinner />
+                        <Text fontSize={"$sm"} >
                             Creating...
                         </Text>
-                        <Spinner />
                     </View> : "Create Profile"
                 }
             </Button>

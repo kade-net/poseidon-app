@@ -50,7 +50,7 @@ const UserMembership = (props: Props) => {
                                 </YStack>
                                 {
                                     data?.owns_community ?
-                                        <Text color={'gold'} >owner</Text> :
+                                        <Text color={'rgb(253,33,85)'} >owner</Text> :
                                         <Text
                                             color={
                                                 data?.type === 2 ? 'rgb(127,88,153)' : data?.type === 1 ? 'rgb(253,33,85)' : 'gray'

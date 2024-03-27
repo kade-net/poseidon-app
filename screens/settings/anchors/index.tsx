@@ -61,7 +61,17 @@ const Anchors = () => {
                 href={"/app-connect/store"}
                 asChild
             >
-                <Button variant='outlined' mt={20} backgroundColor={"$button"} color={"$buttonText"} my={Utils.dynamicHeight(1)}>
+                <Button 
+                    variant='outlined' 
+                    fontSize={"$md"}
+                    fontWeight={"$2"}
+                    borderWidth={1} 
+                    borderColor={"$button"}
+                    color={"$text"}
+                    mt={20} 
+                    my={Utils.dynamicHeight(1)}
+                >
+                        
                     Get Anchors
                 </Button>
             </Link>

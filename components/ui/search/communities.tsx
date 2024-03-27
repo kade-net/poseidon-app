@@ -32,7 +32,7 @@ const Communities = (props: Props) => {
             search: searchDeffered,
             memberAddress: delegateManager.owner!
         },
-        onCompleted: console.log
+        onCompleted: data => console.log('Incoming Data::', data)
     })
 
 

@@ -58,10 +58,12 @@ const CommunitiesScreen = () => {
                         onPress={onClose}
                     >
                         <Button
-                            backgroundColor={"$button"}
-                            color={"$buttonText"}
                             fontSize={"$md"}
-
+                            fontWeight={"$2"}
+                            borderWidth={1} 
+                            borderColor={"$button"}
+                            variant='outlined'
+                            color={"$text"}
                         >
                             Get Anchors
                         </Button>

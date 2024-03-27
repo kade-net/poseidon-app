@@ -10,6 +10,7 @@ import { values } from 'lodash'
 import account from '../../../contract/modules/account'
 import { Button, Spinner, TextArea, XStack, YStack, Text } from 'tamagui'
 import { useRouter } from 'expo-router'
+import Toast from 'react-native-toast-message'
 
 const Bio = () => {
     const [saving, setSaving] = React.useState(false)
@@ -29,6 +30,10 @@ const Bio = () => {
     })
 
     const handleSubmit = async (values: TPROFILE) => {
+        if (values.bio === profile?.data?.account?.profile?.bio) {
+            router.back()
+            return
+        }
         setSaving(true)
 
         try {
@@ -43,23 +48,41 @@ const Bio = () => {
         }
     }
 
+    const handleError = async () => {
+        Toast.show({
+            type: 'error',
+            text1: 'Error',
+            text2: 'Your bio cannot be empty.'
+        })
+    }
+
 
     return (
         <YStack flex={1} w="100%" h="100%" p={20} justifyContent='space-between' backgroundColor={"$background"}>
             <Controller
                 control={form.control}
                 name='bio'
-                render={({ field }) => {
+                render={({ field, fieldState }) => {
                     return (
-                        <TextArea
-                            backgroundColor={"$colorTransparent"}
-                            onChangeText={field.onChange}
-                            value={field.value}
-                            placeholder='Tell people about yourself.'
-                        />
+                        <YStack w="100%" >
+                            <TextArea
+                                backgroundColor={"$colorTransparent"}
+                                onChangeText={field.onChange}
+                                value={field.value}
+                                placeholder='Tell people about yourself.'
+                            />
+                            {
+                                fieldState?.invalid && <Text
+                                    color='red'
+                                    fontSize={'$xxs'}
+                                >
+                                    Your bio cannot be empty.
+                                </Text>
+                            }
+                        </YStack>
                     )
                 }} />
-            <Button disabled={saving} onPress={form.handleSubmit(handleSubmit)} w="100%" backgroundColor={"$button"} color={"$buttonText"}>
+            <Button disabled={saving} onPress={form.handleSubmit(handleSubmit, handleError)} w="100%" backgroundColor={"$button"} color={"$buttonText"}>
                 {
                     saving ? <XStack columnGap={10} >
                         <Spinner />
