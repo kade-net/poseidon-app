@@ -1,8 +1,9 @@
+import Constants from 'expo-constants'
 import { Account, Aptos, AptosConfig, Ed25519PrivateKey, Network } from "@aptos-labs/ts-sdk";
 
 export const USERNAMES_COLLECTION_ADDRESS = '0x32464b70d881e7847f49c7826145bca69337448cee5ed03f563d814d83f155fa'
 
-export const MODULE_ADDRESS = '0xe519b74fd94be761a4879e5db5e6e1ea113697c69be5664eb053123a00a03334'
+export const MODULE_ADDRESS = Constants.expoConfig?.extra?.MODULE_ADDRESS
 
 export const COMMUNITY_MODULE_ADDRESS = '0x3cb811325b7a3e40231ecda6ba74bb0deb97196d2f0353123825a398861db95f' as const;
 
@@ -65,12 +66,12 @@ export const ANCHORS_VIEW_FUNCTIONS = {
 
 
 
-export const aptosConfig = new AptosConfig({ network: Network.TESTNET });
+export const aptosConfig = new AptosConfig({ network: Constants.expoConfig?.extra?.APTOS_NETWORK ?? 'testnet' });
 export const aptos = new Aptos(aptosConfig); 
 
 
-export const APP_SUPPORT_API = 'https://scrooge-rho.vercel.app'
+export const APP_SUPPORT_API = Constants.expoConfig?.extra?.APP_SUPPORT_API
 
-export const COMMUNITY_SUPPORT_API = 'https://anchor-connect.vercel.app'
+export const COMMUNITY_SUPPORT_API = Constants.expoConfig?.extra?.COMMUNITY_SUPPORT_API
 
-export const KADE_ACCOUNT_ADDRESS = '0x809001fa9030e21dbe72a45291ddf227610e9c228025c8d93670ddd894f4141d'
+export const KADE_ACCOUNT_ADDRESS = Constants.expoConfig?.extra?.KADE_ACCOUNT_ADDRESS

@@ -1,28 +1,32 @@
 {
   "expo": {
-    "name": "kadetest",
-    "slug": "kadetest",
-    "version": "0.0.9",
+    "name": "poseidon",
+    "slug": "poseidon",
+    "version": "0.0.10",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "kadetest",
+    "scheme": "poseidon",
     "userInterfaceStyle": "automatic",
     "splash": {
       "image": "./assets/images/splash.png",
       "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "backgroundColor": "#0C1222"
     },
     "assetBundlePatterns": ["**/*"],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.dduke.kadetest"
+      "bundleIdentifier": "com.kadenet.poseidon",
+      "config": {
+        "usesNonExemptEncryption": false
+      }
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
-        "backgroundColor": "#ffffff"
+        "backgroundColor": "#0C1222"
       },
-      "package": "com.dduke.kadetest"
+      "package": "com.kadenet.poseidon",
+      "googleServicesFile": "./google-services.json"
     },
     "web": {
       "bundler": "metro",
@@ -38,7 +42,7 @@
         "origin": false
       },
       "eas": {
-        "projectId": "5a011be0-cd42-40c5-a4d0-09de9f750aa9"
+        "projectId": "30159790-9cfe-44b4-bb58-30450db634ec"
       }
     },
     "owner": "kade-net"

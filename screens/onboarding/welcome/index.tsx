@@ -1,7 +1,7 @@
 import { Link, router, useFocusEffect, useRouter } from 'expo-router'
 import React, { useCallback, useEffect } from 'react'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
-import { Button, SizableText, View } from 'tamagui'
+import { Button, Image, SizableText, View } from 'tamagui'
 import petra from '../../../lib/wallets/petra'
 import delegateManager from '../../../lib/delegate-manager'
 import { User } from '@tamagui/lucide-icons'
@@ -41,12 +41,15 @@ const WelcomeScreen = () => {
     return (
         <View w="100%" backgroundColor={"$background"} alignItems='center' justifyContent='space-between' flex={1} px={Utils.dynamicWidth(5)} pb={insets.bottom}>
             <View h="80%" w="100%" alignItems='center' justifyContent='center' >
-                <View w="$1" h="$1" bg="$red10" transform={[
-                    {
-                        translateY: 50
-                    }
-                ]} >
-
+                <View
+                    h={80}
+                    w={80}
+                >
+                    <Image
+                        source={require('../../../assets/images/adaptive-icon.png')}
+                        width={80}
+                        height={80}
+                    />
                 </View>
             </View>
 

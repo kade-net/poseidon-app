@@ -59,3 +59,7 @@ apps/studio/types/**
 
 .expo
 dev-saves
+
+# Firebase secret key
+kade-firebase-service-account.json
+google-services.json

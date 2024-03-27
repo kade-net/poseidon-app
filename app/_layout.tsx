@@ -7,13 +7,22 @@ import { TamaguiProvider } from 'tamagui'
 import '../tamagui-web.css'
 import { config } from '../tamagui.config'
 import { useFonts } from 'expo-font'
-import { useEffect } from 'react'
+import { useEffect, useRef } from 'react'
 import delegateManager from '../lib/delegate-manager'
 import { ApolloProvider } from '@apollo/client'
 import client from '../data/apollo'
 import { QueryClient, QueryClientProvider } from 'react-query'
 import selfModeration from '../lib/self-moderation'
 import * as Navigator from 'expo-navigation-bar'
+import * as Notifications from 'expo-notifications'
+
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldShowAlert: true,
+    shouldPlaySound: false,
+    shouldSetBadge: false,
+  }),
+});
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -49,6 +58,20 @@ export default function RootLayout() {
     InterBold: require('@tamagui/font-inter/otf/Inter-Bold.otf'),
     Roboto: require('../assets/fonts/Roboto-Regular.ttf')
   })
+  const responseListener = useRef();
+
+  useEffect(() => {
+
+    // @ts-expect-error - TS doesn't know about the `current` property
+    responseListener.current = Notifications.addNotificationResponseReceivedListener(response => {
+      console.log(response);
+    });
+
+    return () => {
+      // @ts-expect-error - TS doesn't know about the `current` property
+      Notifications.removeNotificationSubscription(responseListener.current);
+    };
+  }, []);
 
   useEffect(() => {
     if (interLoaded || interError) {
