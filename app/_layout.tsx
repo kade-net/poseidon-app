@@ -16,6 +16,7 @@ import selfModeration from '../lib/self-moderation'
 import * as Navigator from 'expo-navigation-bar'
 import Toast from 'react-native-toast-message'
 import * as Notifications from 'expo-notifications'
+import localStore from '../lib/local-store'
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({

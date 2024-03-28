@@ -65,8 +65,9 @@ const Notifications = (props: Props) => {
                                     disabled={loading}
                                     checked={field.value}
                                     onCheckedChange={(value) => field.onChange(value)}
+
                                 >
-                                    <Switch.Thumb />
+                                    <Switch.Thumb backgroundColor={'$button'} />
                                 </Switch>
                             )
                         }}

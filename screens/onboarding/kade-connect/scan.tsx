@@ -12,6 +12,7 @@ import { Utils } from '../../../utils'
 import UnstyledButton from '../../../components/ui/buttons/unstyled-button'
 import client from '../../../data/apollo'
 import { GET_MY_PROFILE } from '../../../utils/queries'
+import Toast from 'react-native-toast-message'
 
 const Scan = () => {
     const insets = useSafeAreaInsets()
@@ -51,15 +52,18 @@ const Scan = () => {
             await delegateManager.setUsername(delegateStatus.username)
             await delegateManager.setOwner(delegateStatus.owner)
             await delegateManager.markAsRegistered()
+            console.log("Delegate Manager Owner::", delegateManager.owner)
+            const profileData = await client.query({
+                query: GET_MY_PROFILE,
+                variables: {
+                    address: delegateManager.owner!
+                }
+            })
+            console.log(profileData)
             if (account.isAccountRegistered) {
 
                 if (account.isProfileRegistered) {
-                    const profileData = await client.query({
-                        query: GET_MY_PROFILE,
-                        variables: {
-                            address: delegateManager.owner!
-                        }
-                    })
+
                     goToFeed()
                     return
                 }
@@ -78,7 +82,11 @@ const Scan = () => {
                 goToFeed()
                 return
             }
-
+            if (profileData.data) {
+                account.markProfileAsRegistered()
+                goToFeed()
+                return
+            }
             goToProfile()
             return
         }
@@ -87,11 +95,35 @@ const Scan = () => {
                 try {
 
                     await delegateManager.linkAccount(sessionManager.session)
-                    // TODO: check if the profile already exists and if it does go directly to the user's home feed
+
+                    const profileDataQuery = await client.query({
+                        query: GET_MY_PROFILE,
+                        variables: {
+                            address: delegateManager.owner!
+                        }
+                    })
+
+                    if (profileDataQuery.data.account) {
+                        await account.markProfileAsRegistered()
+                        await account.markAsRegistered()
+
+                    }
+
+                    if (account.isProfileRegistered) {
+                        goToFeed()
+                        return
+                    }
+
                     router.push('/onboard/profile')
                 }
                 catch (e) {
+
                     console.log(`SOMETHING WENT WRONG:: ${e}`)
+                    Toast.show({
+                        type: 'error',
+                        text1: 'Error',
+                        text2: 'Something went wrong'
+                    })
                 }
                 finally {
                     setLoading(false)
@@ -99,6 +131,11 @@ const Scan = () => {
             })
             .catch((e) => {
                 console.log(`SOMETHING WENT WRONG:: ${e}`)
+                Toast.show({
+                    type: 'error',
+                    text1: 'Error',
+                    text2: 'Something went wrong'
+                })
             })
             .finally(() => {
                 setLoading(false)

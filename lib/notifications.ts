@@ -63,6 +63,13 @@ class PoseidonNotifications {
         }
     }
 
+    async nukeNotifications() {
+        await storage.remove({
+            key: 'notifications',
+            id: delegateManager.owner!
+        })
+    }
+
 }
 
 async function registerForPushNotificationsAsync() {

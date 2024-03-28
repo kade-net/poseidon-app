@@ -289,32 +289,29 @@ const PublicationEditor = (props: Props) => {
                             </KeyboardAvoidingView>
                         }
                         <View w="100%" height={'100%'} flexDirection='row' flexWrap='wrap' px={20} rowGap={5} columnGap={5} >
-                            {
-                                images.map((image, index) => {
-                                    return (
-                                        <View
-                                            width={
-                                                images.length > 1 ? (
-                                                    "40%"
-                                                ) : ("80%")
-                                            }
-                                            key={index}
-                                        >
-                                            <FeedImage
-                                                image={image.uri}
-                                                editable={!uploading}
-                                                id={index}
-                                                onRemove={(id) => {
-                                                    setImages((prev) => {
-                                                        return prev.filter((_, i) => i !== id)
-                                                    })
-                                                }}
-                                            />
-
-                                        </View>
-                                    )
-                                })
-                            }
+                            <Controller
+                                control={form.control}
+                                name='media'
+                                render={({ field }) => {
+                                    return <>
+                                        {
+                                            field.value?.map((media, index) => {
+                                                return (
+                                                    <FeedImage
+                                                        key={index}
+                                                        image={media.url}
+                                                        editable={!uploading}
+                                                        id={index}
+                                                        onRemove={(id) => {
+                                                            form.setValue('media', field.value?.filter((_, i) => i !== id))
+                                                        }}
+                                                    />
+                                                )
+                                            })
+                                        }
+                                    </>
+                                }}
+                            />
                         </View>
                     </View>
                 </View>
@@ -363,7 +360,10 @@ const PublicationEditor = (props: Props) => {
 
                         </XStack>
                         {
-                            uploading ? <Text>Uploading...</Text> : null
+                            uploading ? <XStack columnGap={10} >
+                                <Spinner />
+                                <Text>Uploading...</Text>
+                            </XStack> : null
                         }
                     </View>
                 </YStack>

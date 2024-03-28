@@ -20,6 +20,8 @@ const _layout = () => {
     const userAddress = params['address'] as string ?? null
     const { isOpen, onOpen, onClose, onToggle } = useDisclosure()
 
+    const IS_SAME_ACCOUNT = userAddress == delegateManager.owner
+
     const profileQuery = useQuery(GET_MY_PROFILE, {
         variables: {
             address: userAddress
@@ -74,9 +76,9 @@ const _layout = () => {
                                                 }
                                             </H4>}
                                         </TouchableOpacity>
-                                        <View>
+                                        {IS_SAME_ACCOUNT && <View>
                                             <Button onPress={onOpen} variant='outlined' icon={<MoreVertical />} />
-                                        </View>
+                                        </View>}
                                     </View>
                                     <Separator />
                                 </View>

@@ -2,22 +2,30 @@ import { View, Text, YStack, XStack, Separator, H4, Button, Spinner } from 'tama
 import React, { useState } from 'react'
 import { TouchableOpacity } from 'react-native'
 import { Anchor, ArrowRight, Bell, ChevronRight, KeySquare } from '@tamagui/lucide-icons'
-import { Link, useRouter } from 'expo-router'
+import { Link, useNavigation, useRouter } from 'expo-router'
 import account from '../../contract/modules/account'
 import delegateManager from '../../lib/delegate-manager'
 import localStore from '../../lib/local-store'
 import { Utils } from '../../utils'
+import notifications from '../../lib/notifications'
 
 const Settings = () => {
     const [loggingOut, setLoggingOut] = useState(false)
     const router = useRouter()
+    const navigation = useNavigation()
     const handleLogout = async () => {
         setLoggingOut(true)
-        try {
+        try { 
             await account.nuke()//💥
             await delegateManager.nuke() //💥
             await localStore.nuke() //💥
-            router.push('/')
+            await notifications.nukeNotifications() //💥
+
+            navigation.reset({
+                index: 0,
+                // @ts-expect-error - TS doesn't know about the `routes` property
+                routes: [{ name: 'onboard', path: '/' }]
+            })
         }
         catch (e) {
             console.log("Error logging out", e)

@@ -170,7 +170,7 @@ const SeedPhrase = () => {
                     {
                         loading ? <XStack columnGap={20} >
                             <Spinner />
-                            <Text>Veryfying...</Text>
+                            <Text>Verifying...</Text>
                         </XStack> : "Done"
                     }
                 </Button>

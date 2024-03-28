@@ -3,7 +3,7 @@ import 'react-native-get-random-values'
 import * as bip39 from 'bip39'
 import { AptosAccount, HexString } from 'aptos'
 import * as SecureStore from 'expo-secure-store';
-import { ACCOUNT_ENTRY_FUNCTIONS, APP_SUPPORT_API, KADE_ACCOUNT_ADDRESS, aptos } from '../contract';
+import { ACCOUNT_ENTRY_FUNCTIONS, ACCOUNT_VIEW_FUNCTIONS, APP_SUPPORT_API, KADE_ACCOUNT_ADDRESS, aptos } from '../contract';
 import { Account, AccountAddress, AccountAuthenticator, Deserializer, Ed25519PrivateKey, RawTransaction, Serializer } from '@aptos-labs/ts-sdk';
 import axios from 'axios';
 import client from '../data/apollo';
@@ -218,6 +218,41 @@ class DelegateManager {
         })
         this.private_key = pk
 
+        const dOwner = await aptos.view({
+            payload: {
+                function: ACCOUNT_VIEW_FUNCTIONS.delegate_get_owner as any,
+                functionArguments: [this.account?.address()?.toString()],
+                typeArguments: []
+            }
+        })
+
+        const [user_kid, delegate_owner_address] = dOwner as [string, string]
+
+        if (user_kid == '0') {
+            console.log("No owner found")
+            // delegate owns itself
+            this.setOwner(this.account?.address()?.toString())
+        }
+        else {
+            this.setOwner(delegate_owner_address)
+
+            const profile = await client.query({
+                query: GET_MY_PROFILE,
+                variables: {
+                    address: this.owner!
+                }
+            })
+
+            if (profile.data.account) {
+                console.log('Profile::', profile.data.account)
+                SecureStore.setItem('profile', 'registered')
+                SecureStore.setItem('account', 'registered')
+                SecureStore.setItem('deligate', 'registered')
+                profile.data.account?.username?.username && SecureStore.setItem('username', profile.data.account?.username?.username)
+
+            }
+        }
+
         if (!this.owner || reset) {
             this.setOwner(this.account?.address()?.toString())
         }
@@ -227,11 +262,9 @@ class DelegateManager {
         await client.query({
             query: GET_MY_PROFILE,
             variables: {
-                address: this.account?.address?.toString()
+                address: this.owner!
             }
         })
-
-        console.log(this.owner)
 
 
     }
@@ -330,12 +363,13 @@ class DelegateManager {
         await SecureStore.deleteItemAsync('deligate')
         await SecureStore.deleteItemAsync('account')
         await SecureStore.deleteItemAsync('profile')
-        await this.init(true)
 
         this._owner = null
         this.private_key = null
         this.signer = null
         this.account = null
+
+        await this.init(true)
     }
 }
 
