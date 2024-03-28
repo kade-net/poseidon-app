@@ -73,6 +73,7 @@ class SessionManager {
                     }
                 }
                 catch (e) {
+                    clearInterval(interval)
                     reject(e)
                 }
             }, 5000)
