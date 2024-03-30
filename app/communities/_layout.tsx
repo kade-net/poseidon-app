@@ -2,14 +2,14 @@ import { TouchableOpacity } from 'react-native'
 import React from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { Stack } from 'expo-router'
-import { XStack, View, Text, H4, YStack, Separator } from 'tamagui'
+import { XStack, View, Text, H4, YStack, Separator, useTheme } from 'tamagui'
 import { ArrowLeft, ChevronLeft } from '@tamagui/lucide-icons'
 
 const _layout = () => {
+    const tamaguiTheme = useTheme()
     return (
         <SafeAreaView
             style={{
-                flex: 1,
                 width: '100%',
                 height: '100%'
             }}
@@ -21,9 +21,12 @@ const _layout = () => {
                 <Stack.Screen
                     name="create"
                     options={{
+                        headerStyle: {
+                            backgroundColor: tamaguiTheme.background.val
+                        },
                         header(props) {
                             return (
-                                <YStack w="100%" >
+                                <YStack w="100%" backgroundColor={"$background"}>
                                     <TouchableOpacity onPress={props.navigation.goBack} style={{ width: '100%' }} >
                                         <XStack
                                             w="100%"
