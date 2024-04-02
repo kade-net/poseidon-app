@@ -221,7 +221,7 @@ const ProfileDetails = (props: Props) => {
                     </XStack>
                 </XStack>
                 {!IS_SAME_ACCOUNT && <XStack px={10} w="100%" alignItems='center' columnGap={5} py={10} >
-                    <Button borderColor={"$button"} w="100%" onPress={handleFollowToggle} variant={
+                    <Button fontSize={"$sm"} borderColor={"$button"} color={accountViewerStats?.data?.accountViewerStats?.follows ? "$text" : "$buttonText"} backgroundColor={accountViewerStats?.data?.accountViewerStats?.follows ? "$colourlessButton" : "$button"} w="100%" onPress={handleFollowToggle} variant={
                         accountViewerStats?.data?.accountViewerStats?.follows ? "outlined" : undefined
                     }
                         backgroundColor={
