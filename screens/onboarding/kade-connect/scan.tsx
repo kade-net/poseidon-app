@@ -59,7 +59,7 @@ const Scan = () => {
                     address: delegateManager.owner!
                 }
             })
-            console.log(profileData)
+            console.log("Profile::", profileData)
             if (account.isAccountRegistered) {
 
                 if (account.isProfileRegistered) {
@@ -103,7 +103,7 @@ const Scan = () => {
                         }
                     })
 
-                    if (profileDataQuery.data.account) {
+                    if (profileDataQuery.data.account?.profile) {
                         await account.markProfileAsRegistered()
                         await account.markAsRegistered()
 
@@ -119,6 +119,9 @@ const Scan = () => {
                 catch (e) {
 
                     console.log(`SOMETHING WENT WRONG:: ${e}`)
+                    if (e instanceof Error) {
+                        console.log("Error::", e.stack)
+                    }
                     Toast.show({
                         type: 'error',
                         text1: 'Error',
@@ -158,7 +161,7 @@ const Scan = () => {
                             Step 1
                         </Heading>
                         <Text textAlign='center' color={"$text"} >
-                            go to <Text color={"$COAText"} >connect.kade.network</Text> on your desktop browser.
+                            go to <Text color={"$COAText"} >connect.poseidon.ac</Text> on your desktop browser.
                         </Text>
                     </View>
                     <View alignItems='center' rowGap={10} >

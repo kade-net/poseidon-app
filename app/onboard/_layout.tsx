@@ -1,6 +1,7 @@
 import { View, Text } from 'react-native'
 import React from 'react'
-import { Stack } from 'expo-router'
+import { Stack, useFocusEffect } from 'expo-router'
+import { BackHandler } from 'react-native'
 
 const _layout = () => {
     return (

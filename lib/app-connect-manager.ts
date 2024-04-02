@@ -1,7 +1,9 @@
 import axios from "axios"
 import delegateManager from "./delegate-manager"
+import Constants from "expo-constants"
+import { aptos } from "../contract"
 
-const CONNECT_URL = "https://anchor-connect.vercel.app"
+const CONNECT_URL = Constants.expoConfig?.extra?.ANCHORS_URL!
 
 class AppConnect {
     constructor() {

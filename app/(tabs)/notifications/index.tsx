@@ -8,6 +8,7 @@ import { GET_MY_PROFILE } from '../../../utils/queries'
 import delegateManager from '../../../lib/delegate-manager'
 import { Settings } from '@tamagui/lucide-icons'
 import { SafeAreaView } from 'react-native-safe-area-context'
+import { Utils } from '../../../utils'
 
 const NotificationsScreen = () => {
     const profileQuery = useQuery(GET_MY_PROFILE, {
@@ -36,7 +37,7 @@ const NotificationsScreen = () => {
                                     >
                                         <TouchableOpacity>
                                             <Avatar circular size={"$4"} >
-                                                <Avatar.Image src={profileQuery?.data?.account?.profile?.pfp ?? ''} />
+                                                <Avatar.Image src={profileQuery?.data?.account?.profile?.pfp ?? Utils.diceImage(profileQuery?.data?.account?.address ?? '1')} />
                                                 <Avatar.Fallback bg="$pink10" />
                                             </Avatar>
                                         </TouchableOpacity>

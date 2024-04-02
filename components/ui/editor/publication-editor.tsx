@@ -259,7 +259,7 @@ const PublicationEditor = (props: Props) => {
                     >
                         <Avatar circular size={"$3"} >
                             <Avatar.Image
-                                src={profileQuery.data?.account?.profile?.pfp as string ?? null}
+                                src={profileQuery.data?.account?.profile?.pfp as string ?? Utils.diceImage(delegateManager.owner ?? '1')}
                                 accessibilityLabel="Profile Picture"
                             />
                             <Avatar.Fallback

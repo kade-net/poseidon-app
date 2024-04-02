@@ -24,6 +24,7 @@ import account from '../../../../contract/modules/account'
 import publications from '../../../../contract/modules/publications'
 import { isEmpty } from 'lodash'
 import { getMutedUsers, getRemovedFromFeed } from '../../../../contract/modules/store-getters'
+import { Utils } from '../../../../utils'
 
 const Home = () => {
     const publicationsQuery = useQuery(GET_PUBLICATIONS, {
@@ -151,7 +152,7 @@ const Home = () => {
                     <Avatar circular size={"$4"} >
                         <Avatar.Image
                             accessibilityLabel='Profile Picture'
-                            src={profileQuery?.data?.account?.profile?.pfp as string}
+                            src={profileQuery?.data?.account?.profile?.pfp as string ?? Utils.diceImage(delegateManager.owner!)}
                         />
                         <Avatar.Fallback
                             backgroundColor={'$pink10'}

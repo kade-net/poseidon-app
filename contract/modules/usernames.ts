@@ -1,5 +1,5 @@
 import axios from "axios";
-import { APP_SUPPORT_API, KADE_ACCOUNT_ADDRESS, USERNAMES_COLLECTION_ADDRESS, USERNAME_VIEW_FUNCTIONS, aptos } from "..";
+import { ACCOUNT_VIEW_FUNCTIONS, APP_SUPPORT_API, KADE_ACCOUNT_ADDRESS, USERNAMES_COLLECTION_ADDRESS, USERNAME_VIEW_FUNCTIONS, aptos } from "..";
 import delegateManager from "../../lib/delegate-manager";
 import { AccountAddress, AccountAuthenticator, Deserializer, RawTransaction } from "@aptos-labs/ts-sdk";
 
@@ -66,42 +66,17 @@ class UsernamesContract {
     }
 
     async getUsername() {
-        const response = await axios.post('https://indexer-testnet.staging.gcp.aptosdev.com/v1/graphql',
-            {
-                query: `
-                query getAccountOwnedTokensFromCollection($where_condition: current_token_ownerships_v2_bool_exp!, $offset: Int, $limit: Int, $order_by: [current_token_ownerships_v2_order_by!]) {
-                    current_token_ownerships_v2(
-                      where: $where_condition
-                      offset: $offset
-                      limit: $limit
-                      order_by: $order_by
-                    ) {
-                      current_token_data {
-                        token_name
-                      }
-                    }
-                  }
-                `,
-                "variables": {
-                    "where_condition": {
-                        "owner_address": {
-                            "_eq": delegateManager.owner
-                        },
-                        "current_token_data": {
-                            "collection_id": {
-                                "_eq": USERNAMES_COLLECTION_ADDRESS
-                            }
-                        },
-                        "amount": {
-                            "_gt": 0
-                        }
-                    }
-                }
+        const resp = await aptos.view({
+            payload: {
+                function: ACCOUNT_VIEW_FUNCTIONS.get_current_username,
+                functionArguments: [delegateManager.owner],
+                typeArguments: []
             }
-        )
+        })
 
-        const name = response.data.data.current_token_ownerships_v2?.at(0)?.current_token_data.token_name
-        return name as string
+        const [data] = resp as [string]
+        console.log(data)
+        return data
     }
 
 }

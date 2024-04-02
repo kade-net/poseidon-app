@@ -15,6 +15,7 @@ import { useMultiScrollManager } from '../../components/hooks/useMultiScrollMana
 import TabNavbar from './tab-navbar'
 import account from '../../contract/modules/account'
 import { Link } from 'expo-router'
+import { Utils } from '../../utils'
 
 interface Props {
     address: string
@@ -157,7 +158,7 @@ const ProfileDetails = (props: Props) => {
                 >
                     <XStack w="100%" py={10} columnGap={10} >
                         <Avatar circular size={"$6"} >
-                            <Avatar.Image source={{ uri: profileQuery.data?.account?.profile?.pfp ?? undefined }} />
+                            <Avatar.Image source={{ uri: profileQuery.data?.account?.profile?.pfp ?? Utils.diceImage(address) }} />
                             <Avatar.Fallback
                                 bg="lightgray"
                             />
@@ -222,7 +223,11 @@ const ProfileDetails = (props: Props) => {
                 {!IS_SAME_ACCOUNT && <XStack px={10} w="100%" alignItems='center' columnGap={5} py={10} >
                     <Button borderColor={"$button"} w="100%" onPress={handleFollowToggle} variant={
                         accountViewerStats?.data?.accountViewerStats?.follows ? "outlined" : undefined
-                    } >
+                    }
+                        backgroundColor={
+                            accountViewerStats?.data?.accountViewerStats?.follows ? undefined : "$button"
+                        }
+                    >
                         {
                             accountViewerStats?.data?.accountViewerStats?.follows ? "Following" : "Follow"
                         }

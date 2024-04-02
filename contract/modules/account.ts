@@ -102,6 +102,7 @@ class AccountContract {
     }
 
     async setupWithSelfDelegate() {
+        console.log("KADE ADDRESS:: ", KADE_ACCOUNT_ADDRESS)
         if (!delegateManager.signer || !delegateManager.account || !delegateManager.username) {
             throw new Error("No account found")
         }
@@ -112,6 +113,9 @@ class AccountContract {
         })
 
         const { raw_txn, signature } = response.data
+
+        console.log("RAW TXN:: ", raw_txn)
+        console.log("SIGNATURE:: ", signature)
 
         const txn_deserializer = new Deserializer(new Uint8Array(raw_txn))
         const signature_deserializer = new Deserializer(new Uint8Array(signature))

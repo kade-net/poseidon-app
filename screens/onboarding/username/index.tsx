@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react'
 import z from 'zod'
 import { Controller, useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { SafeAreaView } from 'react-native'
+import { SafeAreaView, TouchableOpacity } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { useRouter } from 'expo-router'
 import usernames from '../../../contract/modules/usernames'
@@ -98,6 +98,12 @@ const PickUserName = () => {
             console.log(`ACCOUNT SETUP FAILED:: ${resp}`)
         }
         catch (e) {
+            Toast.show({
+                text1: 'Error claiming username',
+                text2: 'Please try again',
+                type: 'error',
+
+            })
             console.log(`SOMETHING WENT WRONG:: ${e}`)
         }
         finally {
@@ -106,6 +112,10 @@ const PickUserName = () => {
 
     }
 
+
+    const goToSignIn = () => {
+        router.replace('/onboard/signin')
+    }
 
     return (
         <View pt={insets.top} backgroundColor={"$background"} flex={1} justifyContent='space-between' px={Utils.dynamicWidth(5)} pb={insets.bottom}>
@@ -146,6 +156,14 @@ const PickUserName = () => {
 
                         }}
                     />
+                    <XStack>
+                        <Text>
+                            Already Claimed Username?
+                        </Text>
+                        <TouchableOpacity onPress={goToSignIn}>
+                            <Text color={"$primary"}>{" "}Sign in instead</Text>
+                        </TouchableOpacity>
+                    </XStack>
                 </View>
             </View>
             <Button disabled={claiming || checking} backgroundColor={"$button"} color={"$buttonText"} onPress={form.handleSubmit(isAvailable ? claimUsernameAndCreateAccount : checkUsername)} marginBottom={Utils.dynamicHeight(5)}>

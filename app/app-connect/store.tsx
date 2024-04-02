@@ -72,7 +72,7 @@ const StoreConnectScreen = () => {
                                     Step 1
                                 </Heading>
                                 <Text textAlign='center' color={"$text"} fontSize={"$md"}>
-                                    go to <Text color={"$COAText"} >anchors.kade.network</Text> on your desktop browser.
+                                    go to <Text color={"$COAText"} >anchors.poseidon.ac</Text> on your desktop browser.
                                 </Text>
                             </View>
                             <View alignItems='center' rowGap={10} >

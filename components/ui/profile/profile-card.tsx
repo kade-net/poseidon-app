@@ -62,7 +62,7 @@ const ProfileCard = (props: Props) => {
                     >
                         <Avatar circular size={"$3"} >
                             <Avatar.Image
-                                src={data?.profile?.pfp! ?? ""}
+                                src={data?.profile?.pfp! ?? Utils.diceImage(data?.address! ?? '1')}
                                 accessibilityLabel="Profile Picture"
                             />
                             <Avatar.Fallback

@@ -1,7 +1,7 @@
 import { CodegenConfig } from '@graphql-codegen/cli';
 
 const config: CodegenConfig = {
-    schema: 'https://cloudy-smash-production.up.railway.app',
+    schema: 'https://trawler-production.up.railway.app',
     documents: ['app/**/*.{ts,tsx}', 'components/**/*.{ts,tsx}', 'screens/**/*.{ts,tsx}', 'lib/**/*.{ts,tsx}', 'utils/**/*.{ts,tsx}'],
     generates: {
         './__generated__/': {

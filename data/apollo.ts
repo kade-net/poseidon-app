@@ -127,7 +127,7 @@ const cache = new InMemoryCache({
 
 const client = new ApolloClient({
     cache,
-    uri: "https://cloudy-smash-production.up.railway.app",
+    uri: "https://trawler-production.up.railway.app",
 
 })
 
@@ -146,5 +146,5 @@ export const barnicleClient = new ApolloClient({
             }
         }
     }),
-    uri: "https://barnicle-production.up.railway.app"
+    uri: "https://barnicle-new-staging.up.railway.app"
 })

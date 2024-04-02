@@ -22,6 +22,9 @@ export default ({ config }: ConfigContext): Partial<ExpoConfig> => {
             KADE_ACCOUNT_ADDRESS: process.env.KADE_ACCOUNT_ADDRESS,
             MODULE_ADDRESS: process.env.MODULE_ADDRESS,
             APTOS_NETWORK: process.env.APTOS_NETWORK ?? 'testnet',
+            ANCHORS_URL: process.env.ANCHORS_URL,
+            CONNECT_URL: process.env.CONNECT_URL,
+            COMMUNITY_MODULE_ADDRESS: process.env.COMMUNITY_MODULE_ADDRESS,
             eas: {
                 ...config.extra?.eas,
                 projectId: process.env.EAS_PROJECT_ID,

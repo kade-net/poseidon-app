@@ -1,7 +1,7 @@
 import { CodegenConfig } from '@graphql-codegen/cli';
 
 const config: CodegenConfig = {
-    schema: 'https://barnicle-production.up.railway.app',
+    schema: 'https://barnicle-new-staging.up.railway.app',
     documents: ['./support-gql-clients/queries/barnicle.ts'],
     generates: {
         './support-gql-clients/barnicle/__generated__/': {

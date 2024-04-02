@@ -8,9 +8,12 @@ import { Account, AccountAddress, AccountAuthenticator, Deserializer, Ed25519Pri
 import axios from 'axios';
 import client from '../data/apollo';
 import { GET_MY_PROFILE } from '../utils/queries';
+import Constants from 'expo-constants'
 
 
 const DERIVATION_PATH = "m/44'/637'/0'/0'/0'"
+
+const CONNECT_URL = Constants.expoConfig?.extra?.CONNECT_URL
 
 
 
@@ -333,7 +336,8 @@ class DelegateManager {
         const n_array = sig_u8_array.map(x => x)
 
         // TODO: send transaction to the backend for fee sponsorship and submission
-        const response = await axios.post("https://connector-psi.vercel.app/api/link-account", {
+
+        const response = await axios.post(`${CONNECT_URL}/api/link-account`, {
             delegate_address: this.account?.address()?.toString(),
             signature: Array.from(sig_u8_array),
             transaction: Array.from(u8_array)
@@ -344,7 +348,7 @@ class DelegateManager {
                 }
             })
 
-        console.log(response.data)
+        console.log("Sponsorship response::", response.data)
 
         SecureStore.setItem('deligate', 'registered')
     }
