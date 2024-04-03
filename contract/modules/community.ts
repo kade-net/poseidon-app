@@ -47,6 +47,8 @@ class CommunityModule {
 
     async createCommunity(data: COMMUNITY) {
 
+        console.log("COMMUNITY ::", COMMUNITY_SUPPORT_API)
+
         const profile = client.readQuery({
             query: GET_MY_PROFILE,
             variables: {

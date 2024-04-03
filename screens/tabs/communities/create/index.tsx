@@ -136,28 +136,51 @@ const CreateCommunity = () => {
                     <Controller
                         control={form.control}
                         name="name"
-                        render={({ field: { onChange, value } }) => {
+                        render={({ field: { onChange, value }, fieldState }) => {
                             return (
-                                <Input
-                                    backgroundColor={"$colorTransparent"}
-                                    placeholder='What do you want to call your community?'
-                                    value={value}
-                                    onChangeText={onChange}
-                                />
+                                <YStack w="100%" >
+                                    <Input
+                                        backgroundColor={"$colorTransparent"}
+                                        placeholder='What do you want to call your community?'
+                                        value={value}
+                                        onChangeText={onChange}
+                                        autoCapitalize='none'
+                                    />
+                                    {
+                                        fieldState.invalid &&
+                                        <Text
+                                            color={"$red10"}
+                                            fontSize={"$xs"}
+                                        >
+                                            Please Enter a valid community name all lowercase, no space or special character.
+                                        </Text>
+                                    }
+                                </YStack>
                             )
                         }}
                     />
                     <Controller
                         control={form.control}
                         name="description"
-                        render={({ field: { onChange, value } }) => {
+                        render={({ field: { onChange, value }, fieldState }) => {
                             return (
-                                <TextArea
-                                    backgroundColor={"$colorTransparent"}
-                                    placeholder='Why should people join your community?'
-                                    value={value}
-                                    onChangeText={onChange}
-                                />
+                                <YStack>
+                                    <TextArea
+                                        backgroundColor={"$colorTransparent"}
+                                        placeholder='Why should people join your community?'
+                                        value={value}
+                                        onChangeText={onChange}
+                                    />
+                                    {
+                                        fieldState.invalid &&
+                                        <Text
+                                            color={"$red10"}
+                                            fontSize={"$xs"}
+                                        >
+                                            Enter a description for your community.
+                                        </Text>
+                                    }
+                                </YStack>
                             )
                         }}
                     />

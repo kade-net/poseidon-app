@@ -1,4 +1,4 @@
-import { View, Text, YStack, H3, Button, Separator, XStack } from 'tamagui'
+import { View, Text, YStack, H3, Button, Separator, XStack, Spinner } from 'tamagui'
 import React from 'react'
 import { Anchor, ArrowDownLeft, ArrowDownRight, ArrowUpRight, RefreshCw } from '@tamagui/lucide-icons'
 import { FlatList, TouchableOpacity } from 'react-native'
@@ -81,6 +81,11 @@ const Anchors = () => {
                 w="100%"
                 mt={20}
             >
+                {
+                    anchorsQuery.isLoading && <XStack p={20} alignItems='center' justifyContent='center' w="100%" >
+                        <Spinner />
+                    </XStack>
+                }
                 <FlatList
                     data={anchorsQuery?.data?.transactions ?? []}
                     keyExtractor={(_, index) => index.toString()}
@@ -108,6 +113,17 @@ const Anchors = () => {
                                 <Separator />
                             </YStack>
                         )
+                    }}
+                    refreshing={anchorsQuery?.isLoading}
+                    onStartReached={() => anchorsQuery.refetch()}
+                    ListFooterComponent={() => {
+                        if (anchorsQuery.isLoading) return (
+                            <XStack p={20} alignItems='center' justifyContent='center' >
+                                <Spinner />
+                            </XStack>
+                        )
+
+                        return null
                     }}
                 />
             </YStack>

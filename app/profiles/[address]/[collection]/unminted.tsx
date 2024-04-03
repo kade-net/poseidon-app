@@ -1,19 +1,20 @@
 import { View, Text } from 'react-native'
 import React from 'react'
-import CollectionOwners from '../../../../screens/profiles/collection/owners'
+import { SafeAreaView } from 'react-native-safe-area-context'
 import { Stack, useGlobalSearchParams } from 'expo-router'
+import TopBarWithBack from '../../../../components/ui/navigation/top-bar-with-back'
 import { useQuery } from 'react-query'
 import collected from '../../../../contract/modules/collected'
-import TopBarWithBack from '../../../../components/ui/navigation/top-bar-with-back'
+import Unminted from '../../../../screens/profiles/collection/unminted'
 
-const OwnersScreen = () => {
+const UnmintedScreen = () => {
     const params = useGlobalSearchParams()
     const collection_id = params['collection'] as string
     const address = params['address'] as string
 
     const collection = useQuery({
         queryKey: ['collection', collection_id],
-        queryFn: () => collected.getCollection(collection_id, address),
+        queryFn: () => collected.getCollection(collection_id, address)
     })
 
     return (
@@ -24,19 +25,18 @@ const OwnersScreen = () => {
                         return (
                             <TopBarWithBack
                                 navigation={props.navigation}
-                                title={collection?.data?.collection_name ?? 'Untitled'}
+                                title={
+                                    collection?.data?.collection_name ?? 'Unminted'
+                                }
                             />
                         )
                     },
                     headerShown: true
                 }}
             />
-            <CollectionOwners
-                address={address}
-                collection_id={collection_id}
-            />
+            <Unminted />
         </>
     )
 }
 
-export default OwnersScreen
+export default UnmintedScreen

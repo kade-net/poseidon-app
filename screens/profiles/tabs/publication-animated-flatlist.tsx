@@ -74,16 +74,25 @@ const PublicationAnimatedFlatList = (props: ProfileTabsProps & {
 
   }, [])
 
-  const NoPublications = () => {
+  const NoPublications = useCallback(() => {
     return (
       <View mt={10}>
           <Text textAlign='center' fontSize={"$md"} color={"$text"}>No {props.route.title} yet</Text>
           <View flexDirection='row' justifyContent='center' mt={20}>
-            <Button onPress={handleFetchTop} fontSize={"$sm"} backgroundColor={"$button"} color={"$buttonText"} width={"40%"}>Refesh</Button>
+          <Button onPress={handleFetchTop} fontSize={"$sm"} backgroundColor={"$button"} color={"$buttonText"} width={"40%"}>
+            {
+              postsQuery?.loading ? <XStack>
+                <Spinner />
+                <Text>
+                  Refetching
+                </Text>
+              </XStack> : "Refresh"
+            }
+          </Button>
           </View>
       </View>
     )
-  }
+  }, [, postsQuery?.loading])
   return (
     <YStack w="100%" h="100%" >
       <Animated.FlatList

@@ -58,7 +58,7 @@ const PublicationEditor = (props: Props) => {
         const result = await ImagePicker.launchImageLibraryAsync({
             mediaTypes: ImagePicker.MediaTypeOptions.Images, // TODO: Add support for videos
             quality: 1,
-            aspect: [4, 3]
+            allowsEditing: true
         })
 
 

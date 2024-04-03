@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { Utils } from "../utils";
 
 export const profileSchema = z.object({
     pfp: z.string().min(5),
@@ -23,8 +24,8 @@ export type TPUBLICATION = z.infer<typeof publicationSchema>
 
 
 export const communitySchema = z.object({
-    name: z.string(),
-    description: z.string(),
+    name: z.string().regex(Utils.USERNAME_REGEX).min(2),
+    description: z.string().min(2),
     image: z.string()
 })
 

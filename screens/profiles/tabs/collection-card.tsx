@@ -1,12 +1,14 @@
-import { View, Text, YStack, Image, Spinner } from 'tamagui'
+import { View, Text, YStack, Image, Spinner, XStack } from 'tamagui'
 import React from 'react'
 import { GetAccountCollectionsWithOwnedTokenResponse } from '@aptos-labs/ts-sdk'
-import { TouchableOpacity } from 'react-native'
+import { ImageBackground, TouchableOpacity } from 'react-native'
 import { useQuery } from 'react-query'
 import { Utils } from '../../../utils'
 import { Link, useGlobalSearchParams } from 'expo-router'
+import { Anchor, Lock, Unlock } from '@tamagui/lucide-icons'
+import { LinearGradient } from 'expo-linear-gradient'
 
-type COLLECTION = GetAccountCollectionsWithOwnedTokenResponse['0'] & { first_uri: string }
+type COLLECTION = GetAccountCollectionsWithOwnedTokenResponse['0'] & { first_uri: string, is_internal?: boolean, is_locked?: boolean, description?: string }
 
 interface Props {
     data: COLLECTION
@@ -38,7 +40,7 @@ const CollectionCard = (props: Props) => {
         <Link
             asChild
             href={{
-                pathname: '/profiles/[address]/[collection]/',
+                pathname: data?.is_internal ? '/profiles/[address]/[collection]/unminted' : '/profiles/[address]/[collection]/',
                 params: {
                     address: address as string,
                     collection: data.collection_id!
@@ -51,12 +53,53 @@ const CollectionCard = (props: Props) => {
                     padding: 5
                 }}
             >
-                <YStack aspectRatio={1} borderRadius={5} overflow='hidden'  >
+                {
+                    data?.is_internal ? (
+                        <ImageBackground
+                            src={data?.first_uri ?? ''}
+                            style={{
+                                aspectRatio: 1,
+                                justifyContent: 'flex-end',
+                                position: 'relative'
+                            }}
+                        >
+                            <LinearGradient
+                                colors={[
+                                    'transparent', 'rgba(0,0,0,0.8)'
+                                ]}
+                                style={{
+                                    flex: 1
+                                }}
+                            >
+
+                                <YStack w="100%" flex={1} h="100%" justifyContent='flex-end' p={20} rowGap={10} >
+
+                                    <XStack columnGap={10} alignItems='flex-end' >
+                                        {
+                                            data?.is_locked ? <Anchor color="yellow" /> : <Unlock color={'green'} />
+                                        }
+                                        <Text>
+                                            {
+                                                data?.is_locked ? "Get with Anchors" : "Unlocked"
+                                            }
+                                        </Text>
+                                    </XStack>
+                                    <Text>
+                                        {data?.description}
+                                    </Text>
+                                </YStack>
+                            </LinearGradient>
+                        </ImageBackground>
+                    ) : (
+                            <YStack aspectRatio={1} borderRadius={5} overflow='hidden'  >
                     <Image
                         src={data.first_uri ?? ''}
                         aspectRatio={1}
                     />
                 </YStack>
+                    )
+                }
+
             </TouchableOpacity>
         </Link>
     )
