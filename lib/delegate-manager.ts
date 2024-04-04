@@ -9,6 +9,7 @@ import axios from 'axios';
 import client from '../data/apollo';
 import { GET_MY_PROFILE } from '../utils/queries';
 import Constants from 'expo-constants'
+import posti from './posti';
 
 
 const DERIVATION_PATH = "m/44'/637'/0'/0'/0'"
@@ -65,6 +66,13 @@ class DelegateManager {
             this.setOwner(account.address().toString()) // THEY ARE BOTH THEIR DELEGATE AND OWNER
         }
         catch (e) {
+            if (e instanceof Error) {
+
+                posti.capture('mnemonic-generation-failed', {
+                    error: e ? e?.message : "unable to generate mnemonic",
+                    stack: e?.stack ?? 'NO Stack'
+                })
+            }
             throw new Error('Unable to create account from mnemonic')
         }
 
@@ -116,10 +124,23 @@ class DelegateManager {
                 return commited_txn
             }
             catch (e) {
+                if (e instanceof Error) {
+
+                    posti.capture('unable-to-create-delegate-link-intent', {
+                        error: e?.message ? e.message : 'something went wrong',
+                        stack: e?.stack ? e?.stack : 'unable to get stack trace'
+                    })
+                }
                 throw new Error('Unable to submit transaction')
             }
         }
         catch (e) {
+
+            if (e instanceof Error) {
+                posti.capture('unable to register-delegate', {
+                    error: e?.message ? e.message : 'unable to register delegate'
+                })
+            }
             throw new Error('Unable to register as delegate')
         }
 
@@ -168,10 +189,22 @@ class DelegateManager {
                 return commited_txn
             }
             catch (e) {
+                if (e instanceof Error) {
+
+                    posti.capture('unable-to-create-link-intent', {
+                        error: e?.message ?? "Unable to create link intent",
+                        stack: e?.stack ?? 'No Stack'
+                    })
+                }
                 throw new Error('Unable to submit transaction')
             }
         }
         catch (e) {
+            if (e instanceof Error) {
+                posti.capture('unable to register-delegate', {
+                    error: e?.message ? e.message : 'unable to register delegate'
+                })
+            }
             throw new Error('Unable to register as delegate')
         }
     }

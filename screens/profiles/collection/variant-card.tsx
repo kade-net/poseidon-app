@@ -85,13 +85,13 @@ const VariantCard = (props: Props) => {
 
                             <XStack columnGap={10} alignItems='flex-end' >
 
-                                <Text>
+                                <Text color={'white'} >
                                     {
                                         data?.name
                                     }
                                 </Text>
                             </XStack>
-                            <Text>
+                            <Text color={'white'} >
                                 {data?.description}
                             </Text>
                         </YStack>

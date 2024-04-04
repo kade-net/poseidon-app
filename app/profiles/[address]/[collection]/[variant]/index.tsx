@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { Link, Stack, useGlobalSearchParams, useRouter } from 'expo-router'
+import { Link, Stack, useGlobalSearchParams, useNavigation, useRouter } from 'expo-router'
 import { Button, Spinner, XStack, YStack, Text } from 'tamagui'
 import { useQuery } from 'react-query'
 import collected from '../../../../../contract/modules/collected'
@@ -20,6 +20,12 @@ const index = () => {
     const variant = params['variant'] as string
     const [collecting, setCollecting] = useState(false)
     const { isOpen, onOpen, onClose, onToggle } = useDisclosure()
+    const nftsQuery = useQuery({
+        queryFn: () => {
+            return collected.getCollections(address)
+        },
+        queryKey: ['collections', address],
+    })
 
     const router = useRouter()
 
@@ -53,7 +59,7 @@ const index = () => {
                 variant
             )
 
-            await collected.getCollections(delegateManager?.owner!)
+            await nftsQuery.refetch()
 
             Toast.show({
                 type: 'success',
@@ -61,12 +67,8 @@ const index = () => {
                 text1: `Success`
             })
 
-            router.push({
-                pathname: '/profiles/[address]/',
-                params: {
-                    address: address
-                }
-            })
+            router.back()
+            router.back()
         }
         catch (e) {
             Toast.show({

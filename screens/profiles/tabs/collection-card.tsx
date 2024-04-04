@@ -78,13 +78,13 @@ const CollectionCard = (props: Props) => {
                                         {
                                             data?.is_locked ? <Anchor color="yellow" /> : <Unlock color={'green'} />
                                         }
-                                        <Text>
+                                        <Text color={'white'} >
                                             {
                                                 data?.is_locked ? "Get with Anchors" : "Unlocked"
                                             }
                                         </Text>
                                     </XStack>
-                                    <Text>
+                                    <Text color={'white'} >
                                         {data?.description}
                                     </Text>
                                 </YStack>

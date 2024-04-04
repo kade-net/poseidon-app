@@ -14,6 +14,7 @@ import { aptos } from '../../../contract'
 import { Utils } from '../../../utils'
 import UnstyledButton from '../../../components/ui/buttons/unstyled-button'
 import Toast from 'react-native-toast-message'
+import posti from '../../../lib/posti'
 
 const schema = z.object({
     username: z.string().regex(Utils.USERNAME_REGEX).min(3).max(20).trim()
@@ -98,6 +99,9 @@ const PickUserName = () => {
             console.log(`ACCOUNT SETUP FAILED:: ${resp}`)
         }
         catch (e) {
+            posti.capture('claim-username-error', {
+                error: e
+            })
             Toast.show({
                 text1: 'Error claiming username',
                 text2: 'Please try again',

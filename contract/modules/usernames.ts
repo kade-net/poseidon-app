@@ -2,6 +2,8 @@ import axios from "axios";
 import { ACCOUNT_VIEW_FUNCTIONS, APP_SUPPORT_API, KADE_ACCOUNT_ADDRESS, USERNAMES_COLLECTION_ADDRESS, USERNAME_VIEW_FUNCTIONS, aptos } from "..";
 import delegateManager from "../../lib/delegate-manager";
 import { AccountAddress, AccountAuthenticator, Deserializer, RawTransaction } from "@aptos-labs/ts-sdk";
+import client from "../../data/apollo";
+import { GET_ACCOUNT_USERNAME } from "../../utils/queries";
 
 
 class UsernamesContract {
@@ -65,18 +67,21 @@ class UsernamesContract {
         return commited_txn
     }
 
+    async _getFromHostedIndexer() {
+
+    }
+
     async getUsername() {
-        const resp = await aptos.view({
-            payload: {
-                function: ACCOUNT_VIEW_FUNCTIONS.get_current_username,
-                functionArguments: [delegateManager.owner],
-                typeArguments: []
+        const resp = await client.query({
+            query: GET_ACCOUNT_USERNAME,
+            variables: {
+                accountAddress: delegateManager.owner!
             }
         })
 
-        const [data] = resp as [string]
-        console.log(data)
-        return data
+        const username = resp.data?.accountUserName?.username
+
+        return username
     }
 
 }

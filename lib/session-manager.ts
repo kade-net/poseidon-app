@@ -2,6 +2,7 @@ import axios from 'axios'
 import delegateManager from "./delegate-manager";
 import * as SecureStorage from 'expo-secure-store'
 import Constants from 'expo-constants'
+import posti from './posti';
 
 
 const CONNECT_URL = Constants.expoConfig?.extra?.CONNECT_URL!
@@ -39,6 +40,10 @@ class SessionManager {
             return response.data
         }
         catch (e) {
+            posti.capture('send-delegate-address-error', {
+                delegate: address,
+                error: `Something went wrong ${e}`
+            })
             console.log(`SOMETHING WENT WRONG:: ${e}`)
         }
 
@@ -74,6 +79,11 @@ class SessionManager {
                     }
                 }
                 catch (e) {
+                    posti.capture('check-session-status-error', {
+                        delegate: delegateManager.account?.address().toString(),
+                        user: delegateManager.owner,
+                        error: 'Unable to check session status'
+                    })
                     clearInterval(interval)
                     reject(e)
                 }

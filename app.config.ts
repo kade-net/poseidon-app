@@ -25,7 +25,10 @@ export default ({ config }: ConfigContext): Partial<ExpoConfig> => {
             ANCHORS_URL: process.env.ANCHORS_URL,
             CONNECT_URL: process.env.CONNECT_URL,
             COMMUNITY_MODULE_ADDRESS: process.env.COMMUNITY_MODULE_ADDRESS,
-            eas: {
+            POSTHOG_API_KEY: process.env.POSTHOG_API_KEY,
+            USERNAMES_COLLECTION_ID: process.env.USERNAMES_COLLECTION_ID,
+            APP_ENV: process.env.APP_ENV,
+            eas: { 
                 ...config.extra?.eas,
                 projectId: process.env.EAS_PROJECT_ID,
             }

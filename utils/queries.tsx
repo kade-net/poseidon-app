@@ -492,3 +492,16 @@ export const USER_NOTIFICATIONS = gql(/* GraphQL */`
         }
     }
 `)
+
+export const GET_ACCOUNT_USERNAME = gql(/* GraphqQL */`
+    query AccountUserName($accountAddress: String!) {
+        accountUserName(
+            accountAddress: $accountAddress
+        ) {
+            username
+            owner_address
+            token_address
+            timestamp
+        }
+    }
+`)

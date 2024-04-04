@@ -9652,7 +9652,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"expo-application@npm:~5.8.0":
+"expo-application@npm:~5.8.0, expo-application@npm:~5.8.3":
   version: 5.8.3
   resolution: "expo-application@npm:5.8.3"
   peerDependencies:
@@ -9802,6 +9802,17 @@ __metadata:
     expo-constants: "npm:~15.4.3"
     invariant: "npm:^2.2.4"
   checksum: 30d750881b1003fabff17929e1b6062ed6cd243ca35cedd41082df5fd775d0c457f50e4a9e696dedc53459caac4f26d493a2819cef692633822d893c788e0f06
+  languageName: node
+  linkType: hard
+
+"expo-localization@npm:~14.8.3":
+  version: 14.8.3
+  resolution: "expo-localization@npm:14.8.3"
+  dependencies:
+    rtl-detect: "npm:^1.0.2"
+  peerDependencies:
+    expo: "*"
+  checksum: 8a1c2b4413fde550778b8ed469b4c292b3c66264edede70534bdb468605e3dc092de5894cd634a96a8abfeddc23517ee3e4231a8943117d5619a705c0e59ef03
   languageName: node
   linkType: hard
 
@@ -14613,6 +14624,7 @@ __metadata:
     dayjs: "npm:^1.11.10"
     dotenv: "npm:^16.4.5"
     expo: "npm:~50.0.14"
+    expo-application: "npm:~5.8.3"
     expo-camera: "npm:~14.1.1"
     expo-clipboard: "npm:~5.0.1"
     expo-constants: "npm:^15.4.5"
@@ -14622,6 +14634,7 @@ __metadata:
     expo-image-picker: "npm:~14.7.1"
     expo-linear-gradient: "npm:~12.7.2"
     expo-linking: "npm:^6.2.2"
+    expo-localization: "npm:~14.8.3"
     expo-navigation-bar: "npm:~2.8.1"
     expo-notifications: "npm:~0.27.6"
     expo-router: "npm:~3.4.8"
@@ -14633,6 +14646,7 @@ __metadata:
     graphql: "npm:^15.8.0"
     immer: "npm:^10.0.3"
     lodash: "npm:^4.17.21"
+    posthog-react-native: "npm:^3.1.0"
     react: "npm:^18.2.0"
     react-dom: "npm:^18.2.0"
     react-helmet-async: "npm:~2.0.4"
@@ -14682,6 +14696,39 @@ __metadata:
     picocolors: "npm:^1.0.0"
     source-map-js: "npm:^1.0.2"
   checksum: e22a4594c255f26117f38419fb494d7ecab0f596cd409f7aadc8a6173abf180ed7ea970cd13fd366ab12b5840be901d2a09b25197700c2ebcb5a8077326bf519
+  languageName: node
+  linkType: hard
+
+"posthog-react-native@npm:^3.1.0":
+  version: 3.1.0
+  resolution: "posthog-react-native@npm:3.1.0"
+  peerDependencies:
+    "@react-native-async-storage/async-storage": ">=1.0.0"
+    "@react-navigation/native": ">= 5.0.10"
+    expo-application: ">= 4.0.0"
+    expo-device: ">= 4.0.0"
+    expo-file-system: ">= 13.0.0"
+    expo-localization: ">= 11.0.0"
+    react-native-device-info: ">= 10.0.0"
+    react-native-navigation: ">=6.0.0"
+  peerDependenciesMeta:
+    "@react-native-async-storage/async-storage":
+      optional: true
+    "@react-navigation/native":
+      optional: true
+    expo-application:
+      optional: true
+    expo-device:
+      optional: true
+    expo-file-system:
+      optional: true
+    expo-localization:
+      optional: true
+    react-native-device-info:
+      optional: true
+    react-native-navigation:
+      optional: true
+  checksum: cbeac8b5aa02b580581e4b32d6fdcbf223f285a9dcb6539f64024d2428b09ca48eba302d6606da0d622c2a1a6c11309cf3a75d1126c0014639539540bebe3fff
   languageName: node
   linkType: hard
 
@@ -15864,6 +15911,13 @@ __metadata:
   bin:
     rimraf: ./bin.js
   checksum: 884c45de4195e4ce5ab6d8782d073302291a50004d1d79e628cf04b0a3594c882314b0639960333211cebe4ac888755c803cd09a5151d30e88a070af16b1573d
+  languageName: node
+  linkType: hard
+
+"rtl-detect@npm:^1.0.2":
+  version: 1.1.2
+  resolution: "rtl-detect@npm:1.1.2"
+  checksum: d19089c3b5f7a6fbabfa2c4724fcdf8694f313d196d44c8eee3625ba2e46418afe65b4da38e3e92822985291efd0656d85daa4b2ef296a46a65a702d0b156876
   languageName: node
   linkType: hard
 

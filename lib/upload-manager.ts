@@ -3,6 +3,7 @@ import { APP_SUPPORT_API } from "../contract"
 import delegateManager from "./delegate-manager"
 import * as FileSystem from 'expo-file-system'
 import { Buffer } from 'buffer'
+import posti from "./posti"
 
 
 class UploadManager {
@@ -57,6 +58,11 @@ class UploadManager {
 
         }
         catch (e) {
+            posti.capture('image-upload-error', {
+                user: delegateManager.owner,
+                delegate: delegateManager.account?.address().toString(),
+                error: 'Unable to upload file'
+            })
             console.log(`SOMETHING WENT WRONG:: ${e}`)
             throw new Error('Unable to upload file')
         }

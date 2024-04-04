@@ -6,6 +6,7 @@ import { COMMUNITY_QUERY, GET_MY_PROFILE } from "../../utils/queries";
 import delegateManager from "../../lib/delegate-manager";
 import localStore from "../../lib/local-store";
 import { z } from "zod";
+import posti from "../../lib/posti";
 
 interface Community {
     id: string;
@@ -58,6 +59,11 @@ class CommunityModule {
 
 
         if (!profile) {
+            posti.capture('create-community-failed', {
+                error: "Profile does not exist",
+                delegate: delegateManager.account?.address().toString(),
+                user: delegateManager.owner!
+            })
             throw new Error("Profile not found")
         }
 
@@ -99,6 +105,11 @@ class CommunityModule {
             })
         }
         catch (e) {
+            posti.capture('follow failed', {
+                error: 'Unable to follow account',
+                user: delegateManager.owner!,
+                delegate: delegateManager.account?.address().toString()
+            })
             console.log("Error: ", e)
             localStore.removeMembership(communityName)
             throw e
@@ -131,7 +142,11 @@ class CommunityModule {
         }
         catch (e) {
             console.log("Error: ", e)
-
+            posti.capture('unfollow-community-fail', {
+                user: delegateManager.owner!,
+                delegate: delegateManager.account?.address().toString(),
+                communityName
+            })
             localStore.addMembership(communityName)
             throw e
         }
@@ -201,6 +216,12 @@ class CommunityModule {
             await localStore.updateCommunity(data)
         }
         catch (e) {
+            posti.capture('update-community-fail', {
+                user: delegateManager.owner!,
+                delegate: delegateManager.account?.address().toString(),
+                error: e,
+                description: 'Unable to update community'
+            })
             console.log(`Something went wrong: ${e}`)
             throw e
         }

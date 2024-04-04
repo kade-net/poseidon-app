@@ -566,7 +566,7 @@ class LocalStore {
         if (!username) {
             try {
 
-                username = await usernames.getUsername()
+                username = await usernames.getUsername() ?? ''
             }
             catch (e) {
                 // SILENTLY FAIL

@@ -13,6 +13,7 @@ import { GET_MY_PROFILE, GET_PUBLICATION, GET_PUBLICATIONS } from '../../utils/q
 import localStore from '../../lib/local-store';
 import { getAuthenticatorsAndRawTransaction } from './helpers';
 import storage from '../../lib/storage';
+import posti from '../../lib/posti';
 
 class AccountContract {
 
@@ -175,6 +176,12 @@ class AccountContract {
                 return true
             }
             else {
+                posti.capture('follow-account', {
+                    user: delegateManager.owner,
+                    delegate: delegateManager.account?.address(),
+                    following_address,
+                    error: 'Transaction failed'
+                })
                 await localStore.removeFollow(following_address)
                 throw new Error("Transaction failed")
             }
@@ -218,6 +225,12 @@ class AccountContract {
                 return true
             }
             else {
+                posti.capture('unfollow-account-error', {
+                    user: delegateManager.owner,
+                    delegate: delegateManager.account?.address(),
+                    error: 'Unable to unfollow account',
+                    unfollowing_address
+                })
                 await localStore.addFollow(unfollowing_address)
                 throw new Error("Transaction failed")
             }
