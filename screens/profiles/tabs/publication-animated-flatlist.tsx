@@ -4,7 +4,7 @@ import { ProfileTabsProps, SceneProps, ScrollManager } from './common'
 import { useQuery } from '@apollo/client'
 import { GET_PUBLICATIONS } from '../../../utils/queries'
 import delegateManager from '../../../lib/delegate-manager'
-import { Spinner, Text, View, XStack } from 'tamagui'
+import { Button, Spinner, Text, View, XStack, YStack } from 'tamagui'
 import BaseContentContainer from '../../../components/ui/feed/base-content-container'
 import { useGlobalSearchParams } from 'expo-router'
 import { isEmpty } from 'lodash'
@@ -74,9 +74,27 @@ const PublicationAnimatedFlatList = (props: ProfileTabsProps & {
 
   }, [])
 
-
+  const NoPublications = useCallback(() => {
+    return (
+      <View mt={10}>
+          <Text textAlign='center' fontSize={"$md"} color={"$text"}>No {props.route.title} yet</Text>
+          <View flexDirection='row' justifyContent='center' mt={20}>
+          <Button onPress={handleFetchTop} fontSize={"$sm"} backgroundColor={"$button"} color={"$buttonText"} width={"40%"}>
+            {
+              postsQuery?.loading ? <XStack>
+                <Spinner />
+                <Text>
+                  Refetching
+                </Text>
+              </XStack> : "Refresh"
+            }
+          </Button>
+          </View>
+      </View>
+    )
+  }, [, postsQuery?.loading])
   return (
-    <XStack w="100%" h="100%" >
+    <YStack w="100%" h="100%" >
       <Animated.FlatList
         onMomentumScrollBegin={props.manager.onMomentumScrollBegin}
         onMomentumScrollEnd={props.manager.onMomentumScrollEnd}
@@ -119,6 +137,7 @@ const PublicationAnimatedFlatList = (props: ProfileTabsProps & {
         initialNumToRender={20}
         keyExtractor={(item) => item?.id?.toString()}
         renderItem={renderPublication}
+        ListEmptyComponent={NoPublications}
         ListFooterComponent={() => {
           return <View w="100%" flexDirection='row' alignItems='center' justifyContent='center' columnGap={10} >
             {postsQuery?.loading && <>
@@ -131,7 +150,7 @@ const PublicationAnimatedFlatList = (props: ProfileTabsProps & {
         }}
 
       />
-    </XStack>
+    </YStack>
   )
 }
 

@@ -35,7 +35,6 @@ const Search = () => {
                 alignItems='center'
                 columnGap={20}
                 px={Utils.dynamicWidth(5)}
-                pb={20}
             >
                 <Link asChild href={{
                     pathname: '/profiles/[address]/',

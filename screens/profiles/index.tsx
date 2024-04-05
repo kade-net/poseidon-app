@@ -1,7 +1,7 @@
 import { View, Text, Spinner, XStack, Avatar, YStack, Button, H3, H4, H5, H6, useTheme } from 'tamagui'
 import React, { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useQuery } from '@apollo/client'
-import { GET_ACCOUNT_VIEWER_STATS, GET_MY_PROFILE } from '../../utils/queries'
+import { GET_ACCOUNT_STATS, GET_MY_PROFILE, GET_RELATIONSHIP } from '../../utils/queries'
 import delegateManager from '../../lib/delegate-manager'
 import { NavigationState, SceneRendererProps, TabView } from 'react-native-tab-view'
 import { Animated, Platform, TouchableOpacity, useColorScheme, useWindowDimensions } from 'react-native'
@@ -15,6 +15,7 @@ import { useMultiScrollManager } from '../../components/hooks/useMultiScrollMana
 import TabNavbar from './tab-navbar'
 import account from '../../contract/modules/account'
 import { Link } from 'expo-router'
+import { Utils } from '../../utils'
 
 interface Props {
     address: string
@@ -94,17 +95,23 @@ const ProfileDetails = (props: Props) => {
         skip: !address
     })
 
+    const accountStatsQuery = useQuery(GET_ACCOUNT_STATS, {
+        variables: {
+            accountAddress: address
+        },
+        skip: !address
+    })
 
-    const accountViewerStats = useQuery(GET_ACCOUNT_VIEWER_STATS, {
+    const relationshipQuery = useQuery(GET_RELATIONSHIP, {
         variables: {
             accountAddress: address,
-            viewerAddress: delegateManager.owner! // SAFE TO ASSUME
+            viewerAddress: delegateManager.owner!
         },
         skip: !address || IS_SAME_ACCOUNT
     })
 
     const handleFollowToggle = async () => {
-        const following = accountViewerStats?.data?.accountViewerStats?.follows
+        const following = relationshipQuery?.data?.accountRelationship?.follows
         if (following) {
             await account.unFollowAccount(address)
         } else {
@@ -116,12 +123,13 @@ const ProfileDetails = (props: Props) => {
 
 
 
-    if (profileQuery.loading) {
+    if (profileQuery.loading || accountStatsQuery.loading || relationshipQuery.loading) {
         return (
             <View
                 flex={1}
                 w="100%"
                 h="100%"
+                backgroundColor={'$background'}
             >
                 <Spinner />
             </View>
@@ -157,7 +165,7 @@ const ProfileDetails = (props: Props) => {
                 >
                     <XStack w="100%" py={10} columnGap={10} >
                         <Avatar circular size={"$6"} >
-                            <Avatar.Image source={{ uri: profileQuery.data?.account?.profile?.pfp ?? undefined }} />
+                            <Avatar.Image source={{ uri: profileQuery.data?.account?.profile?.pfp ?? Utils.diceImage(address) }} />
                             <Avatar.Fallback
                                 bg="lightgray"
                             />
@@ -187,7 +195,7 @@ const ProfileDetails = (props: Props) => {
                     <XStack columnGap={5} >
                         <Text fontWeight={"bold"} color={"$text"}>
                             {
-                                profileQuery.data?.account?.stats?.following
+                                accountStatsQuery?.data?.accountStats?.following
                             }
                         </Text>
                         <Link asChild href={{
@@ -204,7 +212,7 @@ const ProfileDetails = (props: Props) => {
                     <XStack columnGap={5} >
                         <Text fontWeight={"bold"} color={"$text"}>
                             {
-                                profileQuery.data?.account?.stats?.followers
+                                accountStatsQuery?.data?.accountStats?.followers
                             }
                         </Text>
                         <Link asChild href={{
@@ -220,11 +228,13 @@ const ProfileDetails = (props: Props) => {
                     </XStack>
                 </XStack>
                 {!IS_SAME_ACCOUNT && <XStack px={10} w="100%" alignItems='center' columnGap={5} py={10} >
-                    <Button borderColor={"$button"} w="100%" onPress={handleFollowToggle} variant={
-                        accountViewerStats?.data?.accountViewerStats?.follows ? "outlined" : undefined
-                    } >
+                    <Button fontSize={"$sm"} borderColor={"$button"} color={relationshipQuery?.data?.accountRelationship?.follows ? "$text" : "$buttonText"} backgroundColor={relationshipQuery?.data?.accountRelationship?.follows ? "$colourlessButton" : "$button"} w="100%" onPress={handleFollowToggle} variant={
+                        relationshipQuery?.data?.accountRelationship?.follows ? "outlined" : undefined
+                    }
+
+                    >
                         {
-                            accountViewerStats?.data?.accountViewerStats?.follows ? "Following" : "Follow"
+                            relationshipQuery?.data?.accountRelationship?.follows ? "Following" : "Follow"
                         }
                     </Button>
                     

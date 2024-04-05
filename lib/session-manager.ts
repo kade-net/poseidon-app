@@ -1,9 +1,11 @@
 import axios from 'axios'
 import delegateManager from "./delegate-manager";
 import * as SecureStorage from 'expo-secure-store'
+import Constants from 'expo-constants'
+import posti from './posti';
 
 
-
+const CONNECT_URL = Constants.expoConfig?.extra?.CONNECT_URL!
 
 class SessionManager {
     session: string | null = null;
@@ -26,7 +28,7 @@ class SessionManager {
         // TODO: update connector url
         try {
 
-            const response = await axios.post<{ delegate_linked: boolean, username: string, owner: string } | null>(`https://connector-psi.vercel.app/api/add-delegate`, {
+            const response = await axios.post<{ delegate_linked: boolean, username: string, owner: string } | null>(`${CONNECT_URL}/api/add-delegate`, {
                 delegate_address: address
             },
                 {
@@ -38,6 +40,10 @@ class SessionManager {
             return response.data
         }
         catch (e) {
+            posti.capture('send-delegate-address-error', {
+                delegate: address,
+                error: `Something went wrong ${e}`
+            })
             console.log(`SOMETHING WENT WRONG:: ${e}`)
         }
 
@@ -57,7 +63,7 @@ class SessionManager {
         return new Promise((resolve, reject) => {
             const interval = setInterval(async () => {
                 try {
-                    const response = await axios.get<{ delegate_linked: boolean, account_linked: boolean, address: string, owner: string }>(`https://connector-psi.vercel.app/api/add-delegate?delegate_address=${delegateManager.account?.address()?.toString()}`, {
+                    const response = await axios.get<{ delegate_linked: boolean, account_linked: boolean, address: string, owner: string }>(`${CONNECT_URL}/api/add-delegate?delegate_address=${delegateManager.account?.address()?.toString()}`, {
                         headers: {
                             'Authorization': `Bearer ${this.session}`,
                         }
@@ -73,6 +79,11 @@ class SessionManager {
                     }
                 }
                 catch (e) {
+                    posti.capture('check-session-status-error', {
+                        delegate: delegateManager.account?.address().toString(),
+                        user: delegateManager.owner,
+                        error: 'Unable to check session status'
+                    })
                     clearInterval(interval)
                     reject(e)
                 }

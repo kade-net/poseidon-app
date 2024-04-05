@@ -2,7 +2,7 @@
   "expo": {
     "name": "poseidon",
     "slug": "poseidon",
-    "version": "0.0.15",
+    "version": "0.0.18",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "poseidon",
@@ -19,7 +19,7 @@
       "config": {
         "usesNonExemptEncryption": false
       },
-      "buildNumber": "5"
+      "buildNumber": "8"
     },
     "android": {
       "adaptiveIcon": {
@@ -28,14 +28,19 @@
       },
       "package": "com.kadenet.poseidon",
       "googleServicesFile": "./google-services.json",
-      "versionCode": 5
+      "versionCode": 8
     },
     "web": {
       "bundler": "metro",
       "output": "static",
       "favicon": "./assets/images/favicon.png"
     },
-    "plugins": ["expo-router", "expo-font", "expo-secure-store"],
+    "plugins": [
+      "expo-router",
+      "expo-font",
+      "expo-secure-store",
+      "expo-localization"
+    ],
     "experiments": {
       "typedRoutes": true
     },
@@ -47,6 +52,12 @@
         "projectId": "30159790-9cfe-44b4-bb58-30450db634ec"
       }
     },
-    "owner": "kade-net"
+    "owner": "kade-net",
+    "updates": {
+      "url": "https://u.expo.dev/30159790-9cfe-44b4-bb58-30450db634ec"
+    },
+    "runtimeVersion": {
+      "policy": "appVersion"
+    }
   }
 }

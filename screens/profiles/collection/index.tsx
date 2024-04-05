@@ -5,7 +5,7 @@ import CollectionImage from './collection-image'
 import { useQuery } from 'react-query'
 import collected from '../../../contract/modules/collected'
 import { Link, useGlobalSearchParams } from 'expo-router'
-import { ArrowRight } from '@tamagui/lucide-icons'
+import { ArrowRight, Info } from '@tamagui/lucide-icons'
 import { useQuery as useApolloQuery } from '@apollo/client'
 import { GET_COLLECTION_DETAILS } from '../../../support-gql-clients/queries/barnicle'
 import { barnicleClient } from '../../../data/apollo'
@@ -55,12 +55,19 @@ const Collection = () => {
             <CollectionImage image={collection.data?.first_uri!} name={collection?.data?.collection_name ?? 'Untitled'} />
 
             <YStack w="100%" px={5} py={10} rowGap={20} >
+                <XStack w="100%" columnGap={10} >
+                    <Info color={'aqua'} />
+                    <Text color={'aqua'} textAlign='left' flex={1} w="100%"  >
+                        It may take a sec for us to index all this collection's data.
+                    </Text>
+                </XStack>
                 <YStack w="100%" rowGap={10}  >
                     <H3>
                         {
                             tokenQuery?.data?.at(0)?.current_token_data?.token_name ?? 'Untitled'
                         }
                     </H3>
+
                     {collectionDetailsQuery?.data && <Text fontSize={"$sm"}>
                         {collectionDetailsQuery?.data?.collection?.description ?? 'No description'}
                     </Text>}

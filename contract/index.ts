@@ -5,7 +5,7 @@ export const USERNAMES_COLLECTION_ADDRESS = '0x32464b70d881e7847f49c7826145bca69
 
 export const MODULE_ADDRESS = Constants.expoConfig?.extra?.MODULE_ADDRESS
 
-export const COMMUNITY_MODULE_ADDRESS = '0x3cb811325b7a3e40231ecda6ba74bb0deb97196d2f0353123825a398861db95f' as const;
+export const COMMUNITY_MODULE_ADDRESS = `${Constants.expoConfig?.extra?.COMMUNITY_MODULE_ADDRESS}` as const;
 
 export const ACCOUNTS_RESOURCE_ADDRESS = '0x149e9a5f5dc3179720f0f5ddece23fdfda209fbaa6e24ee604a844e614425715';
 
@@ -13,7 +13,7 @@ export const PUBLICATIONS_RESOURCE_ADDRESS = '0x475f52e760b2b3eb00e5b5dc4907f936
 
 export const USERNAMES_RESOURCE_ADDRESS = '0xfc5fad0f8b01316ca88f0b4a28d1e7cdf66802e707ca5869eec4764580fde925'
 
-export const ACCOUNT_CONTRACT = `${MODULE_ADDRESS}::accounts`
+export const ACCOUNT_CONTRACT = `${MODULE_ADDRESS}::accounts` as const
 
 export const PUBLICATION_CONTRACT = `${MODULE_ADDRESS}::publications`
 
@@ -36,6 +36,7 @@ export const ACCOUNT_ENTRY_FUNCTIONS = {
 export const ACCOUNT_VIEW_FUNCTIONS = {
     get_account: `${ACCOUNT_CONTRACT}::get_account`,
     delegate_get_owner: `${ACCOUNT_CONTRACT}::delegate_get_owner`,
+    get_current_username: `${ACCOUNT_CONTRACT}::get_current_username` as const,
 }
 
 export const PUBLICATION_ENTRY_FUNCTIONS = {

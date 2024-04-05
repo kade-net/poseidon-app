@@ -29,14 +29,14 @@ const ContentPreviewContainer = (props: Props) => {
                         <Avatar.Image src={props.data?.creator?.profile?.pfp as string ?? null} />
                         <Avatar.Fallback backgroundColor={"$pink10"} ></Avatar.Fallback>
                     </Avatar>
-                    <XStack flex={1} flexWrap='wrap' columnGap={5} >
+                    <XStack flex={1} flexWrap='wrap' alignItems='center' columnGap={5} >
                         <Text fontWeight={"bold"} >
                             {props?.data?.creator?.profile?.display_name}
                         </Text>
                         <Text color={"gray"} >
                             @{props?.data?.creator?.username?.username}
                         </Text>
-                        <Dot />
+                        <Dot color='$sideText' />
                         <Text color={"gray"} >
                             {dayjs(props?.data?.timestamp).fromNow()}
                         </Text>

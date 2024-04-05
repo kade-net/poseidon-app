@@ -43,8 +43,8 @@ const PublicationEditor = (props: Props) => {
 
     const { onClose, publicationType, parentPublicationRef, defaultCommunity } = props
     const { isOpen: userMentionsOpen, onClose: closeUserMentions, onOpen: openUserMentions, onToggle: toggleUserMentions } = useDisclosure()
+    const [images, setImages] = useState<string[]>([])
 
-    const [images, setImages] = useState<Array<ImagePicker.ImagePickerAsset>>([])
     const [uploading, setUploading] = useState(false)
     const [publishing, setPublishing] = useState(false)
     const form = useForm<TPUBLICATION>({
@@ -58,16 +58,14 @@ const PublicationEditor = (props: Props) => {
         const result = await ImagePicker.launchImageLibraryAsync({
             mediaTypes: ImagePicker.MediaTypeOptions.Images, // TODO: Add support for videos
             quality: 1,
-            aspect: [4, 3]
+            allowsEditing: true
         })
 
 
 
         if (!result.canceled) {
             const chosen = result.assets ?? []
-            setImages((prev) => {
-                return [...prev, ...chosen]
-            })
+
             const existingMedia = form.getValues('media') ?? []
 
             if (chosen.length > 0) {
@@ -93,6 +91,8 @@ const PublicationEditor = (props: Props) => {
                             ...assets
                         ]
                     )
+
+                    setImages([...images, ...assets.map((asset) => asset.url)])
 
                 }
                 catch (e) {
@@ -259,7 +259,7 @@ const PublicationEditor = (props: Props) => {
                     >
                         <Avatar circular size={"$3"} >
                             <Avatar.Image
-                                src={profileQuery.data?.account?.profile?.pfp as string ?? null}
+                                src={profileQuery.data?.account?.profile?.pfp as string ?? Utils.diceImage(delegateManager.owner ?? '1')}
                                 accessibilityLabel="Profile Picture"
                             />
                             <Avatar.Fallback
@@ -293,6 +293,11 @@ const PublicationEditor = (props: Props) => {
                                 control={form.control}
                                 name='media'
                                 render={({ field }) => {
+                                    if (uploading) return (
+                                        <XStack w="100%" h="100%" borderWidth={1} borderColor={'$borderColor'} borderRadius={'$5'} aspectRatio={16 / 9} bg="$background" alignItems='center' justifyContent='center' >
+                                            <Spinner />
+                                        </XStack>
+                                    )
                                     return <>
                                         {
                                             field.value?.map((media, index) => {
@@ -304,6 +309,7 @@ const PublicationEditor = (props: Props) => {
                                                         id={index}
                                                         onRemove={(id) => {
                                                             form.setValue('media', field.value?.filter((_, i) => i !== id))
+                                                            setImages(images.filter((_, i) => i !== id))
                                                         }}
                                                     />
                                                 )
@@ -359,12 +365,12 @@ const PublicationEditor = (props: Props) => {
                             </TouchableOpacity>
 
                         </XStack>
-                        {
+                        {/* {
                             uploading ? <XStack columnGap={10} >
                                 <Spinner />
                                 <Text>Uploading...</Text>
                             </XStack> : null
-                        }
+                        } */}
                     </View>
                 </YStack>
             </KeyboardAvoidingView>

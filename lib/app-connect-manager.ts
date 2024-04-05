@@ -1,7 +1,10 @@
 import axios from "axios"
 import delegateManager from "./delegate-manager"
+import Constants from "expo-constants"
+import { aptos } from "../contract"
+import posti from "./posti"
 
-const CONNECT_URL = "https://anchor-connect.vercel.app"
+const CONNECT_URL = Constants.expoConfig?.extra?.ANCHORS_URL!
 
 class AppConnect {
     constructor() {
@@ -21,6 +24,9 @@ class AppConnect {
             return true
         }
         else {
+            posti.capture('unable to link to anchors', {
+                message: 'Unable to link to anchors'
+            })
             throw new Error('Failed to link session')
         }
 

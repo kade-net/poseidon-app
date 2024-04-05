@@ -64,6 +64,9 @@ const FeedImage = (props: FeedImageProps) => {
             height={"100%"}
             borderRadius={5}
             overflow='hidden'
+            borderWidth={editable ? 1 : undefined}
+            borderColor={editable ? '$borderColor' : undefined}
+
         >
             {editable && <TouchableOpacity
                 style={{

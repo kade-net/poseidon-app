@@ -2,6 +2,8 @@ import { isString } from "lodash"
 import client from "../data/apollo"
 import { GET_PUBLICATIONS } from "../utils/queries"
 import storage from "./storage"
+import posti from "./posti"
+import delegateManager from "./delegate-manager"
 
 
 class SelfModeration {
@@ -11,6 +13,7 @@ class SelfModeration {
     hiddenPublications: Array<string> = []
 
     async muteUser(id: number, address: string) {
+
         storage.save({
             key: 'muted',
             id: id.toString(),
@@ -26,6 +29,12 @@ class SelfModeration {
 
         client.refetchQueries({
             include: [GET_PUBLICATIONS]
+        })
+
+        posti.capture('user-muted', {
+            user: delegateManager.owner,
+            mutedUser: address,
+            mutedUserKid: id
         })
     }
 
@@ -61,6 +70,10 @@ class SelfModeration {
         // client.refetchQueries({
         //     include: [GET_PUBLICATIONS]
         // })
+
+        posti.capture('remove-post-from-feed', {
+            publication_ref
+        })
 
         await storage.save({
             key: 'removedFromFeed',
