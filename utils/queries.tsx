@@ -77,18 +77,17 @@ export const GET_MY_PROFILE = gql(/* GraphQL */`
             username
         }
         timestamp
-        stats {
-            followers
-            following
-            posts
-            delegates
-            reposts
-            quotes
-            comments
-            reactions
-        }
     }
 }
+`)
+
+export const GET_ACCOUNT_STATS = gql(/* GraphQL */`
+    query AccountStats($accountAddress: String!) {
+        accountStats(accountAddress: $accountAddress) {
+            followers
+            following
+        }
+    }
 `)
 
 export const GET_ACCOUNT_VIEWER_STATS = gql(/* GraphQL */`
@@ -97,6 +96,7 @@ export const GET_ACCOUNT_VIEWER_STATS = gql(/* GraphQL */`
         accountAddress: $accountAddress
         viewerAddress: $viewerAddress
     ) {
+        id
         follows
         followed
     }
@@ -335,7 +335,18 @@ export const GET_FOLLOW_ACCOUNT = gql(/* GraphQL */`
             viewer(address: $viewer) {
                 followed
                 follows
+                id
             }
+        }
+    }
+`)
+
+export const GET_RELATIONSHIP = gql(/* GraphQL */`
+    query AccountRelationship($viewerAddress: String!, $accountAddress: String!) {
+        accountRelationship(viewerAddress: $viewerAddress, accountAddress: $accountAddress) {
+            id
+            follows
+            followed
         }
     }
 `)

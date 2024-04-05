@@ -1,13 +1,14 @@
 import '../../global'
 import 'react-native-get-random-values'
-import { Account, Community, Publication, PublicationViewerStats } from "../../__generated__/graphql";
+import { Community, Publication } from "../../__generated__/graphql";
 import storage from "../storage";
 import { TPROFILE, TPUBLICATION, UpdateCommunitySchema } from '../../schema';
 import client, { barnicleClient } from '../../data/apollo';
-import { GET_PUBLICATIONS, GET_MY_PROFILE, GET_PUBLICATION, GET_PUBLICATION_COMMENTS, GET_PUBLICATION_INTERACTIONS_BY_VIEWER, GET_PUBLICATION_STATS, COMMUNITY_QUERY, GET_ACCOUNT_VIEWER_STATS, ACCOUNTS_SEARCH_QUERY, GET_FOLLOW_ACCOUNT, GET_MEMBERSHIP, SEARCH_COMMUNITIES, GET_COMMUNITY_PUBLICATIONS, POST_COMMUNITY_SEARCH } from '../../utils/queries';
+import { GET_PUBLICATIONS, GET_MY_PROFILE, GET_PUBLICATION, GET_PUBLICATION_COMMENTS, GET_PUBLICATION_INTERACTIONS_BY_VIEWER, GET_PUBLICATION_STATS, COMMUNITY_QUERY, GET_MEMBERSHIP, SEARCH_COMMUNITIES, GET_COMMUNITY_PUBLICATIONS, POST_COMMUNITY_SEARCH, GET_RELATIONSHIP, GET_ACCOUNT_STATS } from '../../utils/queries';
 import delegateManager from '../delegate-manager';
 import usernames from '../../contract/modules/usernames';
 import { getMutedUsers, getRemovedFromFeed } from '../../contract/modules/store-getters';
+import posti from '../posti';
 
 // TODO: for now we will ignore caching of quotes and anything that will not be seen directly in the home page
 class LocalStore {
@@ -222,6 +223,7 @@ class LocalStore {
         try {
 
             if (community) {
+                console.log("Community ::", community)
                 const prevCommunityPublications = client.readQuery({
                     query: GET_COMMUNITY_PUBLICATIONS,
                     variables: {
@@ -592,17 +594,6 @@ class LocalStore {
                     id: currentProfile?.account?.id ?? Date.now(),
                     __typename: "Account",
                     timestamp: currentProfile?.account?.timestamp ?? Date.now(),
-                    stats: currentProfile?.account?.stats ?? {
-                        __typename: "AccountStats",
-                        followers: 0,
-                        following: 0,
-                        posts: 0,
-                        comments: 0,
-                        quotes: 0,
-                        reactions: 0,
-                        reposts: 0,
-                        delegates: 0
-                    },
                     address: delegateManager.owner!
                 },
             },
@@ -626,216 +617,168 @@ class LocalStore {
     }
 
     async addFollow(following_address: string, search?: string) {
-        const prevState = client.readQuery({
-            query: GET_ACCOUNT_VIEWER_STATS,
+        const relationship = client.readQuery({
+            query: GET_RELATIONSHIP,
             variables: {
                 accountAddress: following_address,
                 viewerAddress: delegateManager.owner!
             }
         })
 
-        if (!prevState) {
-            const queryData = client.readQuery({
-                query: GET_FOLLOW_ACCOUNT,
+        if (!relationship) {
+            client.writeQuery({
+                query: GET_RELATIONSHIP,
                 variables: {
-                    address: following_address,
-                    viewer: delegateManager.owner!
+                    accountAddress: following_address,
+                    viewerAddress: delegateManager.owner!
+                },
+                data: {
+                    accountRelationship: {
+                        followed: false,
+                        follows: true,
+                        id: Date.now()
+                    }
                 }
             })
 
-            if (queryData) {
-                client.writeQuery({
-                    query: GET_FOLLOW_ACCOUNT,
-                    variables: {
-                        address: following_address,
-                        viewer: delegateManager.owner!
-                    },
-                    data: {
-                        account: {
-                            __typename: "Account",
-                            viewer: {
-                                followed: queryData.account?.viewer?.followed ?? false,
-                                follows: true,
-                            }
-                        }
-                    }
-                })
-            }
 
-            return
+
+
+
+        } else {
+            client.writeQuery({
+                query: GET_RELATIONSHIP,
+                variables: {
+                    accountAddress: following_address,
+                    viewerAddress: delegateManager.owner!
+                },
+                data: {
+                    accountRelationship: {
+                        follows: true,
+                        followed: relationship.accountRelationship?.followed ?? false,
+                        id: relationship.accountRelationship?.id ?? Date.now()
+                    }
+                }
+            })
+
         }
-        client.writeQuery({
-            query: GET_ACCOUNT_VIEWER_STATS,
-            variables: {
-                accountAddress: following_address,
-                viewerAddress: delegateManager.owner!
-            },
-            data: {
-                ...prevState,
-                accountViewerStats: {
-                    __typename: "AccountViewerStats",
-                    follows: true,
-                    followed: prevState?.accountViewerStats?.follows ?? false,
+
+        try {
+            const { data: currentAccountStats } = await client.query({
+                query: GET_ACCOUNT_STATS,
+                variables: {
+                    accountAddress: following_address
                 }
-            }
-        })
 
-        const prevFollowingAccountState = client.readQuery({
-            query: GET_MY_PROFILE,
-            variables: {
-                address: following_address
-            }
-        })
+            })
 
-        console.log("Following Account State ::", prevFollowingAccountState)
-
-        const prevUserAccountState = client.readQuery({
-            query: GET_MY_PROFILE,
-            variables: {
-                address: delegateManager.owner!
-            }
-        })
-
-        client.writeQuery({
-            query: GET_MY_PROFILE,
-            variables: {
-                address: following_address
-            },
-            data: {
-                account: {
-                    ...prevFollowingAccountState?.account,
-                    // @ts-expect-error - ignoring the type error for now
-                    stats: {
-                        ...prevFollowingAccountState?.account?.stats,
-                        followers: (prevFollowingAccountState?.account?.stats?.followers ?? 0) + 1
+            client.writeQuery({
+                query: GET_ACCOUNT_STATS,
+                variables: {
+                    accountAddress: following_address
+                },
+                data: {
+                    accountStats: {
+                        followers: (currentAccountStats?.accountStats?.followers ?? 0) + 1,
+                        following: currentAccountStats?.accountStats?.following ?? 0,
+                        __typename: "AccountStats",
+                        // @ts-expect-error - this is for internal cache merging
+                        action: "add-follow"
                     }
                 }
-            }
-        })
+            })
 
-        client.writeQuery({
-            query: GET_MY_PROFILE,
-            variables: {
-                address: delegateManager.owner!
-            },
-            data: {
-                account: {
-                    ...prevUserAccountState?.account,
-                    // @ts-expect-error - ignoring the type error for now
-                    stats: {
-                        ...prevUserAccountState?.account?.stats,
-                        following: (prevUserAccountState?.account?.stats?.following ?? 0) + 1,
-                    }
-                }
-            }
-        })
+        }
+        catch (e) {
+            posti.capture('add-follow', {
+                error: e,
+
+            })
+        }
+
     }
 
     async removeFollow(unfollowing_address: string, search?: string) {
-        console.log("Searching::", search)
-        const prevState = client.readQuery({
-            query: GET_ACCOUNT_VIEWER_STATS,
+
+        const relationship = client.readQuery({
+            query: GET_RELATIONSHIP,
             variables: {
                 accountAddress: unfollowing_address,
                 viewerAddress: delegateManager.owner!
             }
         })
 
-        if (!prevState) {
+        if (!relationship) {
 
-            const queryData = client.readQuery({
-                query: GET_FOLLOW_ACCOUNT,
+            client.writeQuery({
+                query: GET_RELATIONSHIP,
                 variables: {
-                    address: unfollowing_address,
-                    viewer: delegateManager.owner!
+                    accountAddress: unfollowing_address,
+                    viewerAddress: delegateManager.owner!
+                },
+                data: {
+                    accountRelationship: {
+                        followed: false, // this can later be reset 
+                        follows: false,
+                        id: Date.now()
+                    }
                 }
             })
 
-            if (queryData) {
-                client.writeQuery({
-                    query: GET_FOLLOW_ACCOUNT,
-                    variables: {
-                        address: unfollowing_address,
-                        viewer: delegateManager.owner!
-                    },
-                    data: {
-                        account: {
-                            __typename: "Account",
-                            viewer: {
-                                followed: queryData.account?.viewer?.followed ?? false,
-                                follows: false,
-                            }
-                        }
-                    }
-                })
-            }
 
-            return
+        } else {
+            client.writeQuery({
+                query: GET_RELATIONSHIP,
+                variables: {
+                    accountAddress: unfollowing_address,
+                    viewerAddress: delegateManager.owner!
+                },
+                data: {
+                    accountRelationship: {
+                        follows: false,
+                        followed: relationship.accountRelationship?.followed ?? false,
+                        id: relationship.accountRelationship?.id ?? Date.now()
+                    }
+                }
+            })
+
         }
 
-        client.writeQuery({
-            query: GET_ACCOUNT_VIEWER_STATS,
-            variables: {
-                accountAddress: unfollowing_address,
-                viewerAddress: delegateManager.owner!
-            },
-            data: {
-                ...prevState,
-                accountViewerStats: {
-                    __typename: "AccountViewerStats",
-                    follows: false,
-                    followed: prevState?.accountViewerStats?.follows ?? false,
+
+        try {
+            const { data: currentAccountStats } = await client.query({
+                query: GET_ACCOUNT_STATS,
+                variables: {
+                    accountAddress: unfollowing_address
                 }
-            }
-        })
 
-        const prevFollowingAccountState = client.readQuery({
-            query: GET_MY_PROFILE,
-            variables: {
-                address: unfollowing_address
-            }
-        })
+            })
 
-        const prevUserAccountState = client.readQuery({
-            query: GET_MY_PROFILE,
-            variables: {
-                address: delegateManager.owner!
-            }
-        })
+            console.log("Current Account Stats ::", currentAccountStats)
 
-        client.writeQuery({
-            query: GET_MY_PROFILE,
-            variables: {
-                address: unfollowing_address
-            },
-            data: {
-                account: {
-                    ...prevFollowingAccountState?.account,
-                    // @ts-expect-error - ignoring the type error for now
-                    stats: {
-                        ...prevFollowingAccountState?.account?.stats,
-                        followers: (prevFollowingAccountState?.account?.stats?.followers ?? 0) - 1
+            client.writeQuery({
+                query: GET_ACCOUNT_STATS,
+                variables: {
+                    accountAddress: unfollowing_address
+                },
+                data: {
+                    accountStats: {
+                        followers: (currentAccountStats?.accountStats?.followers ?? 1) - 1,
+                        following: currentAccountStats?.accountStats?.following ?? 0,
+                        __typename: "AccountStats",
+                        // @ts-expect-error - this is for internal cache merging
+                        action: "remove-follow"
                     }
                 }
-            }
-        })
+            })
 
-        client.writeQuery({
-            query: GET_MY_PROFILE,
-            variables: {
-                address: delegateManager.owner!
-            },
-            data: {
-                account: {
-                    ...prevUserAccountState?.account,
-                    // @ts-expect-error - ignoring the type error for now
-                    stats: {
-                        ...prevUserAccountState?.account?.stats,
-                        following: (prevUserAccountState?.account?.stats?.following ?? 0) - 1
-                    }
-                }
-            }
-        })
+        }
+        catch (e) {
+            posti.capture('remove-follow', {
+                error: e,
+
+            })
+        }
 
     }
 

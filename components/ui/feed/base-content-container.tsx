@@ -1,6 +1,6 @@
 
 import "../../../global"
-import { Heart, MessageSquare, MoreHorizontal, MoreVertical, Repeat2, Reply } from "@tamagui/lucide-icons";
+import { Dot, Heart, MessageSquare, MoreHorizontal, MoreVertical, Repeat2, Reply } from "@tamagui/lucide-icons";
 import { Avatar, Text, View, XStack, YStack, useTheme } from "tamagui";
 import dayjs from "dayjs";
 import relativeTime from 'dayjs/plugin/relativeTime'
@@ -68,16 +68,16 @@ function BaseContentContainer(props: BaseContentContainerProps) {
                 </View>
             }
             <View w="100%" flexDirection="row" columnGap={6}  >
-                <Link
-                    asChild
-                    href={{
-                        pathname: '/profiles/[address]/',
-                        params: {
-                            address: data?.creator?.address!
-                        }
-                    }}
-                >
-                    <View h="100%" w="10%" >
+                <YStack w="10%" >
+                    <Link
+                        asChild
+                        href={{
+                            pathname: '/profiles/[address]/',
+                            params: {
+                                address: data?.creator?.address!
+                            }
+                        }}
+                    >
                         <Avatar circular size={"$3"} >
                             <Avatar.Image
                                 src={data?.creator?.profile?.pfp as string ?? Utils.diceImage(data?.creator?.address! ?? '1')}
@@ -87,8 +87,25 @@ function BaseContentContainer(props: BaseContentContainerProps) {
                                 backgroundColor="$pink10"
                             />
                         </Avatar>
-                    </View>
-                </Link>
+                    </Link>
+                    <Link
+                        href={{
+                            pathname: '/(tabs)/feed/[post-id]/',
+                            params: {
+                                "post-id": data?.publication_ref!
+                            }
+                        }}
+                        style={{
+                            width: '100%'
+                        }}
+                        asChild
+                    >
+
+                        <YStack flex={1} w="100%" >
+
+                        </YStack>
+                    </Link>
+                </YStack>
                 <View w="90%" rowGap={10} >
                     <View flexDirection="row" alignItems="center" justifyContent="space-between" >
                         <Link
@@ -100,16 +117,17 @@ function BaseContentContainer(props: BaseContentContainerProps) {
                             }}
                             asChild
                         >
-                            <View flexDirection="row" alignItems="flex-start" columnGap={10}>
-                                <View>
+                            <View flexDirection="row" alignItems="center" columnGap={2}>
+                                <XStack alignItems="center" columnGap={2} >
                                     <Text fontSize={"$sm"} fontWeight={"$5"}>
                                         {data?.creator?.profile?.display_name}
                                     </Text>
-                                    <Text color={'$sideText'} fontSize={"$xxs"}>
+                                    <Text color={'$sideText'} fontSize={"$sm"}>
                                         @{data?.creator?.username?.username}
                                     </Text>
-                                </View>
-                                <Text fontSize={'$xxs'} color={'$sideText'} >
+                                </XStack>
+                                <Dot color={'$sideText'} />
+                                <Text fontSize={'$sm'} color={'$sideText'} >
                                     {dayjs(data?.timestamp).fromNow()}
                                 </Text>
                             </View>

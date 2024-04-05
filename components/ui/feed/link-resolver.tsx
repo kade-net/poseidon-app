@@ -64,7 +64,7 @@ const LinkResolver = (props: Props) => {
         <TouchableWithoutFeedback
             onPress={handleOpenUrl}
         >
-            <YStack w="100%" mt={5} >
+            <YStack borderColor={'$borderColor'} borderWidth={1} borderRadius={5} w="100%" mt={5} >
                 <XStack w="100%" columnGap={10} borderWidth={
                     linkMetaQuery.data?.[0]?.image ? 1 : 0
                 } borderColor={'$borderColor'} borderRadius={5} p={5} >

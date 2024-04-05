@@ -61,6 +61,9 @@ const CommunitiesSearch = (props: Props) => {
                 onEndReached={handleFetchMore}
                 showsVerticalScrollIndicator={false}
                 onEndReachedThreshold={1}
+                contentContainerStyle={{
+                    paddingBottom: 40
+                }}
                 ListFooterComponent={() => {
                     return (
                         <XStack w="100%" alignItems='center' justifyContent='center' >

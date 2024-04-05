@@ -1,5 +1,5 @@
 import { InMemoryCache, ApolloClient, Reference, defaultDataIdFromObject, FieldFunctionOptions } from "@apollo/client"
-import { Publication } from "../__generated__/graphql"
+import { Publication, AccountStats } from "../__generated__/graphql"
 import { cloneDeep, uniqBy } from "lodash"
 
 function publicationMerge(_existing: Array<Reference> = [], incoming: Array<Reference> = [], options: FieldFunctionOptions) {
@@ -118,6 +118,24 @@ const cache = new InMemoryCache({
                 communities: {
                     keyArgs: ["search", "member"],
                     merge: publicationMerge
+                },
+                accountStats: {
+                    keyArgs: ["accountAddress"],
+                    merge(existing: AccountStats | null = null, incoming: AccountStats | null = null, options) {
+                        console.log('Existing::', existing, "Incoming::", incoming)
+                        if (!existing) return incoming
+                        const resultObject: Partial<AccountStats> = incoming ?? {
+                            followers: 0,
+                            following: 0
+                        }
+
+                        if ((incoming?.followers ?? 0) < (existing?.followers ?? 0)) {
+                            console.log("Existing is greater than incoming")
+                            resultObject.followers = existing?.followers
+                        }
+
+                        return resultObject
+                    }
                 }
             }
         }

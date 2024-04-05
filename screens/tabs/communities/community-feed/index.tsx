@@ -48,6 +48,11 @@ const CommunityFeed = (props: Props) => {
     const { isOpen, onClose, onOpen, onToggle } = useDisclosure()
 
     const handleFetchMore = async () => {
+        const currentLength = data?.communityPublications?.length ?? 0
+
+        if (currentLength < 15) {
+            return
+        }
         try {
             const totalPublications = data?.communityPublications?.length ?? 0
             const nextPage = (Math.floor(totalPublications / 20) - 1) + 1

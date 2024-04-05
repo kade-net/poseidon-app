@@ -3,7 +3,7 @@ import React from 'react'
 import { Account } from '../../../__generated__/graphql'
 import account from '../../../contract/modules/account'
 import { useQuery } from '@apollo/client'
-import { GET_FOLLOW_ACCOUNT } from '../../../utils/queries'
+import { GET_RELATIONSHIP } from '../../../utils/queries'
 import delegateManager from '../../../lib/delegate-manager'
 import { Utils } from '../../../utils'
 
@@ -16,17 +16,17 @@ interface Props {
 const ProfileCard = (props: Props) => {
     const { data, search } = props
 
-    const queryData = useQuery(GET_FOLLOW_ACCOUNT, {
+    const queryData = useQuery(GET_RELATIONSHIP, {
         variables: {
-            address: data?.address!,
-            viewer: delegateManager.owner!
+            accountAddress: data?.address!,
+            viewerAddress: delegateManager.owner!
         },
         skip: !data?.address
     })
 
     const handleFollowToggle = async () => {
         try {
-            if (queryData?.data?.account?.viewer?.follows) {
+            if (queryData?.data?.accountRelationship?.follows) {
                 await account.unFollowAccount(data?.address!, search)
             } else {
                 await account.followAccount(data?.address!, search)
@@ -76,11 +76,11 @@ const ProfileCard = (props: Props) => {
                                 </View>
                         </View>
                         <View>
-                            {queryData?.loading ? <Spinner /> : <Button onPress={handleFollowToggle} size={"$3"} backgroundColor={queryData?.data?.account?.viewer?.follows ? "$colourlessButton" : "$button"} borderWidth={queryData?.data?.account?.viewer?.follows ? 1 : 0} borderColor={"$button"} color={queryData?.data?.account?.viewer?.follows ? "$text" : "$buttonText"} mr={10}
-                                variant={queryData?.data?.account?.viewer?.follows ? "outlined" : undefined}
+                            {queryData?.loading ? <Spinner /> : <Button onPress={handleFollowToggle} size={"$3"} backgroundColor={queryData?.data?.accountRelationship?.follows ? "$colourlessButton" : "$button"} borderWidth={queryData?.data?.accountRelationship?.follows ? 1 : 0} borderColor={"$button"} color={queryData?.data?.accountRelationship?.follows ? "$text" : "$buttonText"} mr={10}
+                                variant={queryData?.data?.accountRelationship?.follows ? "outlined" : undefined}
                             >
                                 {
-                                    queryData?.data?.account?.viewer?.follows ? "Following" : "Follow"
+                                    queryData?.data?.accountRelationship?.follows ? "Following" : "Follow"
                                 }
                             </Button>}
                         </View>
