@@ -1,4 +1,4 @@
-import { View, Text, Button, Separator, ScrollView, TextArea, Spinner, Avatar, XStack, YStack } from 'tamagui'
+import { View, Text, Button, Separator, ScrollView, TextArea, Spinner, Avatar, XStack, YStack, Progress } from 'tamagui'
 import React, { memo, useCallback, useEffect, useState } from 'react'
 import { Controller, ControllerRenderProps, useForm } from 'react-hook-form'
 import { TPUBLICATION, publicationSchema } from '../../../schema'
@@ -7,7 +7,7 @@ import * as ImagePicker from 'expo-image-picker'
 import uploadManager from '../../../lib/upload-manager'
 import publications from '../../../contract/modules/publications'
 import { BackHandler, KeyboardAvoidingView, Platform, TextInput, TouchableOpacity } from 'react-native'
-import { ImagePlus } from '@tamagui/lucide-icons'
+import { ImagePlus, X } from '@tamagui/lucide-icons'
 import FeedImage from '../feed/image'
 import { useQuery } from '@apollo/client'
 import { ACCOUNTS_SEARCH_QUERY, GET_MY_PROFILE } from '../../../utils/queries'
@@ -221,6 +221,9 @@ const PublicationEditor = (props: Props) => {
         }, [])
     )
 
+    const textContent = form.watch('content')
+    const currentLength = textContent?.length ?? 0
+
     return (
         <View flex={1} w="100%" h="100%" backgroundColor={"$background"}>
             <View
@@ -274,6 +277,8 @@ const PublicationEditor = (props: Props) => {
                             borderWidth={0}
                             placeholder={`What's on your mind?`}
                             onChangeText={(text) => form.setValue('content', text)}
+                            autoFocus
+                            maxLength={160}
                         >
                             <HighlightMentions form={form} />
                         </TextArea>
@@ -365,12 +370,13 @@ const PublicationEditor = (props: Props) => {
                             </TouchableOpacity>
 
                         </XStack>
-                        {/* {
-                            uploading ? <XStack columnGap={10} >
-                                <Spinner />
-                                <Text>Uploading...</Text>
-                            </XStack> : null
-                        } */}
+                        <XStack>
+                            {
+                                currentLength > 130 && <Text color={"$red10"} >
+                                    {160 - currentLength}
+                                </Text>
+                            }
+                        </XStack>
                     </View>
                 </YStack>
             </KeyboardAvoidingView>

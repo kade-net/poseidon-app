@@ -183,6 +183,7 @@ const PublicationReactions = (props: Props) => {
                     h="100%"
                     pt={insets.top}
                     pb={insets.bottom}
+                    backgroundColor={"$background"}
                 >
                     <PublicationEditor
                         parentPublicationRef={publication_ref!}
