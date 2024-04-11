@@ -21,6 +21,7 @@ const PostDetailsScreen = () => {
             flex={1}
             w="100%"
             h="100%"
+            backgroundColor={"$background"}
         >
             {
                 publicationQuery?.loading ? <View

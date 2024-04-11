@@ -72,7 +72,7 @@ const TabNavbar = (props: Props) => {
               <TouchableOpacity
                 key={index}
                 style={{
-                  flex: index == 3 ? undefined : 1,
+                  flex: 1,
                   paddingVertical: 10,
                   alignItems: "center",
                   justifyContent: "center"

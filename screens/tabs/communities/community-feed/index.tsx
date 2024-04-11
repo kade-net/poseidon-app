@@ -164,6 +164,7 @@ const CommunityFeed = (props: Props) => {
                     h="100%"
                     pt={insets.top}
                     pb={insets.bottom}
+                    backgroundColor={"$background"}
                 >
                     <PublicationEditor
                         publicationType={1}

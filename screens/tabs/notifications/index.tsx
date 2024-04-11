@@ -2,7 +2,7 @@ import { View, Text, Avatar, Heading, Tabs, SizableText, Separator, YStack, XSta
 import React from 'react'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { FlatList, TouchableOpacity } from 'react-native'
-import { Settings } from '@tamagui/lucide-icons'
+import { Inbox, Settings } from '@tamagui/lucide-icons'
 import { Utils } from '../../../utils'
 import { useQuery } from '@apollo/client'
 import { USER_NOTIFICATIONS } from '../../../utils/queries'
@@ -58,6 +58,12 @@ const Notifications = () => {
         onRefresh={handleFetchTop}
         onEndReached={handleFetchMore}
         onEndReachedThreshold={1}
+        ListEmptyComponent={<YStack w="100%" alignItems='center' justifyContent='center' rowGap={20} p={20} >
+          <Inbox />
+          <Text>
+            No notifications
+          </Text>
+        </YStack>}
         ListFooterComponent={() => {
           if (!notificationsQuery.loading) return null
           return (

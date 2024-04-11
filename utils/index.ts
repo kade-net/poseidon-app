@@ -48,4 +48,9 @@ export namespace Utils {
 
   export const diceImage = (seed: string) => `https://api.dicebear.com/8.x/identicon/png?seed=${seed ?? '1'}`
 
+  export const extractLinks = (content: string) => {
+    const regex = /(?:^|\s)(?:https?|ftp):\/\/[^\s/$.?#].[^\s]*/g
+    return content.match(regex)
+
+  }
 }

@@ -63,7 +63,27 @@ class DelegateManager {
                 privateKey: new Ed25519PrivateKey(new HexString(this.private_key).toUint8Array())
             })
             this.account = account
-            this.setOwner(account.address().toString()) // THEY ARE BOTH THEIR DELEGATE AND OWNER
+            const delegate_address = account.address().toString()
+
+            const dOwner = await aptos.view({
+                payload: {
+                    function: ACCOUNT_VIEW_FUNCTIONS.delegate_get_owner as any,
+                    functionArguments: [delegate_address],
+                    typeArguments: []
+                }
+            })
+
+            const [user_kid, delegate_owner_address] = dOwner as [string, string]
+
+            console.log('Delegate Owner::', user_kid, delegate_owner_address)
+
+            if (user_kid == '0') {
+                // delegate owns itself
+                this.setOwner(delegate_address)
+                return
+            }
+
+            this.setOwner(delegate_owner_address) // THEY ARE BOTH THEIR DELEGATE AND OWNER
         }
         catch (e) {
             if (e instanceof Error) {

@@ -137,7 +137,9 @@ const BaseNotificationContent = (props: Props) => {
             router.push({
                 pathname: '/(tabs)/feed/[post-id]/',
                 params: {
-                    'post-id': data?.publication?.publication_ref!
+                    'post-id':
+                        publication_type == 2 ? data?.publication?.publication_ref! :
+                            data?.publication?.parent?.publication_ref!
                 }
 
             })

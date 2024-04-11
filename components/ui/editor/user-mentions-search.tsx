@@ -2,7 +2,7 @@ import { View, Text, YStack, XStack, Avatar, Spinner, Separator } from 'tamagui'
 import React, { useCallback, useDeferredValue } from 'react'
 import { ACCOUNTS_SEARCH_QUERY, MENTION_USER_SEARCH } from '../../../utils/queries'
 import { useQuery } from '@apollo/client'
-import { FlatList, TouchableOpacity } from 'react-native'
+import { FlatList, SectionList, TouchableOpacity } from 'react-native'
 import delegateManager from '../../../lib/delegate-manager'
 
 interface Props {
@@ -44,22 +44,33 @@ const UserMentionsSearch = (props: Props) => {
 
     return (
         <YStack w="100%" >
-            <FlatList
-                scrollEnabled={false}
-                data={mentionsQuery?.data?.accountsSearch ?? []}
-                keyExtractor={(item) => item?.address}
-                refreshing={mentionsQuery?.loading}
+            {
+                mentionsQuery?.loading && <XStack w="100%" p={10} alignItems='center' justifyContent='center' >
+                    <Spinner />
+                </XStack>
+            }
+            {((mentionsQuery?.data?.accountsSearch?.length ?? 0) > 0) &&
+                mentionsQuery?.data?.accountsSearch?.map((item, i) => {
+                    return (
+                        <YStack w="100%" key={i} >
 
-                renderItem={renderItem}
-                ListFooterComponent={() => {
-                    if (!mentionsQuery?.loading) return null
-                    return <XStack w="100%" alignItems='center' justifyContent='center' p={20} columnGap={10}>
-                        <Spinner />
-                        <Text>Searching...</Text>
-                    </XStack>
-                }}
-                ItemSeparatorComponent={() => <Separator />}
-            />
+                            <TouchableOpacity style={{ flex: 1, width: '100%' }} onPress={() => handleSelect(item?.username?.username!, item?.address)} >
+                                <XStack w="100%" columnGap={10} p={20} >
+                                    <Avatar circular size={"$3"} >
+                                        <Avatar.Image src={item?.profile?.pfp ?? ''} />
+                                        <Avatar.Fallback bg="$pink10" />
+                                    </Avatar>
+                                    <YStack>
+                                        <Text fontSize={"$sm"} >{item?.profile?.display_name}</Text>
+                                        <Text fontSize={"$xs"} color="gray" >@{item?.username?.username}</Text>
+                                    </YStack>
+                                </XStack>
+                            </TouchableOpacity>
+                            <Separator w="100%" />
+                        </YStack >
+                    )
+                })
+            }
         </YStack>
     )
 }

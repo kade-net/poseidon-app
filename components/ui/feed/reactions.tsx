@@ -2,7 +2,7 @@ import { View, Text, useTheme, Button, Spinner } from 'tamagui'
 import React, { memo, useTransition } from 'react'
 import { StyleSheet, TouchableOpacity } from 'react-native'
 import { Heart, MessageSquare, MessageSquarePlus, Repeat } from '@tamagui/lucide-icons'
-import { PublicationStats } from '../../../__generated__/graphql'
+import { Publication, PublicationStats } from '../../../__generated__/graphql'
 import { useQuery } from '@apollo/client'
 import { GET_MY_PROFILE, GET_PUBLICATION_INTERACTIONS_BY_VIEWER, GET_PUBLICATION_STATS } from '../../../utils/queries'
 import client from '../../../data/apollo'
@@ -17,11 +17,12 @@ interface Props {
     initialStats?: PublicationStats,
     publication_ref?: string
     showNumbers?: boolean
+    publication?: Partial<Publication>
 }
 
 const PublicationReactions = (props: Props) => {
     const insets = useSafeAreaInsets()
-    const { initialStats, publication_ref, showNumbers = true } = props
+    const { initialStats, publication_ref, showNumbers = true, publication } = props
     const [currentPublicationType, setCurrentPublicationType] = React.useState<1 | 2 | 3 | 4>(3)
     const [repostLoading, setRepostLoading] = React.useState(false)
     const [quoteLoading, setQuoteLoading] = React.useState(false)
@@ -183,6 +184,7 @@ const PublicationReactions = (props: Props) => {
                     h="100%"
                     pt={insets.top}
                     pb={insets.bottom}
+                    backgroundColor={"$background"}
                 >
                     <PublicationEditor
                         parentPublicationRef={publication_ref!}
@@ -190,6 +192,7 @@ const PublicationReactions = (props: Props) => {
                             currentPublicationType
                         }
                         onClose={onClose}
+                        publication={publication}
                     />
                 </View>
             </BaseContentSheet>}

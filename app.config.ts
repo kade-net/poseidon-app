@@ -30,7 +30,7 @@ export default ({ config }: ConfigContext): Partial<ExpoConfig> => {
             APP_ENV: process.env.APP_ENV,
             eas: { 
                 ...config.extra?.eas,
-                projectId: process.env.EAS_PROJECT_ID,
+                projectId: "30159790-9cfe-44b4-bb58-30450db634ec",
             }
         }
     }

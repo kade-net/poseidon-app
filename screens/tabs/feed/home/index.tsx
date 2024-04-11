@@ -270,6 +270,7 @@ const Home = () => {
                     h="100%"
                     pt={insets.top}
                     pb={insets.bottom}
+                    backgroundColor={'$background'}
                 >
                     <PublicationEditor
                         publicationType={1}

@@ -49,6 +49,9 @@ function BaseContentContainer(props: BaseContentContainerProps) {
     if (getMutedUsers()?.includes(data?.creator?.id!)) return null
     if (getRemovedFromFeed()?.includes(data?.publication_ref!)) return null
 
+    const HAS_LONG_USERNAME = (data?.creator?.username?.username.length ?? 0) > 10
+    const HAS_LONG_DISPLAY_NAME = (data?.creator?.profile?.display_name?.length ?? 0) > 10
+
     return (
         <YStack w="100%" borderBottomWidth={1} borderColor={'$borderColor'} py={9} px={Utils.dynamicWidth(4)} pb={10} >
             {
@@ -107,7 +110,7 @@ function BaseContentContainer(props: BaseContentContainerProps) {
                     </Link>
                 </YStack>
                 <View w="90%" rowGap={10} >
-                    <View flexDirection="row" alignItems="center" justifyContent="space-between" >
+                    <View flexDirection="row" alignItems="flex-start" justifyContent="space-between" >
                         <Link
                             href={{
                                 pathname: '/profiles/[address]/',
@@ -117,16 +120,28 @@ function BaseContentContainer(props: BaseContentContainerProps) {
                             }}
                             asChild
                         >
-                            <View flexDirection="row" alignItems="center" columnGap={2}>
+                            <View flex={1} flexDirection={
+                                HAS_LONG_USERNAME || HAS_LONG_DISPLAY_NAME ? "column" : "row"
+                            } alignItems={
+                                HAS_LONG_USERNAME || HAS_LONG_DISPLAY_NAME ? "flex-start" : "center"
+                            } columnGap={2}>
                                 <XStack alignItems="center" columnGap={2} >
                                     <Text fontSize={"$sm"} fontWeight={"$5"}>
-                                        {data?.creator?.profile?.display_name}
+                                        {
+                                            HAS_LONG_DISPLAY_NAME ?
+                                                `${data?.creator?.profile?.display_name?.slice(0, 10)}...` :
+                                                data?.creator?.profile?.display_name
+                                        }
                                     </Text>
                                     <Text color={'$sideText'} fontSize={"$sm"}>
-                                        @{data?.creator?.username?.username}
+                                        @{
+                                            HAS_LONG_USERNAME ?
+                                                `${data?.creator?.username?.username.slice(0, 10)}...` :
+                                                data?.creator?.username?.username
+                                        }
                                     </Text>
                                 </XStack>
-                                <Dot color={'$sideText'} />
+                                {(!HAS_LONG_DISPLAY_NAME && !HAS_LONG_USERNAME) && <Dot color={'$sideText'} />}
                                 <Text fontSize={'$sm'} color={'$sideText'} >
                                     {dayjs(data?.timestamp).fromNow()}
                                 </Text>
@@ -233,6 +248,8 @@ function BaseContentContainer(props: BaseContentContainerProps) {
                         <PublicationReactions
                             initialStats={data?.stats}
                             publication_ref={data?.publication_ref as string}
+                            // @ts-expect-error - ignoring for now  // TODO: fix me
+                            publication={data}
                         />
                     </View>
                 </View>
