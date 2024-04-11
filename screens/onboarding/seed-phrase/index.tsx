@@ -14,6 +14,7 @@ import client from '../../../data/apollo'
 import { GET_MY_PROFILE } from '../../../utils/queries'
 import UnstyledButton from '../../../components/ui/buttons/unstyled-button'
 import Toast from 'react-native-toast-message'
+import { aptos } from '../../../contract'
 
 // The seed phrase will be a list of 12 words each separated by a space
 const schema = z.object({
@@ -61,7 +62,7 @@ const SeedPhrase = () => {
 
             try {
                 const username = await usernames.getUsername()
-
+                console.log(username)
                 if (!username) {
                     setLoading(false)
                     goToUsername()
@@ -72,9 +73,29 @@ const SeedPhrase = () => {
 
                 const userAccount = await account.getAccount()
 
+                // INFO: Ideally the code below will never run but jsut in case
+
                 if (!userAccount) {
                     try {
-                        await account.setupWithSelfDelegate()
+                        const committed_txn = await account.setupWithSelfDelegate()
+
+                        const status = await aptos.waitForTransaction({
+                            transactionHash: committed_txn.hash
+                        })
+
+                        if (status.success) {
+                            goToUsername()
+                        }
+                        else {
+                            Toast.show({
+                                type: 'error',
+                                text1: 'Error',
+                                text2: 'Failed to setup account'
+                            })
+
+
+                        }
+
                     }
                     catch (e) {
                         console.log(`SOMETHING WENT WRONG:: ${e}`)

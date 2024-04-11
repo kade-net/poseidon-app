@@ -13,6 +13,7 @@ import { Utils } from '../../../../utils'
 import HighlightMentions from '../../../../components/ui/feed/highlight-mentions'
 import publication from './publication'
 import LinkResolver from '../../../../components/ui/feed/link-resolver'
+import ContentPreviewContainer from '../../../../components/ui/feed/content-preview-container'
 dayjs.extend(relativeTime)
 
 interface Props {
@@ -129,7 +130,9 @@ const PublicationContent = (props: Props) => {
                             })
                         }
                     </YStack>
-                    <View flexDirection="row" flexWrap="wrap" w="100%" columnGap={10} rowGap={10} >
+                    <View pb={
+                        data?.publication?.parent ? 20 : 0
+                    } flexDirection="row" flexWrap="wrap" w="100%" columnGap={10} rowGap={10} >
                         {
                             data?.publication?.content?.media?.filter((media: Entities.Media) => media?.type?.includes("image"))?.map((media: Entities.Media) => {
                                 return (
@@ -141,6 +144,14 @@ const PublicationContent = (props: Props) => {
                             })
                         }
                     </View>
+                    {
+                        data?.publication?.parent && (
+                            <ContentPreviewContainer
+                                // @ts-expect-error - //TODO: Fix this
+                                data={data.publication.parent}
+                            />
+                        )
+                    }
                 </View>
 
                 <View rowGap={10}>
@@ -161,6 +172,8 @@ const PublicationContent = (props: Props) => {
                             ref: data.publication.publication_ref!
                         } : undefined}
                         publication_ref={data.publication?.publication_ref!}
+                        // @ts-expect-error - TODO: Fix this
+                        publication={data.publication}
                     />
                     <Separator />
                 </View>

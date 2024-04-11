@@ -1,4 +1,4 @@
-import { View, Text, Button, Separator, ScrollView, TextArea, Spinner, Avatar, XStack, YStack, Progress } from 'tamagui'
+import { View, Text, Button, Separator, ScrollView, TextArea, Spinner, Avatar, XStack, YStack, Progress, Sheet } from 'tamagui'
 import React, { memo, useCallback, useEffect, useState } from 'react'
 import { Controller, ControllerRenderProps, useForm } from 'react-hook-form'
 import { TPUBLICATION, publicationSchema } from '../../../schema'
@@ -13,7 +13,7 @@ import { useQuery } from '@apollo/client'
 import { ACCOUNTS_SEARCH_QUERY, GET_MY_PROFILE } from '../../../utils/queries'
 import delegateManager from '../../../lib/delegate-manager'
 import ChooseCommunityBottomSheet from '../action-sheets/choose-community'
-import { Community } from '../../../__generated__/graphql'
+import { Community, Publication } from '../../../__generated__/graphql'
 import UnstyledButton from '../buttons/unstyled-button'
 import { Utils } from '../../../utils'
 import useDisclosure from '../../hooks/useDisclosure'
@@ -22,12 +22,14 @@ import UserMentionsSearch from './user-mentions-search'
 import HighlightMentions from './highlight-mentions'
 import { uniq } from 'lodash'
 import { useFocusEffect } from 'expo-router'
+import PostReplyTextEditor from './post-reply-editor'
 
 interface Props {
     onClose: () => void
     publicationType: 1 | 2 | 3 | 4
     parentPublicationRef?: string
     defaultCommunity?: Partial<Community>
+    publication?: Partial<Publication>
 }
 
 
@@ -252,81 +254,95 @@ const PublicationEditor = (props: Props) => {
                 </Button>
             </View>
             <Separator />
-            <ScrollView flex={1} w="100%" rowGap={20} px={10} >
-                <View rowGap={5} w="100%" h="100%" flexDirection='row' >
-                    <View
-                        pt={Platform.select({
-                            ios: 10,
-                            android: 30
-                        })}
-                    >
-                        <Avatar circular size={"$3"} >
-                            <Avatar.Image
-                                src={profileQuery.data?.account?.profile?.pfp as string ?? Utils.diceImage(delegateManager.owner ?? '1')}
-                                accessibilityLabel="Profile Picture"
-                            />
-                            <Avatar.Fallback
-                                backgroundColor="$pink10"
-                            />
-                        </Avatar>
-                    </View>
-                    <View flex={1} h="100%" >
-                        <TextArea
-                            backgroundColor={"$colorTransparent"}
-                            outlineWidth={0}
-                            borderWidth={0}
-                            placeholder={`What's on your mind?`}
-                            onChangeText={(text) => form.setValue('content', text)}
-                            autoFocus
-                            maxLength={160}
+            <Sheet.ScrollView flex={1} w="100%" rowGap={20} px={10} >
+                {props.publication ?
+                    <PostReplyTextEditor
+                        publication={props.publication ?? null}
+                        form={form}
+                        userMentionsOpen={userMentionsOpen}
+                        currentMention={currentMention}
+                        onSelect={handleAddMention}
+                        uploading={uploading}
+                        onImageRemove={(id) => {
+                            form.setValue('media', form.getValues('media')?.filter((_, i) => i !== id))
+                            setImages(images.filter((_, i) => i !== id))
+                        }}
+                    /> :
+                    <View rowGap={5} w="100%" h="100%" flexDirection='row' >
+                        <View
+                            pt={Platform.select({
+                                ios: 10,
+                                android: 30
+                            })}
                         >
-                            <HighlightMentions form={form} />
-                        </TextArea>
-                        {
-                            userMentionsOpen &&
-                            <KeyboardAvoidingView
-
-                            >
-                                <UserMentionsSearch
-                                    search={currentMention}
-                                    onSelect={handleAddMention}
+                            <Avatar circular size={"$3"} >
+                                <Avatar.Image
+                                    src={profileQuery.data?.account?.profile?.pfp as string ?? Utils.diceImage(delegateManager.owner ?? '1')}
+                                    accessibilityLabel="Profile Picture"
                                 />
-                            </KeyboardAvoidingView>
-                        }
-                        <View w="100%" height={'100%'} flexDirection='row' flexWrap='wrap' px={20} rowGap={5} columnGap={5} >
-                            <Controller
-                                control={form.control}
-                                name='media'
-                                render={({ field }) => {
-                                    if (uploading) return (
-                                        <XStack w="100%" h="100%" borderWidth={1} borderColor={'$borderColor'} borderRadius={'$5'} aspectRatio={16 / 9} bg="$background" alignItems='center' justifyContent='center' >
-                                            <Spinner />
-                                        </XStack>
-                                    )
-                                    return <>
-                                        {
-                                            field.value?.map((media, index) => {
-                                                return (
-                                                    <FeedImage
-                                                        key={index}
-                                                        image={media.url}
-                                                        editable={!uploading}
-                                                        id={index}
-                                                        onRemove={(id) => {
-                                                            form.setValue('media', field.value?.filter((_, i) => i !== id))
-                                                            setImages(images.filter((_, i) => i !== id))
-                                                        }}
-                                                    />
-                                                )
-                                            })
-                                        }
-                                    </>
-                                }}
-                            />
+                                <Avatar.Fallback
+                                    backgroundColor="$pink10"
+                                />
+                            </Avatar>
+                        </View>
+                        <View flex={1} h="100%" >
+                            <TextArea
+                                backgroundColor={"$colorTransparent"}
+                                outlineWidth={0}
+                                borderWidth={0}
+                                placeholder={`What's on your mind?`}
+                                onChangeText={(text) => form.setValue('content', text)}
+                                autoFocus
+                                maxLength={160}
+                            >
+                                <HighlightMentions form={form} />
+                            </TextArea>
+                            {
+                                userMentionsOpen &&
+                                <KeyboardAvoidingView
+
+                                >
+                                    <UserMentionsSearch
+                                        search={currentMention}
+                                        onSelect={handleAddMention}
+                                    />
+                                </KeyboardAvoidingView>
+                            }
+                            <View w="100%" height={'100%'} flexDirection='row' flexWrap='wrap' px={20} rowGap={5} columnGap={5} >
+                                <Controller
+                                    control={form.control}
+                                    name='media'
+                                    render={({ field }) => {
+                                        if (uploading) return (
+                                            <XStack w="100%" h="100%" borderWidth={1} borderColor={'$borderColor'} borderRadius={'$5'} aspectRatio={16 / 9} bg="$background" alignItems='center' justifyContent='center' >
+                                                <Spinner />
+                                            </XStack>
+                                        )
+                                        return <>
+                                            {
+                                                field.value?.map((media, index) => {
+                                                    return (
+                                                        <FeedImage
+                                                            key={index}
+                                                            image={media.url}
+                                                            editable={!uploading}
+                                                            id={index}
+                                                            onRemove={(id) => {
+                                                                form.setValue('media', field.value?.filter((_, i) => i !== id))
+                                                                setImages(images.filter((_, i) => i !== id))
+                                                            }}
+                                                        />
+                                                    )
+                                                })
+                                            }
+                                        </>
+                                    }}
+                                />
+                            </View>
                         </View>
                     </View>
-                </View>
-            </ScrollView>
+                }
+            </Sheet.ScrollView>
 
             <KeyboardAvoidingView
                 style={{

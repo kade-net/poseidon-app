@@ -248,6 +248,8 @@ function BaseContentContainer(props: BaseContentContainerProps) {
                         <PublicationReactions
                             initialStats={data?.stats}
                             publication_ref={data?.publication_ref as string}
+                            // @ts-expect-error - ignoring for now  // TODO: fix me
+                            publication={data}
                         />
                     </View>
                 </View>

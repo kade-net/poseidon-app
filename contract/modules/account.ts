@@ -251,7 +251,7 @@ class AccountContract {
         const response = await aptos.view({
             payload: {
                 function: ACCOUNT_VIEW_FUNCTIONS.get_account as any,
-                functionArguments: [delegateManager.account?.address()?.toString()],
+                functionArguments: [delegateManager.owner],
                 typeArguments: []
             }
         })

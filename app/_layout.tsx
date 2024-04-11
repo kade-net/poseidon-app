@@ -17,6 +17,8 @@ import * as Navigator from 'expo-navigation-bar'
 import Toast from 'react-native-toast-message'
 import * as Notifications from 'expo-notifications'
 import localStore from '../lib/local-store'
+import * as Updates from 'expo-updates'
+import posti from '../lib/posti'
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
@@ -62,6 +64,25 @@ export default function RootLayout() {
   })
   const responseListener = useRef();
 
+  async function onFetchUpdateAsync() {
+    try {
+      const update = await Updates.checkForUpdateAsync();
+
+      if (update.isAvailable) {
+        await Updates.fetchUpdateAsync();
+        await Updates.reloadAsync();
+      }
+    } catch (error) {
+      posti.capture('error fetching update', {
+        error: error ?? 'Unable to trigger update fetch',
+      })
+    }
+  }
+
+  useEffect(() => {
+    onFetchUpdateAsync()
+  }, [])
+
   useEffect(() => {
 
     // @ts-expect-error - TS doesn't know about the `current` property
@@ -85,6 +106,8 @@ export default function RootLayout() {
   if (!interLoaded && !interError) {
     return null
   }
+
+
 
   return <RootLayoutNav />
 }

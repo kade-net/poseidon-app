@@ -130,6 +130,33 @@ export const GET_PUBLICATION = gql(/* GraphQL */`
                     id
                 },
                 publication_ref
+                parent {
+                    __typename
+                    id,
+                    timestamp
+                    content
+                    type
+                    creator_id
+                    creator {
+                        address
+                        profile {
+                            pfp
+                            bio
+                            display_name
+                        }
+                        username {
+                            username
+                        }
+                        id
+                    },
+                    publication_ref,
+                    stats {
+                        comments
+                        quotes
+                        reposts
+                        reactions
+                    }
+                }
         }
     }
 `)
@@ -481,6 +508,7 @@ export const USER_NOTIFICATIONS = gql(/* GraphQL */`
                 parent {
                     content
                     type
+                    publication_ref
                 }
             }
             reaction {

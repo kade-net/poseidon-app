@@ -5,7 +5,7 @@ import { Dot } from '@tamagui/lucide-icons'
 import relativeTime from 'dayjs/plugin/relativeTime'
 import dayjs from 'dayjs'
 import FeedImage from './image'
-import { trim } from 'lodash'
+import { trim, truncate } from 'lodash'
 import { Link } from 'expo-router'
 dayjs.extend(relativeTime)
 
@@ -31,10 +31,15 @@ const ContentPreviewContainer = (props: Props) => {
                     </Avatar>
                     <XStack flex={1} flexWrap='wrap' alignItems='center' columnGap={5} >
                         <Text fontWeight={"bold"} >
-                            {props?.data?.creator?.profile?.display_name}
+                            {truncate(props?.data?.creator?.profile?.display_name ?? '', {
+                                length: 10
+                            })}
                         </Text>
                         <Text color={"gray"} >
-                            @{props?.data?.creator?.username?.username}
+                            @{truncate(props?.data?.creator?.username?.username, {
+                                length: 10
+
+                            })}
                         </Text>
                         <Dot color='$sideText' />
                         <Text color={"gray"} >
