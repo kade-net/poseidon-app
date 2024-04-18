@@ -1,44 +1,117 @@
 import '../../../global'
-import { View, Text, YStack, XStack, H4, H5, Button, Separator, H6, Avatar, Spinner, useTheme } from 'tamagui'
-import React from 'react'
+import { View, Text, YStack, XStack, H4, H5, Button, Separator, H6, Avatar, Spinner, useTheme, setRef } from 'tamagui'
+import React, { useState } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
-import { Plus, PlusSquare } from '@tamagui/lucide-icons'
-import { Animated, TouchableOpacity } from 'react-native'
+import { ArrowRight, Plus, PlusSquare, Users } from '@tamagui/lucide-icons'
+import { FlatList } from 'react-native'
 import { Link } from 'expo-router'
-import { useQuery } from 'react-query'
 import community from '../../../contract/modules/community'
 import UserMembership from './membership'
+import { useQuery } from '@apollo/client'
+import { GET_ACCOUNT_COMMUNITIES } from '../../../utils/queries'
+import delegateManager from '../../../lib/delegate-manager'
 // TODO: if user has no anchors show bottom sheet leading them to buy some
 const Communities = () => {
     const tamaguiTheme = useTheme()
-    
-    const communitiesQuery = useQuery({
-        queryKey: ['memberships'],
-        queryFn: community.getCommunities
+    const [refreshing, setRefreshing] = useState(false)
+
+    // const communitiesQuery = useQuery({
+    //     queryKey: ['memberships'],
+    //     queryFn: community.getCommunities
+    // })
+
+    const accountCommunitiesQuery = useQuery(GET_ACCOUNT_COMMUNITIES, {
+        variables: {
+            accountAddress: delegateManager.owner!,
+            page: 0,
+            size: 20
+        },
+        onError: (error) => {
+
+            console.log("Error: ", error.message, error.stack,)
+
+        },
+        onCompleted: (data) => {
+            console.log("Data:: ", data)
+        }
     })
+
+    const handleFetchMore = async () => {
+        const currentLength = accountCommunitiesQuery?.data?.accountCommunities?.length ?? 0
+
+        if (currentLength < 15) {
+            return
+        }
+        try {
+            const totalPublications = accountCommunitiesQuery?.data?.accountCommunities?.length ?? 0
+            const nextPage = (Math.floor(totalPublications / 20) - 1) + 1
+            console.log("Next page", nextPage)
+            const results = await accountCommunitiesQuery.fetchMore({
+                variables: {
+                    page: nextPage,
+                    size: 20
+                }
+            })
+        }
+        catch (e) {
+            console.log("Error: ", e)
+        }
+    }
+
+    const handleFetchTop = async () => {
+        console.log("Fetching top")
+        setRefreshing(true)
+        try {
+
+            const results = await accountCommunitiesQuery.fetchMore({
+                variables: {
+                    page: 0,
+                    size: 20
+                }
+            })
+
+            console.log("Results: ", results)
+        }
+        catch (e) {
+            console.log("Error: ", e)
+        }
+        finally {
+            setRefreshing(false)
+        }
+    }
+
+    console.log("Loading:: ", accountCommunitiesQuery.loading)
 
 
     return (
+        <YStack
+            flex={1}
+            w="100%"
+            h="100%"
+        >
 
-            <Animated.FlatList
+            <FlatList
             style={
-                [
+
                     {
-                        backgroundColor: tamaguiTheme.background.val
+                        backgroundColor: tamaguiTheme.background.val,
+                        flex: 1,
                     }
-                ]
-            }
-            data={communitiesQuery.data}
-            keyExtractor={(item) => item.id}
+
+                }
             contentContainerStyle={{
-                width: '100%',
+                flex: 1
             }}
-            onStartReached={() => communitiesQuery?.refetch()}
-            onEndReached={() => communitiesQuery?.refetch()}
+                data={accountCommunitiesQuery?.data?.accountCommunities ?? []}
+                keyExtractor={(item) => item.name?.toString() ?? '0'}
+                onStartReached={handleFetchTop}
+                onRefresh={handleFetchTop}
+                onEndReached={handleFetchMore}
+                // onStartReachedThreshold={0.5}
             onEndReachedThreshold={1}
-            refreshing={communitiesQuery.isFetching}
+                refreshing={accountCommunitiesQuery?.loading || refreshing}
             ListFooterComponent={() => {
-                if (!communitiesQuery.isLoading) return null
+                if (!accountCommunitiesQuery?.loading) return null
                 return (
                     <XStack w="100%" p={20} justifyContent='center' alignItems='center' columnGap={20} >
                         <Spinner />
@@ -51,11 +124,25 @@ const Communities = () => {
             ItemSeparatorComponent={() => <Separator />}
             renderItem={({ item }) => {
                 return (
-                    // @ts-expect-error - gql generated types are too strict
                     <UserMembership data={item} />
                     )
                 }}
+                ListEmptyComponent={<YStack w='100%' p={20} alignItems='center' justifyContent='center' rowGap={10} >
+                    <Users />
+                    <Text textAlign='center' w='80%' fontSize={'$2'} >
+                        Looks like you're not a member of any communities yet.
+                    </Text>
+                    <Link asChild href={'/(tabs)/search/'} >
+                        <XStack columnGap={5} alignItems='center'  >
+                            <Text fontSize={'$2'} color={'$blue10'} >
+                                Lets fix that
+                            </Text>
+                            <ArrowRight size={'$1'} color={'$blue10'} />
+                        </XStack>
+                    </Link>
+                </YStack>}
         />
+        </YStack>
     )
 }
 

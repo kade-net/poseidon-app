@@ -4,11 +4,12 @@ import { Community, Publication } from "../../__generated__/graphql";
 import storage from "../storage";
 import { TPROFILE, TPUBLICATION, UpdateCommunitySchema } from '../../schema';
 import client, { barnicleClient } from '../../data/apollo';
-import { GET_PUBLICATIONS, GET_MY_PROFILE, GET_PUBLICATION, GET_PUBLICATION_COMMENTS, GET_PUBLICATION_INTERACTIONS_BY_VIEWER, GET_PUBLICATION_STATS, COMMUNITY_QUERY, GET_MEMBERSHIP, SEARCH_COMMUNITIES, GET_COMMUNITY_PUBLICATIONS, POST_COMMUNITY_SEARCH, GET_RELATIONSHIP, GET_ACCOUNT_STATS } from '../../utils/queries';
+import { GET_PUBLICATIONS, GET_MY_PROFILE, GET_PUBLICATION, GET_PUBLICATION_COMMENTS, GET_PUBLICATION_INTERACTIONS_BY_VIEWER, GET_PUBLICATION_STATS, COMMUNITY_QUERY, GET_MEMBERSHIP, SEARCH_COMMUNITIES, GET_COMMUNITY_PUBLICATIONS, POST_COMMUNITY_SEARCH, GET_RELATIONSHIP, GET_ACCOUNT_STATS, GET_ACCOUNT_COMMUNITIES } from '../../utils/queries';
 import delegateManager from '../delegate-manager';
 import usernames from '../../contract/modules/usernames';
 import { getMutedUsers, getRemovedFromFeed } from '../../contract/modules/store-getters';
 import posti from '../posti';
+import { Utils } from '../../utils';
 
 // TODO: for now we will ignore caching of quotes and anything that will not be seen directly in the home page
 class LocalStore {
@@ -189,8 +190,10 @@ class LocalStore {
                             reactions: 0,
                             reposts: 0,
                         },
-                        is_new: true
-                    } as any
+                        // @ts-ignore - this is for internal cache merging
+                        is_new: true,
+                        parent: null
+                    }
                 }
             })
 
@@ -279,8 +282,10 @@ class LocalStore {
                             reactions: 0,
                             reposts: 0,
                         },
-                        is_new: true
-                    } as any
+                        // @ts-ignore - this is for internal cache merging
+                        is_new: true,
+                        parent: null
+                    } 
                 }
             })
 
@@ -784,6 +789,15 @@ class LocalStore {
 
     async addMembership(communityName: string) {
 
+        const prevAccountCommunities = client.readQuery({
+            query: GET_ACCOUNT_COMMUNITIES,
+            variables: {
+                accountAddress: delegateManager.owner!,
+                page: 0,
+                size: 20
+            }
+        })
+
         client.writeQuery({
             query: GET_MEMBERSHIP,
             variables: {
@@ -865,10 +879,52 @@ class LocalStore {
                 ]
             }
         })
+
+        client.writeQuery({
+            query: GET_ACCOUNT_COMMUNITIES,
+            variables: {
+                accountAddress: delegateManager.owner!,
+                page: 0,
+                size: 20
+            },
+            data: {
+                accountCommunities: [
+                    {
+                        creator: {
+                            address: 'unknown creator address',
+                            id: Date.now()
+                        },
+                        description: prevCommunityQuery?.community?.description ?? "",
+                        id: prevCommunityQuery?.community?.id ?? 1,
+                        image: prevCommunityQuery?.community?.image ?? Utils.diceImage('community'),
+                        name: prevCommunityQuery?.community?.name ?? '',
+                        timestamp: Date.now(),
+                        display_name: prevCommunityQuery?.community?.display_name,
+                        hosts: [],
+                        __typename: "Community"
+                    },
+                    ...(prevAccountCommunities?.accountCommunities ?? [])
+                ]
+            }
+        })
+
+
     }
 
 
     async removeMembership(communityName: string) {
+
+        const prevAccountCommunities = client.readQuery({
+            query: GET_ACCOUNT_COMMUNITIES,
+            variables: {
+                accountAddress: delegateManager.owner!,
+                page: 0,
+                size: 20
+            }
+        })
+
+
+
         client.writeQuery({
             query: GET_MEMBERSHIP,
             variables: {
@@ -928,6 +984,21 @@ class LocalStore {
                         prevPostCommunitySearches?.communitiesSearch ?? []
                     ).filter((c) => c.name !== communityName)
                 ]
+            }
+        })
+
+
+        client.writeQuery({
+            query: GET_ACCOUNT_COMMUNITIES,
+            variables: {
+                accountAddress: delegateManager.owner!,
+                page: 0,
+                size: 20
+            },
+            data: {
+                accountCommunities: prevAccountCommunities?.accountCommunities?.filter((c) => {
+                    return c.name !== communityName
+                }) ?? []
             }
         })
 
@@ -991,12 +1062,23 @@ class LocalStore {
 
 
     async createCommunity(name: string, description: string, image: string) {
+
+        const prevAccountCommunities = client.readQuery({
+            query: GET_ACCOUNT_COMMUNITIES,
+            variables: {
+                accountAddress: delegateManager.owner!,
+                page: 0,
+                size: 20
+            }
+        })
+
         const profile = client.readQuery({
             query: GET_MY_PROFILE,
             variables: {
                 address: delegateManager.owner!
             }
         })
+
         const timestamp = Date.now()
         client.writeQuery({
             query: COMMUNITY_QUERY,
@@ -1107,6 +1189,35 @@ class LocalStore {
                 ]
             }
         })
+
+        client.writeQuery({
+            query: GET_ACCOUNT_COMMUNITIES,
+            variables: {
+                accountAddress: delegateManager.owner!,
+                page: 0,
+                size: 20
+            },
+            data: {
+                accountCommunities: [
+                    ...(prevAccountCommunities?.accountCommunities ?? []),
+                    {
+                        creator: {
+                            address: delegateManager.owner!,
+                            id: Date.now()
+                        },
+                        description,
+                        image,
+                        name,
+                        id: timestamp,
+                        timestamp,
+                        display_name: name,
+                        hosts: [],
+                        __typename: "Community"
+                    }
+                ]
+            }
+        })
+
     }
 
     // !!! IMPORTANT !!! - this is for dev purpouses only and should never be used in production

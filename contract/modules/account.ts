@@ -14,12 +14,36 @@ import localStore from '../../lib/local-store';
 import { getAuthenticatorsAndRawTransaction } from './helpers';
 import storage from '../../lib/storage';
 import posti from '../../lib/posti';
+import { Utils } from '../../utils';
 
 class AccountContract {
 
     mutedUsers: Array<number> = []
 
+    locked: boolean = false
 
+    lock() {
+        console.log("Locked::")
+        this.locked = true
+    }
+
+    unlock() {
+        console.log("Unlocked")
+        this.locked = false
+    }
+
+    waitForUnlock(): Promise<boolean> {
+        return new Promise<boolean>(async (res, rej) => {
+            if (this.locked) {
+                console.log("Waiting for unlock")
+                await Utils.sleep(1000)
+                return res(this.waitForUnlock())
+            } else {
+                console.log("Resolved unlock")
+                res(true)
+            }
+        })
+    }
 
     get isImported() {
         const imported = SecureStore.getItem('imported')
@@ -144,12 +168,23 @@ class AccountContract {
         return commited_txn
     }
 
-    async followAccount(following_address: string, search?: string) {
+    async followAccount(following_address: string, search?: string, storeUpdated?: boolean) {
+
         if (!delegateManager.signer) {
             throw new Error("No account found")
         }
 
-        await localStore.addFollow(following_address, search)
+        if (!storeUpdated) {
+            await localStore.addFollow(following_address, search)
+        }
+
+        if (this.locked) {
+            await this.waitForUnlock()
+            await this.followAccount(following_address, search, true)
+            return
+        } else {
+            this.lock()
+        }
 
         try {
             const txn_details = await getAuthenticatorsAndRawTransaction(`${APP_SUPPORT_API}/contract/account/follow`, {
@@ -173,6 +208,7 @@ class AccountContract {
             })
 
             if (status.success) {
+                this.unlock()
                 return true
             }
             else {
@@ -183,21 +219,34 @@ class AccountContract {
                     error: 'Transaction failed'
                 })
                 await localStore.removeFollow(following_address)
+                this.unlock()
                 throw new Error("Transaction failed")
             }
 
         }
         catch (e) {
+            this.unlock()
             await localStore.removeFollow(following_address)
             throw e
         }
     }
 
-    async unFollowAccount(unfollowing_address: string, search?: string) {
+    async unFollowAccount(unfollowing_address: string, search?: string, storeUpdated?: boolean) {
         if (!delegateManager.signer) {
             throw new Error("No account found")
         }
-        localStore.removeFollow(unfollowing_address, search)
+
+        if (!storeUpdated) {
+            localStore.removeFollow(unfollowing_address, search)
+        }
+
+        if (this.locked) {
+            const unlocked = await this.waitForUnlock()
+            await this.unFollowAccount(unfollowing_address, search, true)
+            return
+        } else {
+            this.lock()
+        }
 
         try {
             const txn_details = await getAuthenticatorsAndRawTransaction(`${APP_SUPPORT_API}/contract/account/unfollow`, {
@@ -222,6 +271,7 @@ class AccountContract {
             })
 
             if (status.success) {
+                this.unlock()
                 return true
             }
             else {
@@ -232,12 +282,14 @@ class AccountContract {
                     unfollowing_address
                 })
                 await localStore.addFollow(unfollowing_address)
+                this.unlock()
                 throw new Error("Transaction failed")
             }
 
         }
         catch (e) {
             await localStore.addFollow(unfollowing_address)
+            this.unlock()
             throw e
         }
     }

@@ -87,6 +87,19 @@ const _layout = () => {
                         }
                     }}
                 />
+                <Stack.Screen
+                    name="petra"
+                    options={{
+                        header(props) {
+                            return (
+                                <TopBarWithBack
+                                    title={'Wallet'}
+                                    navigation={props.navigation}
+                                />
+                            )
+                        }
+                    }}
+                />
             </Stack>
         </SafeAreaView>
     )

@@ -12,6 +12,7 @@
     "test": "jest --watchAll",
     "compile": "graphql-codegen",
     "compile:barnicle": "graphql-codegen --config ./support-gql-clients/barnicle.codegen.ts",
+    "compile:indexer": "graphql-codegen --config ./lib/indexer-client/codegen.yml",
     "watch": "graphql-codegen -w"
   },
   "jest": {
@@ -56,6 +57,7 @@
     "expo-updates": "~0.24.12",
     "expo-web-browser": "~12.8.2",
     "graphql": "^15.8.0",
+    "graphql-request": "^6.1.0",
     "immer": "^10.0.3",
     "lodash": "^4.17.21",
     "posthog-react-native": "^3.1.0",
@@ -88,6 +90,9 @@
     "@babel/core": "^7.23.3",
     "@graphql-codegen/cli": "^5.0.2",
     "@graphql-codegen/client-preset": "^4.2.4",
+    "@graphql-codegen/import-types-preset": "^3.0.0",
+    "@graphql-codegen/typescript-graphql-request": "^6.2.0",
+    "@graphql-codegen/typescript-operations": "^4.2.0",
     "@graphql-typed-document-node/core": "^3.2.0",
     "@types/lodash": "^4",
     "@types/react": "~18.2.14",

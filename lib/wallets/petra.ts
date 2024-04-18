@@ -42,6 +42,8 @@ class PetraWallet {
         }
         const shared = nacl.box.before(Buffer.from(publicKey, 'hex'), this.latestKeyPair.secretKey)
         this.sharedSecret = shared
+        console.log("Shared secret is::", shared)
+        return shared
         // TODO: Persist the shared secret for later transactions
     }
 
@@ -72,7 +74,7 @@ class PetraWallet {
             appInfo: {
                 domain: "host.exp.exponent" // TODO: change with the app's bundle id later
             },
-            redirectLink: `${Linking.createURL("/connect/")}`,
+            redirectLink: `${Linking.createURL("/settings/petra")}`,
             dappEncryptionPublicKey: Buffer.from(this.latestKeyPair.publicKey).toString('hex')
         }
 

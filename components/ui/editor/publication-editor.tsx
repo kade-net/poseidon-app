@@ -388,8 +388,8 @@ const PublicationEditor = (props: Props) => {
                         </XStack>
                         <XStack>
                             {
-                                currentLength > 130 && <Text color={"$red10"} >
-                                    {160 - currentLength}
+                                <Text color={currentLength > 130 ? "$red10" : undefined} >
+                                    {currentLength} / 160
                                 </Text>
                             }
                         </XStack>

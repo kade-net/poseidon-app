@@ -18,6 +18,7 @@ export const GET_PUBLICATIONS = gql(/* GraphQL */`
             creator {
                 address
                 profile {
+                    creator
                     pfp
                     bio
                     display_name
@@ -37,6 +38,7 @@ export const GET_PUBLICATIONS = gql(/* GraphQL */`
                 creator {
                     address
                     profile {
+                        creator
                         pfp
                         bio
                         display_name
@@ -69,6 +71,7 @@ export const GET_MY_PROFILE = gql(/* GraphQL */`
         id
         address
         profile {
+            creator
             display_name
             bio
             pfp
@@ -120,6 +123,7 @@ export const GET_PUBLICATION = gql(/* GraphQL */`
                 creator {
                     address
                     profile {
+                        creator
                         pfp
                         bio
                         display_name
@@ -140,6 +144,7 @@ export const GET_PUBLICATION = gql(/* GraphQL */`
                     creator {
                         address
                         profile {
+                            creator
                             pfp
                             bio
                             display_name
@@ -203,6 +208,7 @@ export const GET_PUBLICATION_COMMENTS = gql(/* GraphQL */`
             creator {
                 address
                 profile {
+                    creator
                     pfp
                     bio
                     display_name
@@ -277,6 +283,7 @@ export const GET_COMMUNITY_PUBLICATIONS = gql(/* GraphQL */`
             creator {
                 address
                 profile {
+                    creator
                     pfp
                     bio
                     display_name
@@ -296,6 +303,7 @@ export const GET_COMMUNITY_PUBLICATIONS = gql(/* GraphQL */`
                 creator {
                     address
                     profile {
+                        creator
                         pfp
                         bio
                         display_name
@@ -344,6 +352,7 @@ export const ACCOUNTS_SEARCH_QUERY = gql(/* GraphQL */`
             address
             timestamp
             profile {
+                creator
                 pfp
                 bio
                 display_name
@@ -386,6 +395,7 @@ export const GET_ACCOUNT_FOLLOWERS = gql(/* GraphQL */`
         ) {
             address
             profile {
+                creator
                 pfp
                 bio
                 display_name
@@ -405,6 +415,7 @@ export const GET_ACCOUNT_FOLLOWING = gql(/* GraphQL */`
         ) {
             address
             profile {
+                creator
                 pfp
                 bio
                 display_name
@@ -423,6 +434,7 @@ export const COMMUNITY_MEMBERS_SEARCH = gql(/* GraphQL */`
             id
             address
             profile {
+                creator
                 pfp
                 display_name
                 bio
@@ -454,6 +466,7 @@ query AccountsSearch($search: String!, $userAddress: String!) {
         address
         id
         profile {
+            creator
             pfp
             bio
             display_name
@@ -477,11 +490,13 @@ export const USER_NOTIFICATIONS = gql(/* GraphQL */`
             timestamp
             referenceDataId
             referenceUser {
+                id
                 address
                 username {
                     username
                 }
                 profile {
+                    creator
                     pfp
                     display_name
                 }
@@ -490,6 +505,7 @@ export const USER_NOTIFICATIONS = gql(/* GraphQL */`
                 follower {
                     address
                     profile {
+                        creator
                         pfp
                         display_name
                     }
@@ -499,7 +515,9 @@ export const USER_NOTIFICATIONS = gql(/* GraphQL */`
                 content
                 type
                 creator {
+                    address
                     profile {
+                        creator
                         pfp
                         display_name
                     }
@@ -518,7 +536,9 @@ export const USER_NOTIFICATIONS = gql(/* GraphQL */`
                     content
                 }
                 creator {
+                    address
                     profile {
+                        creator
                         display_name
                         pfp
 
@@ -541,6 +561,32 @@ export const GET_ACCOUNT_USERNAME = gql(/* GraphqQL */`
             owner_address
             token_address
             timestamp
+        }
+    }
+`)
+
+export const GET_ACCOUNT_COMMUNITIES = gql(/* GraphQL */`
+    query AccountCommunities($accountAddress: String!, $page: Int!, $size: Int!) {
+        accountCommunities(
+            accountAddress: $accountAddress,
+            pagination: {
+                page: $page,
+                size: $size
+            }
+        ) {
+            id
+            name
+            description
+            image
+            timestamp
+            display_name,
+            creator {
+                id
+                address
+            }
+            hosts {
+                address
+            }
         }
     }
 `)

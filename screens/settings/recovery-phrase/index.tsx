@@ -1,6 +1,6 @@
-import { View, Text, XStack, Button, Input, ScrollView } from 'tamagui'
+import { View, Text, XStack, Button, Input, ScrollView, YStack, TextArea } from 'tamagui'
 import React from 'react'
-import { TextArea, YStack } from 'tamagui'
+import { TextInput } from 'react-native'
 import delegateManager from '../../../lib/delegate-manager'
 import { Copy } from '@tamagui/lucide-icons'
 import * as clipboard from 'expo-clipboard'
@@ -29,8 +29,8 @@ const RecoveryPhrase = () => {
     }
 
     return (
-        <ScrollView showsVerticalScrollIndicator={false}>
-            <YStack p={20} rowGap={20} backgroundColor={"$background"}>
+        <ScrollView flex={1} w="100%" h="100%" backgroundColor={"$background"} showsVerticalScrollIndicator={false}>
+            <YStack flex={1} w="100%" h="100%" p={20} rowGap={20} >
 
                 <YStack>
                     <Text color={"$text"} fontSize={"$md"}>
@@ -76,16 +76,16 @@ const RecoveryPhrase = () => {
                     <Text color={"$text"} fontSize={"$md"}>
                         Delegate Private Key
                     </Text>
-                    <TextArea
+                    <Input
                         fontWeight={"$2"}
                         fontSize={"$sm"}
                         backgroundColor={"$colorTransparent"}
                         my={Utils.dynamicHeight(1)}
-                        multiline
                         disabled
                         value={delegateManager.private_key ?? ""}
-                        textContentType='password'
+                        secureTextEntry
                     />
+
                     <XStack justifyContent='flex-end' >
                         <Button onPress={() => handleSelect('delegate-private-key')} icon={<Copy />} backgroundColor={"$button"} color={"$buttonText"}>
                             Copy
@@ -97,14 +97,14 @@ const RecoveryPhrase = () => {
                     <Text color={"$text"} fontSize={"$md"}>
                         Recovery Phrase
                     </Text>
-                    <TextArea
+                    <Input
                         fontWeight={"$2"}
                         fontSize={"$sm"}
                         backgroundColor={"$colorTransparent"}
                         my={Utils.dynamicHeight(1)}
-                        multiline
                         disabled
                         value={delegateManager.mnemonic ?? ""}
+                        secureTextEntry
 
                     />
                     <XStack justifyContent='flex-end' >

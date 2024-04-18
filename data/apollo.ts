@@ -66,6 +66,12 @@ function simpleMerge(existing: Array<Reference> = [], incoming: Array<Reference>
     return cloned
 }
 
+function simpleMergeAllowEmpty(existing: Array<Reference> = [], incoming: Array<Reference> = [], options: any) {
+    const newExisting = (incoming?.length ?? 0) < (existing?.length ?? 0) ? incoming : cloneDeep(existing)
+
+    return simpleMerge(newExisting, incoming, options)
+}
+
 const cache = new InMemoryCache({
     dataIdFromObject: (object: Record<string, any>) => {
         switch (object.__typename) {
@@ -74,6 +80,12 @@ const cache = new InMemoryCache({
             }
             case "PublicationViewerStats": {
                 return object.ref
+            }
+            case "Account": {
+                return object.address
+            }
+            case "Profile": {
+                return object.creator
             }
             default: {
                 return defaultDataIdFromObject(object)
@@ -136,7 +148,16 @@ const cache = new InMemoryCache({
 
                         return resultObject
                     }
+                },
+                communitiesSearch: {
+                    keyArgs: ['memberAddress', 'search'],
+                    merge: simpleMergeAllowEmpty
+                },
+                accountCommunities: {
+                    keyArgs: ['accountAddress'],
+                    merge: simpleMergeAllowEmpty
                 }
+
             }
         }
     }

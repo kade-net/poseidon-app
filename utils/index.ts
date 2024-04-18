@@ -53,4 +53,8 @@ export namespace Utils {
     return content.match(regex)
 
   }
+
+  export const sleep = (ms: number) => new Promise((res, rej) => {
+    setTimeout(res, ms)
+  })
 }

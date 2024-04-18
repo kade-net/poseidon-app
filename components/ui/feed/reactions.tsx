@@ -1,5 +1,5 @@
 import { View, Text, useTheme, Button, Spinner } from 'tamagui'
-import React, { memo, useTransition } from 'react'
+import React, { memo, useEffect, useTransition } from 'react'
 import { StyleSheet, TouchableOpacity } from 'react-native'
 import { Heart, MessageSquare, MessageSquarePlus, Repeat } from '@tamagui/lucide-icons'
 import { Publication, PublicationStats } from '../../../__generated__/graphql'
@@ -86,6 +86,12 @@ const PublicationReactions = (props: Props) => {
         }
     }
 
+    useEffect(() => {
+        if (isOpen && repostOpen) {
+            closeRepost()
+        }
+    }, [isOpen])
+
     const handleQuote = () => {
         const currentState = userInteractions.data?.publicationInteractionsByViewer
         if (currentState?.quoted) {
@@ -103,7 +109,6 @@ const PublicationReactions = (props: Props) => {
             }
             return
         }
-        closeRepost()
         setCurrentPublicationType(2)
         onOpen()
     }
@@ -174,7 +179,7 @@ const PublicationReactions = (props: Props) => {
             </TouchableOpacity>
 
             {/* Comment Sheet */}
-            {isOpen && <BaseContentSheet
+            {(isOpen && !repostOpen) && <BaseContentSheet
                 open={isOpen}
                 onOpenChange={onToggle}
                 snapPoints={[100]}
