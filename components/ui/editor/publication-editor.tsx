@@ -240,7 +240,7 @@ const PublicationEditor = (props: Props) => {
                 <Button disabled={uploading || publishing}  backgroundColor={(uploading || publishing) ? "$disabledButton" : "$button"} color={"$buttonText"} onPress={form.handleSubmit(handlePublish, console.log)} w={100} >
                     {
                         publishing ? <View flexDirection='row' rowGap={5} >
-                            <Text>
+                            <Text color={'white'} >
                                 in a bit..
                             </Text>
                             <Spinner />

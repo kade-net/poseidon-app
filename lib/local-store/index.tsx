@@ -1,6 +1,6 @@
 import '../../global'
 import 'react-native-get-random-values'
-import { Community, Publication } from "../../__generated__/graphql";
+import { Community, Profile, Publication } from "../../__generated__/graphql";
 import storage from "../storage";
 import { TPROFILE, TPUBLICATION, UpdateCommunitySchema } from '../../schema';
 import client, { barnicleClient } from '../../data/apollo';
@@ -10,6 +10,7 @@ import usernames from '../../contract/modules/usernames';
 import { getMutedUsers, getRemovedFromFeed } from '../../contract/modules/store-getters';
 import posti from '../posti';
 import { Utils } from '../../utils';
+import ephemeralCache from './ephemeral-cache';
 
 // TODO: for now we will ignore caching of quotes and anything that will not be seen directly in the home page
 class LocalStore {
@@ -68,7 +69,8 @@ class LocalStore {
                     display_name: profile?.account?.profile?.display_name,
                     pfp: profile?.account?.profile?.pfp,
                     bio: profile?.account?.profile?.bio,
-                } as any,
+                    creator: profile?.account?.profile?.creator
+                } as Profile,
                 username: {
                     username: profile?.account?.username?.username!
                 } as any,
@@ -108,7 +110,8 @@ class LocalStore {
                 reposted: oldInteractionsState?.reposted ?? false,
                 repost_refs: oldInteractionsState?.repost_refs ?? [],
                 ref: parent_ref,
-                __typename: "PublicationViewerStats" as const
+                __typename: "PublicationViewerStats" as const,
+                is_manual: true
             }
 
             const publicationStatsQuery = client.readQuery({
@@ -134,11 +137,15 @@ class LocalStore {
                 interactions.reposted = !interactions.reposted
                 interactions.repost_refs = [client_ref]
                 stats.reposts = (stats.reposts ?? 0) + 1
+                ephemeralCache.set(`interaction::repost::${parent_ref}`, 'repost')
+                ephemeralCache.set(`stats::reposts::${parent_ref}`, stats.reposts)
 
             } else if (type == 3) {
                 // COMMENT
                 interactions.commented = !interactions.commented
                 stats.comments = (stats.comments ?? 0) + 1
+                ephemeralCache.set(`interaction::comment::${parent_ref}`, 'comment')
+                ephemeralCache.set(`stats::comments::${parent_ref}`, stats.comments)
 
                 const commentQuery = client.readQuery({
                     query: GET_PUBLICATION_COMMENTS,
@@ -173,6 +180,9 @@ class LocalStore {
                 interactions.quoted = !interactions.quoted
                 stats.quotes = (stats.quotes ?? 0) + 1
                 interactions.quote_refs = [client_ref]
+
+                ephemeralCache.set(`interaction::quote::${parent_ref}`, 'quote')
+                ephemeralCache.set(`stats::quotes::${parent_ref}`, stats.reposts)
             }
 
             client.writeQuery({
@@ -226,7 +236,6 @@ class LocalStore {
         try {
 
             if (community) {
-                console.log("Community ::", community)
                 const prevCommunityPublications = client.readQuery({
                     query: GET_COMMUNITY_PUBLICATIONS,
                     variables: {
@@ -341,7 +350,7 @@ class LocalStore {
             })
 
             const oldInteractionsState = currentPublicationInteractions?.publicationInteractionsByViewer
-            console.log("OLD INTERACTIONS ", oldInteractionsState)
+
             const interactions = {
                 commented: oldInteractionsState?.commented ?? false,
                 comment_refs: oldInteractionsState?.comment_refs ?? [],
@@ -351,7 +360,8 @@ class LocalStore {
                 reposted: oldInteractionsState?.reposted ?? false,
                 repost_refs: oldInteractionsState?.repost_refs ?? [],
                 ref,
-                __typename: "PublicationViewerStats" as const
+                __typename: "PublicationViewerStats" as const,
+                is_manual: true
             }
 
             const publicationStatsQuery = client.readQuery({
@@ -377,17 +387,22 @@ class LocalStore {
                 interactions.reposted = !interactions.reposted
                 interactions.repost_refs = interactions.repost_refs.filter((r) => r !== ref)
                 stats.reposts = interactions.reposted ? (stats.reposts ?? 0) + 1 : (stats.reposts ?? 1) - 1
-                console.log("NEW INTERACTIONS ", interactions)
+                ephemeralCache.set(`interaction::repost::${parent_ref}`, 'unrepost')
+                ephemeralCache.set(`stats::reposts::${parent_ref}`, stats.reposts)
 
             } else if (type == 3) {
                 // COMMENT
                 interactions.commented = !interactions.commented
                 stats.comments = interactions.commented ? (stats.comments ?? 0) + 1 : (stats.comments ?? 1) - 1
+                ephemeralCache.set(`interaction::comment::${parent_ref}`, 'uncomment')
+                ephemeralCache.set(`stats::comments::${parent_ref}`, stats.comments)
             }
             else if (type == 2) {
                 // QUOTE
                 interactions.quoted = !interactions.quoted
                 stats.quotes = interactions.quoted ? (stats.quotes ?? 0) + 1 : (stats.quotes ?? 1) - 1
+                ephemeralCache.set(`interaction::quote::${parent_ref}`, 'unquote')
+                ephemeralCache.set(`stats::quotes::${parent_ref}`, stats.quotes)
             }
 
             client.writeQuery({
@@ -494,10 +509,15 @@ class LocalStore {
                     reacted: true,
                     ref: oldState?.ref ?? ref,
                     reposted: oldState?.reposted ?? false,
-                    repost_refs: oldState?.repost_refs ?? []
+                    repost_refs: oldState?.repost_refs ?? [],
+                    // @ts-ignore - this is for internal cache merging
+                    is_manual: true
                 }
             }
         })
+
+        ephemeralCache.set(`interaction::reaction::${ref}`, 'react')
+        ephemeralCache.set(`stats::reactions::${ref}`, (publicationStatsQuery?.publicationStats?.reactions ?? 0) + 1)
     }
 
     async removeReactedToPublication(ref: string) {
@@ -552,10 +572,15 @@ class LocalStore {
                     reacted: false,
                     ref: oldState?.ref ?? ref,
                     reposted: oldState?.reposted ?? false,
-                    repost_refs: oldState?.repost_refs ?? []
+                    repost_refs: oldState?.repost_refs ?? [],
+                    // @ts-ignore - this is for internal cache merging
+                    is_manual: true
                 }
             }
         })
+
+        ephemeralCache.set(`interaction::reaction::${ref}`, 'unreact')
+        ephemeralCache.set(`stats::reactions::${ref}`, (publicationStatsQuery?.publicationStats?.reactions ?? 0) - 1)
 
     }
 
