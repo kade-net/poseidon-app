@@ -101,7 +101,7 @@ const Settings = () => {
                     </YStack>
                 </Link>
                 <Link
-                    href="/settings/petra"
+                    href="/settings/wallet/"
                     asChild
                 >
                     <YStack style={{

@@ -1,3 +1,5 @@
+import { AccountAddress } from "@aptos-labs/ts-sdk";
+import { isString } from "lodash";
 import { Dimensions } from "react-native";
 
 export namespace Utils {
@@ -57,4 +59,23 @@ export namespace Utils {
   export const sleep = (ms: number) => new Promise((res, rej) => {
     setTimeout(res, ms)
   })
+
+
+  export const formatAddress = (address: string) => {
+    return `${address.slice(0, 6)}...${address.slice(-4)}`
+  }
+
+  export const isAptosAddress = (address: string) => {
+    const isValid = AccountAddress.isValid({
+      input: address
+    })
+
+    return isValid.valid && (address?.length === 64 || address?.length === 66)
+
+  }
+
+
+  export const isValidUsername = (usernaem: string) => {
+    return USERNAME_REGEX.test(usernaem)
+  }
 }
