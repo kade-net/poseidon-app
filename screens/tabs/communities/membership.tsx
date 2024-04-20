@@ -3,37 +3,36 @@ import { Avatar, XStack, YStack, Text, Button } from 'tamagui'
 import { Community } from '../../../__generated__/graphql';
 import { TouchableOpacity } from 'react-native';
 import { Link } from 'expo-router';
+import { Utils } from '../../../utils';
+import delegateManager from '../../../lib/delegate-manager';
 
 interface Props {
-    data: {
-        owns_community: boolean;
-        community: Partial<Community>;
-        id: string;
-        user_address: string;
-        type: 0 | 1 | 2;
-        community_id: string;
-    }
+    data: Partial<Community>
 }
 
 const UserMembership = (props: Props) => {
     const { data } = props
+    const hosts_address = data?.hosts?.map(host => host.address)
+    const IS_HOST = hosts_address?.includes(delegateManager.owner!)
+    const IS_OWNER = data?.creator?.address == delegateManager.owner
+    const IS_MEMBER = !IS_HOST && !IS_OWNER
     return (
         <Link
             asChild
             href={{
                 pathname: '/(tabs)/feed/communities/[name]/',
                 params: {
-                    name: data?.community?.name! // Safe to assume this is always defined
+                    name: data?.name! // Safe to assume this is always defined
                 }
             }}
         >
-            <TouchableOpacity style={{
+            {/* <TouchableOpacity style={{
                 width: '100%',
-            }}>
+            }}> */}
                 <YStack w="100%" >
                     <XStack columnGap={10} w="100%" px={10} py={10}  >
                         <Avatar circular >
-                            <Avatar.Image source={{ uri: data?.community?.image }} alt="community" />
+                        <Avatar.Image source={{ uri: data?.image ?? Utils.diceImage(data?.name ?? 'community') }} alt="community" />
                             <Avatar.Fallback
                                 bg="lightgray"
                             />
@@ -42,35 +41,35 @@ const UserMembership = (props: Props) => {
                             <XStack justifyContent='space-between' w="100%" >
                                 <YStack>
                                     <Text fontWeight={"$5"} fontSize={"$sm"}>
-                                        {data?.community?.name}
+                                    {data?.name}
                                     </Text>
                                     <Text fontSize={'$xs'} color={'$sideText'} >
-                                        /{data?.community?.name}
+                                    /{data?.name}
                                     </Text>
                                 </YStack>
                                 {
-                                    data?.owns_community ?
+                                data?.creator?.address == delegateManager.owner ?
                                         <Text color={'rgb(253,33,85)'} >owner</Text> :
                                         <Text
                                             color={
-                                                data?.type === 2 ? 'rgb(127,88,153)' : data?.type === 1 ? 'rgb(253,33,85)' : 'gray'
+                                            IS_MEMBER ? 'rgb(127,88,153)' : IS_HOST ? 'rgb(253,33,85)' : 'gray'
                                             }
                                         >
                                             {
-                                                data?.type === 2 ? 'member' : data?.type === 1 ? 'host' : ''
+                                            IS_MEMBER ? 'member' : IS_HOST ? 'host' : ''
                                             }
                                         </Text>
                                 }
                             </XStack>
                             <Text w="100%" fontSize={"$sm"} >
                                 {
-                                    data?.community?.description
+                                data?.description
                                 }
                             </Text>
                         </YStack>
                     </XStack>
                 </YStack>
-            </TouchableOpacity>
+            {/* </TouchableOpacity> */}
         </Link>
     )
 }

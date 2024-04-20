@@ -7,6 +7,7 @@ import delegateManager from "../../lib/delegate-manager";
 import localStore from "../../lib/local-store";
 import { z } from "zod";
 import posti from "../../lib/posti";
+import { Utils } from "../../utils";
 
 interface Community {
     id: string;
@@ -46,9 +47,30 @@ type CMembership = z.infer<typeof changeMembership>
 class CommunityModule {
     constructor() { }
 
-    async createCommunity(data: COMMUNITY) {
+    locked: boolean = false
 
-        console.log("COMMUNITY ::", COMMUNITY_SUPPORT_API)
+    lock() {
+        this.locked = true
+    }
+
+    unlock() {
+        this.locked = false
+    }
+
+    waitForUnlock(): Promise<boolean> {
+        return new Promise<boolean>(async (res, rej) => {
+            if (this.locked) {
+                console.log("Waiting for unlock")
+                await Utils.sleep(2000)
+                return res(this.waitForUnlock())
+            } else {
+                console.log("Resolved unlock")
+                res(true)
+            }
+        })
+    }
+
+    async createCommunity(data: COMMUNITY) {
 
         const profile = client.readQuery({
             query: GET_MY_PROFILE,
@@ -82,7 +104,8 @@ class CommunityModule {
         return response.data ?? null
     }
 
-    async follow(communityName: string) {
+    async follow(communityName: string, storeUpdated?: boolean) {
+
         const profile = client.readQuery({
             query: GET_MY_PROFILE,
             variables: {
@@ -94,8 +117,17 @@ class CommunityModule {
             throw new Error("Profile not found")
         }
 
-        localStore.addMembership(communityName)
+        if (!storeUpdated) {
+            localStore.addMembership(communityName)
+        }
 
+        if (this.locked) {
+            await this.waitForUnlock()
+            await this.follow(communityName, true)
+            return
+        } else {
+            this.lock()
+        }
         try {
 
             await axios.post(`${COMMUNITY_SUPPORT_API}/api/community/join`, {
@@ -103,6 +135,7 @@ class CommunityModule {
                 user_address: delegateManager.owner!,
                 username: profile.account?.username?.username
             })
+            this.unlock()
         }
         catch (e) {
             posti.capture('follow failed', {
@@ -112,13 +145,14 @@ class CommunityModule {
             })
             console.log("Error: ", e)
             localStore.removeMembership(communityName)
+            this.unlock()
             throw e
         }
 
     }
 
 
-    async unFollow(communityName: string) {
+    async unFollow(communityName: string, storeUpdated?: boolean) {
         const profile = client.readQuery({
             query: GET_MY_PROFILE,
             variables: {
@@ -130,8 +164,18 @@ class CommunityModule {
             throw new Error("Profile not found")
         }
 
-        localStore.removeMembership(communityName)
+        if (!storeUpdated) {
+            localStore.removeMembership(communityName)
+        }
 
+        if (this.locked) {
+            await this.waitForUnlock()
+            await this.unFollow(communityName, true)
+            return
+        }
+        else {
+            this.lock()
+        }
         try {
             await axios.post(`${COMMUNITY_SUPPORT_API}/api/community/delete-membership`, {
                 community_name: communityName,
@@ -139,6 +183,7 @@ class CommunityModule {
                 username: profile.account?.username?.username
             })
 
+            this.unlock()
         }
         catch (e) {
             console.log("Error: ", e)
@@ -148,6 +193,7 @@ class CommunityModule {
                 communityName
             })
             localStore.addMembership(communityName)
+            this.unlock()
             throw e
         }
     }

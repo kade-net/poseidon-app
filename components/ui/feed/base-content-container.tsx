@@ -55,20 +55,38 @@ function BaseContentContainer(props: BaseContentContainerProps) {
     return (
         <YStack w="100%" borderBottomWidth={1} borderColor={'$borderColor'} py={9} px={Utils.dynamicWidth(4)} pb={10} >
             {
-                _data?.type == 4 && <View flexDirection="row" alignItems="center" pb={10} columnGap={10} >
-                    <Repeat2 size={"$1"} />
-                    <Text color="gray" fontSize={"$xxs"} >
-                        @{data?.creator?.username?.username} Reposted
-                    </Text>
-                </View>
+                _data?.type == 4 &&
+                <Link
+                    href={{
+                        pathname: '/(tabs)/feed/[post-id]/',
+                        params: {
+                            "post-id": data?.publication_ref!
+                        }
+                    }}
+                >
+                    <View flexDirection="row" alignItems="center" pb={10} columnGap={10} >
+                        <Repeat2 size={"$1"} />
+                        <Text color="gray" fontSize={"$xxs"} >
+                            @{data?.creator?.username?.username} Reposted
+                        </Text>
+                    </View>
+                    </Link>
             }
             {
-                (_data?.type == 3 && _data?.parent) && <View flexDirection="row" alignItems="center" pb={10} columnGap={10} >
-                    <Reply size={10} />
-                    <Text color="gray" fontSize={10} >
-                        Replied to @{data?.parent?.creator?.username?.username}
-                    </Text>
-                </View>
+                (_data?.type == 3 && _data?.parent) &&
+                <Link asChild href={{
+                    pathname: '/(tabs)/feed/[post-id]/',
+                    params: {
+                        "post-id": data?.parent?.publication_ref!
+                    }
+                }} >
+                    <View flexDirection="row" alignItems="center" pb={10} columnGap={10} >
+                        <Reply size={10} />
+                        <Text color="gray" fontSize={10} >
+                            Replied to @{data?.parent?.creator?.username?.username}
+                        </Text>
+                    </View>
+                    </Link>
             }
             <View w="100%" flexDirection="row" columnGap={6}  >
                 <YStack w="10%" >
@@ -120,11 +138,7 @@ function BaseContentContainer(props: BaseContentContainerProps) {
                             }}
                             asChild
                         >
-                            <View flex={1} flexDirection={
-                                HAS_LONG_USERNAME || HAS_LONG_DISPLAY_NAME ? "column" : "row"
-                            } alignItems={
-                                HAS_LONG_USERNAME || HAS_LONG_DISPLAY_NAME ? "flex-start" : "center"
-                            } columnGap={2}>
+                            <YStack flex={1} >
                                 <XStack alignItems="center" columnGap={2} >
                                     <Text fontSize={"$sm"} fontWeight={"$5"}>
                                         {
@@ -141,11 +155,10 @@ function BaseContentContainer(props: BaseContentContainerProps) {
                                         }
                                     </Text>
                                 </XStack>
-                                {(!HAS_LONG_DISPLAY_NAME && !HAS_LONG_USERNAME) && <Dot color={'$sideText'} />}
                                 <Text fontSize={'$sm'} color={'$sideText'} >
                                     {dayjs(data?.timestamp).fromNow()}
                                 </Text>
-                            </View>
+                            </YStack>
                         </Link>
                         {/* <MoreHorizontal /> */}
                         <PublicationAction
@@ -178,7 +191,7 @@ function BaseContentContainer(props: BaseContentContainerProps) {
                         asChild
                     >
                         {/* Content */}
-                        <View w="100%">
+                        <View w="100%" flex={1} >
                             <YStack w="100%"
                                 mb={
                                     ((data?.content?.media?.length ?? 0) > 0) ? 8 : 0

@@ -1,6 +1,7 @@
 import { InMemoryCache, ApolloClient, Reference, defaultDataIdFromObject, FieldFunctionOptions } from "@apollo/client"
-import { Publication, AccountStats } from "../__generated__/graphql"
-import { cloneDeep, uniqBy } from "lodash"
+import { Publication, AccountStats, PublicationInteractionsByViewerQuery } from "../__generated__/graphql"
+import { cloneDeep, isNumber, isUndefined, uniqBy } from "lodash"
+import ephemeralCache from "../lib/local-store/ephemeral-cache"
 
 function publicationMerge(_existing: Array<Reference> = [], incoming: Array<Reference> = [], options: FieldFunctionOptions) {
 
@@ -66,14 +67,26 @@ function simpleMerge(existing: Array<Reference> = [], incoming: Array<Reference>
     return cloned
 }
 
+function simpleMergeAllowEmpty(existing: Array<Reference> = [], incoming: Array<Reference> = [], options: any) {
+    const newExisting = (incoming?.length ?? 0) < (existing?.length ?? 0) ? incoming : cloneDeep(existing)
+
+    return simpleMerge(newExisting, incoming, options)
+}
+
 const cache = new InMemoryCache({
     dataIdFromObject: (object: Record<string, any>) => {
         switch (object.__typename) {
-            case "PublicationStats": {
-                return object.ref
+            // case "PublicationStats": {
+            //     return object.ref
+            // }
+            // case "PublicationViewerStats": {
+            //     return object.ref
+            // }
+            case "Account": {
+                return object.address
             }
-            case "PublicationViewerStats": {
-                return object.ref
+            case "Profile": {
+                return object.creator
             }
             default: {
                 return defaultDataIdFromObject(object)
@@ -135,6 +148,94 @@ const cache = new InMemoryCache({
                         }
 
                         return resultObject
+                    }
+                },
+                communitiesSearch: {
+                    keyArgs: ['memberAddress', 'search'],
+                    merge: simpleMergeAllowEmpty
+                },
+                accountCommunities: {
+                    keyArgs: ['accountAddress'],
+                    merge: simpleMergeAllowEmpty
+                },
+                publicationInteractionsByViewer: {
+                    merge(existing: PublicationInteractionsByViewerQuery['publicationInteractionsByViewer'], incoming: PublicationInteractionsByViewerQuery['publicationInteractionsByViewer'], options) {
+                        const incomingClone = cloneDeep(incoming)
+                        if (existing && incoming && incomingClone) {
+                            const reaction = ephemeralCache.get(`interaction::reaction::${existing.ref}`)
+                            if (reaction) {
+                                if (reaction == 'react' && !incoming.reacted) {
+                                    incomingClone.reacted = true
+                                }
+                                if (reaction == 'unreact' && incoming.reacted) {
+                                    incomingClone.reacted = false
+                                }
+                            }
+                            const comment = ephemeralCache.get(`interaction::comment::${existing.ref}`)
+                            if (comment) {
+                                if (comment == 'comment' && !incoming.commented) {
+                                    incomingClone.commented = true
+                                }
+                                if (comment == 'uncomment' && incoming.commented) {
+                                    incomingClone.commented = false
+                                }
+                            }
+                            const repost = ephemeralCache.get(`interaction::repost::${existing.ref}`)
+                            if (repost) {
+                                if (repost == 'repost' && !incoming.reposted) {
+                                    incomingClone.reposted = true
+                                }
+                                if (repost == 'unrepost' && incoming.reposted) {
+                                    incomingClone.reposted = false
+                                }
+                            }
+                            const quoted = ephemeralCache.get(`interaction::quote::${existing.ref}`)
+                            if (quoted) {
+                                if (quoted == 'quote' && !incoming.quoted) {
+                                    incomingClone.quoted = true
+                                }
+                                if (quoted == 'unquote' && incoming.quoted) {
+                                    incomingClone.quoted = false
+                                }
+                            }
+                        }
+
+                        return incomingClone
+                    }
+                },
+                publicationStats: {
+                    merge(existing: Publication['stats'], incoming: Publication['stats'], options) {
+                        const incomingClone = cloneDeep(incoming)
+
+                        if (existing && incoming && incomingClone) {
+                            const reactions = ephemeralCache.get(`stats::reactions::${existing.ref}`)
+                            if (!isUndefined(reactions) && isNumber(reactions)) {
+                                if (reactions !== incomingClone.reactions) {
+                                    incomingClone.reactions = reactions
+                                }
+                            }
+                            const comments = ephemeralCache.get(`stats::comments::${existing.ref}`)
+                            if (!isUndefined(comments) && isNumber(comments)) {
+                                if (comments !== incomingClone.comments) {
+                                    incomingClone.comments = comments
+                                }
+                            }
+
+                            const reposts = ephemeralCache.get(`stats::reposts::${existing.ref}`)
+                            if (!isUndefined(reposts) && isNumber(reposts)) {
+                                if (reposts !== incomingClone.reposts) {
+                                    incomingClone.reposts = reposts
+                                }
+                            }
+
+                            const quotes = ephemeralCache.get(`stats::quotes::${existing.ref}`)
+                            if (!isUndefined(quotes) && isNumber(quotes)) {
+                                if (quotes !== incomingClone.quotes) {
+                                    incomingClone.quotes = quotes
+                                }
+                            }
+                        }
+                        return incomingClone
                     }
                 }
             }

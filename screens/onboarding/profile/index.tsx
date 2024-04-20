@@ -60,7 +60,7 @@ const Profile = () => {
         setSubmitting(true)
         let new_file_url = ''
         try {
-            const upload_url = await uploadManager.uploadFile(values.pfp, {
+            const upload_url = await uploadManager.uploadFile(values?.pfp!, {
                 name: image?.fileName ?? 'profile-image',
                 size: image?.fileSize ?? 0,
                 type: image?.type ?? 'image/png',

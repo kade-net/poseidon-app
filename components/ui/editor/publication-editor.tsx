@@ -240,7 +240,7 @@ const PublicationEditor = (props: Props) => {
                 <Button disabled={uploading || publishing}  backgroundColor={(uploading || publishing) ? "$disabledButton" : "$button"} color={"$buttonText"} onPress={form.handleSubmit(handlePublish, console.log)} w={100} >
                     {
                         publishing ? <View flexDirection='row' rowGap={5} >
-                            <Text>
+                            <Text color={'white'} >
                                 in a bit..
                             </Text>
                             <Spinner />
@@ -388,8 +388,8 @@ const PublicationEditor = (props: Props) => {
                         </XStack>
                         <XStack>
                             {
-                                currentLength > 130 && <Text color={"$red10"} >
-                                    {160 - currentLength}
+                                <Text color={currentLength > 130 ? "$red10" : undefined} >
+                                    {currentLength} / 160
                                 </Text>
                             }
                         </XStack>

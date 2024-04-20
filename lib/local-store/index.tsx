@@ -1,14 +1,16 @@
 import '../../global'
 import 'react-native-get-random-values'
-import { Community, Publication } from "../../__generated__/graphql";
+import { Community, Profile, Publication } from "../../__generated__/graphql";
 import storage from "../storage";
 import { TPROFILE, TPUBLICATION, UpdateCommunitySchema } from '../../schema';
 import client, { barnicleClient } from '../../data/apollo';
-import { GET_PUBLICATIONS, GET_MY_PROFILE, GET_PUBLICATION, GET_PUBLICATION_COMMENTS, GET_PUBLICATION_INTERACTIONS_BY_VIEWER, GET_PUBLICATION_STATS, COMMUNITY_QUERY, GET_MEMBERSHIP, SEARCH_COMMUNITIES, GET_COMMUNITY_PUBLICATIONS, POST_COMMUNITY_SEARCH, GET_RELATIONSHIP, GET_ACCOUNT_STATS } from '../../utils/queries';
+import { GET_PUBLICATIONS, GET_MY_PROFILE, GET_PUBLICATION, GET_PUBLICATION_COMMENTS, GET_PUBLICATION_INTERACTIONS_BY_VIEWER, GET_PUBLICATION_STATS, COMMUNITY_QUERY, GET_MEMBERSHIP, SEARCH_COMMUNITIES, GET_COMMUNITY_PUBLICATIONS, POST_COMMUNITY_SEARCH, GET_RELATIONSHIP, GET_ACCOUNT_STATS, GET_ACCOUNT_COMMUNITIES } from '../../utils/queries';
 import delegateManager from '../delegate-manager';
 import usernames from '../../contract/modules/usernames';
 import { getMutedUsers, getRemovedFromFeed } from '../../contract/modules/store-getters';
 import posti from '../posti';
+import { Utils } from '../../utils';
+import ephemeralCache from './ephemeral-cache';
 
 // TODO: for now we will ignore caching of quotes and anything that will not be seen directly in the home page
 class LocalStore {
@@ -67,7 +69,8 @@ class LocalStore {
                     display_name: profile?.account?.profile?.display_name,
                     pfp: profile?.account?.profile?.pfp,
                     bio: profile?.account?.profile?.bio,
-                } as any,
+                    creator: profile?.account?.profile?.creator
+                } as Profile,
                 username: {
                     username: profile?.account?.username?.username!
                 } as any,
@@ -107,7 +110,8 @@ class LocalStore {
                 reposted: oldInteractionsState?.reposted ?? false,
                 repost_refs: oldInteractionsState?.repost_refs ?? [],
                 ref: parent_ref,
-                __typename: "PublicationViewerStats" as const
+                __typename: "PublicationViewerStats" as const,
+                is_manual: true
             }
 
             const publicationStatsQuery = client.readQuery({
@@ -133,11 +137,15 @@ class LocalStore {
                 interactions.reposted = !interactions.reposted
                 interactions.repost_refs = [client_ref]
                 stats.reposts = (stats.reposts ?? 0) + 1
+                ephemeralCache.set(`interaction::repost::${parent_ref}`, 'repost')
+                ephemeralCache.set(`stats::reposts::${parent_ref}`, stats.reposts)
 
             } else if (type == 3) {
                 // COMMENT
                 interactions.commented = !interactions.commented
                 stats.comments = (stats.comments ?? 0) + 1
+                ephemeralCache.set(`interaction::comment::${parent_ref}`, 'comment')
+                ephemeralCache.set(`stats::comments::${parent_ref}`, stats.comments)
 
                 const commentQuery = client.readQuery({
                     query: GET_PUBLICATION_COMMENTS,
@@ -172,6 +180,9 @@ class LocalStore {
                 interactions.quoted = !interactions.quoted
                 stats.quotes = (stats.quotes ?? 0) + 1
                 interactions.quote_refs = [client_ref]
+
+                ephemeralCache.set(`interaction::quote::${parent_ref}`, 'quote')
+                ephemeralCache.set(`stats::quotes::${parent_ref}`, stats.reposts)
             }
 
             client.writeQuery({
@@ -189,8 +200,10 @@ class LocalStore {
                             reactions: 0,
                             reposts: 0,
                         },
-                        is_new: true
-                    } as any
+                        // @ts-ignore - this is for internal cache merging
+                        is_new: true,
+                        parent: null
+                    }
                 }
             })
 
@@ -223,7 +236,6 @@ class LocalStore {
         try {
 
             if (community) {
-                console.log("Community ::", community)
                 const prevCommunityPublications = client.readQuery({
                     query: GET_COMMUNITY_PUBLICATIONS,
                     variables: {
@@ -279,8 +291,10 @@ class LocalStore {
                             reactions: 0,
                             reposts: 0,
                         },
-                        is_new: true
-                    } as any
+                        // @ts-ignore - this is for internal cache merging
+                        is_new: true,
+                        parent: null
+                    } 
                 }
             })
 
@@ -336,7 +350,7 @@ class LocalStore {
             })
 
             const oldInteractionsState = currentPublicationInteractions?.publicationInteractionsByViewer
-            console.log("OLD INTERACTIONS ", oldInteractionsState)
+
             const interactions = {
                 commented: oldInteractionsState?.commented ?? false,
                 comment_refs: oldInteractionsState?.comment_refs ?? [],
@@ -346,7 +360,8 @@ class LocalStore {
                 reposted: oldInteractionsState?.reposted ?? false,
                 repost_refs: oldInteractionsState?.repost_refs ?? [],
                 ref,
-                __typename: "PublicationViewerStats" as const
+                __typename: "PublicationViewerStats" as const,
+                is_manual: true
             }
 
             const publicationStatsQuery = client.readQuery({
@@ -372,17 +387,22 @@ class LocalStore {
                 interactions.reposted = !interactions.reposted
                 interactions.repost_refs = interactions.repost_refs.filter((r) => r !== ref)
                 stats.reposts = interactions.reposted ? (stats.reposts ?? 0) + 1 : (stats.reposts ?? 1) - 1
-                console.log("NEW INTERACTIONS ", interactions)
+                ephemeralCache.set(`interaction::repost::${parent_ref}`, 'unrepost')
+                ephemeralCache.set(`stats::reposts::${parent_ref}`, stats.reposts)
 
             } else if (type == 3) {
                 // COMMENT
                 interactions.commented = !interactions.commented
                 stats.comments = interactions.commented ? (stats.comments ?? 0) + 1 : (stats.comments ?? 1) - 1
+                ephemeralCache.set(`interaction::comment::${parent_ref}`, 'uncomment')
+                ephemeralCache.set(`stats::comments::${parent_ref}`, stats.comments)
             }
             else if (type == 2) {
                 // QUOTE
                 interactions.quoted = !interactions.quoted
                 stats.quotes = interactions.quoted ? (stats.quotes ?? 0) + 1 : (stats.quotes ?? 1) - 1
+                ephemeralCache.set(`interaction::quote::${parent_ref}`, 'unquote')
+                ephemeralCache.set(`stats::quotes::${parent_ref}`, stats.quotes)
             }
 
             client.writeQuery({
@@ -489,10 +509,15 @@ class LocalStore {
                     reacted: true,
                     ref: oldState?.ref ?? ref,
                     reposted: oldState?.reposted ?? false,
-                    repost_refs: oldState?.repost_refs ?? []
+                    repost_refs: oldState?.repost_refs ?? [],
+                    // @ts-ignore - this is for internal cache merging
+                    is_manual: true
                 }
             }
         })
+
+        ephemeralCache.set(`interaction::reaction::${ref}`, 'react')
+        ephemeralCache.set(`stats::reactions::${ref}`, (publicationStatsQuery?.publicationStats?.reactions ?? 0) + 1)
     }
 
     async removeReactedToPublication(ref: string) {
@@ -547,10 +572,15 @@ class LocalStore {
                     reacted: false,
                     ref: oldState?.ref ?? ref,
                     reposted: oldState?.reposted ?? false,
-                    repost_refs: oldState?.repost_refs ?? []
+                    repost_refs: oldState?.repost_refs ?? [],
+                    // @ts-ignore - this is for internal cache merging
+                    is_manual: true
                 }
             }
         })
+
+        ephemeralCache.set(`interaction::reaction::${ref}`, 'unreact')
+        ephemeralCache.set(`stats::reactions::${ref}`, (publicationStatsQuery?.publicationStats?.reactions ?? 0) - 1)
 
     }
 
@@ -784,6 +814,15 @@ class LocalStore {
 
     async addMembership(communityName: string) {
 
+        const prevAccountCommunities = client.readQuery({
+            query: GET_ACCOUNT_COMMUNITIES,
+            variables: {
+                accountAddress: delegateManager.owner!,
+                page: 0,
+                size: 20
+            }
+        })
+
         client.writeQuery({
             query: GET_MEMBERSHIP,
             variables: {
@@ -865,10 +904,52 @@ class LocalStore {
                 ]
             }
         })
+
+        client.writeQuery({
+            query: GET_ACCOUNT_COMMUNITIES,
+            variables: {
+                accountAddress: delegateManager.owner!,
+                page: 0,
+                size: 20
+            },
+            data: {
+                accountCommunities: [
+                    {
+                        creator: {
+                            address: 'unknown creator address',
+                            id: Date.now()
+                        },
+                        description: prevCommunityQuery?.community?.description ?? "",
+                        id: prevCommunityQuery?.community?.id ?? 1,
+                        image: prevCommunityQuery?.community?.image ?? Utils.diceImage('community'),
+                        name: prevCommunityQuery?.community?.name ?? '',
+                        timestamp: Date.now(),
+                        display_name: prevCommunityQuery?.community?.display_name,
+                        hosts: [],
+                        __typename: "Community"
+                    },
+                    ...(prevAccountCommunities?.accountCommunities ?? [])
+                ]
+            }
+        })
+
+
     }
 
 
     async removeMembership(communityName: string) {
+
+        const prevAccountCommunities = client.readQuery({
+            query: GET_ACCOUNT_COMMUNITIES,
+            variables: {
+                accountAddress: delegateManager.owner!,
+                page: 0,
+                size: 20
+            }
+        })
+
+
+
         client.writeQuery({
             query: GET_MEMBERSHIP,
             variables: {
@@ -928,6 +1009,21 @@ class LocalStore {
                         prevPostCommunitySearches?.communitiesSearch ?? []
                     ).filter((c) => c.name !== communityName)
                 ]
+            }
+        })
+
+
+        client.writeQuery({
+            query: GET_ACCOUNT_COMMUNITIES,
+            variables: {
+                accountAddress: delegateManager.owner!,
+                page: 0,
+                size: 20
+            },
+            data: {
+                accountCommunities: prevAccountCommunities?.accountCommunities?.filter((c) => {
+                    return c.name !== communityName
+                }) ?? []
             }
         })
 
@@ -991,12 +1087,23 @@ class LocalStore {
 
 
     async createCommunity(name: string, description: string, image: string) {
+
+        const prevAccountCommunities = client.readQuery({
+            query: GET_ACCOUNT_COMMUNITIES,
+            variables: {
+                accountAddress: delegateManager.owner!,
+                page: 0,
+                size: 20
+            }
+        })
+
         const profile = client.readQuery({
             query: GET_MY_PROFILE,
             variables: {
                 address: delegateManager.owner!
             }
         })
+
         const timestamp = Date.now()
         client.writeQuery({
             query: COMMUNITY_QUERY,
@@ -1107,6 +1214,35 @@ class LocalStore {
                 ]
             }
         })
+
+        client.writeQuery({
+            query: GET_ACCOUNT_COMMUNITIES,
+            variables: {
+                accountAddress: delegateManager.owner!,
+                page: 0,
+                size: 20
+            },
+            data: {
+                accountCommunities: [
+                    ...(prevAccountCommunities?.accountCommunities ?? []),
+                    {
+                        creator: {
+                            address: delegateManager.owner!,
+                            id: Date.now()
+                        },
+                        description,
+                        image,
+                        name,
+                        id: timestamp,
+                        timestamp,
+                        display_name: name,
+                        hosts: [],
+                        __typename: "Community"
+                    }
+                ]
+            }
+        })
+
     }
 
     // !!! IMPORTANT !!! - this is for dev purpouses only and should never be used in production

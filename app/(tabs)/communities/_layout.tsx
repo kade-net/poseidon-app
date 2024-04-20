@@ -8,10 +8,13 @@ const _layout = () => {
         <SafeAreaView
             style={{
                 width: '100%',
-                flex: 1
+                height: '100%'
             }}
         >
             <Stack
+                screenOptions={{
+                    headerShown: false
+                }}
             />
         </SafeAreaView>
     )

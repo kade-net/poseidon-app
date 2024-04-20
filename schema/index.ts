@@ -2,9 +2,9 @@ import { z } from "zod";
 import { Utils } from "../utils";
 
 export const profileSchema = z.object({
-    pfp: z.string().min(5),
-    bio: z.string().min(1),
-    display_name: z.string().min(1),
+    pfp: z.string().min(5).optional(),
+    bio: z.string().min(1).optional(),
+    display_name: z.string().min(1).max(50).optional(),
 })
 
 export type TPROFILE = z.infer<typeof profileSchema>

@@ -30,8 +30,8 @@ const Pfp = () => {
     const form = useForm<TPROFILE>({
         resolver: zodResolver(profileSchema),
         defaultValues: {
-            bio: profile?.data?.account?.profile?.bio ?? '',
-            display_name: profile?.data?.account?.profile?.display_name ?? '',
+            bio: profile?.data?.account?.profile?.bio ?? undefined,
+            display_name: profile?.data?.account?.profile?.display_name ?? undefined,
             pfp: profile?.data?.account?.profile?.pfp ?? ''
         }
     })

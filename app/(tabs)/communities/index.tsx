@@ -7,12 +7,18 @@ import { PlusSquare } from '@tamagui/lucide-icons'
 import BaseContentSheet from '../../../components/ui/action-sheets/base-content-sheet'
 import useDisclosure from '../../../components/hooks/useDisclosure'
 import anchors from '../../../contract/modules/anchors'
+import { useQuery } from 'react-query'
 
 const CommunitiesScreen = () => {
+    const balanceQuery = useQuery({
+        queryFn: anchors.getBalance,
+        onSuccess: (data) => console.log("Balance::", data),
+        refetchOnMount: true
+    })
     const { isOpen, onClose, onOpen, onToggle } = useDisclosure()
     const router = useRouter()
     const handleCreateCommunity = async () => {
-        const currentBalance = await anchors.getBalance()
+        const currentBalance = balanceQuery.data ?? 0
         if (currentBalance < 2500) {
             onOpen()
         } else {
@@ -21,7 +27,12 @@ const CommunitiesScreen = () => {
         }
     }
     return (
-        <>
+        <YStack
+            flex={1}
+            w="100%"
+            h="100%"
+
+        >
             <Stack.Screen
                 options={{
                     header(props) {
@@ -39,6 +50,7 @@ const CommunitiesScreen = () => {
                             </YStack>
                         )
                     },
+                    headerShown: true
                 }}
             />
             <Communities />
@@ -60,7 +72,7 @@ const CommunitiesScreen = () => {
                         <Button
                             fontSize={"$md"}
                             fontWeight={"$2"}
-                            borderWidth={1} 
+                            borderWidth={1}
                             borderColor={"$button"}
                             variant='outlined'
                             color={"$text"}
@@ -70,7 +82,7 @@ const CommunitiesScreen = () => {
                     </Link>
                 </YStack>
             </BaseContentSheet>
-        </>
+        </YStack>
     )
 }
 

@@ -26,6 +26,9 @@ const _layout = () => {
         >
 
             <Stack
+                screenOptions={{
+                    headerShown: false,
+                }}
             >
 
                 <Stack.Screen
@@ -41,7 +44,8 @@ const _layout = () => {
                                     <Separator />
                                 </TouchableOpacity>
                             )
-                        }
+                        },
+                        headerShown: true
                     }}
                 />
                 <Stack.Screen
@@ -56,7 +60,8 @@ const _layout = () => {
                                     </XStack>
                                 </TouchableOpacity>
                             )
-                        }
+                        },
+                        headerShown: true
                     }}
                 />
                 <Stack.Screen
@@ -71,7 +76,8 @@ const _layout = () => {
                                     </XStack>
                                 </TouchableOpacity>
                             )
-                        }
+                        },
+                        headerShown: true
                     }}
                 />
                 <Stack.Screen
@@ -84,9 +90,11 @@ const _layout = () => {
                                     navigation={props.navigation}
                                 />
                             )
-                        }
+                        },
+                        headerShown: true
                     }}
                 />
+
             </Stack>
         </SafeAreaView>
     )

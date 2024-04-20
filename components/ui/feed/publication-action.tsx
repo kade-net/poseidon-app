@@ -1,6 +1,6 @@
 import { View, Text, YStack, Button, Spinner } from 'tamagui'
 import React, { memo, useState } from 'react'
-import { TouchableOpacity } from 'react-native'
+import { Alert, TouchableOpacity } from 'react-native'
 import { Ban, MoreHorizontal, Trash2 } from '@tamagui/lucide-icons'
 import useDisclosure from '../../hooks/useDisclosure'
 import BaseContentSheet from '../action-sheets/base-content-sheet'
@@ -36,20 +36,49 @@ const PublicationActions = (props: Props) => {
     }
 
     const handleDeletePublication = async () => {
-        setDeleting(true)
-        try {
-            triggerHide && triggerHide()
-            await publications.removePublicationWithRef(publicationRef, publication_type as any)
-            setDeleting(false)
-            onClose()
-        }
-        catch (e) {
-            console.error("Error deleting publication", e)
-            setDeleting(false)
-        }
-        finally {
-            setDeleting(false)
-        }
+        Alert.alert("Delete Post", "Are you sure you want to delete this publication?", [
+            {
+                text: "Cancel",
+                onPress: () => console.log("Cancel Pressed"),
+                style: "cancel"
+            },
+            {
+                text: "Delete",
+                onPress: async () => {
+                    console.log("Deleting post")
+                    setDeleting(true)
+                    try {
+                        triggerHide && triggerHide()
+                        await publications.removePublicationWithRef(publicationRef, publication_type as any)
+                        setDeleting(false)
+                        onClose()
+                    }
+                    catch (e) {
+                        console.error("Error deleting publication", e)
+                        setDeleting(false)
+                    }
+                    finally {
+                        setDeleting(false)
+                    }
+                }
+            }
+        ])
+
+        // console.log("Deleting")
+        // setDeleting(true)
+        // try {
+        //     triggerHide && triggerHide()
+        //     await publications.removePublicationWithRef(publicationRef, publication_type as any)
+        //     setDeleting(false)
+        //     onClose()
+        // }
+        // catch (e) {
+        //     console.error("Error deleting publication", e)
+        //     setDeleting(false)
+        // }
+        // finally {
+        //     setDeleting(false)
+        // }
     }
 
     return (

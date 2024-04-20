@@ -76,7 +76,7 @@ const CommunityCard = (props: Props) => {
                         }} >
                             <YStack>
                                 <Text color={"$text"} fontWeight={"$5"} fontSize={"$sm"}>
-                                    {community?.name}
+                                    {community?.name} {community?.id}
                                 </Text>
                                 <Text fontSize={'$1'} color={'$sideText'} >
                                     /{community?.name}

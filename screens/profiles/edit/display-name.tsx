@@ -23,9 +23,9 @@ const DisplayName = () => {
     const form = useForm<TPROFILE>({
         resolver: zodResolver(profileSchema),
         defaultValues: {
-            bio: profile?.data?.account?.profile?.bio ?? '',
+            bio: profile?.data?.account?.profile?.bio ?? undefined,
             display_name: profile?.data?.account?.profile?.display_name ?? '',
-            pfp: profile?.data?.account?.profile?.pfp ?? ''
+            pfp: profile?.data?.account?.profile?.pfp ?? undefined
         }
     })
 

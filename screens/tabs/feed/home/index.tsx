@@ -38,6 +38,7 @@ const Home = () => {
         fetchPolicy: 'cache-and-network'
     })
     const { data, fetchMore, loading } = publicationsQuery
+    console.log("Loading::", loading)
 
     const tamaguiTheme = useTheme()
 
@@ -104,12 +105,7 @@ const Home = () => {
     const handleFetchTop = async () => {
         console.log("Start reached")
         try {
-            await fetchMore({
-                variables: {
-                    page: 0,
-                    size: 20
-                }
-            })
+            await publicationsQuery.refetch()
         }
         catch (e) {
             console.log("Error fetching more", e)
@@ -218,11 +214,12 @@ const Home = () => {
                     keyExtractor={(item) => item.id?.toString()}
                     renderItem={renderPublication}
                     ListHeaderComponent={() => {
-                        if (publicationsQuery.loading) return null
+                        // if (publicationsQuery.loading) return null
                         return <XStack w="100%" p={10} alignItems='center' justifyContent='center' >
-                            <Text>
+                            {publicationsQuery.loading && <Spinner />}
+                            {!publicationsQuery.loading && <Text>
                                 Pull down to refresh
-                            </Text>
+                            </Text>}
                         </XStack>
                     }}
                     ListFooterComponent={() => {
