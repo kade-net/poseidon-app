@@ -131,9 +131,6 @@ function RootLayoutNav() {
                 headerShown: false
               }}
               initialRouteName='onboard'
-              screenListeners={{
-                state: console.log
-              }}
             >
               <Stack.Screen name="index" options={{ headerShown: false }} />
               <Stack.Screen name="onboard" options={{ headerShown: false }} />

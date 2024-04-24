@@ -1,4 +1,4 @@
-import { Animated, Platform } from 'react-native'
+import { Animated, Dimensions, Platform } from 'react-native'
 import React, { memo, useCallback } from 'react'
 import { ProfileTabsProps, SceneProps, ScrollManager } from './common'
 import { useQuery } from '@apollo/client'
@@ -10,7 +10,10 @@ import { useGlobalSearchParams } from 'expo-router'
 import { isEmpty } from 'lodash'
 import account from '../../../contract/modules/account'
 import publications from '../../../contract/modules/publications'
+import Loading from '../../../components/ui/feedback/loading'
+import Empty from '../../../components/ui/feedback/empty'
 
+let DEVICE_HEIGHT = Dimensions.get('screen').height
 
 const PublicationAnimatedFlatList = (props: ProfileTabsProps & {
   types?: number[],
@@ -104,14 +107,14 @@ const PublicationAnimatedFlatList = (props: ProfileTabsProps & {
           [{ nativeEvent: { contentOffset: { y: props.manager.scrollY } } }],
           { useNativeDriver: true }
         )}
-        refreshing={postsQuery.loading}
+        refreshing={false}
         contentContainerStyle={Platform.select({
           ios: {
-            flexGrow: 1,
+            // flexGrow: 1,
             paddingBottom: 40
           },
           android: {
-            flexGrow: 1,
+            // flexGrow: 1,
             paddingBottom: 40,
             paddingTop: props.topSectionHeight + 40
           },
@@ -137,8 +140,30 @@ const PublicationAnimatedFlatList = (props: ProfileTabsProps & {
         initialNumToRender={20}
         keyExtractor={(item) => item?.id?.toString()}
         renderItem={renderPublication}
-        ListEmptyComponent={NoPublications}
+        ListEmptyComponent={() => {
+          if (postsQuery.loading) return <Loading
+            h={DEVICE_HEIGHT / 2}
+            px={20}
+          />
+          return <Empty
+            loading={postsQuery.loading}
+            emptyText={
+              `No ${props.route.title} yet`
+            }
+            px={20}
+            onRefetch={handleFetchTop}
+            h={DEVICE_HEIGHT / 2}
+          />
+        }}
+        ListHeaderComponent={() => {
+          if (postsQuery.loading && (postsQuery?.data?.publications?.length ?? 0) > 0) return <XStack w="100%" alignItems='center' justifyContent='center' >
+            <Spinner />
+          </XStack>
+
+          return null
+        }}
         ListFooterComponent={() => {
+          if ((postsQuery.data?.publications?.length ?? 0) == 0) return null
           return <View w="100%" flexDirection='row' alignItems='center' justifyContent='center' columnGap={10} >
             {postsQuery?.loading && <>
               <Text color="$gray9" >

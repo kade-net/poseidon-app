@@ -2,7 +2,7 @@ import { View, Text, TouchableOpacity } from 'react-native'
 import React from 'react'
 import Notifications from '../../../screens/tabs/notifications'
 import { Link, Stack } from 'expo-router'
-import { Avatar, Separator, XStack, YStack } from 'tamagui'
+import { Avatar, Heading, Separator, XStack, YStack } from 'tamagui'
 import { useQuery } from '@apollo/client'
 import { GET_MY_PROFILE } from '../../../utils/queries'
 import delegateManager from '../../../lib/delegate-manager'
@@ -25,7 +25,7 @@ const NotificationsScreen = () => {
                     header(props) {
                         return (
                             <YStack backgroundColor={'$background'} w="100%" >
-                                <XStack w="100%" px={20} pb={20} alignItems='center' justifyContent='space-between' >
+                                <XStack w="100%" px={12} alignItems='center' height={80} justifyContent='space-between' >
                                     <Link
                                         href={{
                                             pathname: '/profiles/[address]/',
@@ -42,6 +42,10 @@ const NotificationsScreen = () => {
                                             </Avatar>
                                         </TouchableOpacity>
                                     </Link>
+
+                                    <Heading fontFamily={"$heading"} fontWeight={"$4"} >
+                                        Notifications
+                                    </Heading>
 
                                     <Link
                                         href={{

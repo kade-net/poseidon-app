@@ -1,17 +1,21 @@
-import { View, Text, XStack, Spinner } from 'tamagui'
-import React, { useCallback, useDeferredValue } from 'react'
+import { View, Text, XStack, Spinner, YStack } from 'tamagui'
+import React, { useCallback, useContext, useDeferredValue, useState } from 'react'
 import { useQuery } from '@apollo/client'
 import { ACCOUNTS_SEARCH_QUERY } from '../../../../utils/queries'
 import delegateManager from '../../../../lib/delegate-manager'
-import { FlatList } from 'react-native'
+import { Dimensions, FlatList } from 'react-native'
 import ProfileCard from '../../../../components/ui/profile/profile-card'
 import account from '../../../../contract/modules/account'
+import searchContext from '../context'
+import Loading from '../../../../components/ui/feedback/loading'
+import Empty from '../../../../components/ui/feedback/empty'
+import { Utils } from '../../../../utils'
+const DEVICE_HEIGHT = Dimensions.get('screen').height
 
-interface Props {
-  search: string
-}
-const PeopleSearch = (props: Props) => {
-  const { search } = props
+const PeopleSearch = () => {
+  const { search } = useContext(searchContext)
+  const [lastSearch, setLastSearch] = useState<any>()
+
   const defferedSearchValue = useDeferredValue(search)
   const peopleSearchQuery = useQuery(ACCOUNTS_SEARCH_QUERY, {
     variables: {
@@ -20,7 +24,11 @@ const PeopleSearch = (props: Props) => {
       size: 20
     },
     skip: !delegateManager.owner,
-    onCompleted: (data) => console.log("Users::", data.accounts?.length),
+    onCompleted: (data) => {
+      if (!lastSearch) {
+        setLastSearch(data)
+      }
+    },
     onError: console.log
   })
 
@@ -59,27 +67,38 @@ const PeopleSearch = (props: Props) => {
   }
 
   return (
-    <FlatList
-      refreshing={peopleSearchQuery?.loading}
-      data={peopleSearchQuery.data?.accounts?.filter((account) => account.address !== delegateManager.owner)}
-      keyExtractor={(item) => item.address}
-      showsVerticalScrollIndicator={false}
-      renderItem={renderItem}
-      onRefresh={handleFetchTop}
-      onEndReached={handleFetchMore}
-      onEndReachedThreshold={1}
-      contentContainerStyle={{
-        paddingBottom: 40
-      }}
-      ListFooterComponent={() => {
-        return (
-          <XStack w="100%" alignItems='center' justifyContent='center' columnGap={20} >
-            {peopleSearchQuery?.loading && <Spinner />}
-          </XStack>
-        )
-      }}
+    <YStack flex={1} w="100%" h="100%" >
+      <FlatList
+        style={{
+          flex: 1,
+          width: '100%',
+          height: '100%'
+        }}
+        refreshing={false}
+        data={peopleSearchQuery.data?.accounts?.filter((account) => account.address !== delegateManager.owner)}
+        keyExtractor={(item) => item.address}
+        showsVerticalScrollIndicator={false}
+        renderItem={renderItem}
+        onRefresh={handleFetchTop}
+        onEndReached={handleFetchMore}
+        onEndReachedThreshold={1}
+        contentContainerStyle={{
+          paddingBottom: 40
+        }}
+        ListEmptyComponent={() => {
+          if (peopleSearchQuery.loading) return <Loading
+            height={DEVICE_HEIGHT - 400}
+          />
+          return <Empty
+            flex={1}
+            height={DEVICE_HEIGHT - 400}
+            emptyText='No users found'
+            px={20}
+          />
+        }}
 
-    />
+      />
+    </YStack>
   )
 }
 

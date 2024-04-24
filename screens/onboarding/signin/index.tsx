@@ -1,7 +1,7 @@
-import { View, Text, Button, Heading } from 'tamagui'
+import { View, Text, Button, Heading, XStack } from 'tamagui'
 import React from 'react'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
-import { ChevronLeft, KeySquare, MonitorUp } from '@tamagui/lucide-icons'
+import { ChevronLeft, Info, KeySquare, MonitorUp } from '@tamagui/lucide-icons'
 import { useRouter } from 'expo-router'
 import { Utils } from '../../../utils'
 import UnstyledButton from '../../../components/ui/buttons/unstyled-button'
@@ -46,6 +46,14 @@ const SignIn = () => {
                 <View
                     rowGap={20}
                 >
+                    <XStack w="100%" columnGap={10}  >
+                        <Info color={'$blue10'} />
+                        <Text
+                            color={'$blue10'}
+                        >
+                            Sign in with Kade Connect will only work after the mainnet launch!
+                        </Text>
+                    </XStack>
                     <Button onPress={goToKadeConnect} iconAfter={<MonitorUp />} backgroundColor={"$button"} color="$buttonText">
                         Sign in with Kade Connect
                     </Button>

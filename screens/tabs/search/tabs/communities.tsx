@@ -1,16 +1,17 @@
 import { View, Text, YStack, XStack, Spinner } from 'tamagui'
-import React from 'react'
+import React, { useContext } from 'react'
 import { useQuery } from '@apollo/client'
 import { SEARCH_COMMUNITIES } from '../../../../utils/queries'
-import { FlatList } from 'react-native'
+import { Dimensions, FlatList } from 'react-native'
 import CommunityCard from '../../../../components/ui/community/community-card'
+import searchContext from '../context'
+import Loading from '../../../../components/ui/feedback/loading'
+import Empty from '../../../../components/ui/feedback/empty'
 
-interface Props {
-    search: string
-}
+const DEVICE_HEIGHT = Dimensions.get('screen').height
 
-const CommunitiesSearch = (props: Props) => {
-    const { search } = props
+const CommunitiesSearch = () => {
+    const { search } = useContext(searchContext)
     const communitiesQuery = useQuery(SEARCH_COMMUNITIES, {
         variables: {
             search,
@@ -56,7 +57,7 @@ const CommunitiesSearch = (props: Props) => {
             <FlatList
                 data={communitiesQuery?.data?.communities ?? []}
                 keyExtractor={(item) => item.name}
-                refreshing={communitiesQuery.loading}
+                refreshing={false}
                 onRefresh={handleFetchTop}
                 onEndReached={handleFetchMore}
                 showsVerticalScrollIndicator={false}
@@ -64,21 +65,21 @@ const CommunitiesSearch = (props: Props) => {
                 contentContainerStyle={{
                     paddingBottom: 40
                 }}
-                ListFooterComponent={() => {
-                    return (
-                        <XStack w="100%" alignItems='center' justifyContent='center' >
-                            {
-                                communitiesQuery?.loading ? <Spinner /> : null
-                            }
-                        </XStack>
-                    )
-                }}
                 renderItem={({ item }) => {
                     return (
                         <CommunityCard
                             community={item}
                         />
                     )
+                }}
+                ListEmptyComponent={() => {
+                    if (communitiesQuery.loading) return <Loading
+                        h={DEVICE_HEIGHT - 400}
+                    />
+                    return <Empty
+                        emptyText='No communities found'
+                        h={DEVICE_HEIGHT - 400}
+                    />
                 }}
             />
         </YStack>

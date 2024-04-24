@@ -25,6 +25,8 @@ import publications from '../../../../contract/modules/publications'
 import { isEmpty } from 'lodash'
 import { getMutedUsers, getRemovedFromFeed } from '../../../../contract/modules/store-getters'
 import { Utils } from '../../../../utils'
+import Empty from '../../../../components/ui/feedback/empty'
+import Loading from '../../../../components/ui/feedback/loading'
 
 const Home = () => {
     const publicationsQuery = useQuery(GET_PUBLICATIONS, {
@@ -155,7 +157,7 @@ const Home = () => {
                         />
                     </Avatar>
                 </TouchableOpacity>
-                <Heading fontFamily={"$heading"} fontWeight={"$5"} fontSize={"$lg"} >
+                <Heading fontFamily={"$heading"} fontWeight={"$4"} >
                     Home
                 </Heading>
                 <TouchableOpacity onPress={goToSettings} >
@@ -180,7 +182,7 @@ const Home = () => {
                         [{ nativeEvent: { contentOffset: { y: scrollY } } }],
                         { useNativeDriver: true }
                     )}
-                    refreshing={loading}
+                    refreshing={false}
                     contentContainerStyle={Platform.select({
                         ios: {
                             flexGrow: 1,
@@ -215,6 +217,8 @@ const Home = () => {
                     renderItem={renderPublication}
                     ListHeaderComponent={() => {
                         // if (publicationsQuery.loading) return null
+                        console.log("Publications", data?.publications?.length)
+                        if ((data?.publications?.length ?? 0) === 0) return null
                         return <XStack w="100%" p={10} alignItems='center' justifyContent='center' >
                             {publicationsQuery.loading && <Spinner />}
                             {!publicationsQuery.loading && <Text>
@@ -223,6 +227,7 @@ const Home = () => {
                         </XStack>
                     }}
                     ListFooterComponent={() => {
+                        if (data?.publications?.length === 0) return null
                         if (!publicationsQuery.loading) return null
                         return <View w="100%" flexDirection='row' alignItems='center' p={20} justifyContent='center' columnGap={10} >
 
@@ -232,6 +237,15 @@ const Home = () => {
                                 </Text>
 
                         </View>
+                    }}
+                    ListEmptyComponent={() => {
+                        if (!publicationsQuery.loading) return <Empty
+                            px={20}
+                            rowGap={20}
+                            emptyText='No new publications!'
+                            onRefetch={handleFetchTop}
+                        />
+                        return <Loading />
                     }}
 
                 />

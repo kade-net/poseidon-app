@@ -12,8 +12,8 @@ import { useQuery } from 'react-query'
 const CommunitiesScreen = () => {
     const balanceQuery = useQuery({
         queryFn: anchors.getBalance,
-        onSuccess: (data) => console.log("Balance::", data),
-        refetchOnMount: true
+        refetchOnMount: true,
+        refetchInterval: 10000
     })
     const { isOpen, onClose, onOpen, onToggle } = useDisclosure()
     const router = useRouter()
