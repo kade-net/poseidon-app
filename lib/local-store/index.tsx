@@ -474,6 +474,9 @@ class LocalStore {
             }
         })
 
+        ephemeralCache.set(`interaction::reaction::${ref}`, 'react')
+        ephemeralCache.set(`stats::reactions::${ref}`, (publicationStatsQuery?.publicationStats?.reactions ?? 0) + 1)
+
         client.writeQuery({
             query: GET_PUBLICATION_STATS,
             variables: {
@@ -516,8 +519,7 @@ class LocalStore {
             }
         })
 
-        ephemeralCache.set(`interaction::reaction::${ref}`, 'react')
-        ephemeralCache.set(`stats::reactions::${ref}`, (publicationStatsQuery?.publicationStats?.reactions ?? 0) + 1)
+
     }
 
     async removeReactedToPublication(ref: string) {
@@ -538,6 +540,9 @@ class LocalStore {
         })
 
         const oldState = currentPublicationInteractions?.publicationInteractionsByViewer
+
+        ephemeralCache.set(`interaction::reaction::${ref}`, 'unreact')
+        ephemeralCache.set(`stats::reactions::${ref}`, (publicationStatsQuery?.publicationStats?.reactions ?? 0) - 1)
 
         client.writeQuery({
             query: GET_PUBLICATION_STATS,
@@ -579,8 +584,7 @@ class LocalStore {
             }
         })
 
-        ephemeralCache.set(`interaction::reaction::${ref}`, 'unreact')
-        ephemeralCache.set(`stats::reactions::${ref}`, (publicationStatsQuery?.publicationStats?.reactions ?? 0) - 1)
+
 
     }
 
@@ -615,7 +619,8 @@ class LocalStore {
                     ...(currentProfile?.account ? currentProfile.account : {}),
                     profile: {
                         ...profile,
-                        __typename: "Profile"
+                        __typename: "Profile",
+                        creator: currentProfile?.account?.profile?.creator ?? Date.now()
                     },
                     username: {
                         __typename: "Username",
@@ -702,6 +707,8 @@ class LocalStore {
 
             })
 
+            ephemeralCache.set(`account_stats::followers::${following_address}`, (currentAccountStats?.accountStats?.followers ?? 0) + 1)
+
             client.writeQuery({
                 query: GET_ACCOUNT_STATS,
                 variables: {
@@ -784,7 +791,8 @@ class LocalStore {
 
             })
 
-            console.log("Current Account Stats ::", currentAccountStats)
+
+            ephemeralCache.set(`account_stats::followers::${unfollowing_address}`, (currentAccountStats?.accountStats?.followers ?? 1) - 1)
 
             client.writeQuery({
                 query: GET_ACCOUNT_STATS,
@@ -890,7 +898,7 @@ class LocalStore {
                 __typename: "Query",
                 communitiesSearch: [
                     ...(
-                        prevPostCommunitySearches?.communitiesSearch ?? []
+                        prevPostCommunitySearches?.communitiesSearch?.filter((x) => x.name !== communityName) ?? []
                     ),
                     {
                         description: prevCommunityQuery?.community?.description ?? "",
@@ -928,7 +936,7 @@ class LocalStore {
                         hosts: [],
                         __typename: "Community"
                     },
-                    ...(prevAccountCommunities?.accountCommunities ?? [])
+                    ...(prevAccountCommunities?.accountCommunities?.filter((x) => x.name !== communityName) ?? [])
                 ]
             }
         })

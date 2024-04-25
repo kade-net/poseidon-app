@@ -5,11 +5,12 @@ import delegateManager from '../../../lib/delegate-manager'
 import { Copy } from '@tamagui/lucide-icons'
 import * as clipboard from 'expo-clipboard'
 import { Utils } from '../../../utils'
+import * as Haptics from 'expo-haptics'
 
 const RecoveryPhrase = () => {
 
     const handleSelect = async (type: 'account-address' | 'delegate-address' | 'delegate-private-key' | 'delegate-seed-phrase') => {
-
+        Haptics.selectionAsync()
         switch (type) {
             case 'account-address':
                 await clipboard.setStringAsync(delegateManager.owner!)

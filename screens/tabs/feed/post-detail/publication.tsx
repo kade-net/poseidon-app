@@ -4,7 +4,7 @@ import { useQuery } from '@apollo/client'
 import { GET_PUBLICATION_COMMENTS } from '../../../../utils/queries'
 import BaseContentContainer from '../../../../components/ui/feed/base-content-container'
 import { FlatList } from 'react-native'
-import { PublicationsQuery } from '../../../../__generated__/graphql'
+import { PublicationsQuery, SortOrder } from '../../../../__generated__/graphql'
 import PublicationContent from './publication-content'
 
 interface Props {
@@ -17,7 +17,8 @@ const Publication = (props: Props) => {
         variables: {
             publication_ref: props.publication_ref,
             page: 0,
-            size: 20
+            size: 20,
+            sort: SortOrder.Asc
         },
         onCompleted: console.log
     })

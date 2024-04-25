@@ -11,6 +11,9 @@ import account from '../../../contract/modules/account'
 import { Button, Spinner, TextArea, XStack, YStack, Text } from 'tamagui'
 import { useRouter } from 'expo-router'
 import Toast from 'react-native-toast-message'
+import * as Haptics from 'expo-haptics'
+import BaseButton from '../../../components/ui/buttons/base-button'
+import BaseFormTextArea from '../../../components/ui/input/base-form-textarea'
 
 const Bio = () => {
     const [saving, setSaving] = React.useState(false)
@@ -30,6 +33,7 @@ const Bio = () => {
     })
 
     const handleSubmit = async (values: TPROFILE) => {
+        Haptics.selectionAsync()
         if (values.bio === profile?.data?.account?.profile?.bio) {
             router.back()
             return
@@ -37,6 +41,7 @@ const Bio = () => {
         setSaving(true)
 
         try {
+            console.log("Values: ", values)
             await account.updateProfile(values)
             router.back()
         }
@@ -48,7 +53,9 @@ const Bio = () => {
         }
     }
 
-    const handleError = async () => {
+    const handleError = async (error: any) => {
+        console.log("Error: ", error)
+        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error)
         Toast.show({
             type: 'error',
             text1: 'Error',
@@ -64,32 +71,42 @@ const Bio = () => {
                 name='bio'
                 render={({ field, fieldState }) => {
                     return (
-                        <YStack w="100%" >
-                            <TextArea
-                                backgroundColor={"$colorTransparent"}
-                                onChangeText={field.onChange}
-                                value={field.value}
-                                placeholder='Tell people about yourself.'
-                            />
-                            {
-                                fieldState?.invalid && <Text
-                                    color='red'
-                                    fontSize={'$xxs'}
-                                >
-                                    Your bio cannot be empty.
-                                </Text>
-                            }
-                        </YStack>
+                        <BaseFormTextArea
+                            value={field.value}
+                            onChangeText={field.onChange}
+                            placeholder='Tell people about yourself.'
+                            invalid={fieldState?.invalid}
+                            error={fieldState?.error?.message}
+                            maxLength={100}
+                            label='Bio'
+                        />
+                        // <YStack w="100%" >
+                        //     <TextArea
+                        //         backgroundColor={"$colorTransparent"}
+                        //         onChangeText={field.onChange}
+                        //         value={field.value}
+                        //         placeholder='Tell people about yourself.'
+                        //     />
+                        //     {
+                        //         fieldState?.invalid && <Text
+                        //             color='red'
+                        //             fontSize={'$xxs'}
+                        //         >
+                        //             Your bio cannot be empty.
+                        //         </Text>
+                        //     }
+                        // </YStack>
                     )
                 }} />
-            <Button disabled={saving} onPress={form.handleSubmit(handleSubmit, handleError)} w="100%" backgroundColor={"$button"} color={"$buttonText"}>
-                {
-                    saving ? <XStack columnGap={10} >
-                        <Spinner />
-                        <Text>Saving...</Text>
-                    </XStack> : 'Save changes'
-                }
-            </Button>
+            <BaseButton
+                loading={saving}
+                onPress={form.handleSubmit(handleSubmit, handleError)}
+                disabled={saving}
+            >
+                <Text>
+                    Save Changes
+                </Text>
+            </BaseButton>
         </YStack>
     )
 }

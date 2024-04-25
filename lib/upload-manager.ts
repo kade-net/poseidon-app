@@ -5,6 +5,10 @@ import * as FileSystem from 'expo-file-system'
 import { Buffer } from 'buffer'
 import posti from "./posti"
 
+type DIMENSIONS = {
+    width: number,
+    height: number
+}
 
 class UploadManager {
 
@@ -27,14 +31,15 @@ class UploadManager {
     }
 
 
-    async uploadFile(uri: string, file: Partial<File>) {
+    async uploadFile(uri: string, file: Partial<File>, dimesnions?: DIMENSIONS) {
         try {
             const file_buffer = await this.getFileBuffer(uri)
             const response = await axios.post<{ file_url: string, upload_url: string }>(`${APP_SUPPORT_API}/upload`, {
                 file_name: file.name,
                 file_byte_size: file_buffer.byteLength,
                 file_type: file.type,
-                delegate_address: delegateManager.account?.address()?.toString()
+                delegate_address: delegateManager.account?.address()?.toString(),
+                dimesnions
             })
 
             const data = response.data

@@ -10,13 +10,18 @@ import delegateManager from '../../../lib/delegate-manager'
 import { poseidonIndexerClient } from '../../../lib/indexer-client'
 import wallet, { CommonTransaction } from '../../../lib/wallets/wallet'
 import { useInfiniteQuery, useQuery } from 'react-query'
-import { FlatList } from 'react-native'
+import { Dimensions, FlatList } from 'react-native'
 import { flatten, isNumber, uniqBy } from 'lodash'
 import BaseContentSheet from '../../../components/ui/action-sheets/base-content-sheet'
 import useDisclosure from '../../../components/hooks/useDisclosure'
 import * as clipboard from 'expo-clipboard'
+import Empty from '../../../components/ui/feedback/empty'
+import Loading from '../../../components/ui/feedback/loading'
+import * as Haptics from 'expo-haptics'
 
 const IS_SELF_DELEGATE = delegateManager.owner! == delegateManager.account?.address().toString()
+
+const DEVICE_HEIGHT = Dimensions.get('screen').height - 400
 
 const Petra = () => {
     const { isOpen, onOpen, onClose, onToggle } = useDisclosure()
@@ -50,6 +55,7 @@ const Petra = () => {
 
 
     const handleCopyWalletAddress = async () => {
+        Haptics.selectionAsync()
         try {
             await clipboard.setStringAsync(IS_SELF_DELEGATE ? delegateManager.owner! : delegateManager.account?.address().toString()!)
             onClose()
@@ -96,7 +102,7 @@ const Petra = () => {
 
 
                 <FlatList
-                    refreshing={transactionsQuery.isFetching}
+                    refreshing={false}
                     onRefresh={() => !transactionsQuery.isFetching && transactionsQuery.refetch()}
                     onEndReached={() => !transactionsQuery.isFetching && transactionsQuery.hasNextPage && transactionsQuery.fetchNextPage()}
                     // onEndReachedThreshold={1}
@@ -112,23 +118,20 @@ const Petra = () => {
 
                     }}
                     ItemSeparatorComponent={() => <Separator />}
-                    ListEmptyComponent={() => {
-                        return (
-                            <YStack w="100%" alignItems='center' rowGap={10} >
-                                <Inbox />
-                                <H4>
-                                    No transactions yet
-                                </H4>
-                            </YStack>
-                        )
-                    }}
-                    ListFooterComponent={() => {
-                        if (transactionsQuery.isLoading) return (
-                            <XStack p={20} alignItems='center' justifyContent='center' >
-                                <Spinner />
-                            </XStack>
-                        )
+                    ListHeaderComponent={() => {
+                        if ((uniqBy(flatten(transactionsQuery?.data?.pages), (item) => item?.txnVersion)?.length ?? 0) > 0 && transactionsQuery.isFetching) return <XStack w="100%" py={5} alignItems='center' justifyContent='center' >
+                            <Spinner />
+                        </XStack> 
                         return null
+                    }}
+                    ListEmptyComponent={() => {
+                        if (transactionsQuery.isLoading) return <Loading
+                            h={DEVICE_HEIGHT}
+                        />
+                        return <Empty
+                            emptyText='No transactions found'
+                            h={DEVICE_HEIGHT}
+                        />
                     }}
                     showsVerticalScrollIndicator={false}
                 />

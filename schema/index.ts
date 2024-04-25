@@ -3,8 +3,12 @@ import { Utils } from "../utils";
 
 export const profileSchema = z.object({
     pfp: z.string().min(5).optional(),
-    bio: z.string().min(1).optional(),
-    display_name: z.string().min(1).max(50).optional(),
+    bio: z.string().max(80, {
+        message: "Bio cannot be longer than 80 characters"
+    }).optional(),
+    display_name: z.string().max(50, {
+        message: "Display name cannot be longer than 50 characters"
+    }).optional(),
 })
 
 export type TPROFILE = z.infer<typeof profileSchema>

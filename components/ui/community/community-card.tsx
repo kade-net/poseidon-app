@@ -6,6 +6,7 @@ import delegateManager from '../../../lib/delegate-manager';
 import communityModule from '../../../contract/modules/community';
 import { Link } from 'expo-router';
 import { Utils } from '../../../utils';
+import * as Haptics from 'expo-haptics';
 interface COMMUNITY {
     __typename?: "Community" | undefined;
     id: number;
@@ -29,6 +30,7 @@ const CommunityCard = (props: Props) => {
     })
 
     const handleToggleFollow = async () => {
+        await Haptics.selectionAsync()
         try {
             console.log(membershipQuery?.data)
             if (membershipQuery?.data?.membership) {

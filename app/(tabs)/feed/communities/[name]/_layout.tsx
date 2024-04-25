@@ -10,7 +10,7 @@ import { ArrowLeft, ChevronDown, ChevronUp, Edit3, Users } from '@tamagui/lucide
 import delegateManager from '../../../../../lib/delegate-manager'
 import community from '../../../../../contract/modules/community'
 
-const SCREEN_HEIGHT = Dimensions.get('window').height
+const SCREEN_HEIGHT = Dimensions.get('screen').height
 const DROPDOWN_HEIGHT = SCREEN_HEIGHT - 50
 
 const _layout = () => {

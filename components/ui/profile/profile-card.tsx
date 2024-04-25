@@ -7,6 +7,7 @@ import { GET_RELATIONSHIP } from '../../../utils/queries'
 import delegateManager from '../../../lib/delegate-manager'
 import { Link } from 'expo-router'
 import { Utils } from '../../../utils'
+import * as Haptics from 'expo-haptics'
 
 
 interface Props {
@@ -26,6 +27,7 @@ const ProfileCard = (props: Props) => {
     })
 
     const handleFollowToggle = async () => {
+        Haptics.selectionAsync()
         try {
 
             if (queryData?.data?.accountRelationship?.follows) {

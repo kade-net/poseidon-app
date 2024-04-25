@@ -1,6 +1,6 @@
 import { InMemoryCache, ApolloClient, Reference, defaultDataIdFromObject, FieldFunctionOptions } from "@apollo/client"
 import { Publication, AccountStats, PublicationInteractionsByViewerQuery } from "../__generated__/graphql"
-import { cloneDeep, isNumber, isUndefined, uniqBy } from "lodash"
+import { clone, cloneDeep, isNumber, isUndefined, uniqBy } from "lodash"
 import ephemeralCache from "../lib/local-store/ephemeral-cache"
 
 function publicationMerge(_existing: Array<Reference> = [], incoming: Array<Reference> = [], options: FieldFunctionOptions) {
@@ -102,7 +102,7 @@ const cache = new InMemoryCache({
                     read: publicationRead
                 },
                 publicationComments: {
-                    keyArgs: ["ref", "pulication_ref"],
+                    keyArgs: ["ref", "pulication_ref", "sort"],
                     merge: publicationMerge,
                     read: (existing, options) => {
                         if (!existing) {
@@ -135,16 +135,18 @@ const cache = new InMemoryCache({
                 accountStats: {
                     keyArgs: ["accountAddress"],
                     merge(existing: AccountStats | null = null, incoming: AccountStats | null = null, options) {
-                        console.log('Existing::', existing, "Incoming::", incoming)
+
+                        const cache = ephemeralCache.get(`account_stats::followers::${options.args?.accountAddress}`) as number ?? 0
+
                         if (!existing) return incoming
-                        const resultObject: Partial<AccountStats> = incoming ?? {
+                        const resultObject: Partial<AccountStats> = clone(incoming) ?? {
                             followers: 0,
                             following: 0
                         }
 
-                        if ((incoming?.followers ?? 0) < (existing?.followers ?? 0)) {
-                            console.log("Existing is greater than incoming")
-                            resultObject.followers = existing?.followers
+                        if ((incoming?.followers ?? 0) < cache) {
+
+                            resultObject.followers = cache
                         }
 
                         return resultObject

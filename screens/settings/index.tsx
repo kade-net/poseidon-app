@@ -8,12 +8,14 @@ import delegateManager from '../../lib/delegate-manager'
 import localStore from '../../lib/local-store'
 import { Utils } from '../../utils'
 import notifications from '../../lib/notifications'
+import * as Haptics from 'expo-haptics'
 
 const Settings = () => {
     const [loggingOut, setLoggingOut] = useState(false)
     const router = useRouter()
     const navigation = useNavigation()
     const handleLogout = async () => {
+        Haptics.selectionAsync()
         setLoggingOut(true)
         try { 
             await account.nuke()//💥

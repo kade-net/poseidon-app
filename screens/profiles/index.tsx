@@ -16,6 +16,8 @@ import TabNavbar from './tab-navbar'
 import account from '../../contract/modules/account'
 import { Link } from 'expo-router'
 import { Utils } from '../../utils'
+import * as Haptics from 'expo-haptics'
+import Toast from 'react-native-toast-message'
 
 interface Props {
     address: string
@@ -111,11 +113,24 @@ const ProfileDetails = (props: Props) => {
     })
 
     const handleFollowToggle = async () => {
-        const following = relationshipQuery?.data?.accountRelationship?.follows
-        if (following) {
-            await account.unFollowAccount(address)
-        } else {
-            await account.followAccount(address)
+        Haptics.selectionAsync()
+        try {
+            const following = relationshipQuery?.data?.accountRelationship?.follows
+            if (following) {
+                await account.unFollowAccount(address)
+            } else {
+                await account.followAccount(address)
+            }
+
+        }
+        catch (e) {
+            console.log("Error following account", e)
+            Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error)
+            Toast.show({
+                type: 'error',
+                text1: 'Error',
+                text2: 'Something went wrong. Please try again.'
+            })
         }
     }
 
