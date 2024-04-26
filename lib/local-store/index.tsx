@@ -1,6 +1,6 @@
 import '../../global'
 import 'react-native-get-random-values'
-import { Community, Profile, Publication } from "../../__generated__/graphql";
+import { Community, Profile, Publication, SortOrder } from "../../__generated__/graphql";
 import storage from "../storage";
 import { TPROFILE, TPUBLICATION, UpdateCommunitySchema } from '../../schema';
 import client, { barnicleClient } from '../../data/apollo';
@@ -29,6 +29,8 @@ class LocalStore {
     }
 
     async addPublication(publication: TPUBLICATION | null, type: number, parent_ref: string, client_ref: string, current_count?: number) {
+
+        ephemeralCache.set(`publication::${client_ref}`, 'add')
 
         let profile = client.readQuery({
             query: GET_MY_PROFILE,
@@ -152,7 +154,10 @@ class LocalStore {
                     variables: {
                         publication_ref: parent_ref,
                         page: 0,
-                        size: 20 // TODO: we will need to expand this
+                        size: 20, // TODO: we will need to expand this
+                        sort: SortOrder.Asc,
+                        muted: getMutedUsers(),
+                        hide: getRemovedFromFeed()
                     }
                 })
 
@@ -165,7 +170,10 @@ class LocalStore {
                     variables: {
                         publication_ref: parent_ref,
                         page: 0,
-                        size: 20
+                        size: 20,
+                        sort: SortOrder.Asc,
+                        muted: getMutedUsers(),
+                        hide: getRemovedFromFeed()
                     },
                     data: {
                         publicationComments: [newPub, ...comments]
@@ -334,6 +342,8 @@ class LocalStore {
     }
 
     async removePublication(ref: string, type: number, parent_ref?: string) {
+
+        ephemeralCache.set(`publication::${ref}`, 'remove')
 
         if (type !== 1) {
 

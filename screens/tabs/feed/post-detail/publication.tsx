@@ -6,6 +6,9 @@ import BaseContentContainer from '../../../../components/ui/feed/base-content-co
 import { FlatList } from 'react-native'
 import { PublicationsQuery, SortOrder } from '../../../../__generated__/graphql'
 import PublicationContent from './publication-content'
+import { isEmpty } from 'lodash'
+import account from '../../../../contract/modules/account'
+import publications from '../../../../contract/modules/publications'
 
 interface Props {
     publication_ref: string
@@ -18,9 +21,11 @@ const Publication = (props: Props) => {
             publication_ref: props.publication_ref,
             page: 0,
             size: 20,
-            sort: SortOrder.Asc
+            sort: SortOrder.Asc,
+            muted: isEmpty(account.mutedUsers) ? undefined : account.mutedUsers,
+            hide: isEmpty(publications.hiddenPublications) ? undefined : publications.hiddenPublications
         },
-        onCompleted: console.log
+        fetchPolicy: "cache-and-network"
     })
 
     const handleFetchMore = async () => {
@@ -33,7 +38,10 @@ const Publication = (props: Props) => {
             const results = await commentsQuery.fetchMore({
                 variables: {
                     page: currentPage + 1,
-                    size: 20
+                    size: 20,
+                    publication_ref: props.publication_ref,
+                    muted: isEmpty(account.mutedUsers) ? undefined : account.mutedUsers,
+                    hide: isEmpty(publications.hiddenPublications) ? undefined : publications.hiddenPublications
                 }
             })
             const totalPublications = commentsQuery.data?.publicationComments?.length ?? 0
@@ -56,7 +64,11 @@ const Publication = (props: Props) => {
             await commentsQuery.fetchMore({
                 variables: {
                     page: 0,
-                    size: 20
+                    size: 20,
+                    publication_ref: props.publication_ref,
+                    sort: SortOrder.Asc,
+                    // muted: isEmpty(account.mutedUsers) ? undefined : account.mutedUsers,
+                    // hide: isEmpty(publications.hiddenPublications) ? undefined : publications.hiddenPublications
                 }
             })
         }

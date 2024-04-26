@@ -32,6 +32,7 @@ const Notifications = (props: Props) => {
             if (values.enabled == status) return
             try {
                 if (values.enabled) {
+                    console.log(`Enabling notifications`)
                     await notifications.enableNotifications()
                 } else {
                     await notifications.disableNotifications()

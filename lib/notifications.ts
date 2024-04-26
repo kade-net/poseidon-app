@@ -13,6 +13,7 @@ import Constants from 'expo-constants'
 class PoseidonNotifications {
 
     async enableNotifications() {
+        console.log('Enabling notifications')
         const token = await registerForPushNotificationsAsync()
         if (!token) throw new Error('Failed to get push token for push notification!')
         console.log("Token:: ", token)

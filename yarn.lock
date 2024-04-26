@@ -10063,6 +10063,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"expo-media-library@npm:~15.9.2":
+  version: 15.9.2
+  resolution: "expo-media-library@npm:15.9.2"
+  peerDependencies:
+    expo: "*"
+  checksum: db1b3da25a9e8e99b42b9dc89df866693548b124d38ed8faf25ec293408dfb07369d9198875f2d6a9cccfe882364ae1fdac7e4cecdffac7fb2349c24e4a64d31
+  languageName: node
+  linkType: hard
+
 "expo-modules-autolinking@npm:1.10.3":
   version: 1.10.3
   resolution: "expo-modules-autolinking@npm:1.10.3"
@@ -14925,6 +14934,7 @@ __metadata:
     expo-linear-gradient: "npm:~12.7.2"
     expo-linking: "npm:^6.2.2"
     expo-localization: "npm:~14.8.4"
+    expo-media-library: "npm:~15.9.2"
     expo-navigation-bar: "npm:~2.8.1"
     expo-notifications: "npm:~0.27.7"
     expo-router: "npm:~3.4.8"

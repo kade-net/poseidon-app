@@ -14,13 +14,34 @@ function publicationMerge(_existing: Array<Reference> = [], incoming: Array<Refe
         const indexToReplace = offset + i
         if (toBeAdded) {
             if (currentState[indexToReplace]) {
-                const is_new = options.readField("is_new", currentState[indexToReplace])
-                if (!is_new) {
-                    currentState[indexToReplace] = toBeAdded
+                const ref = options.readField("publication_ref", currentState[indexToReplace])
+                const toBeAddedRef = options.readField("publication_ref", toBeAdded)
+                const toBeAddedCached = ephemeralCache.get(`publication::${toBeAddedRef}`)
+                const cached = ephemeralCache.get(`publication::${ref}`)
+                if (cached == 'add') {
+
+                    // update the list and put the new item after the cached item
+                    currentState.splice(indexToReplace, 0, toBeAdded)
+                    continue
                 }
+
+                if (toBeAddedCached == 'remove') {
+
+                    continue
+                }
+
+                currentState[indexToReplace] = toBeAdded
+
             }
             else {
-                currentState.push(toBeAdded)
+                const ref = options.readField("publication_ref", toBeAdded)
+                const cached = ephemeralCache.get(`publication::${ref}`)
+                if (cached == 'remove') {
+                    console.log("Skipping item", ref)
+                    // skip this item
+                } else {
+                    currentState.push(toBeAdded)
+                }
             }
         }
     }
