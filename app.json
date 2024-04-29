@@ -2,7 +2,7 @@
   "expo": {
     "name": "poseidon",
     "slug": "poseidon",
-    "version": "0.0.20",
+    "version": "0.0.21",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "poseidon",
@@ -19,7 +19,7 @@
       "config": {
         "usesNonExemptEncryption": false
       },
-      "buildNumber": "10"
+      "buildNumber": "11"
     },
     "android": {
       "adaptiveIcon": {
@@ -28,7 +28,7 @@
       },
       "package": "com.kadenet.poseidon",
       "googleServicesFile": "./google-services.json",
-      "versionCode": 10
+      "versionCode": 11
     },
     "web": {
       "bundler": "metro",

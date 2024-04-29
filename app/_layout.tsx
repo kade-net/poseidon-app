@@ -17,8 +17,6 @@ import * as Navigator from 'expo-navigation-bar'
 import Toast from 'react-native-toast-message'
 import * as Notifications from 'expo-notifications'
 import localStore from '../lib/local-store'
-import * as Updates from 'expo-updates'
-import posti from '../lib/posti'
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
@@ -63,25 +61,6 @@ export default function RootLayout() {
     Roboto: require('../assets/fonts/Roboto-Regular.ttf')
   })
   const responseListener = useRef();
-
-  async function onFetchUpdateAsync() {
-    try {
-      const update = await Updates.checkForUpdateAsync();
-
-      if (update.isAvailable) {
-        await Updates.fetchUpdateAsync();
-        await Updates.reloadAsync();
-      }
-    } catch (error) {
-      posti.capture('error fetching update', {
-        error: error ?? 'Unable to trigger update fetch',
-      })
-    }
-  }
-
-  useEffect(() => {
-    onFetchUpdateAsync()
-  }, [])
 
   useEffect(() => {
 

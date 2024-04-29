@@ -29,7 +29,6 @@ class PetraWallet {
         try {
             const keys = nacl.box.keyPair()
             this.latestKeyPair = keys
-
         }
         catch (e) {
             console.log("SOmething went wrong", e)

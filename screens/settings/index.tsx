@@ -1,5 +1,5 @@
 import { View, Text, YStack, XStack, Separator, H4, Button, Spinner } from 'tamagui'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { TouchableOpacity } from 'react-native'
 import { Anchor, ArrowRight, Bell, ChevronRight, KeySquare, Wallet } from '@tamagui/lucide-icons'
 import { Link, useNavigation, useRouter } from 'expo-router'
@@ -9,8 +9,13 @@ import localStore from '../../lib/local-store'
 import { Utils } from '../../utils'
 import notifications from '../../lib/notifications'
 import * as Haptics from 'expo-haptics'
+import * as Updates from 'expo-updates'
+import posti from '../../lib/posti'
+import Toast from 'react-native-toast-message'
 
 const Settings = () => {
+    const [updatesReady, setUpdatesReady] = useState(false)
+    const [loading, setLoading] = useState(false)
     const [loggingOut, setLoggingOut] = useState(false)
     const router = useRouter()
     const navigation = useNavigation()
@@ -36,6 +41,52 @@ const Settings = () => {
             setLoggingOut(false)
         }
     }
+
+    // useEffect(() => {
+    //     (async () => {
+    //         try {
+    //             const update = await Updates.checkForUpdateAsync();
+
+    //             if (update.isAvailable) {
+    //                 setUpdatesReady(true)
+    //             } else {
+    //                 setUpdatesReady(false)
+    //             }
+    //         }
+    //         catch (e) {
+    //             posti.capture('error fetching update', {
+    //                 error: e ?? 'Unable to trigger update fetch',
+    //             })
+    //         }
+    //     })();
+    // }, [])
+
+
+    // const fetchUpdatate = async () => {
+    //     Haptics.selectionAsync()
+    //     setLoading(true)
+    //     try {
+    //         const update = await Updates.checkForUpdateAsync();
+
+    //         if (update.isAvailable) {
+    //             await Updates.fetchUpdateAsync();
+    //             await Updates.reloadAsync();
+    //         }
+    //     }
+    //     catch (e) {
+    //         Toast.show({
+    //             type: 'error',
+    //             text1: 'Error fetching update',
+    //             text2: 'Unable to trigger update fetch',
+    //         })
+    //         posti.capture('error fetching update', {
+    //             error: e ?? 'Unable to trigger update fetch',
+    //         })
+    //     }
+    //     finally {
+    //         setLoading(false)
+    //     }
+    // }
 
     return (
         <YStack
@@ -122,6 +173,11 @@ const Settings = () => {
                     </YStack>
                 </Link>
             </YStack>
+            <XStack w="100%" alignItems='center' justifyContent='center' >
+                <Text>
+                    Version 0.0.21
+                </Text>
+            </XStack>
             <XStack alignItems='center' justifyContent='center' p={20} >
                 <Button onPress={handleLogout} w="100%" backgroundColor={'$button'} color={'$buttonText'} fontSize={"$md"} >
                     {
