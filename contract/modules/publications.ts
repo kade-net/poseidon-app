@@ -11,11 +11,37 @@ import localStore from "../../lib/local-store";
 import storage from "../../lib/storage";
 import client from "../../data/apollo";
 import { GET_PUBLICATIONS } from "../../utils/queries";
+import { Utils } from "../../utils";
 
 
 class PublicationsContract {
 
     hiddenPublications: Array<string> = []
+
+    locked = false
+
+    unlock() {
+        this.locked = false
+    }
+
+    lock() {
+        this.locked = true
+    }
+
+    waitForUnlock(): Promise<boolean> {
+        return new Promise<boolean>(async (res, rej) => {
+            if (this.locked) {
+                console.log("Waiting for unlock")
+                await Utils.sleep(1000)
+                return res(this.waitForUnlock())
+            } else {
+                console.log("Resolved unlock")
+                res(true)
+            }
+        })
+    }
+
+
 
     async createPublication(publication: TPUBLICATION | null, publication_type: 1 | 2 | 3 | 4 = 1, reference_kid?: number, parent_ref?: string, count?: number) {
 
@@ -234,12 +260,20 @@ class PublicationsContract {
     }
 
 
-    async createReactionWithRef(reaction: number, ref: string) {
+    createReactionWithRef = async (reaction: number, ref: string) => {
         if (!isNumber(reaction) || !isString(ref)) {
             throw new Error("Invalid reaction")
         }
 
         await localStore.addReactedToPublication(ref, reaction)
+
+        if (this.locked) {
+            await this.waitForUnlock()
+            await this.createReactionWithRef(reaction, ref)
+            return
+        } else {
+            this.lock()
+        }
 
         try {
             const { fee_payer_signature, raw_txn_desirialized, sender_signature } = await getAuthenticatorsAndRawTransaction(`${APP_SUPPORT_API}/contract/publications/create-reaction-with-ref`, {
@@ -263,11 +297,12 @@ class PublicationsContract {
             if (!status.success) {
                 throw new Error("Transaction failed")
             } else {
-
+                this.unlock()
             }
 
         }
         catch (e) {
+            this.unlock()
             await localStore.removeReactedToPublication(ref)
             throw e
         }
@@ -306,6 +341,16 @@ class PublicationsContract {
             throw new Error("Invalid publication ref")
         }
         await localStore.removeReactedToPublication(publication_ref)
+
+        if (this.locked) {
+            await this.waitForUnlock()
+            await this.removeReactionWithRef(publication_ref)
+            return
+        }
+        else {
+            this.lock()
+        }
+
         try {
             const { fee_payer_signature, raw_txn_desirialized, sender_signature } = await getAuthenticatorsAndRawTransaction(`${APP_SUPPORT_API}/contract/publications/remove-reaction-with-ref`, {
                 ref: publication_ref
@@ -327,9 +372,13 @@ class PublicationsContract {
             if (!status.success) {
                 throw new Error("Transaction failed")
             }
+            else {
+                this.unlock()
+            }
 
         }
         catch (e) {
+            this.unlock()
             await localStore.addReactedToPublication(publication_ref, 1)
             throw e
         }

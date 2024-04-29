@@ -198,8 +198,8 @@ export const GET_PUBLICATION_INTERACTIONS_BY_VIEWER = gql(/* GraphQL */`
 
 
 export const GET_PUBLICATION_COMMENTS = gql(/* GraphQL */`
-    query PublicationComments($publication_ref: String!, $page: Int!, $size: Int!, $hide: [String!], $muted: [Int!]) {
-        publicationComments(ref: $publication_ref, pagination: { page: $page, size: $size }, hide: $hide, muted: $muted) {
+    query PublicationComments($publication_ref: String!, $page: Int!, $size: Int!, $hide: [String!], $muted: [Int!], $sort: SortOrder) {
+        publicationComments(ref: $publication_ref, pagination: { page: $page, size: $size }, hide: $hide, muted: $muted, sort: $sort) {
             id
             content
             type

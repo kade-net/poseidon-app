@@ -5,6 +5,10 @@ import { Heart, MessageSquare, Quote, Repeat, UserPlus } from '@tamagui/lucide-i
 import { trim, truncate } from 'lodash'
 import { useRouter } from 'expo-router'
 import { TouchableOpacity } from 'react-native'
+import dayjs from 'dayjs'
+import relativeTime from 'dayjs/plugin/relativeTime'
+
+dayjs.extend(relativeTime)
 
 
 interface Props {
@@ -180,7 +184,7 @@ const BaseNotificationContent = (props: Props) => {
                                     null
                     }
                 </YStack>
-                <YStack flex={1} w="100%"  >
+                <YStack flex={1} w="100%" rowGap={5} >
                     {
                         type == 1 ? <FollowNotificationContent data={data} /> :
                             type == 2 ? (
@@ -191,6 +195,13 @@ const BaseNotificationContent = (props: Props) => {
                             ) :
                                 type == 3 ? <LikeNotificationContent data={data} /> : null
                     }
+                    <Text
+                        color={'$sideText'}
+                    >
+                        {
+                            dayjs(data?.timestamp).fromNow()
+                        }
+                    </Text>
                 </YStack>
             </XStack>
         </TouchableOpacity>

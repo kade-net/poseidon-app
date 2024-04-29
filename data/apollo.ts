@@ -1,6 +1,6 @@
 import { InMemoryCache, ApolloClient, Reference, defaultDataIdFromObject, FieldFunctionOptions } from "@apollo/client"
 import { Publication, AccountStats, PublicationInteractionsByViewerQuery } from "../__generated__/graphql"
-import { cloneDeep, isNumber, isUndefined, uniqBy } from "lodash"
+import { clone, cloneDeep, isNumber, isUndefined, uniqBy } from "lodash"
 import ephemeralCache from "../lib/local-store/ephemeral-cache"
 
 function publicationMerge(_existing: Array<Reference> = [], incoming: Array<Reference> = [], options: FieldFunctionOptions) {
@@ -14,13 +14,34 @@ function publicationMerge(_existing: Array<Reference> = [], incoming: Array<Refe
         const indexToReplace = offset + i
         if (toBeAdded) {
             if (currentState[indexToReplace]) {
-                const is_new = options.readField("is_new", currentState[indexToReplace])
-                if (!is_new) {
-                    currentState[indexToReplace] = toBeAdded
+                const ref = options.readField("publication_ref", currentState[indexToReplace])
+                const toBeAddedRef = options.readField("publication_ref", toBeAdded)
+                const toBeAddedCached = ephemeralCache.get(`publication::${toBeAddedRef}`)
+                const cached = ephemeralCache.get(`publication::${ref}`)
+                if (cached == 'add') {
+
+                    // update the list and put the new item after the cached item
+                    currentState.splice(indexToReplace, 0, toBeAdded)
+                    continue
                 }
+
+                if (toBeAddedCached == 'remove') {
+
+                    continue
+                }
+
+                currentState[indexToReplace] = toBeAdded
+
             }
             else {
-                currentState.push(toBeAdded)
+                const ref = options.readField("publication_ref", toBeAdded)
+                const cached = ephemeralCache.get(`publication::${ref}`)
+                if (cached == 'remove') {
+                    console.log("Skipping item", ref)
+                    // skip this item
+                } else {
+                    currentState.push(toBeAdded)
+                }
             }
         }
     }
@@ -102,7 +123,7 @@ const cache = new InMemoryCache({
                     read: publicationRead
                 },
                 publicationComments: {
-                    keyArgs: ["ref", "pulication_ref"],
+                    keyArgs: ["ref", "pulication_ref", "sort"],
                     merge: publicationMerge,
                     read: (existing, options) => {
                         if (!existing) {
@@ -135,16 +156,18 @@ const cache = new InMemoryCache({
                 accountStats: {
                     keyArgs: ["accountAddress"],
                     merge(existing: AccountStats | null = null, incoming: AccountStats | null = null, options) {
-                        console.log('Existing::', existing, "Incoming::", incoming)
+
+                        const cache = ephemeralCache.get(`account_stats::followers::${options.args?.accountAddress}`) as number ?? 0
+
                         if (!existing) return incoming
-                        const resultObject: Partial<AccountStats> = incoming ?? {
+                        const resultObject: Partial<AccountStats> = clone(incoming) ?? {
                             followers: 0,
                             following: 0
                         }
 
-                        if ((incoming?.followers ?? 0) < (existing?.followers ?? 0)) {
-                            console.log("Existing is greater than incoming")
-                            resultObject.followers = existing?.followers
+                        if ((incoming?.followers ?? 0) < cache) {
+
+                            resultObject.followers = cache
                         }
 
                         return resultObject

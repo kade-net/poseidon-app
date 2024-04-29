@@ -70,6 +70,7 @@ class AccountContract {
     }
 
     async updateProfile(profile: TPROFILE) {
+        console.log("PROFILE:: ", profile)
         if (!delegateManager.signer) {
             throw new Error("No account found")
         }

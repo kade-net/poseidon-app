@@ -1,6 +1,6 @@
 import '../../global'
 import 'react-native-get-random-values'
-import { Community, Profile, Publication } from "../../__generated__/graphql";
+import { Community, Profile, Publication, SortOrder } from "../../__generated__/graphql";
 import storage from "../storage";
 import { TPROFILE, TPUBLICATION, UpdateCommunitySchema } from '../../schema';
 import client, { barnicleClient } from '../../data/apollo';
@@ -29,6 +29,8 @@ class LocalStore {
     }
 
     async addPublication(publication: TPUBLICATION | null, type: number, parent_ref: string, client_ref: string, current_count?: number) {
+
+        ephemeralCache.set(`publication::${client_ref}`, 'add')
 
         let profile = client.readQuery({
             query: GET_MY_PROFILE,
@@ -152,7 +154,10 @@ class LocalStore {
                     variables: {
                         publication_ref: parent_ref,
                         page: 0,
-                        size: 20 // TODO: we will need to expand this
+                        size: 20, // TODO: we will need to expand this
+                        sort: SortOrder.Asc,
+                        muted: getMutedUsers(),
+                        hide: getRemovedFromFeed()
                     }
                 })
 
@@ -165,7 +170,10 @@ class LocalStore {
                     variables: {
                         publication_ref: parent_ref,
                         page: 0,
-                        size: 20
+                        size: 20,
+                        sort: SortOrder.Asc,
+                        muted: getMutedUsers(),
+                        hide: getRemovedFromFeed()
                     },
                     data: {
                         publicationComments: [newPub, ...comments]
@@ -335,6 +343,8 @@ class LocalStore {
 
     async removePublication(ref: string, type: number, parent_ref?: string) {
 
+        ephemeralCache.set(`publication::${ref}`, 'remove')
+
         if (type !== 1) {
 
             if (!parent_ref) {
@@ -474,6 +484,9 @@ class LocalStore {
             }
         })
 
+        ephemeralCache.set(`interaction::reaction::${ref}`, 'react')
+        ephemeralCache.set(`stats::reactions::${ref}`, (publicationStatsQuery?.publicationStats?.reactions ?? 0) + 1)
+
         client.writeQuery({
             query: GET_PUBLICATION_STATS,
             variables: {
@@ -516,8 +529,7 @@ class LocalStore {
             }
         })
 
-        ephemeralCache.set(`interaction::reaction::${ref}`, 'react')
-        ephemeralCache.set(`stats::reactions::${ref}`, (publicationStatsQuery?.publicationStats?.reactions ?? 0) + 1)
+
     }
 
     async removeReactedToPublication(ref: string) {
@@ -538,6 +550,9 @@ class LocalStore {
         })
 
         const oldState = currentPublicationInteractions?.publicationInteractionsByViewer
+
+        ephemeralCache.set(`interaction::reaction::${ref}`, 'unreact')
+        ephemeralCache.set(`stats::reactions::${ref}`, (publicationStatsQuery?.publicationStats?.reactions ?? 0) - 1)
 
         client.writeQuery({
             query: GET_PUBLICATION_STATS,
@@ -579,8 +594,7 @@ class LocalStore {
             }
         })
 
-        ephemeralCache.set(`interaction::reaction::${ref}`, 'unreact')
-        ephemeralCache.set(`stats::reactions::${ref}`, (publicationStatsQuery?.publicationStats?.reactions ?? 0) - 1)
+
 
     }
 
@@ -615,7 +629,8 @@ class LocalStore {
                     ...(currentProfile?.account ? currentProfile.account : {}),
                     profile: {
                         ...profile,
-                        __typename: "Profile"
+                        __typename: "Profile",
+                        creator: currentProfile?.account?.profile?.creator ?? Date.now()
                     },
                     username: {
                         __typename: "Username",
@@ -702,6 +717,8 @@ class LocalStore {
 
             })
 
+            ephemeralCache.set(`account_stats::followers::${following_address}`, (currentAccountStats?.accountStats?.followers ?? 0) + 1)
+
             client.writeQuery({
                 query: GET_ACCOUNT_STATS,
                 variables: {
@@ -784,7 +801,8 @@ class LocalStore {
 
             })
 
-            console.log("Current Account Stats ::", currentAccountStats)
+
+            ephemeralCache.set(`account_stats::followers::${unfollowing_address}`, (currentAccountStats?.accountStats?.followers ?? 1) - 1)
 
             client.writeQuery({
                 query: GET_ACCOUNT_STATS,
@@ -890,7 +908,7 @@ class LocalStore {
                 __typename: "Query",
                 communitiesSearch: [
                     ...(
-                        prevPostCommunitySearches?.communitiesSearch ?? []
+                        prevPostCommunitySearches?.communitiesSearch?.filter((x) => x.name !== communityName) ?? []
                     ),
                     {
                         description: prevCommunityQuery?.community?.description ?? "",
@@ -928,7 +946,7 @@ class LocalStore {
                         hosts: [],
                         __typename: "Community"
                     },
-                    ...(prevAccountCommunities?.accountCommunities ?? [])
+                    ...(prevAccountCommunities?.accountCommunities?.filter((x) => x.name !== communityName) ?? [])
                 ]
             }
         })

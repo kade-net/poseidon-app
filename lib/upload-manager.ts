@@ -4,7 +4,15 @@ import delegateManager from "./delegate-manager"
 import * as FileSystem from 'expo-file-system'
 import { Buffer } from 'buffer'
 import posti from "./posti"
+import * as MediaLibrary from 'expo-media-library'
 
+
+const cloudfront_url = 'https://dw26fem5oa72i.cloudfront.net/'
+
+type DIMENSIONS = {
+    width: number,
+    height: number
+}
 
 class UploadManager {
 
@@ -27,14 +35,15 @@ class UploadManager {
     }
 
 
-    async uploadFile(uri: string, file: Partial<File>) {
+    async uploadFile(uri: string, file: Partial<File>, dimesnions?: DIMENSIONS) {
         try {
             const file_buffer = await this.getFileBuffer(uri)
             const response = await axios.post<{ file_url: string, upload_url: string }>(`${APP_SUPPORT_API}/upload`, {
                 file_name: file.name,
                 file_byte_size: file_buffer.byteLength,
                 file_type: file.type,
-                delegate_address: delegateManager.account?.address()?.toString()
+                delegate_address: delegateManager.account?.address()?.toString(),
+                dimesnions
             })
 
             const data = response.data
@@ -65,6 +74,44 @@ class UploadManager {
             })
             console.log(`SOMETHING WENT WRONG:: ${e}`)
             throw new Error('Unable to upload file')
+        }
+    }
+
+    async downloadFile(uri: string) {
+        try {
+
+
+
+            const timestamp = new Date().getTime().toString()
+            const res = await FileSystem.downloadAsync(uri, `${FileSystem.documentDirectory}${timestamp}.jpg`)
+
+            const { status } = await MediaLibrary.requestPermissionsAsync()
+
+            if (status == 'granted') {
+
+                try {
+                    const asset = await MediaLibrary.createAssetAsync(res.uri);
+                    const album = await MediaLibrary.getAlbumAsync('Download');
+                    if (album == null) {
+                        await MediaLibrary.createAlbumAsync('Download', asset, false);
+                    } else {
+                        await MediaLibrary.addAssetsToAlbumAsync([asset], album, false);
+                    }
+
+                }
+                catch (e) {
+                    console.log(`SOMETHING WENT WRONG:: ${e}`)
+                    throw new Error('Unable to download file')
+                }
+
+            }
+            else {
+                throw new Error('Permission denied')
+            }
+        }
+        catch (e) {
+            console.log(`SOMETHING WENT WRONG:: ${e}`)
+            throw new Error('Unable to download file')
         }
     }
 }

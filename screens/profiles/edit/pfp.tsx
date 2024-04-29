@@ -15,6 +15,9 @@ import uploadManager from '../../../lib/upload-manager'
 import { Plus } from '@tamagui/lucide-icons'
 import { useRouter } from 'expo-router'
 import { Utils } from '../../../utils'
+import * as Haptics from 'expo-haptics'
+import Toast from 'react-native-toast-message'
+import BaseButton from '../../../components/ui/buttons/base-button'
 
 const Pfp = () => {
     const [saving, setSaving] = React.useState(false)
@@ -37,6 +40,7 @@ const Pfp = () => {
     })
 
     const handleSubmit = async (values: TPROFILE) => {
+        Haptics.selectionAsync()
         setSaving(true)
 
         try {
@@ -52,6 +56,7 @@ const Pfp = () => {
     }
 
     const addImage = async () => {
+        Haptics.selectionAsync()
         setUploading(true)
         const result = await ImagePicker.launchImageLibraryAsync({
             mediaTypes: ImagePicker.MediaTypeOptions.Images,
@@ -79,6 +84,13 @@ const Pfp = () => {
 
             }
             catch (e) {
+                Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error)
+                Toast.show({
+                    type: 'error',
+                    text1: 'Error',
+                    text2: 'Unable to upload image. Please try again.'
+
+                })
                 console.log("Something went wrong::", e)
             }
             finally {
@@ -150,14 +162,15 @@ const Pfp = () => {
                     </XStack>
                 }
             </YStack>
-            <Button disabled={saving} onPress={form.handleSubmit(handleSubmit)} w="100%" backgroundColor={"$button"} color={"$buttonText"} marginBottom={Utils.dynamicHeight(5)}>
-                {
-                    saving ? <XStack columnGap={10} >
-                        <Spinner />
-                        <Text>Saving...</Text>
-                    </XStack> : 'Save changes'
-                }
-            </Button>
+            <BaseButton
+                loading={saving}
+                onPress={form.handleSubmit(handleSubmit)}
+                disabled={saving || uploading}
+            >
+                <Text>
+                    Save Changes
+                </Text>
+            </BaseButton>
         </YStack>
     )
 }

@@ -28,13 +28,13 @@ const TabNavbar = (props: Props) => {
   const tamaguiTheme = useTheme()
 
 
-  useEffect(() => {
+  const handleTabChange = (key: string) => {
     Animated.timing(TAB_SLIDER_X, {
-      toValue: tabLayoutDetails[tabRoutes[currentTabIndex].key]?.x,
+      toValue: tabLayoutDetails[key]?.x,
       duration: 200,
       useNativeDriver: true
     }).start()
-  }, [currentTabIndex])
+  }
 
   const TabOffset = useMemo(() => {
     return Platform.OS === 'ios' ? topSectionHeight : 0
@@ -79,6 +79,7 @@ const TabNavbar = (props: Props) => {
                 }}
                 onPress={() => {
                   props.jumpTo(route.key)
+                  handleTabChange(route.key)
                 }}
                 onLayout={(event) => {
                   const layout = clone(event?.nativeEvent?.layout)

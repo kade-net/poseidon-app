@@ -6,6 +6,7 @@ import delegateManager from '../../../lib/delegate-manager';
 import communityModule from '../../../contract/modules/community';
 import { Link } from 'expo-router';
 import { Utils } from '../../../utils';
+import * as Haptics from 'expo-haptics';
 interface COMMUNITY {
     __typename?: "Community" | undefined;
     id: number;
@@ -29,6 +30,7 @@ const CommunityCard = (props: Props) => {
     })
 
     const handleToggleFollow = async () => {
+        await Haptics.selectionAsync()
         try {
             console.log(membershipQuery?.data)
             if (membershipQuery?.data?.membership) {
@@ -76,7 +78,7 @@ const CommunityCard = (props: Props) => {
                         }} >
                             <YStack>
                                 <Text color={"$text"} fontWeight={"$5"} fontSize={"$sm"}>
-                                    {community?.name} {community?.id}
+                                    {community?.name}
                                 </Text>
                                 <Text fontSize={'$1'} color={'$sideText'} >
                                     /{community?.name}

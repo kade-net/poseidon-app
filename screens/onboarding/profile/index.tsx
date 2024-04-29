@@ -18,6 +18,9 @@ import { GET_MY_PROFILE } from '../../../utils/queries'
 import { Utils } from '../../../utils'
 import UnstyledButton from '../../../components/ui/buttons/unstyled-button'
 import Toast from 'react-native-toast-message'
+import * as Haptics from 'expo-haptics'
+import BaseFormInput from '../../../components/ui/input/base-form-input'
+import BaseFormTextArea from '../../../components/ui/input/base-form-textarea'
 
 const Profile = () => {
     const [image, setImage] = useState<ImagePicker.ImagePickerAsset | null>(null)
@@ -57,6 +60,7 @@ const Profile = () => {
     }
 
     const handleSubmit = async (values: TPROFILE) => {
+        Haptics.selectionAsync()
         setSubmitting(true)
         let new_file_url = ''
         try {
@@ -70,9 +74,14 @@ const Profile = () => {
             console.log("Upload URL:: ", upload_url)
         }
         catch (e) {
+            Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error)
             console.log(`SOMETHING WENT WRONG:: ${e}`)
             setSubmitting(false)
-            // TODO: toast error
+            Toast.show({
+                type: 'error',
+                text1: 'Error',
+                text2: 'Failed to upload image, please try again.'
+            })
             return
         }
 
@@ -86,6 +95,12 @@ const Profile = () => {
             goToNext()
         }
         catch (e) {
+            Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error)
+            Toast.show({
+                type: 'error',
+                text1: 'Error',
+                text2: 'Failed to update profile, please try again.'
+            })
             console.log(`SOMETHING WENT WRONG:: ${e}`)
         }
         finally {
@@ -164,13 +179,16 @@ const Profile = () => {
                     <Controller
                         control={form.control}
                         name="display_name"
-                        render={({ field: { onChange, value } }) => {
+                        render={({ field: { onChange, value }, fieldState }) => {
                             return (
-                                <Input
+                                <BaseFormInput
                                     backgroundColor={"$colorTransparent"}
                                     placeholder='Display Name'
                                     value={value}
                                     onChangeText={onChange}
+                                    maxLength={20}
+                                    invalid={fieldState?.invalid}
+                                    error={fieldState?.error?.message}
                                 />
                             )
                         }}
@@ -178,14 +196,18 @@ const Profile = () => {
                     <Controller
                         control={form.control}
                         name="bio"
-                        render={({ field: { onChange, value } }) => {
+                        render={({ field: { onChange, value }, fieldState }) => {
                             return (
-                                <TextArea
+                                <BaseFormTextArea
                                     backgroundColor={"$colorTransparent"}
                                     placeholder='Tell us about yourself'
                                     value={value}
                                     onChangeText={onChange}
+                                    maxLength={50}
+                                    invalid={fieldState?.invalid}
+                                    error={fieldState?.error?.message}
                                 />
+
                             )
                         }}
                     />

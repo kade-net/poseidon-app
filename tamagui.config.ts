@@ -36,6 +36,7 @@ export const config = createTamagui({
     dark:{
       ...configBase.themes.dark,
       primary: 'rgb(10, 132, 255)',
+      baseBackround: configBase.themes.dark.background,
       background: 'rgb(12,18,34)',
       card: 'rgb(18, 18, 18)',
       text: 'rgb(250,250,250)',
@@ -73,6 +74,7 @@ export const config = createTamagui({
       colourlessButton: 'rgb(250,250,250)',
       borderColor: 'rgba(151,151,156,0.4)',
       bottomSheet: 'rgb(237, 230, 230)',
+      baseBackround: configBase.themes.light.background,
 
 
     }

@@ -15,6 +15,7 @@ import { Utils } from '../../../utils'
 import UnstyledButton from '../../../components/ui/buttons/unstyled-button'
 import Toast from 'react-native-toast-message'
 import posti from '../../../lib/posti'
+import * as Haptics from 'expo-haptics'
 
 const schema = z.object({
     username: z.string().regex(Utils.USERNAME_REGEX).min(3).max(20).trim()
@@ -47,6 +48,7 @@ const PickUserName = () => {
     }
 
     const checkUsername = async (values: TSchema) => {
+        Haptics.selectionAsync()
         setChecking(true)
         console.log(`CHECKING USERNAME:: ${values.username}`)
         try {
@@ -55,14 +57,21 @@ const PickUserName = () => {
             setIsAvailable(available)
 
             if (!available) {
+                Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error)
                 Toast.show({
                     text1: 'Username is not available',
                     text2: 'Please try another username',
                     type: 'info',
                 })
             }
+
+            Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success)
         }
         catch (e) {
+            Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error)
+            posti.capture('check-username-error', {
+                error: e
+            })
             console.log(`SOMETHING WENT WRONG:: ${e}`)
         }
         finally {
@@ -71,6 +80,7 @@ const PickUserName = () => {
     }
 
     const claimUsernameAndCreateAccount = async (values: TSchema) => {
+        Haptics.selectionAsync()
         const username = values.username
         delegateManager.setUsername(username)
         setClaiming(true)
@@ -99,6 +109,7 @@ const PickUserName = () => {
             console.log(`ACCOUNT SETUP FAILED:: ${resp}`)
         }
         catch (e) {
+            Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error)
             posti.capture('claim-username-error', {
                 error: e
             })
@@ -149,6 +160,7 @@ const PickUserName = () => {
                                             field.onChange(value)
                                         }}
                                         value={field.value}
+                                        maxLength={20}
                                     />
                                     {
                                         fieldState.invalid && <Text fontSize={"$xxs"} color={"$red10"}>

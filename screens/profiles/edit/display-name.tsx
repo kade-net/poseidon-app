@@ -11,6 +11,9 @@ import account from '../../../contract/modules/account'
 import { Button, Input, Spinner, TextArea, XStack, YStack, Text } from 'tamagui'
 import { useRouter } from 'expo-router'
 import Toast from 'react-native-toast-message'
+import BaseButton from '../../../components/ui/buttons/base-button'
+import * as Haptic from 'expo-haptics'
+import BaseFormInput from '../../../components/ui/input/base-form-input'
 
 const DisplayName = () => {
     const [saving, setSaving] = React.useState(false)
@@ -19,18 +22,17 @@ const DisplayName = () => {
             address: delegateManager.owner!
         }
     })
+
     const router = useRouter()
     const form = useForm<TPROFILE>({
         resolver: zodResolver(profileSchema),
         defaultValues: {
-            bio: profile?.data?.account?.profile?.bio ?? undefined,
-            display_name: profile?.data?.account?.profile?.display_name ?? '',
-            pfp: profile?.data?.account?.profile?.pfp ?? undefined
+            display_name: profile?.data?.account?.profile?.display_name ?? undefined
         }
     })
 
     const handleSubmit = async (values: TPROFILE) => {
-
+        await Haptic.selectionAsync()
         if (values.display_name === profile?.data?.account?.profile?.display_name) {
             router.back()
             return
@@ -39,10 +41,15 @@ const DisplayName = () => {
         setSaving(true)
 
         try {
-            await account.updateProfile(values)
+            await account.updateProfile({
+                ...values,
+                bio: profile?.data?.account?.profile?.bio ?? undefined,
+                pfp: profile?.data?.account?.profile?.pfp ?? undefined
+            })
             router.back()
         }
         catch (e) {
+            setSaving(false)
             console.log(`Something went wrong: ${e}`)
         }
         finally {
@@ -50,7 +57,9 @@ const DisplayName = () => {
         }
     }
 
-    const handleError = async () => {
+    const handleError = async (error: any) => {
+        console.log("Parse Errors::", error)
+        await Haptic.notificationAsync(Haptic.NotificationFeedbackType.Error)
         Toast.show({
             type: 'error',
             text1: 'Error',
@@ -66,27 +75,35 @@ const DisplayName = () => {
                 name='display_name'
                 render={({ field, formState, fieldState }) => {
                     return (
-                        <YStack>
-                            <Input
-                                backgroundColor={"$colorTransparent"}
-                                onChangeText={field.onChange}
-                                value={field.value}
-                                placeholder='Display name'
-                            />
-                            {
-                                fieldState.invalid && <Text color={"red"} fontSize={'$xxs'} >Display name cannot be empty.</Text>
-                            }
-                        </YStack>
+                        <BaseFormInput
+                            label='Display Name'
+                            value={field.value}
+                            onChangeText={field.onChange}
+                            placeholder='Display name'
+                            invalid={fieldState.invalid}
+                            error={fieldState.error?.message}
+                            maxLength={50}
+                        />
+                        // <YStack>
+                        //     <Input
+                        //         backgroundColor={"$colorTransparent"}
+                        //         onChangeText={field.onChange}
+                        //         value={field.value}
+                        //         placeholder='Display name'
+                        //     />
+                        //     {
+                        //         fieldState.invalid && <Text color={"red"} fontSize={'$xxs'} >Display name cannot be empty.</Text>
+                        //     }
+                        // </YStack>
                     )
                 }} />
-            <Button disabled={saving} onPress={form.handleSubmit(handleSubmit, handleError)} w="100%" backgroundColor={"$button"} color={"$buttonText"}>
-                {
-                    saving ? <XStack columnGap={10} >
-                        <Spinner />
-                        <Text>Saving...</Text>
-                    </XStack> : 'Save changes'
-                }
-            </Button>
+            <BaseButton
+                disabled={saving}
+                onPress={form.handleSubmit(handleSubmit, handleError)}
+                loading={saving}
+            >
+                <Text>Save Changes</Text>
+            </BaseButton>
         </YStack>
     )
 }

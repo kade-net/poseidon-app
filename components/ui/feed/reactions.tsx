@@ -12,6 +12,7 @@ import BaseContentSheet from '../action-sheets/base-content-sheet'
 import useDisclosure from '../../hooks/useDisclosure'
 import PublicationEditor from '../editor/publication-editor'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
+import * as Haptics from 'expo-haptics'
 
 interface Props {
     initialStats?: PublicationStats,
@@ -49,6 +50,7 @@ const PublicationReactions = (props: Props) => {
     })
 
     const handleReact = async () => {
+        Haptics.selectionAsync()
         const currentState = userInteractions.data?.publicationInteractionsByViewer?.reacted
         try {
             if (currentState) {
@@ -118,6 +120,7 @@ const PublicationReactions = (props: Props) => {
     return (
         <View flexDirection='row' alignItems='center' w="full" columnGap={50} >
             <TouchableOpacity onPress={() => {
+                Haptics.selectionAsync()
                 setCurrentPublicationType(3)
                 onOpen()
             }} style={styles.action_container} >

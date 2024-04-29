@@ -8,16 +8,18 @@ import BaseContentSheet from '../../../components/ui/action-sheets/base-content-
 import useDisclosure from '../../../components/hooks/useDisclosure'
 import anchors from '../../../contract/modules/anchors'
 import { useQuery } from 'react-query'
+import * as Haptics from 'expo-haptics'
 
 const CommunitiesScreen = () => {
     const balanceQuery = useQuery({
         queryFn: anchors.getBalance,
-        onSuccess: (data) => console.log("Balance::", data),
-        refetchOnMount: true
+        refetchOnMount: true,
+        refetchInterval: 10000
     })
     const { isOpen, onClose, onOpen, onToggle } = useDisclosure()
     const router = useRouter()
     const handleCreateCommunity = async () => {
+        Haptics.selectionAsync()
         const currentBalance = balanceQuery.data ?? 0
         if (currentBalance < 2500) {
             onOpen()

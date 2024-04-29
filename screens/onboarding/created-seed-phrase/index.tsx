@@ -7,12 +7,14 @@ import delegateManager from '../../../lib/delegate-manager'
 import { useRouter } from 'expo-router'
 import { Utils } from '../../../utils'
 import Toast from 'react-native-toast-message'
+import * as Haptics from 'expo-haptics'
 
 const CreatedSeedPhrase = () => {
     const insets = useSafeAreaInsets()
     const router = useRouter()
 
     const copySeedPhrase = async () => {
+        Haptics.selectionAsync()
         const mnemonic = delegateManager.mnemonic
 
         if (mnemonic) {

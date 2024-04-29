@@ -22,11 +22,15 @@ import useSingleScrollManager from '../../../../components/hooks/useSingleScroll
 import { useColorScheme } from 'react-native'
 import account from '../../../../contract/modules/account'
 import publications from '../../../../contract/modules/publications'
-import { isEmpty } from 'lodash'
+import { isEmpty, set, uniqBy } from 'lodash'
 import { getMutedUsers, getRemovedFromFeed } from '../../../../contract/modules/store-getters'
 import { Utils } from '../../../../utils'
+import Empty from '../../../../components/ui/feedback/empty'
+import Loading from '../../../../components/ui/feedback/loading'
 
 const Home = () => {
+    const [refetching, setRefetching] = useState(false)
+
     const publicationsQuery = useQuery(GET_PUBLICATIONS, {
         variables: {
             page: 0,
@@ -38,7 +42,6 @@ const Home = () => {
         fetchPolicy: 'cache-and-network'
     })
     const { data, fetchMore, loading } = publicationsQuery
-    console.log("Loading::", loading)
 
     const tamaguiTheme = useTheme()
 
@@ -86,34 +89,49 @@ const Home = () => {
     }
 
     const handleFetchMore = async () => {
+        setRefetching(true)
         try {
             const totalPublications = data?.publications?.length ?? 0 
             const nextPage = (Math.floor(totalPublications / 20) - 1) + 1
-            console.log("Next page", nextPage)
-            const results = await fetchMore({
+
+            await fetchMore({
                 variables: {
                     page: nextPage,
-                    size: 20
+                    size: 20,
+                    types: [1, 2],
+                    muted: isEmpty(account.mutedUsers) ? undefined : account.mutedUsers,
+                    hide: isEmpty(publications.hiddenPublications) ? undefined : publications.hiddenPublications
                 }
             })
         }
         catch (e) {
             console.log("Error fetching more", e)
         }
+        finally {
+            setRefetching(false)
+        }
     }
 
     const handleFetchTop = async () => {
-        console.log("Start reached")
+        await publications.loadRemovedFromFeed()
+        setRefetching(true)
         try {
-            await publicationsQuery.refetch()
+            await publicationsQuery.fetchMore({
+                variables: {
+                    page: 0,
+                    size: 20,
+                    types: [1, 2],
+                    muted: isEmpty(account.mutedUsers) ? undefined : account.mutedUsers,
+                    hide: isEmpty(publications.hiddenPublications) ? undefined : publications.hiddenPublications
+                },
+            })
         }
         catch (e) {
             console.log("Error fetching more", e)
         }
-    }
-
-    const handleRefetchOnPost = async () => {
-        await handleFetchTop()
+        finally {
+            setRefetching(false)
+        }
     }
 
     const renderPublication = useCallback(({ item }: any) => {
@@ -155,7 +173,7 @@ const Home = () => {
                         />
                     </Avatar>
                 </TouchableOpacity>
-                <Heading fontFamily={"$heading"} fontWeight={"$5"} fontSize={"$lg"} >
+                <Heading fontFamily={"$heading"} fontWeight={"$4"} >
                     Home
                 </Heading>
                 <TouchableOpacity onPress={goToSettings} >
@@ -180,7 +198,7 @@ const Home = () => {
                         [{ nativeEvent: { contentOffset: { y: scrollY } } }],
                         { useNativeDriver: true }
                     )}
-                    refreshing={loading}
+                    refreshing={false}
                     contentContainerStyle={Platform.select({
                         ios: {
                             flexGrow: 1,
@@ -211,19 +229,20 @@ const Home = () => {
                     data={data?.publications ?? []}
                     maxToRenderPerBatch={20}
                     initialNumToRender={20}
-                    keyExtractor={(item) => item.id?.toString()}
+                    keyExtractor={(item, i) => item.publication_ref ?? item?.id?.toString() ?? i.toString()}
                     renderItem={renderPublication}
                     ListHeaderComponent={() => {
-                        // if (publicationsQuery.loading) return null
+                        if ((data?.publications?.length ?? 0) === 0) return null
                         return <XStack w="100%" p={10} alignItems='center' justifyContent='center' >
-                            {publicationsQuery.loading && <Spinner />}
-                            {!publicationsQuery.loading && <Text>
+                            {refetching && <Spinner />}
+                            {!refetching && <Text>
                                 Pull down to refresh
                             </Text>}
                         </XStack>
                     }}
                     ListFooterComponent={() => {
-                        if (!publicationsQuery.loading) return null
+                        if (data?.publications?.length === 0) return null
+                        if (!refetching) return null
                         return <View w="100%" flexDirection='row' alignItems='center' p={20} justifyContent='center' columnGap={10} >
 
                             <Spinner />
@@ -232,6 +251,15 @@ const Home = () => {
                                 </Text>
 
                         </View>
+                    }}
+                    ListEmptyComponent={() => {
+                        if (!publicationsQuery.loading) return <Empty
+                            px={20}
+                            rowGap={20}
+                            emptyText='No new publications!'
+                            onRefetch={handleFetchTop}
+                        />
+                        return <Loading />
                     }}
 
                 />

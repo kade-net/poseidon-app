@@ -23,6 +23,7 @@ import HighlightMentions from './highlight-mentions'
 import { uniq } from 'lodash'
 import { useFocusEffect } from 'expo-router'
 import PostReplyTextEditor from './post-reply-editor'
+import * as Haptics from 'expo-haptics'
 
 interface Props {
     onClose: () => void
@@ -57,10 +58,12 @@ const PublicationEditor = (props: Props) => {
     })
 
     const handleChooseImage = async () => {
+        Haptics.selectionAsync()
         const result = await ImagePicker.launchImageLibraryAsync({
             mediaTypes: ImagePicker.MediaTypeOptions.Images, // TODO: Add support for videos
-            quality: 1,
-            allowsEditing: true
+            // quality: 1,
+            // allowsEditing: true,
+            selectionLimit: 1
         })
 
 
@@ -109,7 +112,7 @@ const PublicationEditor = (props: Props) => {
     }
 
     const handlePublish = async (values: TPUBLICATION) => {
-        console.log("Values ::", values)
+        Haptics.selectionAsync()
         if (publishing) {
             return
         }
@@ -139,6 +142,7 @@ const PublicationEditor = (props: Props) => {
     }
 
     const handleAddMention = (username: string, address: string) => {
+        Haptics.selectionAsync()
         const prevTags = form.getValues('tags') ?? []
         const prevContent = form.getValues('content') ?? ""
         const newTags = uniq([...prevTags, username])

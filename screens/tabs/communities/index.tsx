@@ -3,14 +3,18 @@ import { View, Text, YStack, XStack, H4, H5, Button, Separator, H6, Avatar, Spin
 import React, { useState } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { ArrowRight, Plus, PlusSquare, Users } from '@tamagui/lucide-icons'
-import { FlatList } from 'react-native'
+import { Dimensions, FlatList } from 'react-native'
 import { Link } from 'expo-router'
 import community from '../../../contract/modules/community'
 import UserMembership from './membership'
 import { useQuery } from '@apollo/client'
 import { GET_ACCOUNT_COMMUNITIES } from '../../../utils/queries'
 import delegateManager from '../../../lib/delegate-manager'
-// TODO: if user has no anchors show bottom sheet leading them to buy some
+import Loading from '../../../components/ui/feedback/loading'
+import Empty from '../../../components/ui/feedback/empty'
+
+const DEVICE_HEIGHT = Dimensions.get('screen').height
+
 const Communities = () => {
     const tamaguiTheme = useTheme()
     const [refreshing, setRefreshing] = useState(false)
@@ -30,9 +34,6 @@ const Communities = () => {
 
             console.log("Error: ", error.message, error.stack,)
 
-        },
-        onCompleted: (data) => {
-            console.log("Data:: ", data)
         }
     })
 
@@ -59,18 +60,17 @@ const Communities = () => {
     }
 
     const handleFetchTop = async () => {
-        console.log("Fetching top")
         setRefreshing(true)
         try {
 
-            const results = await accountCommunitiesQuery.fetchMore({
+            await accountCommunitiesQuery.fetchMore({
                 variables: {
                     page: 0,
                     size: 20
                 }
             })
 
-            console.log("Results: ", results)
+
         }
         catch (e) {
             console.log("Error: ", e)
@@ -79,8 +79,6 @@ const Communities = () => {
             setRefreshing(false)
         }
     }
-
-    console.log("Loading:: ", accountCommunitiesQuery.loading)
 
 
     return (
@@ -99,19 +97,17 @@ const Communities = () => {
                     }
 
                 }
-            contentContainerStyle={{
-                flex: 1
-            }}
                 data={accountCommunitiesQuery?.data?.accountCommunities ?? []}
                 keyExtractor={(item) => item.name?.toString() ?? '0'}
-                onStartReached={handleFetchTop}
+                // onStartReached={handleFetchTop}
                 onRefresh={handleFetchTop}
                 onEndReached={handleFetchMore}
                 // onStartReachedThreshold={0.5}
             onEndReachedThreshold={1}
-                refreshing={accountCommunitiesQuery?.loading || refreshing}
+                refreshing={false}
             ListFooterComponent={() => {
                 if (!accountCommunitiesQuery?.loading) return null
+                if ((accountCommunitiesQuery?.data?.accountCommunities?.length ?? 0) === 0) return null
                 return (
                     <XStack w="100%" p={20} justifyContent='center' alignItems='center' columnGap={20} >
                         <Spinner />
@@ -121,26 +117,32 @@ const Communities = () => {
                     </XStack>
                 )
             }}
+                ListHeaderComponent={() => {
+                    if (refreshing) return <XStack w="100%" alignItems='center' justifyContent='center' py={5} >
+                        <Spinner />
+                    </XStack>
+                }}
+
             ItemSeparatorComponent={() => <Separator />}
             renderItem={({ item }) => {
                 return (
+                    // @ts-ignore
                     <UserMembership data={item} />
                     )
                 }}
-                ListEmptyComponent={<YStack w='100%' p={20} alignItems='center' justifyContent='center' rowGap={10} >
-                    <Users />
-                    <Text textAlign='center' w='80%' fontSize={'$2'} >
-                        Looks like you're not a member of any communities yet.
-                    </Text>
-                    <Link asChild href={'/(tabs)/search/'} >
-                        <XStack columnGap={5} alignItems='center'  >
-                            <Text fontSize={'$2'} color={'$blue10'} >
-                                Lets fix that
-                            </Text>
-                            <ArrowRight size={'$1'} color={'$blue10'} />
-                        </XStack>
-                    </Link>
-                </YStack>}
+                ListEmptyComponent={() => {
+                    if ((accountCommunitiesQuery.data?.accountCommunities?.length ?? 0) === 0 && accountCommunitiesQuery.loading) return <Loading
+                        h={
+                            DEVICE_HEIGHT - 200
+                        }
+                    />
+                    return <Empty
+                        emptyText={`You have no communities`}
+                        h={
+                            DEVICE_HEIGHT - 200
+                        }
+                    />
+                }}
         />
         </YStack>
     )

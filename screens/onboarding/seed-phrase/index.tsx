@@ -15,6 +15,7 @@ import { GET_MY_PROFILE } from '../../../utils/queries'
 import UnstyledButton from '../../../components/ui/buttons/unstyled-button'
 import Toast from 'react-native-toast-message'
 import { aptos } from '../../../contract'
+import * as Haptics from 'expo-haptics'
 
 // The seed phrase will be a list of 12 words each separated by a space
 const schema = z.object({
@@ -52,6 +53,7 @@ const SeedPhrase = () => {
     }
 
     const handleSubmit = async (values: TSchema) => {
+        Haptics.selectionAsync()
         const seedPhrase = values.seedPhrase
         setLoading(true)
         try {
@@ -98,6 +100,11 @@ const SeedPhrase = () => {
 
                     }
                     catch (e) {
+                        Toast.show({
+                            type: 'error',
+                            text1: 'Error',
+                            text2: 'Failed to setup account'
+                        })
                         console.log(`SOMETHING WENT WRONG:: ${e}`)
                     }
                     finally {
@@ -131,6 +138,7 @@ const SeedPhrase = () => {
 
             }
             catch (e) {
+                Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error)
                 Toast.show({
                     type: 'error',
                     text1: 'Unable to get username',
@@ -141,6 +149,7 @@ const SeedPhrase = () => {
             }
         }
         catch (e) {
+            Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error)
             console.log(`SOMETHING WENT WRONG:: ${e}`)
             Toast.show({
                 type: 'error',
