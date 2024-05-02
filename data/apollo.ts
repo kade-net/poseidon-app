@@ -2,6 +2,7 @@ import { InMemoryCache, ApolloClient, Reference, defaultDataIdFromObject, FieldF
 import { Publication, AccountStats, PublicationInteractionsByViewerQuery } from "../__generated__/graphql"
 import { clone, cloneDeep, isNumber, isUndefined, uniqBy } from "lodash"
 import ephemeralCache from "../lib/local-store/ephemeral-cache"
+import config from "../config"
 
 function publicationMerge(_existing: Array<Reference> = [], incoming: Array<Reference> = [], options: FieldFunctionOptions) {
 
@@ -269,7 +270,7 @@ const cache = new InMemoryCache({
 
 const client = new ApolloClient({
     cache,
-    uri: "https://trawler.poseidon.ac",
+    uri: config.TRAWLER_API,
 
 })
 
@@ -288,5 +289,16 @@ export const barnicleClient = new ApolloClient({
             }
         }
     }),
-    uri: "https://barnicle.poseidon.ac"
+    uri: config.BARNICLE_API
+})
+
+
+export const convergenceClient = new ApolloClient({
+    cache: new InMemoryCache(),
+    uri: config.CONVERGENCE_URL
+})
+
+export const hermesClient = new ApolloClient({
+    cache: new InMemoryCache(),
+    uri: config.HERMES_API_URL
 })

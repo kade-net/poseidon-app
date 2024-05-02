@@ -8989,6 +8989,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"effect@npm:^3.1.0":
+  version: 3.1.0
+  resolution: "effect@npm:3.1.0"
+  checksum: 43a89715d0cca1a10074a8bf0a1d3aa8a8eabdb4f9f2ab72ca8eb28e029e2525c04d245ed410fad1f8f4b44b9fae97f11b8c85562058d524f50114e08982fb13
+  languageName: node
+  linkType: hard
+
 "electron-to-chromium@npm:^1.4.601":
   version: 1.4.629
   resolution: "electron-to-chromium@npm:1.4.629"
@@ -14921,6 +14928,7 @@ __metadata:
     buffer: "npm:^6.0.3"
     dayjs: "npm:^1.11.10"
     dotenv: "npm:^16.4.5"
+    effect: "npm:^3.1.0"
     expo: "npm:~50.0.17"
     expo-application: "npm:~5.8.4"
     expo-camera: "npm:~14.1.3"

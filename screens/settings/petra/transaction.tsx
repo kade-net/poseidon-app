@@ -10,8 +10,9 @@ import { Types } from 'aptos'
 import delegateManager from '../../../lib/delegate-manager'
 import Constants from 'expo-constants'
 import * as Linking from 'expo-linking'
+import config from '../../../config'
 
-const NETWORK = Constants.expoConfig?.extra?.APTOS_NETWORK
+const NETWORK = config.APTOS_NETWORK
 const EXPLORER = `https://explorer.aptoslabs.com/txn/TXN_VERSION?network=${NETWORK}`
 
 

@@ -10,11 +10,12 @@ import client from '../data/apollo';
 import { GET_MY_PROFILE } from '../utils/queries';
 import Constants from 'expo-constants'
 import posti from './posti';
+import config from '../config';
 
 
 const DERIVATION_PATH = "m/44'/637'/0'/0'/0'"
 
-const CONNECT_URL = Constants.expoConfig?.extra?.CONNECT_URL
+const CONNECT_URL = config.CONNECT_URL
 
 
 

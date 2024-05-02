@@ -42,5 +42,15 @@ export const updateSchema = z.object({
     image: z.string().optional()
 })
 
+export const dmSchema = z.object({
+    content: z.string().optional().default(''),
+    media: z.array(z.object({
+        type: z.enum(['image', 'video', 'audio', 'file', 'gif']),
+        url: z.string()
+    })).optional().default([]),
+})
+
+export type TDM = z.infer<typeof dmSchema>
+
 
 export type UpdateCommunitySchema = z.infer<typeof updateSchema>

@@ -3,8 +3,9 @@ import delegateManager from "./delegate-manager"
 import Constants from "expo-constants"
 import { aptos } from "../contract"
 import posti from "./posti"
+import config from "../config"
 
-const CONNECT_URL = Constants.expoConfig?.extra?.ANCHORS_URL!
+const CONNECT_URL = config.ANCHORS_URL
 
 class AppConnect {
     constructor() {

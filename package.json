@@ -12,7 +12,9 @@
     "test": "jest --watchAll",
     "compile": "graphql-codegen",
     "compile:barnicle": "graphql-codegen --config ./support-gql-clients/barnicle.codegen.ts",
+    "compile:convergence": "graphql-codegen --config ./lib/convergence-client/codegen.ts",
     "compile:indexer": "graphql-codegen --config ./lib/indexer-client/codegen.yml",
+    "compile:hermes": "graphql-codegen --config ./lib/hermes-client/codegen.ts",
     "watch": "graphql-codegen -w"
   },
   "jest": {
@@ -35,6 +37,7 @@
     "bip39": "^3.1.0",
     "buffer": "^6.0.3",
     "dayjs": "^1.11.10",
+    "effect": "^3.1.0",
     "expo": "~50.0.17",
     "expo-application": "~5.8.4",
     "expo-camera": "~14.1.3",

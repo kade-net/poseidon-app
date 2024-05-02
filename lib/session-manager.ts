@@ -3,9 +3,10 @@ import delegateManager from "./delegate-manager";
 import * as SecureStorage from 'expo-secure-store'
 import Constants from 'expo-constants'
 import posti from './posti';
+import config from '../config';
 
 
-const CONNECT_URL = Constants.expoConfig?.extra?.CONNECT_URL!
+const CONNECT_URL = config.CONNECT_URL
 
 class SessionManager {
     session: string | null = null;

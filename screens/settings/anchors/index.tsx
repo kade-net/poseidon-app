@@ -8,8 +8,9 @@ import axios from 'axios'
 import delegateManager from '../../../lib/delegate-manager'
 import { Utils } from '../../../utils'
 import Constants from 'expo-constants'
+import config from '../../../config'
 
-const CONNECT_URL = Constants.expoConfig?.extra?.ANCHORS_URL
+const CONNECT_URL = config.ANCHORS_URL
 
 const Anchors = () => {
 

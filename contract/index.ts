@@ -1,11 +1,12 @@
 import Constants from 'expo-constants'
 import { Account, Aptos, AptosConfig, Ed25519PrivateKey, Network } from "@aptos-labs/ts-sdk";
+import config from '../config';
 
 export const USERNAMES_COLLECTION_ADDRESS = '0x32464b70d881e7847f49c7826145bca69337448cee5ed03f563d814d83f155fa'
 
-export const MODULE_ADDRESS = Constants.expoConfig?.extra?.MODULE_ADDRESS
+export const MODULE_ADDRESS = config.MODULE_ADDRESS
 
-export const COMMUNITY_MODULE_ADDRESS = `${Constants.expoConfig?.extra?.COMMUNITY_MODULE_ADDRESS}` as const;
+export const COMMUNITY_MODULE_ADDRESS = config.COMMUNITY_MODULE_ADDRESS
 
 export const ACCOUNTS_RESOURCE_ADDRESS = '0x149e9a5f5dc3179720f0f5ddece23fdfda209fbaa6e24ee604a844e614425715';
 
@@ -67,12 +68,12 @@ export const ANCHORS_VIEW_FUNCTIONS = {
 
 
 
-export const aptosConfig = new AptosConfig({ network: Constants.expoConfig?.extra?.APTOS_NETWORK ?? 'testnet' });
+export const aptosConfig = new AptosConfig({ network: config.APTOS_NETWORK });
 export const aptos = new Aptos(aptosConfig); 
 
 
-export const APP_SUPPORT_API = Constants.expoConfig?.extra?.APP_SUPPORT_API
+export const APP_SUPPORT_API = config.APP_SUPPORT_API
 
-export const COMMUNITY_SUPPORT_API = Constants.expoConfig?.extra?.COMMUNITY_SUPPORT_API
+export const COMMUNITY_SUPPORT_API = config.COMMUNITY_SUPPORT_API
 
-export const KADE_ACCOUNT_ADDRESS = Constants.expoConfig?.extra?.KADE_ACCOUNT_ADDRESS
+export const KADE_ACCOUNT_ADDRESS = config.KADE_ACCOUNT_ADDRESS
