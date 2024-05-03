@@ -27,6 +27,8 @@ import { getMutedUsers, getRemovedFromFeed } from '../../../../contract/modules/
 import { Utils } from '../../../../utils'
 import Empty from '../../../../components/ui/feedback/empty'
 import Loading from '../../../../components/ui/feedback/loading'
+import network from '../../../../lib/network'
+import Toast from 'react-native-toast-message'
 
 const Home = () => {
     const [refetching, setRefetching] = useState(false)
@@ -89,49 +91,69 @@ const Home = () => {
     }
 
     const handleFetchMore = async () => {
-        setRefetching(true)
-        try {
-            const totalPublications = data?.publications?.length ?? 0 
-            const nextPage = (Math.floor(totalPublications / 20) - 1) + 1
+        const isConnected: boolean =  await network.isNetworkConnected()
 
-            await fetchMore({
-                variables: {
-                    page: nextPage,
-                    size: 20,
-                    types: [1, 2],
-                    muted: isEmpty(account.mutedUsers) ? undefined : account.mutedUsers,
-                    hide: isEmpty(publications.hiddenPublications) ? undefined : publications.hiddenPublications
-                }
+        if(isConnected){
+            setRefetching(true)
+            try {
+                const totalPublications = data?.publications?.length ?? 0 
+                const nextPage = (Math.floor(totalPublications / 20) - 1) + 1
+
+                await fetchMore({
+                    variables: {
+                        page: nextPage,
+                        size: 20,
+                        types: [1, 2],
+                        muted: isEmpty(account.mutedUsers) ? undefined : account.mutedUsers,
+                        hide: isEmpty(publications.hiddenPublications) ? undefined : publications.hiddenPublications
+                    }
+                })
+            }
+            catch (e) {
+                console.log("Error fetching more", e)
+            }
+            finally {
+                setRefetching(false)
+            }
+        } else {
+            Toast.show({
+                type: 'error',
+                text1: `No internet connection`
             })
         }
-        catch (e) {
-            console.log("Error fetching more", e)
-        }
-        finally {
-            setRefetching(false)
-        }
+        
     }
 
     const handleFetchTop = async () => {
-        await publications.loadRemovedFromFeed()
-        setRefetching(true)
-        try {
-            await publicationsQuery.fetchMore({
-                variables: {
-                    page: 0,
-                    size: 20,
-                    types: [1, 2],
-                    muted: isEmpty(account.mutedUsers) ? undefined : account.mutedUsers,
-                    hide: isEmpty(publications.hiddenPublications) ? undefined : publications.hiddenPublications
-                },
+        const isConnected: boolean =  await network.isNetworkConnected()
+
+        if(isConnected){
+            await publications.loadRemovedFromFeed()
+            setRefetching(true)
+            try {
+                await publicationsQuery.fetchMore({
+                    variables: {
+                        page: 0,
+                        size: 20,
+                        types: [1, 2],
+                        muted: isEmpty(account.mutedUsers) ? undefined : account.mutedUsers,
+                        hide: isEmpty(publications.hiddenPublications) ? undefined : publications.hiddenPublications
+                    },
+                })
+            }
+            catch (e) {
+                console.log("Error fetching more", e)
+            }
+            finally {
+                setRefetching(false)
+            }
+        } else {
+            Toast.show({
+                type: 'error',
+                text1: `No internet connection`
             })
         }
-        catch (e) {
-            console.log("Error fetching more", e)
-        }
-        finally {
-            setRefetching(false)
-        }
+        
     }
 
     const renderPublication = useCallback(({ item }: any) => {
