@@ -27,9 +27,10 @@ query GetInboxes($address: String!, $type: InboxType, $active: Boolean) {
 
 
 export const getInboxHistory = gqlHermes(/* GraphQL */`
-    query InboxHistory($inbox_name: String!) {
+    query InboxHistory($inbox_name: String!, $timestamp: Date) {
         inboxHistory(
             inbox_name: $inbox_name
+            timestamp: $timestamp
         ) {
             id
             ref

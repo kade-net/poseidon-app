@@ -3,6 +3,8 @@ import { Publication, AccountStats, PublicationInteractionsByViewerQuery } from 
 import { clone, cloneDeep, isNumber, isUndefined, uniqBy } from "lodash"
 import ephemeralCache from "../lib/local-store/ephemeral-cache"
 import config from "../config"
+import { GraphQLWsLink } from "@apollo/client/link/subscriptions";
+import { createClient } from "graphql-ws";
 
 function publicationMerge(_existing: Array<Reference> = [], incoming: Array<Reference> = [], options: FieldFunctionOptions) {
 
@@ -301,4 +303,15 @@ export const convergenceClient = new ApolloClient({
 export const hermesClient = new ApolloClient({
     cache: new InMemoryCache(),
     uri: config.HERMES_API_URL
+})
+
+export const convergenceLink = new GraphQLWsLink(
+    createClient({
+        url: config.CONVERGENCE_URL?.replace("https", "wss") + "/subscriptions",
+    }),
+);
+
+export const convergenceWebSocketClient = new ApolloClient({
+    link: convergenceLink,
+    cache: new InMemoryCache()
 })

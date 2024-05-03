@@ -4,7 +4,7 @@ import delegateManager from "../lib/delegate-manager"
 import * as convergenceMutations from '../lib/convergence-client/queries'
 import { Effect, Either } from "effect"
 import { convergenceClient } from "../data/apollo"
-import { AccountSignatureError, DeserializationError, TransactionFailedError, TransactionFetchError, TransactionGenerationError, TransactionSubmissionError, UnknownError } from "./errors"
+import { AccountSignatureError, DeserializationError, EncryptionError, InboxNotFoundError, TransactionFailedError, TransactionFetchError, TransactionGenerationError, TransactionSubmissionError, UnknownError } from "./errors"
 import config from "../config"
 
 interface deserializeTransactionArgs {
@@ -180,10 +180,10 @@ export function constructConvergenceTransaction<InputArgs = any>(args: construct
 
 type ExtractSecond<T> = T extends Effect.Effect<any, infer U, any> ? U : never;
 
-type Errors = ExtractSecond<ReturnType<typeof constructConvergenceTransaction>>;
+type Errors = ExtractSecond<ReturnType<typeof constructConvergenceTransaction>> | InboxNotFoundError | EncryptionError;
 
 interface settleConvergenceTransactionArgs {
-    task: ReturnType<typeof constructConvergenceTransaction>
+    task: Effect.Effect<string, Errors, never>
     onSettled: (hash: string) => Promise<void>
     onError: (errors: Errors | UnknownError) => void
 }

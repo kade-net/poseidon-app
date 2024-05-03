@@ -1,5 +1,5 @@
 import { View, Text } from 'react-native'
-import React, { useState } from 'react'
+import React, { memo, useState } from 'react'
 import { Input, XStack } from 'tamagui'
 import { Plus, SendHorizontal } from '@tamagui/lucide-icons'
 import BaseButton from '../../../../components/ui/buttons/base-button'
@@ -11,13 +11,15 @@ import * as Haptics from 'expo-haptics'
 import hermes from '../../../../contract/modules/hermes'
 import Toast from 'react-native-toast-message'
 
-const MessageEditor = () => {
+interface Props {
+    handleScrollToEnd: () => void
+}
+const MessageEditor = (props: Props) => {
+    const { handleScrollToEnd } = props 
     const [loading, setLoading] = useState(false)
     const params = useLocalSearchParams()
     const inbox_name = params.inbox_name as string
     const other_user = params.other_user as string
-
-    console.log("Inbox Name::", inbox_name)
 
     const form = useForm<TDM>({
         resolver: zodResolver(dmSchema)
@@ -43,6 +45,7 @@ const MessageEditor = () => {
         }
 
         if (response.success) {
+            handleScrollToEnd()
             console.log("Hash::", response.data)
             form.reset()
         }
@@ -88,4 +91,4 @@ const MessageEditor = () => {
     )
 }
 
-export default MessageEditor
+export default memo(MessageEditor)

@@ -1,14 +1,14 @@
 import { Effect, Either } from 'effect'
 import delegateManager from '../../../lib/delegate-manager'
-import { EmptyError, NoOwner, UnknownError } from '../../../utils/errors'
-import { convergenceClient } from '../../../data/apollo'
-import { registerRequestInbox } from '../../../lib/convergence-client/queries'
+import { NoOwner } from '../../../utils/errors'
 import { constructConvergenceTransaction, settleConvergenceTransaction } from '../../../utils/transactions'
 import config from '../../../config'
 import { AcceptRequestArgs, RegisterRequestInboxInputArgs, RequestConversationArgs, SendArgs } from '../../../lib/convergence-client/__generated__/graphql'
 import { FunctionResponse } from '../../../utils/functions'
 import { TDM } from '../../../schema'
-import { getInboxMessages } from './utils'
+import { INBOX_NAME, encryptEnvelopeContent, getInboxMessages, retrieveMessagesFromPDS, saveIncomingMessage, saveOwnMessage, serializeInboxName } from './utils'
+import { queryClient } from '../../../data/query'
+import storage from '../../../lib/storage'
 
 class Hermes {
 
@@ -147,16 +147,23 @@ class Hermes {
 
         const ref = `inbox::${args.inbox_name}::${Date.now()}::${delegateManager.owner}::dm`
 
-        const task = constructConvergenceTransaction({
-            fee_payer_address: config.HERMES_MODULE_ADDRESS,
-            name: 'send',
-            variables: {
-                content: JSON.stringify(args.data),
-                ref,
-                sender_address: delegateManager.owner!,
-                to: args.to
-            } as SendArgs
-        })
+        const mainTask = encryptEnvelopeContent({
+            content: args.data,
+            inbox_name: args.inbox_name as INBOX_NAME,
+        }).pipe(
+            Effect.flatMap((encryptedMessage) => {
+                return constructConvergenceTransaction({
+                    fee_payer_address: config.HERMES_MODULE_ADDRESS,
+                    name: 'send',
+                    variables: {
+                        content: encryptedMessage,
+                        ref,
+                        sender_address: delegateManager.owner!,
+                        to: args.to
+                    } as SendArgs
+                })
+            })
+        )
 
         let response: FunctionResponse<string> = {
             success: false,
@@ -165,12 +172,23 @@ class Hermes {
         }
 
         await settleConvergenceTransaction({
-            task,
+            task: mainTask,
             onSettled: async (hash) => {
+                console.log("Hash::", hash)
+                await saveOwnMessage({
+                    content: args.data.content,
+                    inbox_name: args.inbox_name as INBOX_NAME,
+                    ref,
+                    sender: delegateManager.owner!,
+                    isMine: true,
+                    media: args.data.media,
+                    receiver: args.to,
+                })
                 response.success = true
                 response.data = hash
             },
             onError(error) {
+                console.log("Error::", error)
                 response.error = error
             }
         })
@@ -186,6 +204,7 @@ class Hermes {
 
         if (Either.isEither(result)) {
             if (Either.isLeft(result)) {
+                console.log("Error::", result.left)
                 // TODO: handle error
                 return []
             }
@@ -196,6 +215,40 @@ class Hermes {
         return []
     }
 
+    async getPDSData(inbox_name: string) {
+
+        const result = await retrieveMessagesFromPDS(inbox_name as INBOX_NAME)
+
+        return result
+
+    }
+
+    // NOTE: we'll make the assumption its a valid envelope for now
+    async saveIncomingMessage(envelope: any) {
+        const result = await saveIncomingMessage(envelope)
+
+        if (Either.isEither(result)) {
+            if (Either.isLeft(result)) {
+                console.log("Error::", result.left)
+                // silent fail
+            }
+
+            if (Either.isRight(result)) {
+                queryClient.invalidateQueries(['getDecryptedMessageHistory', result.right.inbox_name])
+                return result.right
+                // silent success
+            }
+        }
+    }
+
+    // !!! IMPORTANT: this is a dev only function should never be called in prod
+    async clearSavedMessages(inbox_name: string) {
+        if (__DEV__) {
+            await storage.clearMapForKey(serializeInboxName(inbox_name as INBOX_NAME))
+            queryClient.invalidateQueries(['getDecryptedMessageHistory', inbox_name])
+        }
+
+    }
 
 
 }

@@ -17,6 +17,7 @@ const documents = {
     "\nmutation RequestConversation($args: RequestConversationArgs!) {\n    requestConversation(\n        input: $args\n    ) {\n        raw_transaction\n        signature\n    }\n}\n": types.RequestConversationDocument,
     "\nmutation AcceptRequest($args: AcceptRequestArgs!) {\n    acceptRequest(input: $args) {\n        raw_transaction\n        signature\n    }\n}\n": types.AcceptRequestDocument,
     "\n    mutation Send($args: SendArgs!) {\n        send(input: $args) {\n            raw_transaction\n            signature\n        }\n    }\n": types.SendDocument,
+    "\n    subscription LiveInbox($inbox_name: String!, $viewer: String!, $timestamp: Date) {\n        liveInbox(inbox_name: $inbox_name, viewer: $viewer, timestamp: $timestamp) {\n            hid\n            content\n            ref\n            timestamp\n            inbox_name\n            sender_public_key\n            receiver_public_key\n            sender\n            receiver\n        }\n    }\n": types.LiveInboxDocument,
 };
 
 /**
@@ -49,6 +50,10 @@ export function gql(source: "\nmutation AcceptRequest($args: AcceptRequestArgs!)
  * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function gql(source: "\n    mutation Send($args: SendArgs!) {\n        send(input: $args) {\n            raw_transaction\n            signature\n        }\n    }\n"): (typeof documents)["\n    mutation Send($args: SendArgs!) {\n        send(input: $args) {\n            raw_transaction\n            signature\n        }\n    }\n"];
+/**
+ * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function gql(source: "\n    subscription LiveInbox($inbox_name: String!, $viewer: String!, $timestamp: Date) {\n        liveInbox(inbox_name: $inbox_name, viewer: $viewer, timestamp: $timestamp) {\n            hid\n            content\n            ref\n            timestamp\n            inbox_name\n            sender_public_key\n            receiver_public_key\n            sender\n            receiver\n        }\n    }\n"): (typeof documents)["\n    subscription LiveInbox($inbox_name: String!, $viewer: String!, $timestamp: Date) {\n        liveInbox(inbox_name: $inbox_name, viewer: $viewer, timestamp: $timestamp) {\n            hid\n            content\n            ref\n            timestamp\n            inbox_name\n            sender_public_key\n            receiver_public_key\n            sender\n            receiver\n        }\n    }\n"];
 
 export function gql(source: string) {
   return (documents as any)[source] ?? {};

@@ -113,3 +113,27 @@ export class EncryptionError {
         this.initialError = error
     }
 }
+
+export class NoPrivateKeyError {
+    readonly _tag = 'NoPrivateKeyError'
+    initialError: any
+    constructor(error?: any) {
+        this.initialError = error
+    }
+}
+
+export class NoPublicKeyError {
+    readonly _tag = 'NoPublicKeyError'
+    initialError: any
+    constructor(error?: any) {
+        this.initialError = error
+    }
+}
+
+export class InboxNotFoundError {
+    readonly _tag = 'InboxNotFoundError'
+    initialError: any
+    constructor(error?: any) {
+        this.initialError = error
+    }
+}

@@ -6235,6 +6235,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/ed2curve@npm:^0.2.4":
+  version: 0.2.4
+  resolution: "@types/ed2curve@npm:0.2.4"
+  dependencies:
+    tweetnacl: "npm:^1.0.0"
+  checksum: 81e6177e374c7c4c7a106456342d260b655c213d0f7c497ada5e5d870f83c16886ab6050d0c858cab1eb47b5d12b37ca2d0769a6f03f20809f4f2ec44de7dbea
+  languageName: node
+  linkType: hard
+
 "@types/eslint-visitor-keys@npm:^1.0.0":
   version: 1.0.0
   resolution: "@types/eslint-visitor-keys@npm:1.0.0"
@@ -8969,6 +8978,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"ed2curve@npm:^0.3.0":
+  version: 0.3.0
+  resolution: "ed2curve@npm:0.3.0"
+  dependencies:
+    tweetnacl: "npm:1.x.x"
+  checksum: b5551bea14bd101a0d674114b1240abcdde11b475f48ab0b8d4d52452257f87ee27b1848d5760b8356224b6ef82b0746a9ac100f5090b4a4de00a3984526b61a
+  languageName: node
+  linkType: hard
+
 "edit-json-file@npm:^1.7.0":
   version: 1.8.0
   resolution: "edit-json-file@npm:1.8.0"
@@ -11202,6 +11220,15 @@ __metadata:
   peerDependencies:
     graphql: ">=0.11 <=16"
   checksum: 0bad9451601c6d0ed3951d289ca66afa7b2bf5db8a21e9f6f5a5c553ec9f5ef8381a858bb64dfdb3ecc8c6c4d6156c7216a41aa76748c39460338f739553a270
+  languageName: node
+  linkType: hard
+
+"graphql-ws@npm:^5.16.0":
+  version: 5.16.0
+  resolution: "graphql-ws@npm:5.16.0"
+  peerDependencies:
+    graphql: ">=0.11 <=16"
+  checksum: e56d903920c78fa88966e31940d281f8b35ef8c9f4543255bfe349e47a0e972c6ca746bcb52040b1c6938d22e42560228994399972abc473cfa6bcd183aca709
   languageName: node
   linkType: hard
 
@@ -14918,6 +14945,7 @@ __metadata:
     "@tamagui/lucide-icons": "npm:^1.90.6"
     "@tamagui/metro-plugin": "npm:^1.90.6"
     "@tanstack/react-query": "npm:^5.27.5"
+    "@types/ed2curve": "npm:^0.2.4"
     "@types/lodash": "npm:^4"
     "@types/react": "npm:~18.2.14"
     "@types/react-native-get-random-values": "npm:^1"
@@ -14928,6 +14956,7 @@ __metadata:
     buffer: "npm:^6.0.3"
     dayjs: "npm:^1.11.10"
     dotenv: "npm:^16.4.5"
+    ed2curve: "npm:^0.3.0"
     effect: "npm:^3.1.0"
     expo: "npm:~50.0.17"
     expo-application: "npm:~5.8.4"
@@ -14954,6 +14983,7 @@ __metadata:
     expo-web-browser: "npm:~12.8.2"
     graphql: "npm:^15.8.0"
     graphql-request: "npm:^6.1.0"
+    graphql-ws: "npm:^5.16.0"
     immer: "npm:^10.0.3"
     lodash: "npm:^4.17.21"
     posthog-react-native: "npm:^3.1.0"
@@ -17694,7 +17724,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"tweetnacl@npm:1.0.3, tweetnacl@npm:^1.0.3":
+"tweetnacl@npm:1.0.3, tweetnacl@npm:1.x.x, tweetnacl@npm:^1.0.0, tweetnacl@npm:^1.0.3":
   version: 1.0.3
   resolution: "tweetnacl@npm:1.0.3"
   checksum: ca122c2f86631f3c0f6d28efb44af2a301d4a557a62a3e2460286b08e97567b258c2212e4ad1cfa22bd6a57edcdc54ba76ebe946847450ab0999e6d48ccae332

@@ -17,6 +17,7 @@ import * as Navigator from 'expo-navigation-bar'
 import Toast from 'react-native-toast-message'
 import * as Notifications from 'expo-notifications'
 import localStore from '../lib/local-store'
+import { queryClient } from '../data/query'
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
@@ -53,7 +54,7 @@ delegateManager.init().then(async () => {
 }).catch((e) => {
   console.error("UNABLE TO INITIALIZE DELEGATE", e)
 })
-const queryClient = new QueryClient
+
 export default function RootLayout() {
   const [interLoaded, interError] = useFonts({
     Inter: require('@tamagui/font-inter/otf/Inter-Medium.otf'),

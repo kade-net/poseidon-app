@@ -37,3 +37,19 @@ export const send = gql(/* GraphQL */`
         }
     }
 `)
+
+export const INBOX_MESSAGE_SUBSCRIPTION = gql(/* GraphQL */`
+    subscription LiveInbox($inbox_name: String!, $viewer: String!, $timestamp: Date) {
+        liveInbox(inbox_name: $inbox_name, viewer: $viewer, timestamp: $timestamp) {
+            hid
+            content
+            ref
+            timestamp
+            inbox_name
+            sender_public_key
+            receiver_public_key
+            sender
+            receiver
+        }
+    }
+`)
