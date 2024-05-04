@@ -50,8 +50,12 @@ const Home = () => {
     useFocusEffect(
         useCallback(() => {
             const onBackPress = () => {
+                const canGoBack: boolean = router.canGoBack()
 
-                return true
+                if(!canGoBack){
+                    BackHandler.exitApp()
+                    return true
+                }
             }
 
             const subscription = BackHandler.addEventListener('hardwareBackPress', onBackPress)

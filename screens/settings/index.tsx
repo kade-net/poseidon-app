@@ -182,7 +182,7 @@ const Settings = () => {
                 <Button onPress={handleLogout} w="100%" backgroundColor={'$button'} color={'$buttonText'} fontSize={"$md"} >
                     {
                         loggingOut ? <XStack columnGap={10} >
-                            <Spinner />
+                            <Spinner/>
                             <Text>
                                 Logging out
                             </Text>
