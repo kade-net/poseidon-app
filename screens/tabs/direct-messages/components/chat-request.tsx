@@ -42,19 +42,14 @@ const ChatRequest = (props: Props) => {
 
         if (response.success) {
             console.log("Hash::", response.data)
-            console.log("Request accepted::", response.success)
-            Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success)
-            Toast.show({
-                type: 'success',
-                text1: 'Request accepted',
-                text2: 'You can now chat with this person'
-            })
+
+
         }
         setLoading(false)
     }
 
     return (
-        <XStack w="100%" alignItems='center' flex={1} columnGap={10} py={10} px={5} >
+        <XStack w="100%" alignItems='center' flex={1} columnGap={10} >
             <Avatar circular size="$4" >
                 <Avatar.Image
                     src={profileQuery?.data?.account?.profile?.pfp ?? Utils.diceImage(address ?? '')}

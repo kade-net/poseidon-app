@@ -6,7 +6,7 @@ import { Envelope } from "../../../lib/hermes-client/__generated__/graphql"
 import { TDM, dmSchema } from "../../../schema"
 import delegateManager from "../../../lib/delegate-manager"
 import storage from "../../../lib/storage"
-import { isString, mean } from "lodash"
+import { isString, mean, sortBy } from "lodash"
 import { queryClient } from "../../../data/query"
 import nacl from "tweetnacl"
 import naclUtil from "tweetnacl-util"
@@ -60,10 +60,10 @@ export function initializeInbox(args: initializeInboxArgs) {
                     key: 'inboxes',
                     id: serializeInboxName(inbox_name)
                 })
-
                 return inbox
             }
             catch (e) {
+                console.log("Inbox not found")
                 return null
             }
         },
@@ -281,7 +281,6 @@ export function decryptEnvelope(args: decryptEnvelopeArgs) {
     const task = Effect.tryPromise({
         try: async () => {
             const savedMessage = await getCachedDecryptedMessage(args.envelope.inbox_name as INBOX_NAME, args?.envelope?.ref ?? args.envelope.hid)
-
             return savedMessage
         },
         catch(error) {
@@ -294,9 +293,13 @@ export function decryptEnvelope(args: decryptEnvelopeArgs) {
             return Effect.tryPromise({
                 try: async () => {
                     if (cachedMessage) return cachedMessage
+                    // not sure about this mismatch
+                    const encryptedContent = args.envelope.content?.content ?? args.envelope.content
+                    if (!isString(encryptedContent)) {
 
-                    const encryptedContent = args.envelope.content
-                    if (!isString(encryptedContent)) return null
+                        console.log("Invalid encrypted content", encryptedContent)
+                        return null
+                    }
 
                     try {
 
@@ -412,7 +415,8 @@ export function getInboxMessages(args: getInboxMessagesArgs) {
 
 export async function retrieveMessagesFromPDS(inbox_name: INBOX_NAME) {
     const messages = await storage.getAllDataForKey<MESSAGE>(serializeInboxName(inbox_name))
-    return messages
+    const sortedMessages = sortBy(messages, 'timestamp')
+    return sortedMessages
 }
 
 

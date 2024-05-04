@@ -31,9 +31,6 @@ const CommunitiesChoice = () => {
         },
         onError: (error) => {
             console.error(error)
-        },
-        onCompleted: (data) => {
-            console.log(`Data::`, data)
         }
     })
 

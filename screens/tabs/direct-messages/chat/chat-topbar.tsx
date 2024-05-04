@@ -50,7 +50,7 @@ const ChatTopBar = (props: Props) => {
                 </XStack>
             </TouchableOpacity>
 
-            <Settings />
+            {/* <Settings /> */}
         </XStack>
     )
 }

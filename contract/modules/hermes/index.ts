@@ -9,6 +9,7 @@ import { TDM } from '../../../schema'
 import { INBOX_NAME, encryptEnvelopeContent, getInboxMessages, retrieveMessagesFromPDS, saveIncomingMessage, saveOwnMessage, serializeInboxName } from './utils'
 import { queryClient } from '../../../data/query'
 import storage from '../../../lib/storage'
+import { acceptMessageRequestUpdateCache, addConversationRequestToPending, disableDirectMessagingCacheUpdate, enableDirectMessagingCacheUpdate, removeAcceptedMessageRequestUpdateCache, removeConversationRequestFromPending } from './cache'
 
 class Hermes {
 
@@ -21,6 +22,8 @@ class Hermes {
                 data: null
             }
         }
+
+        enableDirectMessagingCacheUpdate()
 
         const task = constructConvergenceTransaction({
             fee_payer_address: config.HERMES_MODULE_ADDRESS,
@@ -43,6 +46,7 @@ class Hermes {
                 response.data = hash
             },
             onError(error) {
+                disableDirectMessagingCacheUpdate()
                 // TODO: deal with error here
                 response.error = error
             },
@@ -60,6 +64,10 @@ class Hermes {
                 data: null
             }
         }
+
+        addConversationRequestToPending({
+            address: user_address
+        })
 
         const task = constructConvergenceTransaction({
             fee_payer_address: config.HERMES_MODULE_ADDRESS,
@@ -86,6 +94,9 @@ class Hermes {
             onError(error) {
                 // TODO: deal with error here
                 response.error = error
+                removeConversationRequestFromPending({
+                    address: user_address
+                })
             },
         })
 
@@ -101,6 +112,10 @@ class Hermes {
                 data: null
             }
         }
+
+        acceptMessageRequestUpdateCache({
+            address: requester_address
+        })
 
         const task = constructConvergenceTransaction({
             fee_payer_address: config.HERMES_MODULE_ADDRESS,
@@ -124,7 +139,10 @@ class Hermes {
                 response.data = hash
             },
             onError(error) {
-
+                console.log("Error::", error)
+                removeAcceptedMessageRequestUpdateCache({
+                    address: requester_address
+                })
                 response.error = error
             }
         })

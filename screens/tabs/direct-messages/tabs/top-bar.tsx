@@ -1,5 +1,5 @@
 import { SceneRendererProps } from "react-native-tab-view"
-import { ScrollView, Text, XStack, YStack } from "tamagui"
+import { Heading, ScrollView, Text, XStack, YStack } from "tamagui"
 import BaseButton from "../../../../components/ui/buttons/base-button"
 import SearchInput from "../../../../components/ui/search-input"
 import { Plus } from "@tamagui/lucide-icons"
@@ -34,9 +34,12 @@ const DirectMessageTopBar = (props: P) => {
                 columnGap={20}
                 px={20}
             >
-                <SearchInput
+                {/* <SearchInput
                     placeholder="Search"
-                />
+                /> */}
+                <Heading>
+                    Direct Messages
+                </Heading>
                 <Link
                     asChild
                     href={{

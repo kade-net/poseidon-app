@@ -65,6 +65,7 @@ const DMTabs = () => {
           index: currentTabIndex,
           routes: tabRoutes
         }}
+        animationEnabled={false}
         style={{
           backgroundColor: theme.background.val,
           flex: 1,

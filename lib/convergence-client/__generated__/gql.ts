@@ -18,6 +18,7 @@ const documents = {
     "\nmutation AcceptRequest($args: AcceptRequestArgs!) {\n    acceptRequest(input: $args) {\n        raw_transaction\n        signature\n    }\n}\n": types.AcceptRequestDocument,
     "\n    mutation Send($args: SendArgs!) {\n        send(input: $args) {\n            raw_transaction\n            signature\n        }\n    }\n": types.SendDocument,
     "\n    subscription LiveInbox($inbox_name: String!, $viewer: String!, $timestamp: Date) {\n        liveInbox(inbox_name: $inbox_name, viewer: $viewer, timestamp: $timestamp) {\n            hid\n            content\n            ref\n            timestamp\n            inbox_name\n            sender_public_key\n            receiver_public_key\n            sender\n            receiver\n        }\n    }\n": types.LiveInboxDocument,
+    "\n    query Accounts($search: String, $viewer: String) {\n        accounts(search: $search, viewer: $viewer) {\n            pfp\n            address\n            username\n            bio\n            display_name\n            public_key\n        }\n    }\n": types.AccountsDocument,
 };
 
 /**
@@ -54,6 +55,10 @@ export function gql(source: "\n    mutation Send($args: SendArgs!) {\n        se
  * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function gql(source: "\n    subscription LiveInbox($inbox_name: String!, $viewer: String!, $timestamp: Date) {\n        liveInbox(inbox_name: $inbox_name, viewer: $viewer, timestamp: $timestamp) {\n            hid\n            content\n            ref\n            timestamp\n            inbox_name\n            sender_public_key\n            receiver_public_key\n            sender\n            receiver\n        }\n    }\n"): (typeof documents)["\n    subscription LiveInbox($inbox_name: String!, $viewer: String!, $timestamp: Date) {\n        liveInbox(inbox_name: $inbox_name, viewer: $viewer, timestamp: $timestamp) {\n            hid\n            content\n            ref\n            timestamp\n            inbox_name\n            sender_public_key\n            receiver_public_key\n            sender\n            receiver\n        }\n    }\n"];
+/**
+ * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function gql(source: "\n    query Accounts($search: String, $viewer: String) {\n        accounts(search: $search, viewer: $viewer) {\n            pfp\n            address\n            username\n            bio\n            display_name\n            public_key\n        }\n    }\n"): (typeof documents)["\n    query Accounts($search: String, $viewer: String) {\n        accounts(search: $search, viewer: $viewer) {\n            pfp\n            address\n            username\n            bio\n            display_name\n            public_key\n        }\n    }\n"];
 
 export function gql(source: string) {
   return (documents as any)[source] ?? {};

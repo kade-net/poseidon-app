@@ -53,3 +53,16 @@ export const INBOX_MESSAGE_SUBSCRIPTION = gql(/* GraphQL */`
         }
     }
 `)
+
+export const DMS_ACCOUNTS_SEARCH = gql(/* GraphQL */`
+    query Accounts($search: String, $viewer: String) {
+        accounts(search: $search, viewer: $viewer) {
+            pfp
+            address
+            username
+            bio
+            display_name
+            public_key
+        }
+    }
+`)

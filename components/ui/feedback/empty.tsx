@@ -23,7 +23,7 @@ const Empty = (props: Props & Parameters<typeof YStack>[0]) => {
         >
             <XStack columnGap={10} alignItems='center' justifyContent='center' >
                 <Inbox />
-                <Text>
+                <Text >
                     {emptyText ? emptyText : 'No data found'}
                 </Text>
             </XStack>

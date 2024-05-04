@@ -22,14 +22,24 @@ interface Props {
 
 const _DirectMessages = (props: Props) => {
     const { phonebook } = props
-    console.log("Data::", phonebook)
     const [registering, setRegistering] = useState(false)
-    const { isOpen, onClose, onOpen } = useDisclosure({
-        defaultIsOpen: false
-    })
-
+    const { isOpen, onClose, onOpen } = useDisclosure()
+    console.log("Phonebook::", phonebook)
     useFocusEffect(() => {
-        onOpen()
+        const phoneBookQuery = hermesClient.readQuery({
+            query: getPhoneBook,
+            variables: {
+                address: delegateManager.owner!
+            }
+        })
+
+        console.log("Phonebook query::", phoneBookQuery?.phoneBook)
+        if (phoneBookQuery?.phoneBook) {
+            onClose()
+        } else {
+            onOpen()
+        }
+
     })
 
     const router = useRouter()
@@ -54,13 +64,14 @@ const _DirectMessages = (props: Props) => {
             })
         }
         else {
+            onClose()
             console.log("Success::", status.data)
         }
         setRegistering(false)
     }
 
     return (
-        <YStack flex={1} h="100%" w="100%" >
+        <YStack flex={1} h="100%" w="100%" backgroundColor={'$background'} pt={20} >
             <DMTabs />
             {!phonebook && <BaseContentSheet
                 snapPoints={[30]}
@@ -100,6 +111,8 @@ const DirectMessages = () => {
         },
         client: hermesClient
     })
+
+    console.log("Phonebook top::", phonebook?.data?.phoneBook)
 
     if (phonebook.loading) return <Loading
         backgroundColor={'$background'}

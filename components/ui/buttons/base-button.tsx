@@ -25,7 +25,7 @@ function BaseButton(props: Parameters<typeof _BaseButton>[0] & { loading?: boole
     const { children, loading, loadingText, ...rest } = props
     return <_BaseButton {...rest} >
         {
-            loading ? <XStack alignItems='center' justifyContent='center' columnGap={5} flex={1} >
+            loading ? <XStack alignItems='center' justifyContent='center' columnGap={5} flex={1} px={5} >
                 <Spinner />
                 {/* {loadingText ? 
                 <Text

@@ -22,7 +22,7 @@ const ChatBubble = (props: Props) => {
             py={5}
         >
 
-            <YStack w="80%" borderRadius={10} overflow='hidden' p={5} bg={
+            <YStack w="80%" borderRadius={10} rowGap={10} overflow='hidden' p={5} bg={
                 data?.isMine ? '$primary' : '$baseBackround'
             } >
                 <Text flex={1} w="100%" >

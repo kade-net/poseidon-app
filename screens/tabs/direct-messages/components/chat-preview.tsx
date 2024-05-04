@@ -1,5 +1,5 @@
 import { View, Text, XStack, Avatar, YStack } from 'tamagui'
-import React from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import { useQuery } from '@apollo/client'
 import { GET_MY_PROFILE } from '../../../../utils/queries'
 import { Utils } from '../../../../utils'
@@ -7,6 +7,13 @@ import { Inbox } from '../../../../lib/hermes-client/__generated__/graphql'
 import delegateManager from '../../../../lib/delegate-manager'
 import { TouchableOpacity } from 'react-native'
 import { Link } from 'expo-router'
+import hermes from '../../../../contract/modules/hermes'
+import { MESSAGE } from '../../../../contract/modules/hermes/utils'
+import dayjs from 'dayjs'
+import relativeTime from 'dayjs/plugin/relativeTime'
+import { queryClient } from '../../../../data/query'
+import { isArray } from 'lodash'
+dayjs.extend(relativeTime)
 
 interface Props {
     data: Partial<Inbox>
@@ -19,6 +26,24 @@ const ChatPreview = (props: Props) => {
             address: address
         }
     })
+    const [lastMessage, setLastMessage] = useState<MESSAGE | null>(null)
+
+    const messages: Array<MESSAGE> = queryClient.getQueryData(['getDecryptedMessageHistory', data.id]) ?? []
+
+    useEffect(() => {
+        if (data.id && isArray(messages) && messages.length > 0) {
+            ; (async () => {
+                try {
+
+                    const lastMessage = messages[(messages?.length ?? 1) - 1]
+                    setLastMessage(lastMessage)
+                }
+                catch (e) {
+                    // ignore
+                }
+            })();
+        }
+    }, [messages?.length])
 
     return (
         <Link
@@ -43,15 +68,20 @@ const ChatPreview = (props: Props) => {
                             bg="$pink10"
                         />
                     </Avatar>
-                    <YStack w="100%" h="100%" borderBottomWidth={1} borderBottomColor={'$sideText'} flex={1} >
+                    <YStack w="100%" h="100%" borderBottomWidth={1} borderBottomColor={'$gray2'} flex={1} rowGap={5} >
                         <XStack w="100%" alignItems='center' justifyContent='space-between' >
                             <Text
                                 fontWeight={'$5'} fontSize={'$sm'}
                             >
                                 {profileQuery?.data?.account?.profile?.display_name ?? profileQuery?.data?.account?.username?.username}
                             </Text>
+                            {lastMessage && <Text fontSize={'$xs'} color={'$sideText'} >
+                                {dayjs(lastMessage?.timestamp).fromNow()}
+                            </Text>}
                         </XStack>
-                        {/* // TODO: add month and last item in conversation */}
+                        <Text w="100%" fontSize={'$xxs'} color={'$sideText'} >
+                            {lastMessage?.isMine ? 'you:' : ""}{"  "}{lastMessage?.content}
+                        </Text>
                     </YStack>
                 </XStack>
             </TouchableOpacity>

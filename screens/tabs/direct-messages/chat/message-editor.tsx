@@ -1,6 +1,6 @@
-import { View, Text } from 'react-native'
+import { View, Text, TouchableOpacity, Platform } from 'react-native'
 import React, { memo, useState } from 'react'
-import { Input, XStack } from 'tamagui'
+import { Button, Input, Spinner, XStack } from 'tamagui'
 import { Plus, SendHorizontal } from '@tamagui/lucide-icons'
 import BaseButton from '../../../../components/ui/buttons/base-button'
 import { Controller, useForm } from 'react-hook-form'
@@ -12,10 +12,8 @@ import hermes from '../../../../contract/modules/hermes'
 import Toast from 'react-native-toast-message'
 
 interface Props {
-    handleScrollToEnd: () => void
 }
 const MessageEditor = (props: Props) => {
-    const { handleScrollToEnd } = props 
     const [loading, setLoading] = useState(false)
     const params = useLocalSearchParams()
     const inbox_name = params.inbox_name as string
@@ -24,6 +22,9 @@ const MessageEditor = (props: Props) => {
     const form = useForm<TDM>({
         resolver: zodResolver(dmSchema)
     })
+
+    const content = form.watch('content')
+    const IS_EMPTY = content ? content.trim().length === 0 : true
 
     const handleSend = async (values: TDM) => {
         setLoading(true)
@@ -45,7 +46,6 @@ const MessageEditor = (props: Props) => {
         }
 
         if (response.success) {
-            handleScrollToEnd()
             console.log("Hash::", response.data)
             form.reset()
         }
@@ -58,11 +58,28 @@ const MessageEditor = (props: Props) => {
 
     return (
         <XStack w="100%" alignItems='flex-start' justifyContent='center' columnGap={5} px={5} py={5} >
-            <BaseButton height={40} circular type="outlined" display='flex' alignItems='center' justifyContent='center' >
+            <TouchableOpacity
+                style={[
+                    Platform.select({
+                        android: {
+                            padding: 10,
+
+                        },
+                        ios: {
+                            padding: 10
+                        }
+                    }),
+                    {
+                        borderRadius: 20,
+                    }
+                ]}
+                disabled
+            >
                 <Plus
-                    color={'$primary'}
+                    color={'$sideText'}
+                    size={'$1'}
                 />
-            </BaseButton>
+            </TouchableOpacity>
             <Controller
                 control={form.control}
                 name='content'
@@ -72,8 +89,11 @@ const MessageEditor = (props: Props) => {
                             onChangeText={field.onChange}
                             value={field.value}
                             flex={1}
+                            py={Platform.select({
+                                ios: 10,
+                                android: 5
+                            })}
                             // size="$3"
-                            minHeight={40}
                             borderRadius={20}
                             multiline
                             placeholder='Message...'
@@ -82,11 +102,31 @@ const MessageEditor = (props: Props) => {
                     )
                 }}
             />
-            <BaseButton loading={loading} onPress={form.handleSubmit(handleSend, handleError)} height={40} circular type="primary" display='flex' alignItems='center' justifyContent='center' >
-                <SendHorizontal
-                    size={'$1'}
-                />
-            </BaseButton>
+            <TouchableOpacity
+                disabled={IS_EMPTY}
+                onPress={form.handleSubmit(handleSend, handleError)}
+                style={[
+                    Platform.select({
+                        android: {
+                            padding: 10,
+                        },
+                        ios: {
+                            padding: 10
+                        }
+                    }),
+                    {
+                        borderRadius: 20,
+                    }
+                ]}
+            >
+                {
+                    loading ? <Spinner /> : <SendHorizontal
+                        color={IS_EMPTY ? '$sideText' : '$primary'}
+                        size={'$1'}
+                    />
+                }
+
+            </TouchableOpacity>
         </XStack>
     )
 }

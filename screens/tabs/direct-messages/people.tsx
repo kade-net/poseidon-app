@@ -14,20 +14,28 @@ import Empty from '../../../components/ui/feedback/empty'
 import * as Haptic from 'expo-haptics'
 import hermes from '../../../contract/modules/hermes'
 import Toast from 'react-native-toast-message'
+import { DMS_ACCOUNTS_SEARCH } from '../../../lib/convergence-client/queries'
+import { CAccount } from '../../../lib/convergence-client/__generated__/graphql'
+import delegateManager from '../../../lib/delegate-manager'
+import { convergenceClient } from '../../../data/apollo'
+import { Info } from '@tamagui/lucide-icons'
 
 const People = () => {
   const [search, setSearch] = useState('')
   const [loading, setLoading] = useState(false)
   const searchValue = useDeferredValue(search)
   const theme = useTheme()
-  const peopleSearchQuery = useQuery(ACCOUNTS_SEARCH_QUERY, {
+  const peopleSearchQuery = useQuery(DMS_ACCOUNTS_SEARCH, {
     variables: {
       search: searchValue,
-      page: 0,
-      size: 20
-    }
+      viewer: delegateManager.owner
+    },
+    onError(error) {
+      console.log("Error::", error)
+    },
+    client: convergenceClient
   })
-  const [selectedProfile, setSelectedProfile] = useState<Partial<Account> | null>(null)
+  const [selectedProfile, setSelectedProfile] = useState<Partial<CAccount> | null>(null)
   const { onOpen, isOpen, onToggle, onClose } = useDisclosure()
 
   const handleSelectProfile = (profile: any) => {
@@ -61,6 +69,7 @@ const People = () => {
         text1: 'Request sent',
         text2: 'Wait for the user to accept the request'
       })
+      await peopleSearchQuery.refetch()
       console.log("Hash::", result.data)
     }
     setLoading(false)
@@ -85,7 +94,13 @@ const People = () => {
       <XStack w="100%" >
         <SearchInput onChangeText={setSearch} />
       </XStack>
-      <YStack flex={1} w="100%" h="100%" >
+      <YStack flex={1} w="100%" h="100%" rowGap={10} >
+        <XStack p={5} borderWidth={1} borderColor={'$primary'} borderRadius={10} w="100%" alignItems='center' columnGap={5} >
+          <Info color={'$primary'} />
+          <Text flex={1} >
+            Only users who have enabled direct messages are shown
+          </Text>
+        </XStack>
         <FlatList
           style={{
             flex: 1,
@@ -95,9 +110,11 @@ const People = () => {
             borderRadius: 20,
             overflow: 'hidden'
           }}
+          refreshing={peopleSearchQuery.loading}
+          onRefresh={() => peopleSearchQuery.refetch()}
           ItemSeparatorComponent={() => <Separator />}
           showsVerticalScrollIndicator={false}
-          data={peopleSearchQuery.data?.accounts ?? []}
+          data={peopleSearchQuery.data?.accounts?.filter((c) => c.address !== delegateManager.owner) ?? []}
           keyExtractor={(item) => item.address}
           renderItem={renderItem}
           ListEmptyComponent={() => {
@@ -109,8 +126,11 @@ const People = () => {
             />
 
             return <Empty
+              w="100%"
+              h="100%"
               p={20}
               emptyText='No results found'
+              flex={1}
             />
           }}
 

@@ -630,7 +630,10 @@ class LocalStore {
                     profile: {
                         ...profile,
                         __typename: "Profile",
-                        creator: currentProfile?.account?.profile?.creator ?? Date.now()
+                        creator: currentProfile?.account?.profile?.creator ?? Date.now(),
+                        bio: profile.bio ?? "",
+                        display_name: profile.display_name ?? "",
+                        pfp: profile.pfp ?? "",
                     },
                     username: {
                         __typename: "Username",
