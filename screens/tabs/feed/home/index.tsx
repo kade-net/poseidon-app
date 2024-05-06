@@ -1,5 +1,5 @@
 import { View, Text, Avatar, Heading, ButtonIcon, useTheme, Separator, Sheet, Button, TextArea, ScrollView, Spinner, XStack } from 'tamagui'
-import React, { useCallback, useMemo, useState } from 'react'
+import React, { useCallback, useMemo, useRef, useState } from 'react'
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context'
 import { ImagePlus, MessageCirclePlus, Settings } from '@tamagui/lucide-icons'
 import { Animated, BackHandler, FlatList, KeyboardAvoidingView, ListRenderItem, Platform, TouchableOpacity } from 'react-native'
@@ -27,11 +27,16 @@ import { getMutedUsers, getRemovedFromFeed } from '../../../../contract/modules/
 import { Utils } from '../../../../utils'
 import Empty from '../../../../components/ui/feedback/empty'
 import Loading from '../../../../components/ui/feedback/loading'
+import { useIsFocused, useScrollToTop } from '@react-navigation/native';
 import network from '../../../../lib/network'
 import Toast from 'react-native-toast-message'
 
 const Home = () => {
     const [refetching, setRefetching] = useState(false)
+
+    const flatListRef = useRef(null);
+    useScrollToTop(flatListRef);
+
 
     const publicationsQuery = useQuery(GET_PUBLICATIONS, {
         variables: {
@@ -160,6 +165,8 @@ const Home = () => {
         
     }
 
+    const isFocused = useIsFocused();
+
     const renderPublication = useCallback(({ item }: any) => {
         return (
             <BaseContentContainer
@@ -248,6 +255,7 @@ const Home = () => {
                             top: 80
                         }
                     })}
+                    ref={flatListRef}
                     onRefresh={handleFetchTop}
                     onEndReached={handleFetchMore}
                     onEndReachedThreshold={1}
