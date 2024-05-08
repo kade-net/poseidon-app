@@ -97,6 +97,8 @@ const ProfileDetails = (props: Props) => {
         skip: !address
     })
 
+    console.log("Profile query", profileQuery.loading)
+
     const accountStatsQuery = useQuery(GET_ACCOUNT_STATS, {
         variables: {
             accountAddress: address

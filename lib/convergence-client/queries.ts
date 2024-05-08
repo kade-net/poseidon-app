@@ -66,3 +66,63 @@ export const DMS_ACCOUNTS_SEARCH = gql(/* GraphQL */`
         }
     }
 `)
+
+export const GET_CONNECTION = gql(/* GraphQL */`
+    query getConnection($connection_id: String!) {
+        connection(connection_id: $connection_id) {
+            user_address
+            delegate_address
+            timestamp
+            is_delegate_linked
+            is_intent_created
+        }
+    }
+`)
+
+export const UPDATE_CONNECTION = gql(/* GraphQL */`
+    mutation UpdateConnection($input: updateConnectionInput!) {
+        updateConnection(input: $input)
+    }
+`)
+
+export const CREATE_ACCOUNT_LINK_INTENT = gql(/* GraphQL */`
+    mutation CreateAccountLinkIntent($input: createAccountLinkIntentInput!){
+        createAccountLinkIntent(input: $input) {
+            raw_transaction
+            signature
+        }
+    }
+`)
+
+export const CONFIRM_DELEGATE_LINKED = gql(/* GraphQL */`
+    mutation ConfirmDelegate($input: confirmDelegateInput!) {
+        confirmDelegate(input: $input)
+    }
+`)
+
+export const REGISTER_DELEGATE = gql(/* GraphQL */`
+    mutation RegisterDelegate($input: RegisterDelegateArgs!) {
+        registerDelegate(input: $input) {
+            raw_transaction
+            signature
+        }
+    }
+`)
+
+export const INIT_ACCOUNT_AND_INBOX = gql(/* GraphQL */`
+    mutation init_account_and_inbox($input: initSelfDelegateKadeAccountWithHermesInboxArgs!){
+        initSelfDelegateKadeAccountWithHermesInbox(input: $input) {
+            raw_transaction
+            signature
+        }
+    }
+`)
+
+export const INIT_DELEGATE = gql(/* GraphQL */`
+    mutation init_delegate($input: registerDelegateOnKadeAndHermesArgs!){
+        registerDelegateOnKadeAndHermes(input: $input) {
+            raw_transaction
+            signature
+        }
+    }
+`)

@@ -18,7 +18,7 @@ export const GET_PUBLICATIONS = gql(/* GraphQL */`
             creator {
                 address
                 profile {
-                    creator
+                    address
                     pfp
                     bio
                     display_name
@@ -38,7 +38,7 @@ export const GET_PUBLICATIONS = gql(/* GraphQL */`
                 creator {
                     address
                     profile {
-                        creator
+                        address
                         pfp
                         bio
                         display_name
@@ -71,7 +71,7 @@ export const GET_MY_PROFILE = gql(/* GraphQL */`
         id
         address
         profile {
-            creator
+            address
             display_name
             bio
             pfp
@@ -123,7 +123,7 @@ export const GET_PUBLICATION = gql(/* GraphQL */`
                 creator {
                     address
                     profile {
-                        creator
+                        address
                         pfp
                         bio
                         display_name
@@ -144,7 +144,7 @@ export const GET_PUBLICATION = gql(/* GraphQL */`
                     creator {
                         address
                         profile {
-                            creator
+                            address
                             pfp
                             bio
                             display_name
@@ -208,7 +208,7 @@ export const GET_PUBLICATION_COMMENTS = gql(/* GraphQL */`
             creator {
                 address
                 profile {
-                    creator
+                    address
                     pfp
                     bio
                     display_name
@@ -283,7 +283,7 @@ export const GET_COMMUNITY_PUBLICATIONS = gql(/* GraphQL */`
             creator {
                 address
                 profile {
-                    creator
+                    address
                     pfp
                     bio
                     display_name
@@ -303,7 +303,7 @@ export const GET_COMMUNITY_PUBLICATIONS = gql(/* GraphQL */`
                 creator {
                     address
                     profile {
-                        creator
+                        address
                         pfp
                         bio
                         display_name
@@ -352,7 +352,7 @@ export const ACCOUNTS_SEARCH_QUERY = gql(/* GraphQL */`
             address
             timestamp
             profile {
-                creator
+                address
                 pfp
                 bio
                 display_name
@@ -395,7 +395,7 @@ export const GET_ACCOUNT_FOLLOWERS = gql(/* GraphQL */`
         ) {
             address
             profile {
-                creator
+                address
                 pfp
                 bio
                 display_name
@@ -415,7 +415,7 @@ export const GET_ACCOUNT_FOLLOWING = gql(/* GraphQL */`
         ) {
             address
             profile {
-                creator
+                address
                 pfp
                 bio
                 display_name
@@ -434,7 +434,7 @@ export const COMMUNITY_MEMBERS_SEARCH = gql(/* GraphQL */`
             id
             address
             profile {
-                creator
+                address
                 pfp
                 display_name
                 bio
@@ -466,7 +466,7 @@ query AccountsSearch($search: String!, $userAddress: String!) {
         address
         id
         profile {
-            creator
+            address
             pfp
             bio
             display_name
@@ -496,7 +496,7 @@ export const USER_NOTIFICATIONS = gql(/* GraphQL */`
                     username
                 }
                 profile {
-                    creator
+                    address
                     pfp
                     display_name
                 }
@@ -505,7 +505,7 @@ export const USER_NOTIFICATIONS = gql(/* GraphQL */`
                 follower {
                     address
                     profile {
-                        creator
+                        address
                         pfp
                         display_name
                     }
@@ -517,7 +517,7 @@ export const USER_NOTIFICATIONS = gql(/* GraphQL */`
                 creator {
                     address
                     profile {
-                        creator
+                        address
                         pfp
                         display_name
                     }
@@ -538,7 +538,7 @@ export const USER_NOTIFICATIONS = gql(/* GraphQL */`
                 creator {
                     address
                     profile {
-                        creator
+                        address
                         display_name
                         pfp
 

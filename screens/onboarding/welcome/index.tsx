@@ -12,7 +12,6 @@ import { BackHandler, useColorScheme } from 'react-native'
 
 
 const WelcomeScreen = () => {
-    const insets = useSafeAreaInsets()
     const router = useRouter()
     const colorSchem = useColorScheme()
 
@@ -40,7 +39,7 @@ const WelcomeScreen = () => {
         router.replace('/onboard/signin')
     }
     return (
-        <View w="100%" backgroundColor={"$background"} alignItems='center' justifyContent='space-between' flex={1} px={Utils.dynamicWidth(5)} pb={insets.bottom}>
+        <View w="100%" backgroundColor={"$background"} alignItems='center' justifyContent='space-between' flex={1} px={20}>
             <View h="80%" w="100%" alignItems='center' justifyContent='center' >
                 <View
                     h={80}

@@ -109,9 +109,9 @@ const cache = new InMemoryCache({
             case "Account": {
                 return object.address
             }
-            // case "Profile": {
-            //     return object.creator
-            // }
+            case "Profile": {
+                return object.address
+            }
             default: {
                 return defaultDataIdFromObject(object)
             }
@@ -120,16 +120,6 @@ const cache = new InMemoryCache({
     typePolicies: {
         Query: {
             fields: {
-                profile: {
-                    merge: (existing, incoming, options) => {
-                        if (!existing) {
-                            console.log("Incoming::", incoming)
-                            return incoming
-                        }
-                        console.log("Existing::", existing)
-                        return existing
-                    }
-                },
                 publications: {
                     keyArgs: ["type", "address", "creator_address", "types", "reaction"], // TODO: Not sure if its creator_address or address
                     merge: publicationMerge,

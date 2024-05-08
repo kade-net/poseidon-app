@@ -71,7 +71,7 @@ class LocalStore {
                     display_name: profile?.account?.profile?.display_name,
                     pfp: profile?.account?.profile?.pfp,
                     bio: profile?.account?.profile?.bio,
-                    creator: profile?.account?.profile?.creator
+                    address: delegateManager.owner!
                 } as Profile,
                 username: {
                     username: profile?.account?.username?.username!
@@ -623,17 +623,14 @@ class LocalStore {
         client.writeQuery({
             query: GET_MY_PROFILE,
             data: {
-                ...(currentProfile ? currentProfile : {
-                }),
                 account: {
-                    ...(currentProfile?.account ? currentProfile.account : {}),
                     profile: {
                         ...profile,
                         __typename: "Profile",
-                        creator: currentProfile?.account?.profile?.creator ?? Date.now(),
                         bio: profile.bio ?? "",
                         display_name: profile.display_name ?? "",
                         pfp: profile.pfp ?? "",
+                        address: delegateManager.owner!
                     },
                     username: {
                         __typename: "Username",

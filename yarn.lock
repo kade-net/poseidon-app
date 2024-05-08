@@ -3663,6 +3663,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@kade-net/portals-parser@npm:^0.0.3":
+  version: 0.0.3
+  resolution: "@kade-net/portals-parser@npm:0.0.3"
+  dependencies:
+    effect: "npm:^3.0.7"
+    html-entities: "npm:^2.5.2"
+  checksum: 7bf0b3c257479a0235d91f87af945d79148c37781d984e6c766d78cafbdd394cdb2603de72ec2f5cdaf0d97581937f42536890d7b11192c9af09b1351aa55cd4
+  languageName: node
+  linkType: hard
+
 "@kamilkisiela/fast-url-parser@npm:^1.1.4":
   version: 1.1.4
   resolution: "@kamilkisiela/fast-url-parser@npm:1.1.4"
@@ -9007,6 +9017,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"effect@npm:^3.0.7":
+  version: 3.1.2
+  resolution: "effect@npm:3.1.2"
+  checksum: 45e6da6e467a7490eaf37eda3bf1c663a6b2438742a1edc8c2e26796f270c44a5705f1cb802fc2c67c8ef2937929556b4d1934c9c5f09813d7c61ff835361089
+  languageName: node
+  linkType: hard
+
 "effect@npm:^3.1.0":
   version: 3.1.0
   resolution: "effect@npm:3.1.0"
@@ -11431,6 +11448,13 @@ __metadata:
   dependencies:
     lru-cache: "npm:^6.0.0"
   checksum: fac26fe551d87f271b31e80e5a7519cbb50a3c30ea89cad734da8068930f27288a049258e6ed9c39e20ebec9cf4b67c5cb02055bd73230962ef34db0d45da3e7
+  languageName: node
+  linkType: hard
+
+"html-entities@npm:^2.5.2":
+  version: 2.5.2
+  resolution: "html-entities@npm:2.5.2"
+  checksum: 4ec12ebdf2d5ba8192c68e1aef3c1e4a4f36b29246a0a88464fe278a54517d0196d3489af46a3145c7ecacb4fc5fd50497be19eb713b810acab3f0efcf36fdc2
   languageName: node
   linkType: hard
 
@@ -14939,6 +14963,7 @@ __metadata:
     "@graphql-codegen/typescript-operations": "npm:^4.2.0"
     "@graphql-typed-document-node/core": "npm:^3.2.0"
     "@hookform/resolvers": "npm:^3.3.4"
+    "@kade-net/portals-parser": "npm:^0.0.3"
     "@react-native-async-storage/async-storage": "npm:1.21.0"
     "@react-navigation/native": "npm:^6.0.2"
     "@tamagui/config": "npm:^1.90.6"

@@ -16,6 +16,8 @@ import UnstyledButton from '../../../components/ui/buttons/unstyled-button'
 import Toast from 'react-native-toast-message'
 import { aptos } from '../../../contract'
 import * as Haptics from 'expo-haptics'
+import { Either } from 'effect'
+import BaseButton from '../../../components/ui/buttons/base-button'
 
 // The seed phrase will be a list of 12 words each separated by a space
 const schema = z.object({
@@ -78,40 +80,12 @@ const SeedPhrase = () => {
                 // INFO: Ideally the code below will never run but jsut in case
 
                 if (!userAccount) {
-                    try {
-                        const committed_txn = await account.setupWithSelfDelegate()
-
-                        const status = await aptos.waitForTransaction({
-                            transactionHash: committed_txn.hash
-                        })
-
-                        if (status.success) {
-                            goToUsername()
-                        }
-                        else {
-                            Toast.show({
-                                type: 'error',
-                                text1: 'Error',
-                                text2: 'Failed to setup account'
-                            })
-
-
-                        }
-
-                    }
-                    catch (e) {
-                        Toast.show({
-                            type: 'error',
-                            text1: 'Error',
-                            text2: 'Failed to setup account'
-                        })
-                        console.log(`SOMETHING WENT WRONG:: ${e}`)
-                    }
-                    finally {
-                        setLoading(false)
-                    }
+                    goToUsername()
+                    setLoading(false)
                     return
                 }
+
+                // This won't register an inbox for most tesnet accounts if they choose to sign in via seed phrase
 
                 const profile = await client.query({
                     query: GET_MY_PROFILE,
@@ -163,7 +137,7 @@ const SeedPhrase = () => {
     }
 
     return (
-        <View pt={insets.top} px={Utils.dynamicWidth(5)} pb={insets.bottom} flex={1} backgroundColor={"$background"}>
+        <View px={20} flex={1} backgroundColor={"$background"}>
             <View w="100%" columnGap={20} >
                 <UnstyledButton callback={goBack} icon={<ChevronLeft/>} label={"Back"}/>
             </View>
@@ -196,14 +170,19 @@ const SeedPhrase = () => {
                         }}
                     />
                 </View>
-                <Button disabled={loading} onPress={form.handleSubmit(handleSubmit)} w="100%" backgroundColor={"$button"} color="$buttonText" marginBottom={Utils.dynamicHeight(5)}>
-                    {
-                        loading ? <XStack columnGap={20} >
-                            <Spinner />
-                            <Text>Verifying...</Text>
-                        </XStack> : "Done"
-                    }
-                </Button>
+                <View w="100%" >
+                    <BaseButton
+                        loading={loading}
+                        onPress={form.handleSubmit(handleSubmit)}
+                        flex={1}
+                        w="100%"
+
+                    >
+                        <Text>
+                            Done
+                        </Text>
+                    </BaseButton>
+                </View>
             </View>
         </View>
     )

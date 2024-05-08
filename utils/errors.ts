@@ -137,3 +137,11 @@ export class InboxNotFoundError {
         this.initialError = error
     }
 }
+
+export class BuildTransactionError {
+    readonly _tag = 'BuildTransactionError'
+    initialError: any
+    constructor(error?: any) {
+        this.initialError = error
+    }
+}

@@ -2,7 +2,7 @@ import { Animated, Dimensions, Platform } from 'react-native'
 import React, { memo, useCallback } from 'react'
 import { ProfileTabsProps, SceneProps, ScrollManager } from './common'
 import { useQuery } from '@apollo/client'
-import { GET_PUBLICATIONS } from '../../../utils/queries'
+import { GET_MY_PROFILE, GET_PUBLICATIONS } from '../../../utils/queries'
 import delegateManager from '../../../lib/delegate-manager'
 import { Button, Spinner, Text, View, XStack, YStack } from 'tamagui'
 import BaseContentContainer from '../../../components/ui/feed/base-content-container'
@@ -12,6 +12,7 @@ import account from '../../../contract/modules/account'
 import publications from '../../../contract/modules/publications'
 import Loading from '../../../components/ui/feedback/loading'
 import Empty from '../../../components/ui/feedback/empty'
+import client from '../../../data/apollo'
 
 let DEVICE_HEIGHT = Dimensions.get('screen').height
 
@@ -21,6 +22,11 @@ const PublicationAnimatedFlatList = (props: ProfileTabsProps & {
 }) => {
   const params = useGlobalSearchParams()
   const address = params['address'] as string
+  const profileQuery = useQuery(GET_MY_PROFILE, {
+    variables: {
+      address
+    }
+  })
   const postsQuery = useQuery(GET_PUBLICATIONS, {
     variables: {
       page: 0,
@@ -55,6 +61,7 @@ const PublicationAnimatedFlatList = (props: ProfileTabsProps & {
 
   const handleFetchTop = async () => {
     console.log("Start reached")
+
     try {
       await postsQuery?.fetchMore({
         variables: {
@@ -62,6 +69,8 @@ const PublicationAnimatedFlatList = (props: ProfileTabsProps & {
           size: 20
         }
       })
+
+      await profileQuery?.refetch()
     }
     catch (e) {
       console.log("Error fetching more", e)

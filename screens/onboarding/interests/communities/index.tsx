@@ -18,7 +18,7 @@ const CommunitiesInterest =  () => {
     }
 
     return(
-        <View pt={insets.top} px={Utils.dynamicWidth(5)} pb={insets.bottom} flex={1} backgroundColor={"$background"}>
+        <View px={20} flex={1} backgroundColor={"$background"}>
             <YStack>
                 <View flexDirection='row' w="100%" justifyContent='space-between' alignItems='center'>
                     <Heading size={"$md"} color={"$text"} >

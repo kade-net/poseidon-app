@@ -123,11 +123,9 @@ const Profile = () => {
 
     return (
         <View
-            pt={insets.top}
-            pb={insets.bottom}
             flex={1}
             justifyContent='space-between'
-            px={Utils.dynamicWidth(5)}
+            px={20}
             backgroundColor={"$background"}
         >
             <View>

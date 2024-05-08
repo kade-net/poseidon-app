@@ -23,12 +23,10 @@ const SignIn = () => {
 
     return (
         <View
-            pt={insets.top}
-            pb={insets.bottom}
             flex={1}
             w="100%"
             backgroundColor={"$background"}
-            paddingHorizontal={Utils.dynamicWidth(5)}
+            paddingHorizontal={20}
         >
             <View w="100%" >
                 <UnstyledButton callback={goBack} icon={<ChevronLeft/>} label={"Back"}/>  

@@ -8,13 +8,17 @@ import { AccountAddress, AccountAuthenticator, Deserializer, RawTransaction, Acc
 import { HexString } from "aptos";
 import { TPROFILE, profileSchema } from "../../schema";
 import * as SecureStore from 'expo-secure-store'
-import client from '../../data/apollo';
+import client, { convergenceClient } from '../../data/apollo';
 import { GET_MY_PROFILE, GET_PUBLICATION, GET_PUBLICATIONS } from '../../utils/queries';
 import localStore from '../../lib/local-store';
 import { getAuthenticatorsAndRawTransaction } from './helpers';
 import storage from '../../lib/storage';
 import posti from '../../lib/posti';
 import { Utils } from '../../utils';
+import { Effect } from 'effect';
+import { BuildTransactionError, DeserializationError, TransactionFetchError, TransactionSubmissionError } from '../../utils/errors';
+import { INIT_ACCOUNT_AND_INBOX } from '../../lib/convergence-client/queries';
+import { enableDirectMessagingCacheUpdate } from './hermes/cache';
 
 class AccountContract {
 
@@ -128,45 +132,106 @@ class AccountContract {
     }
 
     async setupWithSelfDelegate() {
-        console.log("KADE ADDRESS:: ", KADE_ACCOUNT_ADDRESS)
-        if (!delegateManager.signer || !delegateManager.account || !delegateManager.username) {
-            throw new Error("No account found")
-        }
+        const task = Effect.tryPromise({
+            try: async () => {
+                const serialized = await convergenceClient.mutate({
+                    mutation: INIT_ACCOUNT_AND_INBOX,
+                    variables: {
+                        input: {
+                            public_key: delegateManager.signer?.publicKey.toString()!,
+                            sender_address: delegateManager.account?.address()?.toString()!,
+                            username: delegateManager.username!
+                        }
+                    }
+                })
 
-        const response = await axios.post<{ raw_txn: Array<number>, signature: Array<number> }>(`${APP_SUPPORT_API}/contract/account/account-setup-with-self-delegate`, {
-            user_address: delegateManager.account?.address()?.toString(),
-            username: delegateManager.username
-        })
+                const args = serialized?.data?.initSelfDelegateKadeAccountWithHermesInbox
 
-        const { raw_txn, signature } = response.data
+                if (!args || !args.raw_transaction || !args.signature) {
+                    throw new Error("Invalid response")
+                }
 
-        console.log("RAW TXN:: ", raw_txn)
-        console.log("SIGNATURE:: ", signature)
-
-        const txn_deserializer = new Deserializer(new Uint8Array(raw_txn))
-        const signature_deserializer = new Deserializer(new Uint8Array(signature))
-
-        const raw_txn_deserialized = RawTransaction.deserialize(txn_deserializer)
-        const signature_deserialized = AccountAuthenticator.deserialize(signature_deserializer)
-
-        const accountSignature = aptos.transaction.sign({
-            signer: delegateManager.signer,
-            transaction: {
-                rawTransaction: raw_txn_deserialized,
-                feePayerAddress: AccountAddress.from(KADE_ACCOUNT_ADDRESS)
+                return args
+            },
+            catch(e) {
+                return new TransactionFetchError(e)
             }
         })
+            .pipe(
+                Effect.flatMap((serialized_args) => {
+                    return Effect.tryPromise({
+                        try: async () => {
+                            const txn_deserializer = new Deserializer(new Uint8Array(serialized_args.raw_transaction))
+                            const signature_deserializer = new Deserializer(new Uint8Array(serialized_args.signature))
 
-        const commited_txn = await aptos.transaction.submit.simple({
-            senderAuthenticator: accountSignature,
-            transaction: {
-                rawTransaction: raw_txn_deserialized,
-                feePayerAddress: AccountAddress.from(KADE_ACCOUNT_ADDRESS)
-            },
-            feePayerAuthenticator: signature_deserialized
-        })
+                            const raw_txn_deserialized = RawTransaction.deserialize(txn_deserializer)
+                            const signature_deserialized = AccountAuthenticator.deserialize(signature_deserializer)
 
-        return commited_txn
+                            return {
+                                raw_txn_deserialized,
+                                signature_deserialized
+                            }
+                        },
+                        catch(e) {
+                            return new DeserializationError(e)
+                        }
+                    })
+                }),
+                Effect.flatMap((deserialized_args) => {
+                    return Effect.tryPromise({
+                        try: async () => {
+                            const accountSignature = aptos.transaction.sign({
+                            signer: delegateManager.signer!,
+                            transaction: {
+                                rawTransaction: deserialized_args.raw_txn_deserialized,
+                                feePayerAddress: AccountAddress.from(KADE_ACCOUNT_ADDRESS)  
+                            },
+                        })
+
+                            const pendingTransaction = await aptos.transaction.submit.simple({
+                                senderAuthenticator: accountSignature,
+                                transaction: {
+                                rawTransaction: deserialized_args.raw_txn_deserialized,
+                                feePayerAddress: AccountAddress.from(KADE_ACCOUNT_ADDRESS)
+                            },
+                            feePayerAuthenticator: deserialized_args.signature_deserialized
+                        })
+
+                            return pendingTransaction
+                        },
+                        catch(error) {
+                            return new BuildTransactionError(error)
+                        },
+                    })
+                }),
+                Effect.flatMap((pending) => {
+                    return Effect.tryPromise({
+                        try: async () => {
+                            const status = await aptos.transaction.waitForTransaction({
+                                transactionHash: pending.hash
+                            })
+
+                            if (!status.success) {
+                                throw new Error("Transaction failed")
+                            }
+
+                            return pending
+
+                        },
+                        catch(error) {
+                            return new TransactionSubmissionError(error)
+                        },
+                    })
+                }),
+                Effect.tap(() => {
+                    delegateManager.setOwner(delegateManager.account?.address()?.toString()!)
+                    // enable direct messaging cache update
+                    enableDirectMessagingCacheUpdate()
+                    this.markAsRegistered()
+                })
+        )
+
+        return Effect.runPromise(Effect.either(task))
     }
 
     async followAccount(following_address: string, search?: string, storeUpdated?: boolean) {
