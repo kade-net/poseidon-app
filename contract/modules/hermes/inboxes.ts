@@ -294,7 +294,7 @@ class Inboxes {
     }
 
     async loadInbox(other_user: string) {
-
+        // concerned about running this everytime we enter a chat
         await this.cleanInbox(other_user)
         let existingHeaders: InboxHeaders | null = null
         let delegates = new Array<Delegate>()
@@ -414,6 +414,7 @@ class Inboxes {
 
     deserializeBroadCast(envelope: Envelope, broadcast: string) {
         const baseBroadCast = JSON.parse(broadcast) as BroadCast
+        console.log("Broadcast", baseBroadCast)
         const my_address = delegateManager.account?.address()?.toString()!
 
         const task = Effect.tryPromise({

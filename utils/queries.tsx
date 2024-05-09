@@ -534,6 +534,7 @@ export const USER_NOTIFICATIONS = gql(/* GraphQL */`
                 reaction
                 publication {
                     content
+                    publication_ref
                 }
                 creator {
                     address

@@ -552,7 +552,7 @@ class LocalStore {
         const oldState = currentPublicationInteractions?.publicationInteractionsByViewer
 
         ephemeralCache.set(`interaction::reaction::${ref}`, 'unreact')
-        ephemeralCache.set(`stats::reactions::${ref}`, (publicationStatsQuery?.publicationStats?.reactions ?? 0) - 1)
+        ephemeralCache.set(`stats::reactions::${ref}`, (publicationStatsQuery?.publicationStats?.reactions ?? 1) - 1)
 
         client.writeQuery({
             query: GET_PUBLICATION_STATS,
@@ -563,7 +563,7 @@ class LocalStore {
                 publicationStats: {
                     comments: publicationStatsQuery?.publicationStats?.comments ?? 0,
                     quotes: publicationStatsQuery?.publicationStats?.quotes ?? 0,
-                    reactions: (publicationStatsQuery?.publicationStats?.reactions ?? 0) - 1,
+                    reactions: (publicationStatsQuery?.publicationStats?.reactions ?? 1) - 1,
                     reposts: publicationStatsQuery?.publicationStats?.reposts ?? 0,
                     ref: publicationStatsQuery?.publicationStats?.ref ?? ref,
                     __typename: "PublicationStats"

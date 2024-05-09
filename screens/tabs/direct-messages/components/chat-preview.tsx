@@ -6,13 +6,14 @@ import { Utils } from '../../../../utils'
 import { Inbox } from '../../../../lib/hermes-client/__generated__/graphql'
 import delegateManager from '../../../../lib/delegate-manager'
 import { TouchableOpacity } from 'react-native'
-import { Link } from 'expo-router'
+import { Link, useFocusEffect } from 'expo-router'
 import hermes from '../../../../contract/modules/hermes'
 import { MESSAGE } from '../../../../contract/modules/hermes/utils'
 import dayjs from 'dayjs'
 import relativeTime from 'dayjs/plugin/relativeTime'
 import { queryClient } from '../../../../data/query'
 import { isArray } from 'lodash'
+import { useQuery as uzQuery } from '@tanstack/react-query'
 dayjs.extend(relativeTime)
 
 interface Props {
@@ -26,11 +27,12 @@ const ChatPreview = (props: Props) => {
             address: address
         }
     })
+
     const [lastMessage, setLastMessage] = useState<MESSAGE | null>(null)
 
-    const messages: Array<MESSAGE> = queryClient.getQueryData(['getDecryptedMessageHistory', data.id]) ?? []
 
-    useEffect(() => {
+    useFocusEffect(() => {
+        const messages: Array<MESSAGE> = queryClient.getQueryData(['getDecryptedMessageHistory', data.id]) ?? []
         if (data.id && isArray(messages) && messages.length > 0) {
             ; (async () => {
                 try {
@@ -43,7 +45,7 @@ const ChatPreview = (props: Props) => {
                 }
             })();
         }
-    }, [messages?.length])
+    })
 
     return (
         <Link

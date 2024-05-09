@@ -1,8 +1,8 @@
 import { View, Text, YStack, XStack, Separator, H4, Button, Spinner } from 'tamagui'
 import React, { useEffect, useState } from 'react'
 import { TouchableOpacity } from 'react-native'
-import { Anchor, ArrowRight, Bell, ChevronRight, KeySquare, Wallet } from '@tamagui/lucide-icons'
-import { Link, useNavigation, useRouter } from 'expo-router'
+import { Anchor, ArrowRight, Bell, ChevronRight, KeySquare, Layout, LayoutGrid, Wallet } from '@tamagui/lucide-icons'
+import { Link, useFocusEffect, useNavigation, useRouter } from 'expo-router'
 import account from '../../contract/modules/account'
 import delegateManager from '../../lib/delegate-manager'
 import localStore from '../../lib/local-store'
@@ -42,59 +42,83 @@ const Settings = () => {
         }
     }
 
-    // useEffect(() => {
-    //     (async () => {
-    //         try {
-    //             const update = await Updates.checkForUpdateAsync();
+    useFocusEffect(() => {
+        (async () => {
+            try {
+                const update = await Updates.checkForUpdateAsync();
 
-    //             if (update.isAvailable) {
-    //                 setUpdatesReady(true)
-    //             } else {
-    //                 setUpdatesReady(false)
-    //             }
-    //         }
-    //         catch (e) {
-    //             posti.capture('error fetching update', {
-    //                 error: e ?? 'Unable to trigger update fetch',
-    //             })
-    //         }
-    //     })();
-    // }, [])
+                if (update.isAvailable) {
+                    setUpdatesReady(true)
+                } else {
+                    setUpdatesReady(false)
+                }
+            }
+            catch (e) {
+                posti.capture('error fetching update', {
+                    error: e ?? 'Unable to trigger update fetch',
+                })
+            }
+        })();
+    })
 
 
-    // const fetchUpdatate = async () => {
-    //     Haptics.selectionAsync()
-    //     setLoading(true)
-    //     try {
-    //         const update = await Updates.checkForUpdateAsync();
+    const fetchUpdatate = async () => {
+        Haptics.selectionAsync()
+        setLoading(true)
+        try {
+            const update = await Updates.checkForUpdateAsync();
 
-    //         if (update.isAvailable) {
-    //             await Updates.fetchUpdateAsync();
-    //             await Updates.reloadAsync();
-    //         }
-    //     }
-    //     catch (e) {
-    //         Toast.show({
-    //             type: 'error',
-    //             text1: 'Error fetching update',
-    //             text2: 'Unable to trigger update fetch',
-    //         })
-    //         posti.capture('error fetching update', {
-    //             error: e ?? 'Unable to trigger update fetch',
-    //         })
-    //     }
-    //     finally {
-    //         setLoading(false)
-    //     }
-    // }
+            if (update.isAvailable) {
+                await Updates.fetchUpdateAsync();
+                await Updates.reloadAsync();
+            }
+        }
+        catch (e) {
+            Toast.show({
+                type: 'error',
+                text1: 'Error fetching update',
+                text2: 'Unable to trigger update fetch',
+            })
+            posti.capture('error fetching update', {
+                error: e ?? 'Unable to trigger update fetch',
+            })
+        }
+        finally {
+            setLoading(false)
+        }
+    }
 
     return (
         <YStack
             w="100%"
             h="100%"
-            py={Utils.dynamicWidth(5)}
             backgroundColor={"$background"}
         >
+            {
+                updatesReady ?
+                    <TouchableOpacity disabled={loading} onPress={fetchUpdatate}  >
+                        <YStack w="100%" >
+                            <XStack
+                                w="100%"
+                                alignItems='center'
+                                justifyContent='center'
+                                p={5}
+                                columnGap={20}
+                            >
+                                {loading ? <Spinner /> : <>
+                                    <LayoutGrid size={'$1'} color={'$primary'} />
+                                    <Text
+                                        color={'$primary'}
+                                    >
+                                        New update available, press to update
+                                    </Text>
+                                </>}
+                            </XStack>
+                            <Separator />
+                        </YStack>
+                    </TouchableOpacity>
+                    : null
+            }
             <YStack w="100%" flex={1} >
                 <Link
                     href="/settings/anchors"
@@ -146,25 +170,6 @@ const Settings = () => {
                                 <Bell />
                                 <H4 textTransform='none' >
                                     Notifications
-                                </H4>
-                            </XStack>
-                            <ChevronRight />
-                        </XStack>
-                        <Separator />
-                    </YStack>
-                </Link>
-                <Link
-                    href="/settings/connect"
-                    asChild
-                >
-                    <YStack style={{
-                        width: "100%",
-                    }} >
-                        <XStack w="100%" p={20} justifyContent='space-between' >
-                            <XStack columnGap={20} >
-                                <Bell />
-                                <H4 textTransform='none' >
-                                    Connect
                                 </H4>
                             </XStack>
                             <ChevronRight />

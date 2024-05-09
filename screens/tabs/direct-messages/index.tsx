@@ -24,7 +24,6 @@ const _DirectMessages = (props: Props) => {
     const { phonebook } = props
     const [registering, setRegistering] = useState(false)
     const { isOpen, onClose, onOpen } = useDisclosure()
-    console.log("Phonebook::", phonebook)
     useFocusEffect(() => {
         const phoneBookQuery = hermesClient.readQuery({
             query: getPhoneBook,
@@ -32,8 +31,6 @@ const _DirectMessages = (props: Props) => {
                 address: delegateManager.owner!
             }
         })
-
-        console.log("Phonebook query::", phoneBookQuery?.phoneBook)
         if (phoneBookQuery?.phoneBook) {
             onClose()
         } else {
@@ -111,8 +108,6 @@ const DirectMessages = () => {
         },
         client: hermesClient
     })
-
-    console.log("Phonebook top::", phonebook?.data?.phoneBook)
 
     if (phonebook.loading) return <Loading
         backgroundColor={'$background'}

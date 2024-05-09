@@ -9,53 +9,52 @@ import delegateManager from '../../../lib/delegate-manager'
 import { Utils } from '../../../utils'
 import Constants from 'expo-constants'
 import config from '../../../config'
+import anchors from '../../../contract/modules/anchors'
+import { useQuery as useApolloQuery } from '@apollo/client'
+import { GET_ANCHOR_HISTORY } from '../../../lib/convergence-client/queries'
+import { AnchorTransactionType } from '../../../lib/convergence-client/__generated__/graphql'
+import Loading from '../../../components/ui/feedback/loading'
+import Empty from '../../../components/ui/feedback/empty'
+import { convergenceClient } from '../../../data/apollo'
 
 const CONNECT_URL = config.ANCHORS_URL
 
 const Anchors = () => {
 
-    const anchorsQuery = useQuery({
-        queryKey: 'anchors',
-        queryFn: async () => {
-            try {
-                const response = await axios.get<{
-                    total_amount: number,
-                    transactions: Array<{
-                        type: "deposit" | "transfer",
-                        amount: number,
-                        timestamp: number
-                    }>
-
-                }>(`${CONNECT_URL}/api/anchors`, {
-                    params: {
-                        user_address: delegateManager?.owner
-                    }
-                })
-
-                return response?.data
-            }
-            catch (e) {
-                return null
-            }
-
-        }
+    const anchorAmountQuery = useQuery({
+        queryFn: () => anchors.getBalance(),
+        queryKey: ['anchors'],
+        refetchInterval: 10000
     })
+
+    const transactionsQuery = useApolloQuery(GET_ANCHOR_HISTORY, {
+        variables: {
+            user_address: delegateManager.owner!
+        },
+        client: convergenceClient
+    })
+
     return (
         <YStack alignItems='center' flex={1} w="100%" h="100%" px={Utils.dynamicWidth(5)} py={Utils.dynamicHeight(3)} backgroundColor={"$background"}>
             <XStack w="100%" justifyContent='flex-end' >
                 <TouchableOpacity
-                    onPress={() => anchorsQuery.refetch()}
-                    disabled={anchorsQuery.isLoading}
+                    onPress={() => transactionsQuery.refetch()}
+                    disabled={transactionsQuery.loading}
                 >
-                    <RefreshCw />
+                    {
+                        transactionsQuery.loading ? <Spinner /> : <RefreshCw />
+                    }
+
                 </TouchableOpacity>
             </XStack>
             <View w="100%" alignItems='center' justifyContent='center' pb={10} >
                 <Anchor size={100} />
             </View>
-            <H3 w="100%" textAlign='center' color={"$text"} >
-                {Intl.NumberFormat().format(anchorsQuery?.data?.total_amount ?? 0)} Anchors
-            </H3>
+            <View>
+                <H3>
+                    {Intl.NumberFormat().format(anchorAmountQuery.data ?? 0)} Anchors
+                </H3>
+            </View>
             <Text w="85%" textAlign='center' color={'$text'} fontFamily={"$body"} fontSize={"$sm"} my={Utils.dynamicHeight(1)}>
                 Anchors can be used to perform a variety of onchain and Kade specific actions.
             </Text>
@@ -82,32 +81,27 @@ const Anchors = () => {
                 w="100%"
                 mt={20}
             >
-                {
-                    anchorsQuery.isLoading && <XStack p={20} alignItems='center' justifyContent='center' w="100%" >
-                        <Spinner />
-                    </XStack>
-                }
                 <FlatList
-                    data={anchorsQuery?.data?.transactions ?? []}
+                    data={transactionsQuery?.data?.anchorTransactions ?? []}
                     keyExtractor={(_, index) => index.toString()}
-                    renderItem={(item) => {
+                    renderItem={({ item }) => {
                         return (
                             <YStack w="100%" >
                                 <XStack w="100%" justifyContent='space-between' >
                                     <XStack columnGap={5} >
                                         {
-                                            item.item.type == "deposit" ? <ArrowDownRight /> : <ArrowUpRight />
+                                            item.type == AnchorTransactionType.Deposit ? <ArrowDownRight /> : <ArrowUpRight />
                                         }
                                         <Text>
                                             {
-                                                item.item.type == "deposit" ? "Received" : "Sent"
+                                                item.type == AnchorTransactionType.Deposit ? "Received" : "Sent"
                                             }
                                         </Text>
                                     </XStack>
 
                                     <XStack columnGap={5} >
                                         <Text>
-                                            {Intl.NumberFormat().format(item.item.amount)}
+                                            {Intl.NumberFormat().format(item?.anchor_amount ?? 0)}
                                         </Text>
                                     </XStack>
                                 </XStack>
@@ -115,17 +109,21 @@ const Anchors = () => {
                             </YStack>
                         )
                     }}
-                    refreshing={anchorsQuery?.isLoading}
-                    onStartReached={() => anchorsQuery.refetch()}
-                    ListFooterComponent={() => {
-                        if (anchorsQuery.isLoading) return (
-                            <XStack p={20} alignItems='center' justifyContent='center' >
-                                <Spinner />
-                            </XStack>
-                        )
+                    refreshing={false}
+                    onRefresh={() => transactionsQuery.refetch({
+                        user_address: delegateManager.owner!
+                    })}
+                    ListEmptyComponent={() => {
+                        if (transactionsQuery.loading) return <Loading flex={1} w="100%" h="100%" />
 
-                        return null
+                        return <Empty
+                            w="100%"
+                            h="100%"
+                            flex={1}
+                            emptyText='No transactions found.'
+                        />
                     }}
+
                 />
             </YStack>
         </YStack>

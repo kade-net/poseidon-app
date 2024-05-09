@@ -3,7 +3,7 @@ import React, { memo, useMemo } from 'react'
 // @ts-ignore
 import { OpenGraphAwareInput, OpenGraphDisplay, OpenGraphParser } from 'react-native-opengraph-kit';
 import { useQuery } from 'react-query';
-import { TouchableWithoutFeedback, useColorScheme } from 'react-native';
+import { Alert, TouchableWithoutFeedback, useColorScheme } from 'react-native';
 import * as Linking from 'expo-linking'
 import * as browser from 'expo-web-browser'
 
@@ -33,7 +33,6 @@ const LinkResolver = (props: Props) => {
         queryFn: async (): Promise<OGData[]> => {
             try {
                 const data = await OpenGraphParser?.extractMeta?.(link?.trim() ?? "")
-
                 return data
             }
             catch (e) {
@@ -47,16 +46,24 @@ const LinkResolver = (props: Props) => {
     const handleOpenUrl = () => {
         const _link = link.trim()
         return Linking.canOpenURL(_link).then(async (supported) => {
-            console.log("supported", supported)
             if (supported) {
-                Linking.openURL(_link)
+                Alert.alert("Leaving app", "You are about to leave the app, and pose a risk of being redirected to a malicious website. Are you sure you want to continue?", [
+                    {
+                        text: "Cancel",
+                        onPress: () => { }
+                    },
+                    {
+                        text: "Continue",
+                        onPress: () => Linking.openURL(_link)
+                    }
+                ])
             } else {
                 await browser.openBrowserAsync(_link)
             }
         })
     }
 
-    if (!link || link.length === 0 || !linkMetaQuery.data?.[0] || !linkMetaQuery.data?.[0]?.url || !linkMetaQuery.data?.[0]?.title || !linkMetaQuery.data?.[0]?.description) {
+    if (!link || link.length === 0 || !linkMetaQuery.data?.[0] || !linkMetaQuery.data?.[0]?.url || !linkMetaQuery.data?.[0]?.title) {
         return <XStack w={0} h={0} />
     }
 

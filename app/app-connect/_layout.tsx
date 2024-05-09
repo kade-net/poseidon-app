@@ -4,6 +4,7 @@ import { Stack } from 'expo-router'
 import { H4, XStack, useTheme } from 'tamagui'
 import { ArrowLeft } from '@tamagui/lucide-icons'
 import { SafeAreaView } from 'react-native-safe-area-context'
+import TopBarWithBack from '../../components/ui/navigation/top-bar-with-back'
 
 const _layout = () => {
     const tamaguiTheme = useTheme()
@@ -19,14 +20,10 @@ const _layout = () => {
             <Stack>
                 <Stack.Screen options={{
                     header(props) {
-                        return (
-                            <TouchableOpacity onPress={props.navigation.goBack} >
-                                <XStack w="100%" alignItems='center' px={20} columnGap={20} backgroundColor={"$background"}>
-                                    <ArrowLeft />
-                                    <H4 textTransform='none' >Anchors</H4>
-                                </XStack>
-                            </TouchableOpacity>
-                        )
+                        return <TopBarWithBack
+                            navigation={props.navigation}
+                            title='Purchase Anchors'
+                        />
                     },
                 }} name="store" />
             </Stack>

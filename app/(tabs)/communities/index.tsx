@@ -33,7 +33,7 @@ const CommunitiesScreen = () => {
             flex={1}
             w="100%"
             h="100%"
-
+            backgroundColor={'$background'}
         >
             <Stack.Screen
                 options={{

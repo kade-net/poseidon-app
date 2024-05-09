@@ -157,3 +157,18 @@ export const INIT_DELEGATE = gql(/* GraphQL */`
         }
     }
 `)
+
+export const GET_ANCHOR_HISTORY = gql(/* GraphQL */`
+    query AnchorTransactions($user_address: String!) {
+        anchorTransactions(
+            user_address: $user_address
+        ) {
+            sender_address
+            receiver_address
+            anchor_amount
+            timestamp
+            type
+        }
+    }
+
+`)

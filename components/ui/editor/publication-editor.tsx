@@ -296,7 +296,7 @@ const PublicationEditor = (props: Props) => {
                                 borderWidth={0}
                                 placeholder={`What's on your mind?`}
                                 onChangeText={(text) => form.setValue('content', text)}
-                                autoFocus
+                                // autoFocus
                                 maxLength={160}
                             >
                                 <HighlightMentions form={form} />

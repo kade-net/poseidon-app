@@ -42,7 +42,6 @@ export function _generateSharedSecret(pubkey: string, privkey: string) {
 
     // Compute the shared secret using your private key and your friend's public key
     const sharedSecret = nacl.scalarMult(myPrivateKey, theirPublicKey)
-    console.log("Shared secret:", Buffer.from(sharedSecret).toString('hex'))
 
     return Buffer.from(sharedSecret).toString('hex') // This shared secret can be used to encrypt messages
 }

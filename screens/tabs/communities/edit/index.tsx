@@ -8,7 +8,7 @@ const EditCommunity = () => {
     const params = useGlobalSearchParams()
     const communityName = params?.['name'] as string
     return (
-        <YStack w="100%" flex={1} py={20}  >
+        <YStack backgroundColor={'$background'} w="100%" flex={1} py={20}  >
             <Link asChild href={{
                 pathname: '/(tabs)/feed/communities/[name]/edit/displayname',
                 params: {

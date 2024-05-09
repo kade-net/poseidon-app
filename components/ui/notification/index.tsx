@@ -148,12 +148,23 @@ const BaseNotificationContent = (props: Props) => {
 
             })
         }
+
+        if (type == 3) {
+
+            console.log("Ref::", data)
+            router.push({
+                pathname: '/(tabs)/feed/[post-id]/',
+                params: {
+                    'post-id': data?.reaction?.publication?.publication_ref!
+                }
+            })
+        }
     }
 
     return (
         <TouchableOpacity
             onPress={handleSelect}
-            disabled={type == 3 || type == 2 && data?.publication?.type == 4}
+            disabled={type == 2 && data?.publication?.type == 4}
         >
             <XStack w="100%" columnGap={10} py={20} px={10}  >
                 <YStack h="100%" >
