@@ -10,6 +10,9 @@ import { INBOX_NAME, encryptEnvelopeContent, getInboxMessages, retrieveMessagesF
 import { queryClient } from '../../../data/query'
 import storage from '../../../lib/storage'
 import { acceptMessageRequestUpdateCache, addConversationRequestToPending, disableDirectMessagingCacheUpdate, enableDirectMessagingCacheUpdate, removeAcceptedMessageRequestUpdateCache, removeConversationRequestFromPending } from './cache'
+import posti from '../../../lib/posti'
+import { hermesClient } from '../../../data/apollo'
+import { getPhoneBook } from '../../../lib/hermes-client/queries'
 
 class Hermes {
 
@@ -65,17 +68,19 @@ class Hermes {
             }
         }
 
+        const using_owner = delegateManager.isDelegateOwner
+
         addConversationRequestToPending({
             address: user_address
         })
 
         const task = constructConvergenceTransaction({
             fee_payer_address: config.HERMES_MODULE_ADDRESS,
-            name: 'requestConversation',
+            name: using_owner ? 'requestConversation' : 'delegateRequestConversation',
             variables: {
                 envelope: "",
                 sender_address: delegateManager.owner!,
-                user_address: user_address,
+                user_address: using_owner ? delegateManager.owner! : delegateManager.account?.address().toString()!,
             } as RequestConversationArgs
         })
 
@@ -113,16 +118,19 @@ class Hermes {
             }
         }
 
+        const using_owner = delegateManager.isDelegateOwner
+
+
         acceptMessageRequestUpdateCache({
             address: requester_address
         })
 
         const task = constructConvergenceTransaction({
             fee_payer_address: config.HERMES_MODULE_ADDRESS,
-            name: 'acceptRequest',
+            name: using_owner ? 'acceptRequest' : 'delegateAcceptRequest',
             variables: {
                 requester_address: requester_address,
-                sender_address: delegateManager.owner!,
+                sender_address: using_owner ? delegateManager.owner! : delegateManager.account?.address().toString()!,
             } as AcceptRequestArgs
         })
 
@@ -162,6 +170,7 @@ class Hermes {
                 data: null
             }
         }
+        const using_owner = delegateManager.isDelegateOwner
 
         const ref = `inbox::${args.inbox_name}::${Date.now()}::${delegateManager.owner}::dm`
 
@@ -176,7 +185,7 @@ class Hermes {
                     variables: {
                         content: encryptedMessage,
                         ref,
-                        sender_address: delegateManager.owner!,
+                        sender_address: using_owner ? delegateManager.owner! : delegateManager.account?.address().toString()!,
                         to: args.to
                     } as SendArgs
                 })
@@ -266,6 +275,33 @@ class Hermes {
             queryClient.invalidateQueries(['getDecryptedMessageHistory', inbox_name])
         }
 
+    }
+
+
+    // !!! IMPORTANT: this should only run for the testers at should probably be removed in prod
+    async checkHasInboxIfNotRegister() {
+        // assumption - is self delegate
+        try {
+            const phonebook = await hermesClient.query({
+                query: getPhoneBook,
+                variables: {
+                    address: delegateManager.owner!
+                }
+            })
+
+            if (!phonebook.data.phoneBook) {
+                await this.registerInbox()
+            }
+            else {
+                console.log("phonebook already exists")
+            }
+        }
+        catch (e) {
+            console.log("Error::", e)
+            posti.capture('checkHasInboxIfNotRegister', {
+                error: e
+            })
+        }
     }
 
 

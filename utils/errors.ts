@@ -145,3 +145,59 @@ export class BuildTransactionError {
         this.initialError = error
     }
 }
+
+export class DelegateFetchError {
+    readonly _tag = 'DelegateFetchError'
+    initialError: any
+    constructor(error?: any) {
+        this.initialError = error
+    }
+}
+
+export class UnableToGenerateSharedSecret {
+    readonly _tag = 'UnableToGenerateSharedSecret'
+    initialError: any
+    constructor(error?: any) {
+        this.initialError = error
+    }
+}
+
+export class UnableToStoreInboxHeaders {
+    readonly _tag = 'UnableToStoreInboxHeaders'
+    initialError: any
+    constructor(error?: any) {
+        this.initialError = error
+    }
+}
+
+export class UnableToStoreDelegate {
+    readonly _tag = 'UnableToStoreDelegate'
+    initialError: any
+    constructor(error?: any) {
+        this.initialError = error
+    }
+}
+
+export class UnableToEncryptMessage {
+    readonly _tag = 'UnableToEncryptMessage_'
+    initialError: any
+    constructor(error?: any) {
+        this.initialError = error
+    }
+}
+
+export class UnableToSerializeBroadCast {
+    readonly _tag = 'UnableToSerializeBroadCast'
+    initialError: any
+    constructor(error?: any) {
+        this.initialError = error
+    }
+}
+
+export class MessageNotFoundError {
+    readonly _tag = 'MessageNotFoundError'
+    initialError: any
+    constructor(error?: any) {
+        this.initialError = error
+    }
+}

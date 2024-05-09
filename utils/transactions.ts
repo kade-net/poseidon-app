@@ -180,7 +180,7 @@ export function constructConvergenceTransaction<InputArgs = any>(args: construct
 
 type ExtractSecond<T> = T extends Effect.Effect<any, infer U, any> ? U : never;
 
-type Errors = ExtractSecond<ReturnType<typeof constructConvergenceTransaction>> | InboxNotFoundError | EncryptionError;
+type Errors = ExtractSecond<ReturnType<typeof constructConvergenceTransaction>> | InboxNotFoundError | EncryptionError | any;
 
 interface settleConvergenceTransactionArgs {
     task: Effect.Effect<string, Errors, never>

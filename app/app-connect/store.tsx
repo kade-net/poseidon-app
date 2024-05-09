@@ -1,6 +1,5 @@
 import { ChevronLeft } from '@tamagui/lucide-icons'
-import { BarCodeScanningResult } from 'expo-camera/build/Camera.types'
-import { CameraView } from 'expo-camera/next'
+import { BarcodeScanningResult, CameraView } from 'expo-camera'
 import { useCameraPermissions } from 'expo-image-picker'
 import React, { useEffect } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
@@ -27,7 +26,7 @@ const StoreConnectScreen = () => {
     }, [])
 
 
-    const handleBarCodeScanned = async (data: BarCodeScanningResult) => {
+    const handleBarCodeScanned = async (data: BarcodeScanningResult) => {
         setData(data)
 
         if (data.data) {

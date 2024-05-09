@@ -2,7 +2,7 @@ import '../global'
 import 'react-native-get-random-values'
 import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native'
 import { SplashScreen, Stack } from 'expo-router'
-import { Platform, useColorScheme } from 'react-native'
+import { Platform, Text, View, useColorScheme } from 'react-native'
 import { TamaguiProvider } from 'tamagui'
 import '../tamagui-web.css'
 import { config } from '../tamagui.config'
@@ -18,6 +18,7 @@ import Toast from 'react-native-toast-message'
 import * as Notifications from 'expo-notifications'
 import localStore from '../lib/local-store'
 import { queryClient } from '../data/query'
+import hermes from '../contract/modules/hermes'
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
@@ -48,14 +49,10 @@ SplashScreen.preventAutoHideAsync();
 //   console.log("DONE NUKING")
 // })();
 
-delegateManager.init().then(async () => {
-  await selfModeration?.loadMutedUsers()
-  await selfModeration?.loadRemovedFromFeed()
-}).catch((e) => {
-  console.error("UNABLE TO INITIALIZE DELEGATE", e)
-})
+
 
 export default function RootLayout() {
+  const colorScheme = useColorScheme()
   const [interLoaded, interError] = useFonts({
     Inter: require('@tamagui/font-inter/otf/Inter-Medium.otf'),
     InterBold: require('@tamagui/font-inter/otf/Inter-Bold.otf'),
@@ -77,14 +74,43 @@ export default function RootLayout() {
   }, []);
 
   useEffect(() => {
-    if (interLoaded || interError) {
-      // Hide the splash screen after the fonts have loaded (or an error was returned) and the UI is ready.
-      SplashScreen.hideAsync()
+    const subscription = async () => {
+      return delegateManager.init().then(async () => {
+        await selfModeration?.loadMutedUsers()
+        await selfModeration?.loadRemovedFromFeed()
+        try {
+          // !!! IMPORTANT: this is temporary, so that testers can get access to dms
+          await hermes.checkHasInboxIfNotRegister()
+        }
+        catch (e) {
+
+        }
+        SplashScreen.hideAsync()
+      }).catch((e) => {
+        console.error("UNABLE TO INITIALIZE DELEGATE", e)
+        SplashScreen.hideAsync()
+
+      })
     }
+    if (interError || interLoaded) {
+      subscription()
+    }
+
+    // return () => {
+    //   subscription()
+    // }
   }, [interLoaded, interError])
 
   if (!interLoaded && !interError) {
-    return null
+    return <View
+      style={{
+        flex: 1,
+        backgroundColor: colorScheme === 'dark' ? 'rgb(12,18,34)' : 'rgb(250,250,250)',
+        width: '100%',
+        height: '100%',
+      }}
+    >
+    </View>
   }
 
 

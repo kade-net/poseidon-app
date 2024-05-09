@@ -19,6 +19,7 @@ import { CAccount } from '../../../lib/convergence-client/__generated__/graphql'
 import delegateManager from '../../../lib/delegate-manager'
 import { convergenceClient } from '../../../data/apollo'
 import { Info } from '@tamagui/lucide-icons'
+import inboxes from '../../../contract/modules/hermes/inboxes'
 
 const People = () => {
   const [search, setSearch] = useState('')
@@ -70,7 +71,6 @@ const People = () => {
         text2: 'Wait for the user to accept the request'
       })
       await peopleSearchQuery.refetch()
-      console.log("Hash::", result.data)
     }
     setLoading(false)
     onClose()

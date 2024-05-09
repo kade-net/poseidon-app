@@ -42,6 +42,31 @@ export const getInboxHistory = gqlHermes(/* GraphQL */`
             reciever_public_key
             sender
             receiver
+            delegate_public_key
+        }
+    }
+`)
+
+export const getInbox = gqlHermes(/* GraphQL */`
+ query getInbox($viewer: String!, $address: String!) {
+    inbox(viewer: $viewer, address: $address, active: true) {
+        id
+        owner_address
+        initiator_address
+        timestamp
+        hid
+        active
+    }
+}
+`)
+
+export const getDelegate = gqlHermes(/* GraphQL */`
+    query getDelegates($address: String!){
+        delegates(address: $address){
+            address
+            user_address
+            timestamp
+            public_key
         }
     }
 `)

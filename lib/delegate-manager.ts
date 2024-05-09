@@ -13,7 +13,6 @@ import posti from './posti';
 import config from '../config';
 import { CONFIRM_DELEGATE_LINKED, CREATE_ACCOUNT_LINK_INTENT, INIT_DELEGATE, UPDATE_CONNECTION } from './convergence-client/queries';
 import { Connection } from './convergence-client/__generated__/graphql';
-import { enableDirectMessagingCacheUpdate } from '../contract/modules/hermes/cache';
 
 
 const DERIVATION_PATH = "m/44'/637'/0'/0'/0'"
@@ -457,12 +456,6 @@ class DelegateManager {
             // TODO: caoture with posti
         }
 
-        try {
-            await enableDirectMessagingCacheUpdate()
-        }
-        catch (e) {
-            console.log("Error enabling direct messaging cache update", e)
-        }
     }
 
     async markAsRegistered() {

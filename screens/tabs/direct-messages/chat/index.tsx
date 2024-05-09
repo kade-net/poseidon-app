@@ -12,6 +12,7 @@ import { INBOX_MESSAGE_SUBSCRIPTION } from '../../../../lib/convergence-client/q
 import { convergenceWebSocketClient } from '../../../../data/apollo'
 import delegateManager from '../../../../lib/delegate-manager'
 import index from '../../../../app'
+import inboxes from '../../../../contract/modules/hermes/inboxes'
 
 interface Props {
   inbox_name: string
@@ -88,6 +89,11 @@ const Chat = () => {
     return Date.now()
   }, [])
 
+  const loadInbox = useQuery({
+    queryKey: ['loadInbox', inbox_name, other_user],
+    queryFn: () => inboxes.loadInbox(other_user)
+  })
+
   useSubscription(INBOX_MESSAGE_SUBSCRIPTION, {
     client: convergenceWebSocketClient,
     variables: {
@@ -100,17 +106,22 @@ const Chat = () => {
     onData: async (data) => {
       if (data?.data?.data?.liveInbox && !data?.data?.error) {
         const envelope = data?.data?.data?.liveInbox ?? null
-        await hermes.saveIncomingMessage({ ...envelope, is_from_live: true, content: envelope.content.startsWith('{') ? JSON.parse(envelope.content) : envelope.content })
+        await hermes.saveIncomingMessage({ ...envelope, content: JSON.parse(envelope.content), is_from_live: true })
       }
     },
+    skip: loadInbox.isLoading && !loadInbox.isError && !!inbox_name && !!other_user
   })
+
+
 
   const initialMessageQuery = useQuery({
     queryKey: ['getDecryptedMessageHistory', inbox_name, other_user],
-    queryFn: () => hermes.getInboxHistory(inbox_name, other_user)
+    queryFn: () => hermes.getInboxHistory(inbox_name, other_user),
+    enabled: !loadInbox.isLoading
   })
 
-  if (initialMessageQuery.isLoading) return <Loading flex={1} w="100%" h="100%" backgroundColor={'$background'} />
+
+  if (initialMessageQuery.isLoading || loadInbox.isLoading) return <Loading flex={1} w="100%" h="100%" backgroundColor={'$background'} />
 
   return <_Chat handleRefresh={() => initialMessageQuery.refetch()} inbox_name={inbox_name} other_user={other_user} timestamp={view_timestamp} />
 }

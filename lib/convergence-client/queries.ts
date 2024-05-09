@@ -29,6 +29,26 @@ mutation AcceptRequest($args: AcceptRequestArgs!) {
 }
 `)
 
+export const delegateAcceptRequest = gql(/* GraphQL */`
+mutation DelegateAcceptRequest($args: DelegateAcceptRequestArgs!) {
+    delegateAcceptRequest(input: $args) {
+        raw_transaction
+        signature
+    }
+}
+`)
+
+export const delegateRequestConversation = gql(/* GraphQL */`
+    mutation DelegateRequestConversation($input: DelegateRequestConversationArgs!) {
+        delegateRequestConversation(
+            input: $input
+        ) {
+            raw_transaction
+            signature
+        }
+    }
+`)
+
 export const send = gql(/* GraphQL */`
     mutation Send($args: SendArgs!) {
         send(input: $args) {
@@ -36,6 +56,16 @@ export const send = gql(/* GraphQL */`
             signature
         }
     }
+`)
+
+export const delegateSendEnvelope = gql(/* GraphQL */`
+    mutation DelegateSendEnvelope($args: SendArgs!) {
+        delegateSendEnvelope(input: $args) {
+            raw_transaction
+            signature
+        }
+    }
+
 `)
 
 export const INBOX_MESSAGE_SUBSCRIPTION = gql(/* GraphQL */`
@@ -50,6 +80,7 @@ export const INBOX_MESSAGE_SUBSCRIPTION = gql(/* GraphQL */`
             receiver_public_key
             sender
             receiver
+            delegate_public_key
         }
     }
 `)

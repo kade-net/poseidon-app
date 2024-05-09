@@ -11,11 +11,11 @@ import { queryClient } from "../../../data/query"
 import nacl from "tweetnacl"
 import naclUtil from "tweetnacl-util"
 import { _generateSharedSecret, decryptMessageSecretBox } from "../../../utils/encryption"
+import inboxes from "./inboxes"
 
 export type INBOX_NAME = `@${string}:@${string}`
 
 export type LOCAL_INBOX = {
-    shared_secret: string
     other_user: string
 }
 
@@ -73,75 +73,25 @@ export function initializeInbox(args: initializeInboxArgs) {
     })
         .pipe(
             Effect.flatMap((inbox) => {
+                if (inbox) return Effect.succeed(inbox)
                 return Effect.tryPromise({
                     try: async () => {
-                        if (inbox) return inbox
-                        // 2. check if there are any messages saved to that inbox, if there are get the public key of the other user
-                        let messages: MESSAGE[] = []
-                        try {
-                            messages = await storage.getAllDataForKey<MESSAGE>(serializeInboxName(inbox_name))
+                        const inbox: LOCAL_INBOX = {
+                            other_user
                         }
-                        catch (e) {
-                            console.log("No messages found in the inbox")
-                        }
+                        await storage.save({
+                            key: 'inboxes',
+                            id: serializeInboxName(inbox_name),
+                            data: inbox
+                        })
 
-                        let public_key: string | null = null
-                        if (messages.length > 0) {
-                            const firstMessage = messages.at(0)
-                            public_key = (firstMessage?.sender == other_user ? firstMessage?.sender_public_key : firstMessage?.receiver_public_key) ?? null
-                        }
-
-                        if (!public_key) {
-                            // 3. if there are no messages saved, query the public key of the other user
-
-                            const phoneBookQuery = await hermesClient.query({
-                                query: getPhoneBook,
-                                variables: {
-                                    address: other_user
-                                }
-                            })
-
-                            if (phoneBookQuery.data?.phoneBook?.public_key) {
-                                public_key = phoneBookQuery.data.phoneBook.public_key
-                            }
-
-                        }
-
-                        if (!public_key) {
-                            throw new NoPublicKeyError()
-                        }
-
-                        return public_key?.replaceAll('0x', '') as string
+                        return inbox
                     },
                     catch(error) {
-                        return new UnknownError(error)
+                        return new InboxNotFoundError(error)
                     },
                 })
-            }),
-            Effect.flatMap((public_key_or_inbox) => {
-                return Effect.tryPromise({
-                    try: async () => {
-                        if (isString(public_key_or_inbox)) {
-                            const shared_secret = generateSharedSecret(public_key_or_inbox)
-                            const inbox: LOCAL_INBOX = {
-                                shared_secret,
-                                other_user
-                            }
-                            await storage.save({
-                                key: 'inboxes',
-                                id: serializeInboxName(inbox_name),
-                                data: inbox
-                            })
 
-                            return inbox
-                        }
-
-                        return public_key_or_inbox
-                    },
-                    catch(error) {
-                        return new UnknownError(error)
-                    }
-                })
             })
         )
 
@@ -230,6 +180,7 @@ export function encryptEnvelopeContent(args: encryptEnvelopeArgs) {
                 id: serializeInboxName(args.inbox_name)
             })
 
+
             return inbox
         },
         catch(error) {
@@ -237,35 +188,8 @@ export function encryptEnvelopeContent(args: encryptEnvelopeArgs) {
         }
     })
         .pipe(
-            Effect.flatMap((inbox) => {
-                return Effect.tryPromise({
-                    try: async () => {
-                        const parsed = dmSchema.safeParse(args.content)
+            Effect.flatMap((inbox) => inboxes.generateBroadCast(args.content, inbox.other_user))
 
-                        if (!parsed.success) {
-                            throw parsed.error
-                        }
-
-                        const stringified = JSON.stringify(parsed.data)
-
-                        const nonce = nacl.randomBytes(nacl.secretbox.nonceLength);
-                        const messageUint8 = naclUtil.decodeUTF8(stringified);
-                        const box = nacl.secretbox(messageUint8, nonce, Buffer.from(inbox.shared_secret, 'hex'));
-
-                        const fullMessage = new Uint8Array(nonce.length + box.length);
-                        fullMessage.set(nonce);
-                        fullMessage.set(box, nonce.length);
-
-                        const message = naclUtil.encodeBase64(fullMessage);
-
-                        return message
-
-                    },
-                    catch(error) {
-                        return new EncryptionError(error)
-                    },
-                })
-            })
         )
 
     return encryptionTask
@@ -274,7 +198,6 @@ export function encryptEnvelopeContent(args: encryptEnvelopeArgs) {
 
 interface decryptEnvelopeArgs {
     envelope: Envelope
-    shared_secret?: string
 }
 
 export function decryptEnvelope(args: decryptEnvelopeArgs) {
@@ -290,87 +213,12 @@ export function decryptEnvelope(args: decryptEnvelopeArgs) {
         }
     }).pipe(
         Effect.flatMap((cachedMessage) => {
-            return Effect.tryPromise({
-                try: async () => {
-                    if (cachedMessage) return cachedMessage
-                    // not sure about this mismatch
-                    const encryptedContent = args.envelope.content?.content ?? args.envelope.content
-                    if (!isString(encryptedContent)) {
+            if (cachedMessage) return Effect.succeed(cachedMessage)
+            return inboxes.deserializeBroadCast(args.envelope, JSON.stringify(args.envelope.content))
 
-                        console.log("Invalid encrypted content", encryptedContent)
-                        return null
-                    }
-
-                    try {
-
-
-                        const decryptedContent = decryptMessageSecretBox(encryptedContent, args.shared_secret!)
-
-                        const actualContent = JSON.parse(decryptedContent) as TDM
-
-                        const message = {
-                            content: actualContent?.content ?? '',
-                            media: actualContent?.media ?? [],
-                            timestamp: args.envelope.timestamp,
-                            isMine: args.envelope.sender === delegateManager.owner!,
-                            receiver: args.envelope.receiver,
-                            sender: args.envelope.sender,
-                            hid: args.envelope.hid,
-                            inbox_name: args.envelope.inbox_name,
-                            ref: args.envelope.ref,
-                            // @ts-expect-error - Bad spelling :) 
-                            receiver_public_key: args.envelope.receiver_public_key ?? args.envelope.reciever_public_key,
-                            sender_public_key: args.envelope.sender_public_key
-                        } as MESSAGE
-
-                        await storeDecryptedMessage({ message })
-
-                        return message
-                    }
-                    catch (e) {
-                        console.log("Decryption error::", e)
-                        return null
-                    }
-
-                },
-                catch(error) {
-                    console.log("Decryption error::", error)
-                    // ignore ddecryption error
-                }
-            })
         }),
-        Effect.flatMap((cachedMessage) => {
-            return Effect.tryPromise({
-                try: async () => {
-                    if (cachedMessage) return cachedMessage
-                    // go ahead and decrypt the message then store it
-
-                    const actualContent = args.envelope.content as TDM
-
-                    // TODO: decrypt the envelope content
-                    const message = {
-                        content: actualContent?.content ?? '',
-                        media: actualContent?.media ?? [],
-                        timestamp: args.envelope.timestamp,
-                        isMine: args.envelope.sender === delegateManager.owner!,
-                        receiver: args.envelope.receiver,
-                        sender: args.envelope.sender,
-                        hid: args.envelope.hid,
-                        inbox_name: args.envelope.inbox_name,
-                        ref: args.envelope.ref,
-                        // @ts-expect-error - Bad spelling :) 
-                        receiver_public_key: args.envelope.receiver_public_key ?? args.envelope.reciever_public_key,
-                        sender_public_key: args.envelope.sender_public_key
-                    } as MESSAGE
-
-                    await storeDecryptedMessage({ message })
-
-                    return message
-                },
-                catch(e) {
-                    return new DecryptionError(e)
-                }
-            })
+        Effect.tap((message) => {
+            storeDecryptedMessage({ message })
         })
     )
 
@@ -380,18 +228,14 @@ export function decryptEnvelope(args: decryptEnvelopeArgs) {
 
 interface getDecryptedMessageHistoryArgs {
     messagesTask: ReturnType<typeof getEncryptedMessageHistory>
-    shared_secret: string
 }
 
 export function getDecryptedMessageHistory(args: getDecryptedMessageHistoryArgs) {
     const task = args.messagesTask.pipe(Effect.flatMap((envelopes) => {
-        return Effect.forEach(envelopes, (e) => decryptEnvelope({ envelope: e, shared_secret: args.shared_secret }))
+        return Effect.forEach(envelopes, (e) => decryptEnvelope({ envelope: e }))
     }))
     return task
 }
-
-// TODO: add effect to store them locally maybe instead of a full query we can use a last read or something for better caching
-
 
 interface getInboxMessagesArgs {
     inbox_name: string
@@ -405,8 +249,7 @@ export function getInboxMessages(args: getInboxMessagesArgs) {
             return getDecryptedMessageHistory({
                 messagesTask: getEncryptedMessageHistory({
                     inbox_name: args.inbox_name, other_user: args.other_user,
-                }),
-                shared_secret: inbox.shared_secret
+                })
             })
         })
     )
@@ -441,16 +284,11 @@ export async function removeMessageFromPDS(inbox_name: string, ref: string) {
 }
 
 export async function saveIncomingMessage(envelope: Envelope) {
-    const inbox = await storage.load({
-        key: 'inboxes',
-        id: serializeInboxName(envelope.inbox_name as INBOX_NAME)
-    })
     const task = decryptEnvelope({
         envelope: {
             ...envelope,
             id: envelope.hid,
         },
-        shared_secret: inbox?.shared_secret
     })
 
     return Effect.runPromise(Effect.either(task))

@@ -30,9 +30,11 @@ export function decryptMessageSecretBox(messageWithNonce: string, key: string) {
 }
 
 export function _generateSharedSecret(pubkey: string, privkey: string) {
+    const privateKey = privkey.replace('0x', '')
+    const publicKey = pubkey.replace('0x', '')
 
-    const myPrivateKey = ed2curve.convertSecretKey(Buffer.from(privkey, 'hex'))
-    const theirPublicKey = ed2curve.convertPublicKey(Buffer.from(pubkey, 'hex'))
+    const myPrivateKey = ed2curve.convertSecretKey(Buffer.from(privateKey, 'hex'))
+    const theirPublicKey = ed2curve.convertPublicKey(Buffer.from(publicKey, 'hex'))
 
     if (!myPrivateKey || !theirPublicKey) {
         throw new Error("Unable to generate shared secret")
@@ -40,6 +42,7 @@ export function _generateSharedSecret(pubkey: string, privkey: string) {
 
     // Compute the shared secret using your private key and your friend's public key
     const sharedSecret = nacl.scalarMult(myPrivateKey, theirPublicKey)
+    console.log("Shared secret:", Buffer.from(sharedSecret).toString('hex'))
 
     return Buffer.from(sharedSecret).toString('hex') // This shared secret can be used to encrypt messages
 }

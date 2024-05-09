@@ -16,7 +16,7 @@ const config = {
     CONVERGENCE_URL: 'https://convergence.poseidon.ac',
     TRAWLER_API: "https://trawler.poseidon.ac",
     BARNICLE_API: "https://barnicle.poseidon.ac",
-    HERMES_MODULE_ADDRESS: "0x49b97913fbd1a22a5dbf5e79515fa6e799ec7baf5ac710edb2f9aaa68fea2977",
+    HERMES_MODULE_ADDRESS: "0xaf58b8a7f94ecf3666c008312c14bd04bb1cde3ea8f182bb9706be47f598f3b5",
     HERMES_API_URL: "https://hermes-api.poseidon.ac",
 } as const
 

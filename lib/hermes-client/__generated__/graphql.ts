@@ -32,6 +32,7 @@ export type Delegate = {
   __typename?: 'Delegate';
   address: Scalars['String']['output'];
   hid: Scalars['String']['output'];
+  public_key?: Maybe<Scalars['String']['output']>;
   timestamp?: Maybe<Scalars['Date']['output']>;
   user_address: Scalars['String']['output'];
 };
@@ -39,6 +40,7 @@ export type Delegate = {
 export type Envelope = {
   __typename?: 'Envelope';
   content?: Maybe<Scalars['JSON']['output']>;
+  delegate_public_key?: Maybe<Scalars['String']['output']>;
   hid: Scalars['String']['output'];
   id: Scalars['String']['output'];
   inbox_name: Scalars['String']['output'];
@@ -82,9 +84,23 @@ export type PhoneBook = {
 
 export type Query = {
   __typename?: 'Query';
+  delegates?: Maybe<Array<Delegate>>;
+  inbox?: Maybe<Inbox>;
   inboxHistory?: Maybe<Array<Envelope>>;
   inboxes?: Maybe<Array<Inbox>>;
   phoneBook?: Maybe<PhoneBook>;
+};
+
+
+export type QueryDelegatesArgs = {
+  address: Scalars['String']['input'];
+};
+
+
+export type QueryInboxArgs = {
+  active?: InputMaybe<Scalars['Boolean']['input']>;
+  address: Scalars['String']['input'];
+  viewer: Scalars['String']['input'];
 };
 
 
@@ -136,9 +152,26 @@ export type InboxHistoryQueryVariables = Exact<{
 }>;
 
 
-export type InboxHistoryQuery = { __typename?: 'Query', inboxHistory?: Array<{ __typename?: 'Envelope', id: string, ref: string, timestamp?: any | null, hid: string, inbox_name: string, sender_public_key: string, content?: any | null, reciever_public_key: string, sender: string, receiver: string }> | null };
+export type InboxHistoryQuery = { __typename?: 'Query', inboxHistory?: Array<{ __typename?: 'Envelope', id: string, ref: string, timestamp?: any | null, hid: string, inbox_name: string, sender_public_key: string, content?: any | null, reciever_public_key: string, sender: string, receiver: string, delegate_public_key?: string | null }> | null };
+
+export type GetInboxQueryVariables = Exact<{
+  viewer: Scalars['String']['input'];
+  address: Scalars['String']['input'];
+}>;
+
+
+export type GetInboxQuery = { __typename?: 'Query', inbox?: { __typename?: 'Inbox', id: string, owner_address: string, initiator_address: string, timestamp?: any | null, hid: string, active: boolean } | null };
+
+export type GetDelegatesQueryVariables = Exact<{
+  address: Scalars['String']['input'];
+}>;
+
+
+export type GetDelegatesQuery = { __typename?: 'Query', delegates?: Array<{ __typename?: 'Delegate', address: string, user_address: string, timestamp?: any | null, public_key?: string | null }> | null };
 
 
 export const GetPhoneBookDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetPhoneBook"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"address"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"phoneBook"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"address"},"value":{"kind":"Variable","name":{"kind":"Name","value":"address"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"address"}},{"kind":"Field","name":{"kind":"Name","value":"hid"}},{"kind":"Field","name":{"kind":"Name","value":"timestamp"}},{"kind":"Field","name":{"kind":"Name","value":"public_key"}}]}}]}}]} as unknown as DocumentNode<GetPhoneBookQuery, GetPhoneBookQueryVariables>;
 export const GetInboxesDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetInboxes"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"address"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"type"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"InboxType"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"active"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Boolean"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"inboxes"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"address"},"value":{"kind":"Variable","name":{"kind":"Name","value":"address"}}},{"kind":"Argument","name":{"kind":"Name","value":"type"},"value":{"kind":"Variable","name":{"kind":"Name","value":"type"}}},{"kind":"Argument","name":{"kind":"Name","value":"active"},"value":{"kind":"Variable","name":{"kind":"Name","value":"active"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"owner_address"}},{"kind":"Field","name":{"kind":"Name","value":"initiator_address"}},{"kind":"Field","name":{"kind":"Name","value":"timestamp"}},{"kind":"Field","name":{"kind":"Name","value":"hid"}},{"kind":"Field","name":{"kind":"Name","value":"active"}}]}}]}}]} as unknown as DocumentNode<GetInboxesQuery, GetInboxesQueryVariables>;
-export const InboxHistoryDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"InboxHistory"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"inbox_name"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"timestamp"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Date"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"inboxHistory"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"inbox_name"},"value":{"kind":"Variable","name":{"kind":"Name","value":"inbox_name"}}},{"kind":"Argument","name":{"kind":"Name","value":"timestamp"},"value":{"kind":"Variable","name":{"kind":"Name","value":"timestamp"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"ref"}},{"kind":"Field","name":{"kind":"Name","value":"timestamp"}},{"kind":"Field","name":{"kind":"Name","value":"hid"}},{"kind":"Field","name":{"kind":"Name","value":"inbox_name"}},{"kind":"Field","name":{"kind":"Name","value":"sender_public_key"}},{"kind":"Field","name":{"kind":"Name","value":"content"}},{"kind":"Field","name":{"kind":"Name","value":"reciever_public_key"}},{"kind":"Field","name":{"kind":"Name","value":"sender"}},{"kind":"Field","name":{"kind":"Name","value":"receiver"}}]}}]}}]} as unknown as DocumentNode<InboxHistoryQuery, InboxHistoryQueryVariables>;
+export const InboxHistoryDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"InboxHistory"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"inbox_name"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"timestamp"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Date"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"inboxHistory"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"inbox_name"},"value":{"kind":"Variable","name":{"kind":"Name","value":"inbox_name"}}},{"kind":"Argument","name":{"kind":"Name","value":"timestamp"},"value":{"kind":"Variable","name":{"kind":"Name","value":"timestamp"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"ref"}},{"kind":"Field","name":{"kind":"Name","value":"timestamp"}},{"kind":"Field","name":{"kind":"Name","value":"hid"}},{"kind":"Field","name":{"kind":"Name","value":"inbox_name"}},{"kind":"Field","name":{"kind":"Name","value":"sender_public_key"}},{"kind":"Field","name":{"kind":"Name","value":"content"}},{"kind":"Field","name":{"kind":"Name","value":"reciever_public_key"}},{"kind":"Field","name":{"kind":"Name","value":"sender"}},{"kind":"Field","name":{"kind":"Name","value":"receiver"}},{"kind":"Field","name":{"kind":"Name","value":"delegate_public_key"}}]}}]}}]} as unknown as DocumentNode<InboxHistoryQuery, InboxHistoryQueryVariables>;
+export const GetInboxDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"getInbox"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"viewer"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"address"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"inbox"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"viewer"},"value":{"kind":"Variable","name":{"kind":"Name","value":"viewer"}}},{"kind":"Argument","name":{"kind":"Name","value":"address"},"value":{"kind":"Variable","name":{"kind":"Name","value":"address"}}},{"kind":"Argument","name":{"kind":"Name","value":"active"},"value":{"kind":"BooleanValue","value":true}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"owner_address"}},{"kind":"Field","name":{"kind":"Name","value":"initiator_address"}},{"kind":"Field","name":{"kind":"Name","value":"timestamp"}},{"kind":"Field","name":{"kind":"Name","value":"hid"}},{"kind":"Field","name":{"kind":"Name","value":"active"}}]}}]}}]} as unknown as DocumentNode<GetInboxQuery, GetInboxQueryVariables>;
+export const GetDelegatesDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"getDelegates"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"address"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"delegates"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"address"},"value":{"kind":"Variable","name":{"kind":"Name","value":"address"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"address"}},{"kind":"Field","name":{"kind":"Name","value":"user_address"}},{"kind":"Field","name":{"kind":"Name","value":"timestamp"}},{"kind":"Field","name":{"kind":"Name","value":"public_key"}}]}}]}}]} as unknown as DocumentNode<GetDelegatesQuery, GetDelegatesQueryVariables>;

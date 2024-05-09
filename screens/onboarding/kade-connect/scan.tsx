@@ -1,8 +1,7 @@
 import { View, Text, Spinner, Heading, Button } from 'tamagui'
 import React, { useEffect, useState } from 'react'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
-import { CameraView, useCameraPermissions } from 'expo-camera/next'
-import { BarCodeScanningResult } from 'expo-camera/build/Camera.types'
+import { BarcodeScanningResult, CameraView, useCameraPermissions } from 'expo-camera'
 import sessionManager from '../../../lib/session-manager'
 import delegateManager from '../../../lib/delegate-manager'
 import { useRouter } from 'expo-router'
@@ -16,9 +15,10 @@ import Toast from 'react-native-toast-message'
 import { useQuery } from '@apollo/client'
 import { GET_CONNECTION, UPDATE_CONNECTION } from '../../../lib/convergence-client/queries'
 import { isString } from 'lodash'
+import { enableDirectMessagingCacheUpdate } from '../../../contract/modules/hermes/cache'
 
 const Scan = () => {
-    const [data, setData] = useState<null | BarCodeScanningResult>(null)
+    const [data, setData] = useState<null | BarcodeScanningResult>(null)
     const [initialized, setInitialized] = useState(false)
     const connectionQuery = useQuery(GET_CONNECTION, {
         variables: {
@@ -60,7 +60,7 @@ const Scan = () => {
 
             if (_data.connection && _data.connection.is_intent_created && !registered) {
                 const account = await delegateManager.linkAccount(_data?.connection, data?.data!)
-
+                enableDirectMessagingCacheUpdate()
                 if (!account) {
                     goToProfile()
                 }
@@ -121,7 +121,7 @@ const Scan = () => {
         })()
     }, [])
 
-    const handleBarCodeScanned = async (data: BarCodeScanningResult) => {
+    const handleBarCodeScanned = async (data: BarcodeScanningResult) => {
         console.log("Bar code scanned::", data)
         setData(data)
     }
