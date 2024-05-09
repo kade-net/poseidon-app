@@ -259,6 +259,7 @@ const ProfileDetails = (props: Props) => {
             </Animated.View>
             <YStack flex={1} w="100%" h="100%" >
                 <TabView
+                    swipeEnabled={false}
                     navigationState={{
                         index: currentTabIndex,
                         routes: tabRoutes

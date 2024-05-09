@@ -77,6 +77,7 @@ const DMTabs = () => {
           height: '100%',
           flex: 1
         }}
+        swipeEnabled={false}
         onIndexChange={handleCurrentTabIndexChange}
         renderScene={renderScene}
         renderTabBar={renderTabBar}
