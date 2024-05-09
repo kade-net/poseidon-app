@@ -49,7 +49,7 @@ export const getInboxHistory = gqlHermes(/* GraphQL */`
 
 export const getInbox = gqlHermes(/* GraphQL */`
  query getInbox($viewer: String!, $address: String!) {
-    inbox(viewer: $viewer, address: $address, active: true) {
+    inbox(viewer: $viewer, address: $address) {
         id
         owner_address
         initiator_address
