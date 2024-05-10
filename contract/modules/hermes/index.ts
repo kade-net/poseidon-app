@@ -52,6 +52,9 @@ class Hermes {
             },
             onError(error) {
                 disableDirectMessagingCacheUpdate()
+                posti.capture('hermes:registerInbox::', {
+                    error: error
+                })
                 // TODO: deal with error here
                 response.error = error
             },
@@ -104,6 +107,10 @@ class Hermes {
                 removeConversationRequestFromPending({
                     address: user_address
                 })
+
+                posti.capture('hermes:requestConversation::', {
+                    error: error
+                })
             },
         })
 
@@ -154,6 +161,9 @@ class Hermes {
                     address: requester_address
                 })
                 response.error = error
+                posti.capture('hermes:acceptRequest::', {
+                    error: error
+                })
             }
         })
 
@@ -219,6 +229,9 @@ class Hermes {
             onError(error) {
                 console.log("Error::", error)
                 response.error = error
+                posti.capture('hermes:send::', {
+                    error: error
+                })
             }
         })
 
@@ -233,6 +246,9 @@ class Hermes {
 
         if (Either.isEither(result)) {
             if (Either.isLeft(result)) {
+                posti.capture('getInboxHistory', {
+                    error: result.left
+                })
                 console.log("Error::", result.left)
                 // TODO: handle error
                 return []
@@ -266,6 +282,9 @@ class Hermes {
         if (Either.isEither(result)) {
             if (Either.isLeft(result)) {
                 console.log("Error::", result.left)
+                posti.capture('saveIncomingMessage', {
+                    error: result.left
+                })
                 // silent fail
             }
 

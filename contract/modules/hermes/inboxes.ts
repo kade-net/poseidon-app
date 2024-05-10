@@ -9,6 +9,7 @@ import { Envelope, GetInboxQuery } from "../../../lib/hermes-client/__generated_
 import { MESSAGE, serializeInboxName } from "./utils"
 import { TDM } from "../../../schema"
 import { broadcast } from "effect/Stream"
+import posti from "../../../lib/posti"
 
 interface InboxHeaders {
     current: string
@@ -314,11 +315,13 @@ class Inboxes {
             if (Either.isEither(eitherResult)) {
                 if (Either.isLeft(eitherResult)) {
                     console.log("Unable to load Inbox", eitherResult.left)
+                    posti.capture('loading_inbox', { error: eitherResult.left })
                     throw eitherResult.left
                 } else {
                     const persistEitherResult = await Effect.runPromise(Effect.either(this.persistInboxTask(eitherResult.right)))
                     if (Either.isLeft(persistEitherResult)) {
                         console.log("Unable to persist Inbox", persistEitherResult.left)
+                        posti.capture('persisting_inbox', { error: persistEitherResult.left })
                         throw persistEitherResult.left
                     }
 
