@@ -126,7 +126,7 @@ const PickUserName = () => {
     }
 
     return (
-        <View backgroundColor={"$background"} flex={1} justifyContent='space-between' px={20} >
+        <View backgroundColor={"$background"} flex={1} justifyContent='space-between' px={20} pb={40} >
             <View w="100%" rowGap={20}>
                 <UnstyledButton callback={goBack} icon={<ChevronLeft/>} label={"Back"}/>
                 <View w="100%" rowGap={10} >

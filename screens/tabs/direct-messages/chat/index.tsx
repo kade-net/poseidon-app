@@ -27,14 +27,20 @@ const _Chat = (props: Props) => {
 
   const messageQuery = useQuery({
     queryKey: ['getDecryptedMessageHistory', inbox_name],
-    queryFn: () => hermes.getPDSData(inbox_name)
+    queryFn: () => hermes.getPDSData(inbox_name, other_user)
   })
 
   const onRefetch = async () => {
     if (handleRefresh) {
       await handleRefresh()
     }
-    messageQuery.refetch()
+    try {
+      await messageQuery.refetch()
+
+    }
+    catch (e) {
+
+    }
   }
 
 
@@ -117,13 +123,23 @@ const Chat = () => {
   const initialMessageQuery = useQuery({
     queryKey: ['getDecryptedMessageHistory', inbox_name, other_user],
     queryFn: () => hermes.getInboxHistory(inbox_name, other_user),
-    enabled: !loadInbox.isLoading
+    enabled: !loadInbox.isLoading,
+
   })
 
 
-  if (initialMessageQuery.isLoading || loadInbox.isLoading) return <Loading flex={1} w="100%" h="100%" backgroundColor={'$background'} />
+  useFocusEffect(useCallback(() => {
+    if (!initialMessageQuery.isLoading && !initialMessageQuery.isFetching) {
+      initialMessageQuery.refetch()
+    }
+  }, []))
 
-  return <_Chat handleRefresh={() => initialMessageQuery.refetch()} inbox_name={inbox_name} other_user={other_user} timestamp={view_timestamp} />
+
+  if (initialMessageQuery.isLoading || loadInbox.isLoading || loadInbox.isFetching) return <Loading flex={1} w="100%" h="100%" backgroundColor={'$background'} />
+
+  return <_Chat handleRefresh={async () => {
+    await initialMessageQuery.refetch()
+  }} inbox_name={inbox_name} other_user={other_user} timestamp={view_timestamp} />
 }
 
 export default Chat

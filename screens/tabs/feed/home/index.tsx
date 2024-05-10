@@ -1,5 +1,5 @@
 import { View, Text, Avatar, Heading, ButtonIcon, useTheme, Separator, Sheet, Button, TextArea, ScrollView, Spinner, XStack } from 'tamagui'
-import React, { useCallback, useMemo, useState } from 'react'
+import React, { useCallback, useMemo, useRef, useState } from 'react'
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context'
 import { ImagePlus, MessageCirclePlus, Settings } from '@tamagui/lucide-icons'
 import { Animated, BackHandler, FlatList, KeyboardAvoidingView, ListRenderItem, Platform, TouchableOpacity } from 'react-native'
@@ -27,9 +27,14 @@ import { getMutedUsers, getRemovedFromFeed } from '../../../../contract/modules/
 import { Utils } from '../../../../utils'
 import Empty from '../../../../components/ui/feedback/empty'
 import Loading from '../../../../components/ui/feedback/loading'
+import * as Haptics from 'expo-haptics'
+import { useScrollToTop } from '@react-navigation/native'
 
 const Home = () => {
+    const flatlistRef = useRef<FlatList>(null)
     const [refetching, setRefetching] = useState(false)
+
+    useScrollToTop(flatlistRef)
 
     const publicationsQuery = useQuery(GET_PUBLICATIONS, {
         variables: {
@@ -113,6 +118,7 @@ const Home = () => {
     }
 
     const handleFetchTop = async () => {
+        Haptics.selectionAsync()
         await publications.loadRemovedFromFeed()
         setRefetching(true)
         try {
@@ -187,6 +193,7 @@ const Home = () => {
 
             }} >
                 <Animated.FlatList
+                    ref={flatlistRef}
                     style={
                         [
                             {

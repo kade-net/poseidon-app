@@ -1,8 +1,14 @@
-import { add, isNull, remove } from "lodash";
+import { add, isEmpty, isNull, remove } from "lodash";
 import { hermesClient } from "../../../data/apollo";
 import delegateManager from "../../../lib/delegate-manager";
 import { getInboxes, getPhoneBook } from "../../../lib/hermes-client/queries";
 import { GetInboxesQuery, Inbox, InboxType } from "../../../lib/hermes-client/__generated__/graphql";
+import ephemeralCache from "../../../lib/local-store/ephemeral-cache";
+import { queryClient } from "../../../data/query";
+import { Effect, Either } from "effect";
+import { UnknownError } from "../../../utils/errors";
+import { MESSAGE } from "./utils";
+import hermes from ".";
 
 
 export async function enableDirectMessagingCacheUpdate() {
@@ -89,6 +95,10 @@ export function acceptMessageRequestUpdateCache(args: acceptMessageRequestUpdate
 
         })
 
+        if (updatedInbox?.id) {
+            ephemeralCache.set(updatedInbox?.id, true)
+        }
+
         hermesClient.writeQuery({
             query: getInboxes,
             variables: {
@@ -150,6 +160,10 @@ export function removeAcceptedMessageRequestUpdateCache(args: removeAcceptedMess
                 type: InboxType.Received
             }
         })
+
+        if (updatedInbox) {
+            ephemeralCache.set(updatedInbox?.id, false)
+        }
 
         hermesClient.writeQuery({
             query: getInboxes,

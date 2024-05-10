@@ -1,18 +1,20 @@
 import { Effect, Either } from 'effect'
 import delegateManager from '../../../lib/delegate-manager'
-import { NoOwner } from '../../../utils/errors'
+import { NoOwner, UnknownError } from '../../../utils/errors'
 import { constructConvergenceTransaction, settleConvergenceTransaction } from '../../../utils/transactions'
 import config from '../../../config'
 import { AcceptRequestArgs, RegisterRequestInboxInputArgs, RequestConversationArgs, SendArgs } from '../../../lib/convergence-client/__generated__/graphql'
 import { FunctionResponse } from '../../../utils/functions'
 import { TDM } from '../../../schema'
-import { INBOX_NAME, encryptEnvelopeContent, getInboxMessages, retrieveMessagesFromPDS, saveIncomingMessage, saveOwnMessage, serializeInboxName } from './utils'
+import { INBOX_NAME, MESSAGE, encryptEnvelopeContent, getInboxMessages, retrieveMessagesFromPDS, saveIncomingMessage, saveOwnMessage, serializeInboxName } from './utils'
 import { queryClient } from '../../../data/query'
 import storage from '../../../lib/storage'
 import { acceptMessageRequestUpdateCache, addConversationRequestToPending, disableDirectMessagingCacheUpdate, enableDirectMessagingCacheUpdate, removeAcceptedMessageRequestUpdateCache, removeConversationRequestFromPending } from './cache'
 import posti from '../../../lib/posti'
-import { hermesClient } from '../../../data/apollo'
+import client, { hermesClient } from '../../../data/apollo'
 import { getPhoneBook } from '../../../lib/hermes-client/queries'
+import { isEmpty } from 'lodash'
+import { GET_MY_PROFILE } from '../../../utils/queries'
 
 class Hermes {
 
@@ -79,8 +81,8 @@ class Hermes {
             name: using_owner ? 'requestConversation' : 'delegateRequestConversation',
             variables: {
                 envelope: "",
-                sender_address: delegateManager.owner!,
-                user_address: using_owner ? delegateManager.owner! : delegateManager.account?.address().toString()!,
+                sender_address: using_owner ? delegateManager.owner! : delegateManager.account?.address().toString()!,
+                user_address: user_address
             } as RequestConversationArgs
         })
 
@@ -242,10 +244,17 @@ class Hermes {
         return []
     }
 
-    async getPDSData(inbox_name: string) {
+    async getPDSData(inbox_name: string, other_user: string, retry?: boolean): Promise<Array<MESSAGE>> {
 
         const result = await retrieveMessagesFromPDS(inbox_name as INBOX_NAME)
 
+        if (retry) {
+            return result
+        }
+        if (isEmpty(result)) {
+            await this.getInboxHistory(inbox_name, other_user)
+            return this.getPDSData(inbox_name, other_user, true)
+        }
         return result
 
     }
@@ -268,6 +277,40 @@ class Hermes {
         }
     }
 
+    async getLastMessage(inbox_name: string, other_user: string) {
+
+        const task = Effect.tryPromise({
+            try: async () => {
+                const messages: Array<MESSAGE> = queryClient.getQueryData(['getDecryptedMessageHistory', inbox_name]) ?? []
+                return messages
+            },
+            catch(error) {
+                return new UnknownError(error)
+            },
+        }).pipe(
+            Effect.flatMap((messages) => {
+                if (!isEmpty(messages)) {
+                    const message = messages[messages.length - 1]
+                    if (message) return Effect.succeed(message)
+                }
+                return Effect.tryPromise({
+                    try: async () => {
+                        const messages = await hermes.getPDSData(inbox_name, other_user)
+                        return messages?.at(-1) ?? null
+                    },
+                    catch(error) {
+                        return new UnknownError(error)
+                    },
+                })
+            })
+        )
+
+        const eitherResult = await Effect.runPromise(Effect.either(task))
+
+        if (Either.isLeft(eitherResult)) return null
+        return eitherResult.right
+    }
+
     // !!! IMPORTANT: this is a dev only function should never be called in prod
     async clearSavedMessages(inbox_name: string) {
         if (__DEV__) {
@@ -281,19 +324,33 @@ class Hermes {
     // !!! IMPORTANT: this should only run for the testers at should probably be removed in prod
     async checkHasInboxIfNotRegister() {
         // assumption - is self delegate
+
+        if (!delegateManager.owner) {
+            return
+        }
         try {
-            const phonebook = await hermesClient.query({
-                query: getPhoneBook,
+            const profile = await client.query({
+                query: GET_MY_PROFILE,
                 variables: {
                     address: delegateManager.owner!
                 }
             })
 
-            if (!phonebook.data.phoneBook) {
-                await this.registerInbox()
-            }
-            else {
-                console.log("phonebook already exists")
+            if (profile.data.account?.profile) {
+                const phonebook = await hermesClient.query({
+                    query: getPhoneBook,
+                    variables: {
+                        address: delegateManager.owner!
+                    }
+                })
+
+                if (!phonebook.data.phoneBook) {
+                    await this.registerInbox()
+                }
+                else {
+                    console.log("phonebook already exists")
+                }
+
             }
         }
         catch (e) {

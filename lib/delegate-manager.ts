@@ -13,6 +13,7 @@ import posti from './posti';
 import config from '../config';
 import { CONFIRM_DELEGATE_LINKED, CREATE_ACCOUNT_LINK_INTENT, INIT_DELEGATE, UPDATE_CONNECTION } from './convergence-client/queries';
 import { Connection } from './convergence-client/__generated__/graphql';
+import { isEmpty } from 'lodash';
 
 
 const DERIVATION_PATH = "m/44'/637'/0'/0'/0'"
@@ -297,16 +298,18 @@ class DelegateManager {
             this.setOwner(this.account?.address()?.toString())
         }
         else {
-            this.setOwner(delegate_owner_address)
+            if (delegate_owner_address) {
+                this.setOwner(delegate_owner_address)
+            }
 
-            const profile = await client.query({
+            const profile = this.owner ? await client.query({
                 query: GET_MY_PROFILE,
                 variables: {
                     address: this.owner!
                 }
-            })
+            }) : null
 
-            if (profile.data.account) {
+            if (profile?.data.account) {
                 console.log('Profile::', profile.data.account)
                 SecureStore.setItem('profile', 'registered')
                 SecureStore.setItem('account', 'registered')
@@ -322,12 +325,14 @@ class DelegateManager {
 
         console.log('Owner::', this.owner)
 
-        await client.query({
-            query: GET_MY_PROFILE,
-            variables: {
-                address: this.owner!
-            }
-        })
+        if (this.owner) {
+            await client.query({
+                query: GET_MY_PROFILE,
+                variables: {
+                    address: this.owner!
+                }
+            })
+        }
 
 
     }
@@ -343,7 +348,9 @@ class DelegateManager {
 
     async setOwner(owner: string) {
         this._owner = owner
-        SecureStore.setItem('owner', owner)
+        if (!isEmpty(owner)) {
+            SecureStore.setItem('owner', owner)
+        }
     }
 
     async setUsername(username: string) {

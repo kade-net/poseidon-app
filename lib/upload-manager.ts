@@ -5,6 +5,7 @@ import * as FileSystem from 'expo-file-system'
 import { Buffer } from 'buffer'
 import posti from "./posti"
 import * as MediaLibrary from 'expo-media-library'
+import { Platform } from "react-native"
 
 
 const cloudfront_url = 'https://dw26fem5oa72i.cloudfront.net/'
@@ -80,34 +81,11 @@ class UploadManager {
     async downloadFile(uri: string) {
         try {
 
-
-
             const timestamp = new Date().getTime().toString()
             const res = await FileSystem.downloadAsync(uri, `${FileSystem.documentDirectory}${timestamp}.jpg`)
+            await MediaLibrary.saveToLibraryAsync(res.uri)
 
-            const { status } = await MediaLibrary.requestPermissionsAsync()
 
-            if (status == 'granted') {
-
-                try {
-                    const asset = await MediaLibrary.createAssetAsync(res.uri);
-                    const album = await MediaLibrary.getAlbumAsync('Download');
-                    if (album == null) {
-                        await MediaLibrary.createAlbumAsync('Download', asset, false);
-                    } else {
-                        await MediaLibrary.addAssetsToAlbumAsync([asset], album, false);
-                    }
-
-                }
-                catch (e) {
-                    console.log(`SOMETHING WENT WRONG:: ${e}`)
-                    throw new Error('Unable to download file')
-                }
-
-            }
-            else {
-                throw new Error('Permission denied')
-            }
         }
         catch (e) {
             console.log(`SOMETHING WENT WRONG:: ${e}`)

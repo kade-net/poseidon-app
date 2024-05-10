@@ -37,9 +37,16 @@ const DirectMessageTopBar = (props: P) => {
                 {/* <SearchInput
                     placeholder="Search"
                 /> */}
-                <Heading>
-                    Direct Messages
-                </Heading>
+                <XStack alignItems="center" columnGap={10} >
+                    <Heading>
+                        Direct Messages
+                    </Heading>
+                    <XStack alignItems="center" px={5} borderWidth={1} borderColor={'$primary'} justifyContent="center" borderRadius={100} >
+                        <Text>
+                            Beta
+                        </Text>
+                    </XStack>
+                </XStack>
                 <Link
                     asChild
                     href={{

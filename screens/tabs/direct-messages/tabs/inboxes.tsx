@@ -9,6 +9,7 @@ import ChatPreview from '../components/chat-preview'
 import ChatRequest from '../components/chat-request'
 import Empty from '../../../../components/ui/feedback/empty'
 import Loading from '../../../../components/ui/feedback/loading'
+import ephemeralCache from '../../../../lib/local-store/ephemeral-cache'
 
 interface Props {
     variables: Exact<{
@@ -48,7 +49,8 @@ const Inboxes = (props: Props) => {
                 }}
                 keyExtractor={(item) => item.id}
                 renderItem={({ item }) => {
-                    if (item.active) return <ChatPreview
+                    const is_cached_as_active = ephemeralCache.get(item.id) as boolean
+                    if (item.active || is_cached_as_active) return <ChatPreview
                         data={item}
                     />
 

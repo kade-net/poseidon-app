@@ -1,5 +1,5 @@
 import { View, Text, XStack, Avatar, YStack } from 'tamagui'
-import React, { useEffect, useMemo, useState } from 'react'
+import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import { useQuery } from '@apollo/client'
 import { GET_MY_PROFILE } from '../../../../utils/queries'
 import { Utils } from '../../../../utils'
@@ -13,7 +13,7 @@ import dayjs from 'dayjs'
 import relativeTime from 'dayjs/plugin/relativeTime'
 import { queryClient } from '../../../../data/query'
 import { isArray } from 'lodash'
-import { useQuery as uzQuery } from '@tanstack/react-query'
+import { useQuery as uzQuery } from 'react-query'
 dayjs.extend(relativeTime)
 
 interface Props {
@@ -25,27 +25,23 @@ const ChatPreview = (props: Props) => {
     const profileQuery = useQuery(GET_MY_PROFILE, {
         variables: {
             address: address
-        }
+        },
+        fetchPolicy: 'cache-and-network'
     })
 
-    const [lastMessage, setLastMessage] = useState<MESSAGE | null>(null)
-
-
-    useFocusEffect(() => {
-        const messages: Array<MESSAGE> = queryClient.getQueryData(['getDecryptedMessageHistory', data.id]) ?? []
-        if (data.id && isArray(messages) && messages.length > 0) {
-            ; (async () => {
-                try {
-
-                    const lastMessage = messages[(messages?.length ?? 1) - 1]
-                    setLastMessage(lastMessage)
-                }
-                catch (e) {
-                    // ignore
-                }
-            })();
-        }
+    const { data: lastMessage, refetch: refetchLastMessage, isFetching, isLoading } = uzQuery({
+        queryKey: ['chatLastMessage', data.id],
+        queryFn: () => hermes.getLastMessage(data.id!, address),
+        enabled: !!data.id,
+        refetchOnMount: true,
     })
+
+    useFocusEffect(useCallback(() => {
+        if (data.id) {
+            refetchLastMessage()
+        }
+    }, []))
+
 
     return (
         <Link

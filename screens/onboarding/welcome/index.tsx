@@ -1,7 +1,7 @@
 import { Link, router, useFocusEffect, useRouter } from 'expo-router'
 import React, { useCallback, useEffect } from 'react'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
-import { Button, Image, SizableText, View } from 'tamagui'
+import { Button, Image, SizableText, View, YStack } from 'tamagui'
 import petra from '../../../lib/wallets/petra'
 import delegateManager from '../../../lib/delegate-manager'
 import { User } from '@tamagui/lucide-icons'
@@ -40,7 +40,7 @@ const WelcomeScreen = () => {
     }
     return (
         <View w="100%" backgroundColor={"$background"} alignItems='center' justifyContent='space-between' flex={1} px={20}>
-            <View h="80%" w="100%" alignItems='center' justifyContent='center' >
+            <View flex={1} w="100%" alignItems='center' justifyContent='center' >
                 <View
                     h={80}
                     w={80}
@@ -53,15 +53,19 @@ const WelcomeScreen = () => {
                 </View>
             </View>
 
-            <View w="100%" rowGap={20}  >
-                <Button icon={<User size={20}/>} w="100%" variant='outlined' onPress={goToSignIn}  >
-                    <SizableText fontSize={"$sm"}>Sign In</SizableText>
-                </Button>
-                <Button w="100%" onPress={goToCreateAccount} backgroundColor={"$button"} marginBottom={Utils.dynamicHeight(5)}>
-                    <SizableText fontSize={"$sm"} color={"$buttonText"} >Create Account</SizableText>
-                </Button>
-
-            </View>
+            <YStack w="100%" rowGap={10} >
+                <View w="100%" rowGap={20}  >
+                    <Button icon={<User size={20} />} w="100%" variant='outlined' onPress={goToSignIn}  >
+                        <SizableText fontSize={"$sm"}>Sign In</SizableText>
+                    </Button>
+                    <Button w="100%" onPress={goToCreateAccount} backgroundColor={"$button"}>
+                        <SizableText fontSize={"$sm"} color={"$buttonText"} >Create Account</SizableText>
+                    </Button>
+                </View>
+                <Text alignItems='center' textAlign='center' fontSize={'$1'} >
+                    By creating an account, you agree to our <Text color={'$COAText'} >Terms of Service</Text> and <Text color={'$COAText'} >Privacy Policy</Text>
+                </Text>
+            </YStack>
 
         </View >
         // <SizableText>Hello</SizableText>

@@ -34,7 +34,8 @@ const People = () => {
     onError(error) {
       console.log("Error::", error)
     },
-    client: convergenceClient
+    client: convergenceClient,
+    fetchPolicy: 'network-only'
   })
   const [selectedProfile, setSelectedProfile] = useState<Partial<CAccount> | null>(null)
   const { onOpen, isOpen, onToggle, onClose } = useDisclosure()

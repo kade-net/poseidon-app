@@ -199,7 +199,7 @@ const Settings = () => {
             </YStack>
             <XStack w="100%" alignItems='center' justifyContent='center' >
                 <Text>
-                    Version 0.0.21
+                    Version 0.0.22
                 </Text>
             </XStack>
             <XStack alignItems='center' justifyContent='center' p={20} >

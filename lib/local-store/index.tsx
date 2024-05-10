@@ -620,18 +620,22 @@ class LocalStore {
             }
         }
 
+        const _newProfile = {
+            ...profile,
+            __typename: "Profile" as const,
+            bio: profile.bio ?? "",
+            display_name: profile.display_name ?? "",
+            pfp: profile.pfp ?? "",
+            address: delegateManager.owner!
+        }
+
+        ephemeralCache.set(`lastProfileUpdate:${delegateManager.owner}`, _newProfile)
+
         client.writeQuery({
             query: GET_MY_PROFILE,
             data: {
                 account: {
-                    profile: {
-                        ...profile,
-                        __typename: "Profile",
-                        bio: profile.bio ?? "",
-                        display_name: profile.display_name ?? "",
-                        pfp: profile.pfp ?? "",
-                        address: delegateManager.owner!
-                    },
+                    profile: _newProfile,
                     username: {
                         __typename: "Username",
                         username: username ?? "_u38",

@@ -9837,7 +9837,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"expo-updates-interface@npm:~0.16.0":
+"expo-updates-interface@npm:~0.16.2":
   version: 0.16.2
   resolution: "expo-updates-interface@npm:0.16.2"
   peerDependencies:
@@ -9846,9 +9846,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"expo-updates@npm:~0.25.10":
-  version: 0.25.10
-  resolution: "expo-updates@npm:0.25.10"
+"expo-updates@npm:~0.25.11":
+  version: 0.25.11
+  resolution: "expo-updates@npm:0.25.11"
   dependencies:
     "@expo/code-signing-certificates": "npm:0.0.5"
     "@expo/config": "npm:~9.0.0-beta.0"
@@ -9860,7 +9860,7 @@ __metadata:
     expo-eas-client: "npm:~0.12.0"
     expo-manifests: "npm:~0.14.0"
     expo-structured-headers: "npm:~3.8.0"
-    expo-updates-interface: "npm:~0.16.0"
+    expo-updates-interface: "npm:~0.16.2"
     fast-glob: "npm:^3.3.2"
     fbemitter: "npm:^3.0.0"
     ignore: "npm:^5.3.1"
@@ -9869,7 +9869,7 @@ __metadata:
     expo: "*"
   bin:
     expo-updates: bin/cli.js
-  checksum: 1ed39cfe8af89b4730f75a37e0ccb334c38863b5dacbb5ad053d5ae666db43111db9b8e675a54443e6aaa9dd66d5f33ce34a44b49a87f36d1b6f9d5a969d9fcf
+  checksum: 5d31abb937a4b22a1e4b3542ad873d9fc82ca21de81d62e2de81ffd3909e02680ab019cc8fa51f86f27fbdb201204585608c63699f71bee126eb9a2337bc68b1
   languageName: node
   linkType: hard
 
@@ -9882,9 +9882,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"expo@npm:^51.0.1":
-  version: 51.0.1
-  resolution: "expo@npm:51.0.1"
+"expo@npm:~51.0.2":
+  version: 51.0.2
+  resolution: "expo@npm:51.0.2"
   dependencies:
     "@babel/runtime": "npm:^7.20.0"
     "@expo/cli": "npm:0.18.10"
@@ -9903,7 +9903,7 @@ __metadata:
     whatwg-url-without-unicode: "npm:8.0.0-3"
   bin:
     expo: bin/cli
-  checksum: 96230d6a0ba7774fe0e45d1ca9659decf49f87791c289fc3b22dfffd97e34e534f29a3598def2349c02eaf125e6126861a6d154952831e7fda64c999c8389312
+  checksum: ce992efd8f794a04dc73b034e9f59e30e1fbde22eea3781e753956d01392e9cd694a4e1aea413d6d2fb63e8eee007a32150338188829cc8adeb88c38b516cc46
   languageName: node
   linkType: hard
 
@@ -14548,7 +14548,7 @@ __metadata:
     dotenv: "npm:^16.4.5"
     ed2curve: "npm:^0.3.0"
     effect: "npm:^3.1.0"
-    expo: "npm:^51.0.1"
+    expo: "npm:~51.0.2"
     expo-application: "npm:~5.9.1"
     expo-camera: "npm:~15.0.5"
     expo-clipboard: "npm:~6.0.3"
@@ -14569,7 +14569,7 @@ __metadata:
     expo-splash-screen: "npm:~0.27.4"
     expo-status-bar: "npm:~1.12.1"
     expo-system-ui: "npm:~3.0.4"
-    expo-updates: "npm:~0.25.10"
+    expo-updates: "npm:~0.25.11"
     expo-web-browser: "npm:~13.0.3"
     graphql: "npm:^15.8.0"
     graphql-request: "npm:^6.1.0"
@@ -14585,7 +14585,7 @@ __metadata:
     react-native-get-random-values: "npm:~1.11.0"
     react-native-opengraph-kit: "npm:^3.0.1"
     react-native-pager-view: "npm:6.3.0"
-    react-native-reanimated: "npm:3.10.0"
+    react-native-reanimated: "npm:~3.10.1"
     react-native-safe-area-context: "npm:4.10.1"
     react-native-screens: "npm:3.31.1"
     react-native-storage: "npm:^1.0.1"
@@ -15064,9 +15064,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-native-reanimated@npm:3.10.0":
-  version: 3.10.0
-  resolution: "react-native-reanimated@npm:3.10.0"
+"react-native-reanimated@npm:~3.10.1":
+  version: 3.10.1
+  resolution: "react-native-reanimated@npm:3.10.1"
   dependencies:
     "@babel/plugin-transform-arrow-functions": "npm:^7.0.0-0"
     "@babel/plugin-transform-nullish-coalescing-operator": "npm:^7.0.0-0"
@@ -15080,7 +15080,7 @@ __metadata:
     "@babel/core": ^7.0.0-0
     react: "*"
     react-native: "*"
-  checksum: 253f2d128a8b90dc3c3e66e5ad1cac9e3fd4dfe6cdce5b7ec34da41e6df3ae615f6302c25a22d1f49a3560a2874b065fa6969725d0ada023348fb51bc99c906d
+  checksum: bb2a0802fd619999dd5d1dd9734875fc14699de29d3537003997e85040dd3a0b430716192388c71544d600fc7abf243af1cfc24ce2513c282b046e8bb3430125
   languageName: node
   linkType: hard
 

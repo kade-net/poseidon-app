@@ -109,9 +109,9 @@ const cache = new InMemoryCache({
             case "Account": {
                 return object.address
             }
-            case "Profile": {
-                return object.address
-            }
+            // case "Profile": {
+            //     return object.address
+            // }
             default: {
                 return defaultDataIdFromObject(object)
             }
@@ -262,6 +262,23 @@ const cache = new InMemoryCache({
                             }
                         }
                         return incomingClone
+                    }
+                }
+            }
+        },
+        Account: {
+            fields: {
+                profile: {
+                    keyArgs: ['address'],
+                    merge(existing, incoming, options) {
+                        const lastProfileUpdate = ephemeralCache.get(`lastProfileUpdate:${incoming?.address}`)
+
+                        if (lastProfileUpdate && incoming) {
+                            console.log("Last Profile Update", lastProfileUpdate)
+                            return lastProfileUpdate
+                        }
+
+                        return incoming
                     }
                 }
             }

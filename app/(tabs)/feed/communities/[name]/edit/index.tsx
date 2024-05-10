@@ -3,6 +3,7 @@ import React from 'react'
 import EditCommunity from '../../../../../../screens/tabs/communities/edit'
 import { Stack } from 'expo-router'
 import CommunitiesEditTopBar from '../../../../../../screens/tabs/communities/edit/top-bar'
+import TopBarWithBack from '../../../../../../components/ui/navigation/top-bar-with-back'
 
 const index = () => {
     return (
@@ -10,7 +11,10 @@ const index = () => {
             <Stack.Screen
                 options={{
                     header(props) {
-                        return <CommunitiesEditTopBar {...props} />
+                        return <TopBarWithBack
+                            navigation={props.navigation}
+                            title='Edit Community'
+                        />
                     },
                 }}
             />

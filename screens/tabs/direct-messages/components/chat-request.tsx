@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useMemo } from 'react'
 import { Inbox } from '../../../../lib/hermes-client/__generated__/graphql'
 import delegateManager from '../../../../lib/delegate-manager'
 import { GET_MY_PROFILE } from '../../../../utils/queries'
@@ -10,6 +10,7 @@ import { Check, X } from '@tamagui/lucide-icons'
 import hermes from '../../../../contract/modules/hermes'
 import * as Haptics from 'expo-haptics'
 import Toast from 'react-native-toast-message'
+import ephemeralCache from '../../../../lib/local-store/ephemeral-cache'
 
 interface Props {
     data: Partial<Inbox>
@@ -18,6 +19,15 @@ interface Props {
 const ChatRequest = (props: Props) => {
     const [loading, setLoading] = React.useState(false)
     const { data } = props
+
+    const doesCacheSayActive = useMemo(() => {
+        if (data?.id) {
+            const cached = ephemeralCache.get(data.id) as boolean
+            return cached ?? false
+        }
+        return false
+    }, [data.id])
+
     const address = (data?.owner_address == delegateManager.owner ? data?.initiator_address : data?.owner_address)!
     const profileQuery = useQuery(GET_MY_PROFILE, {
         variables: {
