@@ -5,7 +5,7 @@ import * as FileSystem from 'expo-file-system'
 import { Buffer } from 'buffer'
 import posti from "./posti"
 import * as MediaLibrary from 'expo-media-library'
-import { Platform } from "react-native"
+import { Alert, Platform } from "react-native"
 
 
 const cloudfront_url = 'https://dw26fem5oa72i.cloudfront.net/'
@@ -84,8 +84,7 @@ class UploadManager {
             const timestamp = new Date().getTime().toString()
             const res = await FileSystem.downloadAsync(uri, `${FileSystem.documentDirectory}${timestamp}.jpg`)
             await MediaLibrary.saveToLibraryAsync(res.uri)
-
-
+            Alert.alert('Image saved')
         }
         catch (e) {
             console.log(`SOMETHING WENT WRONG:: ${e}`)
