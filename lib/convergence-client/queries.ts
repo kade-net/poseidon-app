@@ -172,3 +172,9 @@ export const GET_ANCHOR_HISTORY = gql(/* GraphQL */`
     }
 
 `)
+
+export const DELETE_ACCOUNT = gql(/* GraphQL */`
+    mutation AdminRemoveAccount($input: adminRemoveAccountArgs!) {
+        adminRemoveAccount(input: $input)
+    }
+`)

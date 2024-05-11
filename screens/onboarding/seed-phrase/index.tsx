@@ -137,14 +137,15 @@ const SeedPhrase = () => {
     }
 
     return (
-        <View px={20} flex={1} backgroundColor={"$background"}>
+        <View px={20} flex={1} pb={20} backgroundColor={"$background"}>
             <View w="100%" columnGap={20} >
                 <UnstyledButton callback={goBack} icon={<ChevronLeft/>} label={"Back"}/>
             </View>
             <View
-                flex={1}
                 alignItems='center'
                 justifyContent='space-between'
+                flex={1}
+                w="100%"
             >
                 <View w="100%" rowGap={10} >
                     <Heading color={"$text"}>
@@ -174,9 +175,7 @@ const SeedPhrase = () => {
                     <BaseButton
                         loading={loading}
                         onPress={form.handleSubmit(handleSubmit)}
-                        flex={1}
                         w="100%"
-
                     >
                         <Text>
                             Done

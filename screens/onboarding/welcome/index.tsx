@@ -9,6 +9,7 @@ import { Text } from 'tamagui'
 import account from '../../../contract/modules/account'
 import { Utils } from '../../../utils'
 import { BackHandler, useColorScheme } from 'react-native'
+import * as Linking from 'expo-linking'
 
 
 const WelcomeScreen = () => {
@@ -38,6 +39,15 @@ const WelcomeScreen = () => {
     const goToSignIn = () => {
         router.replace('/onboard/signin')
     }
+
+    const handleOpenTerms = () => {
+        Linking.openURL('https://legal.poseidon.ac/legal/terms-of-service')
+    }
+
+    const handleOpenPrivacy = () => {
+        Linking.openURL('https://legal.poseidon.ac/legal/privacy-policy')
+    }
+
     return (
         <View w="100%" backgroundColor={"$background"} alignItems='center' justifyContent='space-between' flex={1} px={20}>
             <View flex={1} w="100%" alignItems='center' justifyContent='center' >
@@ -63,7 +73,7 @@ const WelcomeScreen = () => {
                     </Button>
                 </View>
                 <Text alignItems='center' textAlign='center' fontSize={'$1'} >
-                    By creating an account, you agree to our <Text color={'$COAText'} >Terms of Service</Text> and <Text color={'$COAText'} >Privacy Policy</Text>
+                    By creating an account, you agree to our <Text color={'$COAText'} onPress={handleOpenTerms} >Terms of Service</Text> and <Text onPress={handleOpenPrivacy} color={'$COAText'} >Privacy Policy</Text>
                 </Text>
             </YStack>
 

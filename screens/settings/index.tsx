@@ -1,7 +1,7 @@
 import { View, Text, YStack, XStack, Separator, H4, Button, Spinner } from 'tamagui'
 import React, { useEffect, useState } from 'react'
 import { TouchableOpacity } from 'react-native'
-import { Anchor, ArrowRight, Bell, ChevronRight, KeySquare, Layout, LayoutGrid, Wallet } from '@tamagui/lucide-icons'
+import { Anchor, ArrowRight, Bell, ChevronRight, KeySquare, Layout, LayoutGrid, Trash, Wallet } from '@tamagui/lucide-icons'
 import { Link, useFocusEffect, useNavigation, useRouter } from 'expo-router'
 import account from '../../contract/modules/account'
 import delegateManager from '../../lib/delegate-manager'
@@ -189,6 +189,25 @@ const Settings = () => {
                                 <Wallet />
                                 <H4 textTransform='none' >
                                     Wallet
+                                </H4>
+                            </XStack>
+                            <ChevronRight />
+                        </XStack>
+                        <Separator />
+                    </YStack>
+                </Link>
+                <Link
+                    href="/settings/delete/"
+                    asChild
+                >
+                    <YStack style={{
+                        width: "100%",
+                    }} >
+                        <XStack w="100%" p={20} justifyContent='space-between' >
+                            <XStack columnGap={20} >
+                                <Trash color={'$red10'} />
+                                <H4 textTransform='none' color={'$red10'} >
+                                    Delete Account
                                 </H4>
                             </XStack>
                             <ChevronRight />

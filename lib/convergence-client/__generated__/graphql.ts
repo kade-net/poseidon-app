@@ -134,6 +134,7 @@ export type Inbox = {
 export type Mutation = {
   __typename?: 'Mutation';
   acceptRequest: SerializedTransaction;
+  adminRemoveAccount: Scalars['Boolean']['output'];
   cleanAnchorOrder?: Maybe<Scalars['String']['output']>;
   confirmAnchorOrder?: Maybe<Scalars['Boolean']['output']>;
   confirmDelegate?: Maybe<Scalars['Boolean']['output']>;
@@ -162,6 +163,11 @@ export type Mutation = {
 
 export type MutationAcceptRequestArgs = {
   input: AcceptRequestArgs;
+};
+
+
+export type MutationAdminRemoveAccountArgs = {
+  input: AdminRemoveAccountArgs;
 };
 
 
@@ -370,6 +376,10 @@ export type SubscriptionLiveInboxArgs = {
   viewer: Scalars['String']['input'];
 };
 
+export type AdminRemoveAccountArgs = {
+  user_address: Scalars['String']['input'];
+};
+
 export type CleanAnchorOrderInput = {
   user_address: Scalars['String']['input'];
 };
@@ -541,6 +551,13 @@ export type AnchorTransactionsQueryVariables = Exact<{
 
 export type AnchorTransactionsQuery = { __typename?: 'Query', anchorTransactions: Array<{ __typename?: 'AnchorTransaction', sender_address?: string | null, receiver_address?: string | null, anchor_amount?: number | null, timestamp?: any | null, type?: AnchorTransactionType | null }> };
 
+export type AdminRemoveAccountMutationVariables = Exact<{
+  input: AdminRemoveAccountArgs;
+}>;
+
+
+export type AdminRemoveAccountMutation = { __typename?: 'Mutation', adminRemoveAccount: boolean };
+
 
 export const RegisterRequestInboxDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"RegisterRequestInbox"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"args"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"RegisterRequestInboxInputArgs"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"registerRequestInbox"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"args"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"raw_transaction"}},{"kind":"Field","name":{"kind":"Name","value":"signature"}}]}}]}}]} as unknown as DocumentNode<RegisterRequestInboxMutation, RegisterRequestInboxMutationVariables>;
 export const RequestConversationDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"RequestConversation"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"args"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"RequestConversationArgs"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"requestConversation"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"args"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"raw_transaction"}},{"kind":"Field","name":{"kind":"Name","value":"signature"}}]}}]}}]} as unknown as DocumentNode<RequestConversationMutation, RequestConversationMutationVariables>;
@@ -559,3 +576,4 @@ export const RegisterDelegateDocument = {"kind":"Document","definitions":[{"kind
 export const Init_Account_And_InboxDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"init_account_and_inbox"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"initSelfDelegateKadeAccountWithHermesInboxArgs"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"initSelfDelegateKadeAccountWithHermesInbox"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"raw_transaction"}},{"kind":"Field","name":{"kind":"Name","value":"signature"}}]}}]}}]} as unknown as DocumentNode<Init_Account_And_InboxMutation, Init_Account_And_InboxMutationVariables>;
 export const Init_DelegateDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"init_delegate"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"registerDelegateOnKadeAndHermesArgs"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"registerDelegateOnKadeAndHermes"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"raw_transaction"}},{"kind":"Field","name":{"kind":"Name","value":"signature"}}]}}]}}]} as unknown as DocumentNode<Init_DelegateMutation, Init_DelegateMutationVariables>;
 export const AnchorTransactionsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"AnchorTransactions"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"user_address"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"anchorTransactions"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"user_address"},"value":{"kind":"Variable","name":{"kind":"Name","value":"user_address"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"sender_address"}},{"kind":"Field","name":{"kind":"Name","value":"receiver_address"}},{"kind":"Field","name":{"kind":"Name","value":"anchor_amount"}},{"kind":"Field","name":{"kind":"Name","value":"timestamp"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}}]}}]} as unknown as DocumentNode<AnchorTransactionsQuery, AnchorTransactionsQueryVariables>;
+export const AdminRemoveAccountDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"AdminRemoveAccount"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"adminRemoveAccountArgs"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"adminRemoveAccount"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}]}]}}]} as unknown as DocumentNode<AdminRemoveAccountMutation, AdminRemoveAccountMutationVariables>;
