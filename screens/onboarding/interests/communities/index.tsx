@@ -5,6 +5,9 @@ import UnstyledButton from "../../../../components/ui/buttons/unstyled-button"
 import { ChevronRight } from "@tamagui/lucide-icons"
 import { router } from "expo-router"
 import CommunitiesChoice from "./communities-choice"
+import Toast from "react-native-toast-message"
+import { useEffect } from "react"
+import { BackHandler, NativeEventSubscription } from "react-native"
 
 const CommunitiesInterest =  () => {
     const insets = useSafeAreaInsets()
@@ -16,6 +19,28 @@ const CommunitiesInterest =  () => {
     const handleCommunitiesInterestSkip = async () => {
         goToNext()
     }
+
+    const preventBackFlow = (): boolean => {
+        Toast.show({
+            type: 'info',
+            text2: `Please complete profile creation`,
+        })
+
+        return true
+    }
+
+    useEffect(() => {
+
+        const subscription: NativeEventSubscription = BackHandler.addEventListener('hardwareBackPress', preventBackFlow)
+
+
+        return () => {
+            
+            subscription.remove()
+        }
+
+    },[])
+
 
     return(
         <View px={20} flex={1} backgroundColor={"$background"}>

@@ -6,8 +6,8 @@ import { ChevronRight } from "@tamagui/lucide-icons"
 import { Utils } from "../../../../utils"
 import topics, { Topic } from "../../../../contract/modules/topics"
 import { useQuery } from "react-query"
-import { useState } from "react"
-import { Pressable } from "react-native"
+import { useEffect, useState } from "react"
+import { BackHandler, NativeEventSubscription, Pressable } from "react-native"
 import Toast from 'react-native-toast-message'
 
 const TopicsInterest = () => {
@@ -52,6 +52,28 @@ const TopicsInterest = () => {
 
         goToNext()
     }
+
+    const preventBackFlow = (): boolean => {
+        Toast.show({
+            type: 'info',
+            text2: `Please complete profile creation`,
+        })
+
+        return true
+    }
+
+    useEffect(() => {
+
+        const subscription: NativeEventSubscription = BackHandler.addEventListener('hardwareBackPress', preventBackFlow)
+
+
+        return () => {
+            
+            subscription.remove()
+        }
+
+    },[])
+
 
     return(
         <View px={20} flex={1} backgroundColor={"$background"}>
