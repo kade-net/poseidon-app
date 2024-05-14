@@ -91,7 +91,7 @@ const People = () => {
 
 
   return (
-    <YStack flex={1} w="100%" h="100%" p={20} backgroundColor={'$background'} rowGap={20} >
+    <YStack flex={1} w="100%" h="100%" p={10} backgroundColor={'$background'} rowGap={20} >
       <XStack w="100%" >
         <SearchInput onChangeText={setSearch} />
       </XStack>
@@ -107,13 +107,13 @@ const People = () => {
             flex: 1,
             width: '100%',
             height: '100%',
-            backgroundColor: theme.baseBackround.val,
+            backgroundColor: theme.background.val,
             borderRadius: 20,
             overflow: 'hidden'
           }}
           refreshing={peopleSearchQuery.loading}
           onRefresh={() => peopleSearchQuery.refetch()}
-          ItemSeparatorComponent={() => <Separator />}
+          ItemSeparatorComponent={() => <Separator  />}
           showsVerticalScrollIndicator={false}
           data={peopleSearchQuery.data?.accounts?.filter((c) => c.address !== delegateManager.owner) ?? []}
           keyExtractor={(item) => item.address}

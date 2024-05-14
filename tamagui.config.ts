@@ -53,6 +53,7 @@ export const config = createTamagui({
       colourlessButton: 'rgb(12,18,34)',
       borderColor: 'rgba(151,151,156,0.4)',
       bottomSheet: 'rgb(20, 29, 54)',
+      searchBar: '#3c3c3e'
       
     },
     light: {
@@ -75,6 +76,7 @@ export const config = createTamagui({
       borderColor: 'rgba(151,151,156,0.4)',
       bottomSheet: 'rgb(237, 230, 230)',
       baseBackround: configBase.themes.light.background,
+      searchBar: '#d5d5d7'
 
 
     }
