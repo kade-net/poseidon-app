@@ -59,7 +59,7 @@ const ChatRequest = (props: Props) => {
     }
 
     return (
-        <XStack w="100%" alignItems='center' flex={1} columnGap={10} pb={5} borderColor={"$sideText"} borderBottomWidth={0.5}>
+        <XStack w="100%" alignItems='center' mb={5} flex={1} columnGap={10} pb={5} borderColor={"$sideText"} borderBottomWidth={0.5}>
             <Avatar circular size="$4" >
                 <Avatar.Image
                     src={profileQuery?.data?.account?.profile?.pfp ?? Utils.diceImage(address ?? '')}
@@ -82,12 +82,15 @@ const ChatRequest = (props: Props) => {
                             data?.initiator_address == delegateManager.owner ? 'You sent a request' : 'You received a request'
                         }
                     </Text>
-                    {data?.initiator_address !== delegateManager.owner && <BaseButton loading={loading} onPress={handleApprove} size="$2" type="primary" >
-                        <Text>
+                    
+                </XStack>
+            </YStack>
+            <YStack>
+                {data?.initiator_address !== delegateManager.owner && <BaseButton loading={loading} onPress={handleApprove} size="$2" type="primary" >
+                        <Text color={"white"}>
                             Approve
                         </Text>
-                    </BaseButton>}
-                </XStack>
+                </BaseButton>}
             </YStack>
         </XStack>
     )

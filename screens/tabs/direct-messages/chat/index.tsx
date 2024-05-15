@@ -1,6 +1,6 @@
-import { View, Text, FlatList, KeyboardAvoidingView } from 'react-native'
+import { View, FlatList, KeyboardAvoidingView } from 'react-native'
 import React, { useCallback, useEffect, useMemo, useRef } from 'react'
-import { Button, Spinner, XStack, YStack } from 'tamagui'
+import { Button, Spinner, Text, XStack, YStack } from 'tamagui'
 import MessageEditor from './message-editor'
 import { useQuery } from 'react-query'
 import { useFocusEffect, useLocalSearchParams } from 'expo-router'
@@ -13,6 +13,7 @@ import { convergenceWebSocketClient } from '../../../../data/apollo'
 import delegateManager from '../../../../lib/delegate-manager'
 import index from '../../../../app'
 import inboxes from '../../../../contract/modules/hermes/inboxes'
+import BaseButton from '../../../../components/ui/buttons/base-button'
 
 interface Props {
   inbox_name: string
@@ -54,9 +55,9 @@ const _Chat = (props: Props) => {
         <Spinner />
       </XStack>} */}
       {__DEV__ && <XStack w="100%" alignItems='center' justifyContent='center' >
-        <Button onPress={() => hermes.clearSavedMessages(inbox_name)} >
-          Clear All
-        </Button>
+        <BaseButton onPress={() => hermes.clearSavedMessages(inbox_name)} >
+          <Text color={"white"} >Clear All</Text>
+        </BaseButton>
       </XStack>}
       <KeyboardAvoidingView
         style={{

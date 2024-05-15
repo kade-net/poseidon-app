@@ -55,7 +55,7 @@ const DirectMessageTopBar = (props: P) => {
                 >
                     <TouchableOpacity>
                         <YStack p={5} borderRadius={50} bg="$primary" alignItems="center" justifyContent="center" >
-                            <Plus />
+                            <Plus color={"white"}/>
                         </YStack>
                     </TouchableOpacity>
                 </Link>
@@ -80,7 +80,7 @@ const DirectMessageTopBar = (props: P) => {
                     <BaseButton
                         onPress={() => handleTabChange(0)}
                         size={'$2.5'} type={currentTab == 0 ? "primary" : "outlined"} >
-                        <Text>
+                        <Text color={currentTab === 0 ?"white":"$text"}>
 
                             Active
                         </Text>
@@ -88,7 +88,7 @@ const DirectMessageTopBar = (props: P) => {
                     <BaseButton
                         onPress={() => handleTabChange(1)}
                         size={'$2.5'} type={currentTab == 1 ? "primary" : "outlined"}>
-                        <Text>
+                        <Text color={currentTab === 1?"white":"$text"}>
 
                             Incoming Requests
                         </Text>
@@ -96,7 +96,7 @@ const DirectMessageTopBar = (props: P) => {
                     <BaseButton
                         onPress={() => handleTabChange(2)}
                         size={'$2.5'} type={currentTab == 2 ? "primary" : "outlined"}>
-                        <Text>
+                        <Text color={currentTab === 2?"white":"$text"}>
 
                             Pending Requests
                         </Text>

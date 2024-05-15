@@ -201,7 +201,7 @@ const Profile = () => {
                         render={({ field: { onChange, value }, fieldState }) => {
                             return (
                                 <BaseFormInput
-                                    backgroundColor={"$colorTransparent"}
+                                    backgroundColor={"$backgroundTransparent"}
                                     placeholder='Display Name'
                                     value={value}
                                     onChangeText={onChange}

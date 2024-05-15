@@ -179,14 +179,14 @@ const PickUserName = () => {
                 {
                     isAvailable ?
                         <BaseButton onPress={form.handleSubmit(claimUsernameAndCreateAccount)} flex={1} loading={claiming} loadingText='Claiming' >
-                            <Text>
+                            <Text color={"$buttonText"}>
 
                                 Claim username
                             </Text>
                         </BaseButton>
                         :
                         <BaseButton onPress={form.handleSubmit(checkUsername)} flex={1} loading={checking} loadingText='Checking'   >
-                            <Text>
+                            <Text color={"$buttonText"}>
                                 Check availability
                             </Text>
                         </BaseButton>
