@@ -120,7 +120,7 @@ const Settings = () => {
                     : null
             }
             <YStack w="100%" flex={1} >
-                <Link
+                {/* <Link
                     href="/settings/anchors"
                     asChild
                 >
@@ -138,7 +138,7 @@ const Settings = () => {
                         </XStack>
                         <Separator />
                     </YStack>
-                </Link>
+                </Link> */}
                 <Link
                     href="/settings/codes"
                     asChild

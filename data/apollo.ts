@@ -273,7 +273,7 @@ const cache = new InMemoryCache({
                     merge(existing, incoming, options) {
                         const lastProfileUpdate = ephemeralCache.get(`lastProfileUpdate:${incoming?.address}`)
 
-                        if (lastProfileUpdate && incoming) {
+                        if (lastProfileUpdate) {
                             console.log("Last Profile Update", lastProfileUpdate)
                             return lastProfileUpdate
                         }

@@ -71,9 +71,7 @@ const SearchTopBar = (props: P) => {
                         </Avatar>
                     </TouchableOpacity>
                 </Link>
-                <SearchInput value={search} onChangeText={setSearch} onBlur={() => {
-                    setSearch('')
-                }} />
+                <SearchInput value={search} onChangeText={setSearch} />
 
             </XStack>
 
