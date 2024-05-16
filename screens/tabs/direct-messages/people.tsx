@@ -143,7 +143,7 @@ const People = () => {
         open={isOpen}
         onOpenChange={onToggle}
       >
-        <YStack p={20} w="100%" h="100%" flex={1} rowGap={20} >
+        <YStack backgroundColor={'$background'} p={20} w="100%" h="100%" flex={1} rowGap={20} >
           {selectedProfile && <SimpleProfileCard
             data={selectedProfile}
           />}
@@ -152,12 +152,12 @@ const People = () => {
               onClose()
               setSelectedProfile(null)
             }} flex={1} type="outlined" >
-              <Text>
+              <Text color={'$primary'} >
                 Cancel
               </Text>
             </BaseButton>
             <BaseButton loading={loading} flex={1} onPress={handleSendRequest} >
-              <Text>
+              <Text color={'white'} >
                 Send Request
               </Text>
             </BaseButton>

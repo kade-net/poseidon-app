@@ -61,7 +61,7 @@ export const config = createTamagui({
     light: {
       ...configBase.themes.light,
       primary: 'rgb(10, 132, 255)',
-      background: 'rgb(250,250,250)',
+      background: '#ffffff',
       card: 'rgb(18, 18, 18)',
       text: 'rgb(13,12,12)',
       sideText: 'rgb(151,151,156)',

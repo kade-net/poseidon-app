@@ -1,4 +1,4 @@
-import { View, Text, XStack, YStack, Avatar, Input } from 'tamagui'
+import { View, Text, XStack, YStack, Avatar, Input, useTheme } from 'tamagui'
 import React, { useContext, useEffect, useRef, useState } from 'react'
 import { SceneRendererProps } from 'react-native-tab-view'
 import { Animated, TouchableOpacity } from 'react-native'
@@ -22,6 +22,7 @@ type P = Props & SceneRendererProps
 
 const SearchTopBar = (props: P) => {
     const { search, setSearch } = useContext(searchContext)
+    const theme = useTheme()
 
     const profileQuery = useQuery(GET_MY_PROFILE, {
         variables: {
@@ -112,7 +113,7 @@ const SearchTopBar = (props: P) => {
                         position: 'absolute',
                         bottom: 0,
                         height: 2,
-                        backgroundColor: "white",
+                        backgroundColor: theme.primary.val,
                         width: tabLayoutDetails[routes[currentIndex].key]?.width,
                         left: 0,
                         transform: [

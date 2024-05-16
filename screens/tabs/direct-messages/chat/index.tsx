@@ -28,7 +28,8 @@ const _Chat = (props: Props) => {
 
   const messageQuery = useQuery({
     queryKey: ['getDecryptedMessageHistory', inbox_name],
-    queryFn: () => hermes.getPDSData(inbox_name, other_user)
+    queryFn: () => hermes.getPDSData(inbox_name, other_user),
+    cacheTime: 0
   })
 
   const onRefetch = async () => {
@@ -125,7 +126,7 @@ const Chat = () => {
     queryKey: ['getDecryptedMessageHistory', inbox_name, other_user],
     queryFn: () => hermes.getInboxHistory(inbox_name, other_user),
     enabled: !loadInbox.isLoading,
-
+    cacheTime: 0
   })
 
 

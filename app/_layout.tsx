@@ -78,13 +78,6 @@ export default function RootLayout() {
       return delegateManager.init().then(async () => {
         await selfModeration?.loadMutedUsers()
         await selfModeration?.loadRemovedFromFeed()
-        try {
-          // !!! IMPORTANT: this is temporary, so that testers can get access to dms
-          await hermes.checkHasInboxIfNotRegister()
-        }
-        catch (e) {
-
-        }
         SplashScreen.hideAsync()
       }).catch((e) => {
         console.error("UNABLE TO INITIALIZE DELEGATE", e)

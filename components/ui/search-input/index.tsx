@@ -23,14 +23,14 @@ const SearchInput = (props: P) => {
                         rest?.onChangeText?.('')
                     }}
                 >
-                    <XCircle size={16} />
+                    <XCircle color={'$red10'} size={16} />
                 </TouchableOpacity>
             </XStack>}
             {!active && <XStack onPress={() => {
                 setActive(true)
             }} w="100%" alignItems='center' justifyContent='center' columnGap={10} py={10} >
-                <Search size={12} />
-                <Text>Search</Text>
+                <Search size={12} color={'$primary'} />
+                <Text color={'$primary'} >Search</Text>
             </XStack>}
         </XStack>
     )

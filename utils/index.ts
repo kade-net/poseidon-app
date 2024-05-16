@@ -45,6 +45,31 @@ export namespace Utils {
     }
   }
 
+  export const getImageData = async (uri: string) => {
+    if (!uri || uri.length == 0) return null
+
+    try {
+      const resp = await fetch(uri, { method: 'GET' })
+      if (resp.ok) {
+        try {
+          const json = await resp.json()
+
+          const image = isString(json?.image) ? json?.image : null
+
+          return image
+        }
+        catch (e) {
+          return null
+        }
+      } else {
+        return null
+      }
+    }
+    catch (e) {
+      return null
+    }
+  }
+
 
   export const USERNAME_REGEX = /^[a-zA-Z0-9_]{3,20}$/
 

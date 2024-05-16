@@ -17,7 +17,7 @@ const documents = {
     "\nmutation RequestConversation($args: RequestConversationArgs!) {\n    requestConversation(\n        input: $args\n    ) {\n        raw_transaction\n        signature\n    }\n}\n": types.RequestConversationDocument,
     "\nmutation AcceptRequest($args: AcceptRequestArgs!) {\n    acceptRequest(input: $args) {\n        raw_transaction\n        signature\n    }\n}\n": types.AcceptRequestDocument,
     "\nmutation DelegateAcceptRequest($args: DelegateAcceptRequestArgs!) {\n    delegateAcceptRequest(input: $args) {\n        raw_transaction\n        signature\n    }\n}\n": types.DelegateAcceptRequestDocument,
-    "\n    mutation DelegateRequestConversation($input: DelegateRequestConversationArgs!) {\n        delegateRequestConversation(\n            input: $input\n        ) {\n            raw_transaction\n            signature\n        }\n    }\n": types.DelegateRequestConversationDocument,
+    "\n    mutation DelegateRequestConversation($args: DelegateRequestConversationArgs!) {\n        delegateRequestConversation(\n            input: $args\n        ) {\n            raw_transaction\n            signature\n        }\n    }\n": types.DelegateRequestConversationDocument,
     "\n    mutation Send($args: SendArgs!) {\n        send(input: $args) {\n            raw_transaction\n            signature\n        }\n    }\n": types.SendDocument,
     "\n    mutation DelegateSendEnvelope($args: SendArgs!) {\n        delegateSendEnvelope(input: $args) {\n            raw_transaction\n            signature\n        }\n    }\n\n": types.DelegateSendEnvelopeDocument,
     "\n    subscription LiveInbox($inbox_name: String!, $viewer: String!, $timestamp: Date) {\n        liveInbox(inbox_name: $inbox_name, viewer: $viewer, timestamp: $timestamp) {\n            hid\n            content\n            ref\n            timestamp\n            inbox_name\n            sender_public_key\n            receiver_public_key\n            sender\n            receiver\n            delegate_public_key\n        }\n    }\n": types.LiveInboxDocument,
@@ -66,7 +66,7 @@ export function gql(source: "\nmutation DelegateAcceptRequest($args: DelegateAcc
 /**
  * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function gql(source: "\n    mutation DelegateRequestConversation($input: DelegateRequestConversationArgs!) {\n        delegateRequestConversation(\n            input: $input\n        ) {\n            raw_transaction\n            signature\n        }\n    }\n"): (typeof documents)["\n    mutation DelegateRequestConversation($input: DelegateRequestConversationArgs!) {\n        delegateRequestConversation(\n            input: $input\n        ) {\n            raw_transaction\n            signature\n        }\n    }\n"];
+export function gql(source: "\n    mutation DelegateRequestConversation($args: DelegateRequestConversationArgs!) {\n        delegateRequestConversation(\n            input: $args\n        ) {\n            raw_transaction\n            signature\n        }\n    }\n"): (typeof documents)["\n    mutation DelegateRequestConversation($args: DelegateRequestConversationArgs!) {\n        delegateRequestConversation(\n            input: $args\n        ) {\n            raw_transaction\n            signature\n        }\n    }\n"];
 /**
  * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

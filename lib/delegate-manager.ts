@@ -18,8 +18,6 @@ import { isEmpty } from 'lodash';
 
 const DERIVATION_PATH = "m/44'/637'/0'/0'/0'"
 
-const CONNECT_URL = config.CONNECT_URL
-
 
 
 class DelegateManager {
@@ -29,23 +27,41 @@ class DelegateManager {
     signer: Account | null = null;
 
     get isDeligateRegistered() {
-        const registered = SecureStore.getItem('deligate')
-        if (registered) {
-            return true
+        try {
+            const registered = SecureStore.getItem('deligate')
+            if (registered) {
+                return true
+            }
+            return false
+
         }
-        return false
+        catch (e) {
+            return false
+        }
     }
 
     get owner() {
-        let current = this._owner
-        if (!current) {
-            current = SecureStore.getItem('owner')
+        try {
+            let current = this._owner
+            if (!current) {
+                current = SecureStore.getItem('owner')
+            }
+            return current
+
         }
-        return current
+        catch (e) {
+            return null
+        }
     }
 
     get mnemonic() {
-        return SecureStore.getItem('mnemonic')
+        try {
+            return SecureStore.getItem('mnemonic')
+
+        }
+        catch (e) {
+            return null
+        }
     }
 
     get isDelegateOwner() {

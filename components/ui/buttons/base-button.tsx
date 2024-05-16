@@ -34,7 +34,10 @@ function BaseButton(props: Parameters<typeof _BaseButton>[0] & { loading?: boole
                 >{loadingText}</Text> :
                     null}  */}
             </XStack> : <>
+                    <Text color={rest.type == 'outlined' ? '$primary' : 'white'} >
+
                 {children}
+                    </Text>
             </>
         }
     </_BaseButton>

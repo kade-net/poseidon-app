@@ -269,9 +269,9 @@ const cache = new InMemoryCache({
         Account: {
             fields: {
                 profile: {
-                    keyArgs: ['address'],
+                    // keyArgs: ['address'],
                     merge(existing, incoming, options) {
-                        const lastProfileUpdate = ephemeralCache.get(`lastProfileUpdate:${incoming?.address}`)
+                        const lastProfileUpdate = ephemeralCache.get(`lastProfileUpdate:${incoming?.address ?? existing?.address}`)
 
                         if (lastProfileUpdate) {
                             console.log("Last Profile Update", lastProfileUpdate)

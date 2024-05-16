@@ -47,7 +47,6 @@ const Home = () => {
         },
         fetchPolicy: 'cache-and-network'
     })
-    const { data, fetchMore, loading } = publicationsQuery
 
     const tamaguiTheme = useTheme()
 
@@ -95,12 +94,15 @@ const Home = () => {
     }
 
     const handleFetchMore = async () => {
+        if (publicationsQuery.loading || refetching || (publicationsQuery.data?.publications?.length ?? 0) < 20) {
+            return
+        }
         setRefetching(true)
         try {
-            const totalPublications = data?.publications?.length ?? 0 
+            const totalPublications = publicationsQuery?.data?.publications?.length ?? 0 
             const nextPage = (Math.floor(totalPublications / 20) - 1) + 1
 
-            await fetchMore({
+            await publicationsQuery?.fetchMore({
                 variables: {
                     page: nextPage,
                     size: 20,
@@ -119,6 +121,9 @@ const Home = () => {
     }
 
     const handleFetchTop = async () => {
+        if (refetching || publicationsQuery.loading) {
+            return
+        }
         Haptics.selectionAsync()
         await publications.loadRemovedFromFeed()
         setRefetching(true)
@@ -234,20 +239,20 @@ const Home = () => {
                     onEndReached={handleFetchMore}
                     onEndReachedThreshold={1}
                     showsVerticalScrollIndicator={false}
-                    data={data?.publications ?? []}
+                    data={publicationsQuery?.data?.publications ?? []}
                     maxToRenderPerBatch={20}
                     initialNumToRender={20}
                     keyExtractor={(item, i) => item.publication_ref ?? item?.id?.toString() ?? i.toString()}
                     renderItem={renderPublication}
                     ListHeaderComponent={() => {
-                        if ((data?.publications?.length ?? 0) === 0) return null
+                        if ((publicationsQuery?.data?.publications?.length ?? 0) === 0) return null
                         return <XStack w="100%" p={10} alignItems='center' justifyContent='center' >
                             {refetching && <Spinner />}
                             {!refetching && <PullDownButton />}
                         </XStack>
                     }}
                     ListFooterComponent={() => {
-                        if (data?.publications?.length === 0) return null
+                        if (publicationsQuery?.data?.publications?.length === 0) return null
                         if (!refetching) return null
                         return <View w="100%" flexDirection='row' alignItems='center' p={20} justifyContent='center' columnGap={10} >
 

@@ -79,11 +79,17 @@ class Hermes {
             address: user_address
         })
 
+        console.log("Data::", {
+            envelope: "",
+            sender_address: using_owner ? delegateManager.owner! : delegateManager.account?.address().toString()!,
+            user_address: user_address
+        })
+
         const task = constructConvergenceTransaction({
             fee_payer_address: config.HERMES_MODULE_ADDRESS,
             name: using_owner ? 'requestConversation' : 'delegateRequestConversation',
             variables: {
-                envelope: "",
+                envelope: "request",
                 sender_address: using_owner ? delegateManager.owner! : delegateManager.account?.address().toString()!,
                 user_address: user_address
             } as RequestConversationArgs

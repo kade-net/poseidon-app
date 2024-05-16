@@ -1,5 +1,5 @@
 import { View, Text, YStack, Image, Spinner, XStack } from 'tamagui'
-import React from 'react'
+import React, { useEffect } from 'react'
 import { GetAccountCollectionsWithOwnedTokenResponse } from '@aptos-labs/ts-sdk'
 import { ImageBackground, TouchableOpacity } from 'react-native'
 import { useQuery } from 'react-query'
@@ -22,14 +22,29 @@ const CollectionCard = (props: Props) => {
         queryFn: () => Utils.validateImageUri(data.first_uri ?? '')
     })
 
-    if (validateImageQuery.isLoading) return (
+    const ImageData = useQuery({
+        queryKey: [data.collection_id, data.first_uri, 'data'],
+        queryFn: () => Utils.getImageData(data.first_uri ?? ''),
+        enabled: (!validateImageQuery.isFetching && !validateImageQuery.isLoading && !validateImageQuery.data)
+    })
+
+    useEffect(() => {
+        ; (async () => {
+            if (!validateImageQuery.isFetching) {
+                const json = await Utils.getImageData(data.first_uri ?? '')
+            }
+
+        })()
+    }, [validateImageQuery.isFetching])
+
+    if (validateImageQuery.isLoading || ImageData.isLoading) return (
         <YStack flex={1} aspectRatio={1} alignItems='center' justifyContent='center' >
             <Spinner />
         </YStack>
     )
 
-    if (!validateImageQuery.data) return (
-        <YStack bg='$button' flex={1} aspectRatio={1} borderRadius={5} overflow='hidden' alignItems='center' justifyContent='center'  >
+    if (!validateImageQuery.data && !ImageData.data) return (
+        <YStack borderColor={'$primary'} flex={1} aspectRatio={1} borderRadius={5} overflow='hidden' alignItems='center' justifyContent='center'  >
             <Text>
                 {data?.collection_name ?? 'Untitled'}
             </Text>
@@ -93,7 +108,7 @@ const CollectionCard = (props: Props) => {
                     ) : (
                             <YStack aspectRatio={1} borderRadius={5} overflow='hidden'  >
                     <Image
-                        src={data.first_uri ?? ''}
+                                    src={ImageData?.data ?? data.first_uri ?? ''}
                         aspectRatio={1}
                     />
                 </YStack>

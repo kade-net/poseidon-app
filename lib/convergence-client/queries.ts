@@ -39,9 +39,9 @@ mutation DelegateAcceptRequest($args: DelegateAcceptRequestArgs!) {
 `)
 
 export const delegateRequestConversation = gql(/* GraphQL */`
-    mutation DelegateRequestConversation($input: DelegateRequestConversationArgs!) {
+    mutation DelegateRequestConversation($args: DelegateRequestConversationArgs!) {
         delegateRequestConversation(
-            input: $input
+            input: $args
         ) {
             raw_transaction
             signature

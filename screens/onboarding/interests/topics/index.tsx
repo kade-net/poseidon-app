@@ -9,6 +9,7 @@ import { useQuery } from "react-query"
 import { useEffect, useState } from "react"
 import { BackHandler, NativeEventSubscription, Pressable } from "react-native"
 import Toast from 'react-native-toast-message'
+import posti from "../../../../lib/posti"
 
 const TopicsInterest = () => {
     const topicsQuery = useQuery({
@@ -39,14 +40,22 @@ const TopicsInterest = () => {
 
 
         try {
+            console.log("Active interests::", activeInterests)
             await topics.createInterest(activeInterests)
         }
         catch (e) {
-            Toast.show({
-                text1: 'Error saving interests',
-                text2: 'Please try again, or skip this step.',
-                type: 'error',
+            // silent fail
+            posti.capture('add-topic-interests', {
+                activeInterests,
             })
+            // Toast.show({
+            //     text1: 'Error saving interests',
+            //     text2: 'Please try again, or skip this step.',
+            //     type: 'error',
+            // })
+        }
+        finally {
+            setSaving(false)
         }
 
 

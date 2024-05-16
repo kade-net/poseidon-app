@@ -218,6 +218,7 @@ const PublicationReactions = (props: Props) => {
                         py={20}
                         px={5}
                         rowGap={10}
+                        backgroundColor={'$background'}
                     >
                         <BaseButton icon={<Repeat size={12} />} onPress={handleRepost} type="outlined" loading={repostLoading} >
                             <Text>
