@@ -16,10 +16,7 @@ const SearchInput = (props: P) => {
     <XStack flex={1} alignItems='center' backgroundColor={'$searchBar'} borderRadius={30} px={20}   >
             {active && <XStack w="100%" alignItems='center'   >
                 <Search size={16} color={'$primary'} />
-                <Input backgroundColor={"$backgroundTransparent"} {...rest} autoFocus autoCapitalize='none' borderWidth={0} placeholder='' flex={1} onBlur={(e) => {
-                    setActive(false)
-                    rest?.onBlur?.(e)
-                }} />
+                <Input backgroundColor={"$backgroundTransparent"} {...rest} autoFocus autoCapitalize='none' borderWidth={0} placeholder='' flex={1} />
                 <TouchableOpacity
                     onPress={() => {
                         setActive(false)

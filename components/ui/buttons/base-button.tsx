@@ -27,7 +27,7 @@ function BaseButton(props: Parameters<typeof _BaseButton>[0] & { loading?: boole
     return <_BaseButton key={isUndefined(loading) ? undefined : `${loading}`} {...rest} >
         {
             loading ? <XStack alignItems='center' justifyContent='center' columnGap={5} flex={1} px={5} >
-                <Spinner />
+                <Spinner color={rest.type == 'outlined' ? '$primary' : 'white'} />
                 {/* {loadingText ?
                 <Text
                     color={'white'}

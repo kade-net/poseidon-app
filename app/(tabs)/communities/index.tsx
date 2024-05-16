@@ -44,9 +44,9 @@ const CommunitiesScreen = () => {
                                     <Text fontFamily={"$heading"} fontSize={"$sm"}>
                                         Your Communities
                                     </Text>
-                                    <TouchableOpacity onPress={handleCreateCommunity} >
+                                    {/* <TouchableOpacity onPress={handleCreateCommunity} >
                                         <PlusSquare />
-                                    </TouchableOpacity>
+                                    </TouchableOpacity> */}
                                 </XStack>
                                 <Separator />
                             </YStack>

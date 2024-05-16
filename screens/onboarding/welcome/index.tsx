@@ -63,7 +63,7 @@ const WelcomeScreen = () => {
                 </View>
             </View>
 
-            <YStack w="100%" rowGap={10} >
+            <YStack w="100%" rowGap={10} pb={20} >
                 <View w="100%" rowGap={20}  >
                     <Button icon={<User size={20} />} w="100%" variant='outlined' onPress={goToSignIn}  >
                         <SizableText fontSize={"$sm"}>Sign In</SizableText>

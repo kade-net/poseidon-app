@@ -49,7 +49,7 @@ const SignIn = () => {
                         <Text
                             color={'$blue10'}
                         >
-                            Sign in with Kade Connect will only work after the mainnet launch!
+                            Sign in with Kade Connect will only work if you already have a username!
                         </Text>
                     </XStack>
                     <Button onPress={goToKadeConnect} iconAfter={<MonitorUp />} backgroundColor={"$button"} color="$buttonText">
