@@ -97,6 +97,8 @@ const MessageEditor = (props: Props) => {
                             borderRadius={20}
                             multiline
                             placeholder='Message...'
+                            backgroundColor={"$searchBar"}
+                            color={"$text"}
 
                         />
                     )

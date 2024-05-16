@@ -12,7 +12,7 @@ interface Props {
 const SimpleProfileCard = (props: Props) => {
   const { data } = props
   return (
-    <XStack w="100%" alignItems='center' columnGap={10} px={10} py={10} >
+    <XStack backgroundColor={"$background"} w="100%" alignItems='center' columnGap={10} px={10} py={10} >
       <Avatar circular size={'$3'} >
         <Avatar.Image
           src={data?.pfp! ?? Utils.diceImage(data?.address! ?? '1')}

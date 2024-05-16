@@ -1,4 +1,4 @@
-import { View, Text, XStack, Avatar, YStack } from 'tamagui'
+import { View, Text, XStack, Avatar, YStack, SizableText } from 'tamagui'
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import { useQuery } from '@apollo/client'
 import { GET_MY_PROFILE } from '../../../../utils/queries'
@@ -53,6 +53,9 @@ const ChatPreview = (props: Props) => {
                     'inbox_name': data?.id!,
                 }
             }}
+            style={{ 
+                marginBottom:10
+             }}
         >
             <TouchableOpacity style={{
                 width: "100%"
@@ -66,7 +69,7 @@ const ChatPreview = (props: Props) => {
                             bg="$pink10"
                         />
                     </Avatar>
-                    <YStack w="100%" h="100%" borderBottomWidth={1} borderBottomColor={'$gray2'} flex={1} rowGap={5} >
+                    <YStack w="100%" h="100%"  flex={1} rowGap={5} >
                         <XStack w="100%" alignItems='center' justifyContent='space-between' >
                             <Text
                                 fontWeight={'$5'} fontSize={'$sm'}
@@ -77,9 +80,11 @@ const ChatPreview = (props: Props) => {
                                 {dayjs(lastMessage?.timestamp).fromNow()}
                             </Text>}
                         </XStack>
-                        <Text w="100%" fontSize={'$xxs'} color={'$sideText'} >
+                        <SizableText width={"100%"}  color={"$sideText"} fontSize={"$xs"} ellipse={true} >
                             {lastMessage?.isMine ? 'you:' : ""}{"  "}{lastMessage?.content}
-                        </Text>
+                        </SizableText>
+                        {/* <Text w="100%" fontSize={'$xxs'} color={'$sideText'} >
+                        </Text> */}
                     </YStack>
                 </XStack>
             </TouchableOpacity>

@@ -226,7 +226,7 @@ const Settings = () => {
                     {
                         loggingOut ? <XStack columnGap={10} >
                             <Spinner />
-                            <Text>
+                            <Text color={"$buttonText"}>
                                 Logging out
                             </Text>
                         </XStack> : "Log out"
