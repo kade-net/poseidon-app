@@ -48,7 +48,7 @@ const PublicationReactions = (props: Props) => {
         },
         skip: !publication_ref || !delegateManager.owner,
         fetchPolicy: 'cache-and-network',
-        pollInterval: 120000
+        // pollInterval: 120000
     })
 
     const handleReact = async () => {

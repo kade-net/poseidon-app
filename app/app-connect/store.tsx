@@ -25,9 +25,9 @@ const StoreConnectScreen = () => {
                 </Text>
 
             </YStack>
-            <Text>
+            {/* <Text>
                 In App Purchases are coming soon!
-            </Text>
+            </Text> */}
         </YStack>
     )
 }

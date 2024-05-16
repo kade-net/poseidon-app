@@ -29,6 +29,7 @@ import Empty from '../../../../components/ui/feedback/empty'
 import Loading from '../../../../components/ui/feedback/loading'
 import * as Haptics from 'expo-haptics'
 import { useScrollToTop } from '@react-navigation/native'
+import PullDownButton from './pull-down-button'
 
 const Home = () => {
     const flatlistRef = useRef<FlatList>(null)
@@ -242,9 +243,7 @@ const Home = () => {
                         if ((data?.publications?.length ?? 0) === 0) return null
                         return <XStack w="100%" p={10} alignItems='center' justifyContent='center' >
                             {refetching && <Spinner />}
-                            {!refetching && <Text>
-                                Pull down to refresh
-                            </Text>}
+                            {!refetching && <PullDownButton />}
                         </XStack>
                     }}
                     ListFooterComponent={() => {

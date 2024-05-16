@@ -1,6 +1,6 @@
 import { View, Text, YStack, XStack, Separator, H4, Button, Spinner } from 'tamagui'
 import React, { useEffect, useState } from 'react'
-import { TouchableOpacity } from 'react-native'
+import { Platform, TouchableOpacity } from 'react-native'
 import { Anchor, ArrowRight, Bell, ChevronRight, KeySquare, Layout, LayoutGrid, Trash, Wallet } from '@tamagui/lucide-icons'
 import { Link, useFocusEffect, useNavigation, useRouter } from 'expo-router'
 import account from '../../contract/modules/account'
@@ -120,7 +120,7 @@ const Settings = () => {
                     : null
             }
             <YStack w="100%" flex={1} >
-                {/* <Link
+                {Platform.OS == 'android' && <Link
                     href="/settings/anchors"
                     asChild
                 >
@@ -138,7 +138,7 @@ const Settings = () => {
                         </XStack>
                         <Separator />
                     </YStack>
-                </Link> */}
+                </Link>}
                 <Link
                     href="/settings/codes"
                     asChild
@@ -219,6 +219,11 @@ const Settings = () => {
             <XStack w="100%" alignItems='center' justifyContent='center' >
                 <Text>
                     Version 0.0.22
+                </Text>
+            </XStack>
+            <XStack w="100%" alignItems='center' justifyContent='center' >
+                <Text>
+                    Built with ❤️ by Kade.
                 </Text>
             </XStack>
             <XStack alignItems='center' justifyContent='center' p={20} >
