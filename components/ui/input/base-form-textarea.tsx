@@ -29,6 +29,7 @@ const BaseFormTextArea = (props: P) => {
                     }
                 </XStack>
                 <TextArea
+                    backgroundColor={"$backgroundTransparent"}
                     p={0}
                     borderWidth={0}
                     {...rest}

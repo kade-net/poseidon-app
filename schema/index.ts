@@ -3,8 +3,8 @@ import { Utils } from "../utils";
 
 export const profileSchema = z.object({
     pfp: z.string().min(5).optional(),
-    bio: z.string().max(80, {
-        message: "Bio cannot be longer than 80 characters"
+    bio: z.string().max(100, {
+        message: "Bio cannot be longer than 100 characters"
     }).optional(),
     display_name: z.string().max(50, {
         message: "Display name cannot be longer than 50 characters"
