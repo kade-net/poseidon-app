@@ -34,6 +34,7 @@ const Collection = () => {
         queryFn: () => Utils.getImageData(collection?.data?.first_uri ?? ''),
         enabled: (!collection.isLoading && !collection.isFetching && !collection.data)
     })
+    // console.log("Images data")
 
     const tokenQuery = useQuery({
         queryFn: () => collected.getTokens(collection_id, address),
@@ -59,7 +60,7 @@ const Collection = () => {
             px={Utils.dynamicWidth(3)}
         >
 
-            <CollectionImage image={ImageData?.data ?? collection.data?.first_uri!} name={collection?.data?.collection_name ?? 'Untitled'} />
+            <CollectionImage image={ImageData?.data?.image ?? collection.data?.first_uri!} name={collection?.data?.collection_name ?? 'Untitled'} />
 
             <YStack w="100%" px={5} py={10} rowGap={20} >
                 <XStack w="100%" columnGap={10} >

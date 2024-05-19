@@ -54,7 +54,7 @@ const PickUserName = () => {
         setChecking(true)
         console.log(`CHECKING USERNAME:: ${values.username}`)
         try {
-            const available = await usernames.checkUsernameAvailability(values.username)
+            const available = await usernames.checkUsernameAvailability(values.username?.toLowerCase())
             console.log(`USERNAME IS AVAILABLE:: ${available}`)
             setIsAvailable(available)
 
@@ -83,7 +83,7 @@ const PickUserName = () => {
 
     const claimUsernameAndCreateAccount = async (values: TSchema) => {
         Haptics.selectionAsync()
-        const username = values.username
+        const username = values.username?.toLowerCase()
         delegateManager.setUsername(username)
         setClaiming(true)
         const eitherResult = await account.setupWithSelfDelegate()

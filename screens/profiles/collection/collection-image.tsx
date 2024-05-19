@@ -11,6 +11,7 @@ import { useQuery as useApolloQuery } from '@apollo/client'
 import * as Haptics from 'expo-haptics'
 import account from '../../../contract/modules/account'
 import Toast from 'react-native-toast-message'
+import { SvgUri } from 'react-native-svg'
 
 const getSize = async (image: string) => {
     return new Promise<{ width: number, height: number }>((res, rej) => {
@@ -49,13 +50,15 @@ const CollectionImage = (props: Props) => {
         queryFn: async () => {
             try {
                 const { width, height } = await getSize(image)
-                return width / height
+                const aspectRatio = width / height
+                const newAspectRatio = isNaN(aspectRatio) ? 16 / 9 : aspectRatio == 0 ? 1 : aspectRatio
+                return newAspectRatio
             }
             catch (e) {
                 return 16 / 9
             }
         },
-        enabled: !!image
+        enabled: !!image && !validateImageQuery.data?.is_svg
     })
 
     const handleSetPfp = async () => {
@@ -96,11 +99,19 @@ const CollectionImage = (props: Props) => {
 
     return (
         <YStack w="100%" rowGap={10} >
-            <Image
+            {
+                validateImageQuery?.data?.is_svg ?
+                    <SvgUri
+                        width={'100%'}
+                        height={300}
+                        uri={image}
+                    /> : <Image
                 src={image ?? ''}
                 aspectRatio={aspectRatioQuery?.data ?? 16 / 9}
             />
-            {IS_OWNER && <XStack>
+            }
+
+            {(IS_OWNER && !validateImageQuery?.data?.is_svg) && <XStack>
 
                 <BaseButton loading={uploading} onPress={handleSetPfp} size="$2" py={3} type="outlined" >
                     <Text>

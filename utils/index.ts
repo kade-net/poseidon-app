@@ -27,21 +27,23 @@ export namespace Utils {
   export const urlRegex = /https?:\/\/[^\s]+/g;
 
   export const validateImageUri = async (uri: string) => {
-    if (!uri || uri.length === 0) return false
+    if (!uri || uri.length === 0) return null
     try {
       const resp = await fetch(uri, { method: 'HEAD' })
 
       const contentType = resp.headers.get('content-type')
 
       if (!contentType || !contentType.startsWith('image')) {
-        return false
+        return null
       }
 
-      return true
+      return {
+        is_svg: contentType?.includes('image/svg+xml')
+      }
 
     }
     catch (e) {
-      return false
+      return null
     }
   }
 
@@ -52,11 +54,19 @@ export namespace Utils {
       const resp = await fetch(uri, { method: 'GET' })
       if (resp.ok) {
         try {
-          const json = await resp.json()
-
-          const image = isString(json?.image) ? json?.image : null
-
-          return image
+          // TODO: update
+          const json: any = await resp.json()
+          console.log("JSON::", json)
+          const image: string | null = isString(json?.image) ? json?.image : null
+          const imageResp = image ? await fetch(image, { method: 'HEAD' }) : null
+          if (!imageResp) return null
+          const contentType = imageResp?.headers.get('content-type')
+          if (!contentType) return null
+          return {
+            image,
+            is_svg: contentType?.includes('image/svg+xml'),
+            is_image: contentType?.includes('image')
+          }
         }
         catch (e) {
           return null

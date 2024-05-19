@@ -188,7 +188,7 @@ const Settings = () => {
                             <XStack columnGap={20} >
                                 <Wallet />
                                 <H4 textTransform='none' >
-                                    Wallet
+                                    Delegate Wallet
                                 </H4>
                             </XStack>
                             <ChevronRight />
@@ -218,7 +218,7 @@ const Settings = () => {
             </YStack>
             <XStack w="100%" alignItems='center' justifyContent='center' >
                 <Text>
-                    Version 0.0.22
+                    Version 0.0.26
                 </Text>
             </XStack>
             <XStack w="100%" alignItems='center' justifyContent='center' >

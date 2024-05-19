@@ -10,7 +10,7 @@ import account from '../../../contract/modules/account'
 import delegateManager from '../../../lib/delegate-manager'
 import usernames from '../../../contract/modules/usernames'
 import { Utils } from '../../../utils'
-import client from '../../../data/apollo'
+import client, { hermesClient } from '../../../data/apollo'
 import { GET_MY_PROFILE } from '../../../utils/queries'
 import UnstyledButton from '../../../components/ui/buttons/unstyled-button'
 import Toast from 'react-native-toast-message'
@@ -18,6 +18,9 @@ import { aptos } from '../../../contract'
 import * as Haptics from 'expo-haptics'
 import { Either } from 'effect'
 import BaseButton from '../../../components/ui/buttons/base-button'
+import { getPhoneBook } from '../../../lib/hermes-client/queries'
+import hermes from '../../../contract/modules/hermes'
+import posti from '../../../lib/posti'
 
 // The seed phrase will be a list of 12 words each separated by a space
 const schema = z.object({
@@ -105,8 +108,39 @@ const SeedPhrase = () => {
                     goToFeed()
                     return
                 }   
-                setLoading(false)
-                goToProfile()
+
+                const inboxQuery = await hermesClient.query({
+                    query: getPhoneBook,
+                    variables: {
+                        address: delegateManager.owner!
+                    }
+                })
+
+                if (inboxQuery.data.phoneBook?.hid) {
+                    setLoading(false)
+                    goToProfile()
+
+                } else {
+                    const response = await hermes.registerInbox()
+
+                    if (!response.success) {
+                        posti.capture('Failed to setup account', {
+                            response
+                        })
+                        setLoading(false)
+                        Toast.show({
+                            type: 'error',
+                            text1: 'Uh oh!',
+                            text2: 'Failed to setup account, please try again later.'
+                        })
+                        return
+
+                    }
+
+                    setLoading(false)
+                    goToProfile()
+                }
+
                 return
 
 
