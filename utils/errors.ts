@@ -201,3 +201,19 @@ export class MessageNotFoundError {
         this.initialError = error
     }
 }
+
+export class UnableToGetUsername {
+    readonly _tag = 'UnableToGetUsername'
+    initialError: any
+    constructor(error?: any) {
+        this.initialError = error
+    }
+}
+
+export class UnableToFetchDelegateStatus {
+    readonly _tag = 'UnableToFetchDelegateStatus'
+    initialError: any
+    constructor(error?: any) {
+        this.initialError = error
+    }
+}

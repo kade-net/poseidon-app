@@ -10,14 +10,17 @@ import account from '../../../contract/modules/account'
 import delegateManager from '../../../lib/delegate-manager'
 import usernames from '../../../contract/modules/usernames'
 import { Utils } from '../../../utils'
-import client from '../../../data/apollo'
+import client, { hermesClient } from '../../../data/apollo'
 import { GET_MY_PROFILE } from '../../../utils/queries'
 import UnstyledButton from '../../../components/ui/buttons/unstyled-button'
 import Toast from 'react-native-toast-message'
 import { aptos } from '../../../contract'
 import * as Haptics from 'expo-haptics'
-import { Either } from 'effect'
+import { Effect, Either } from 'effect'
 import BaseButton from '../../../components/ui/buttons/base-button'
+import { getPhoneBook } from '../../../lib/hermes-client/queries'
+import hermes from '../../../contract/modules/hermes'
+import posti from '../../../lib/posti'
 
 // The seed phrase will be a list of 12 words each separated by a space
 const schema = z.object({
@@ -64,28 +67,7 @@ const SeedPhrase = () => {
 
             await account.markAsImported()
 
-            try {
-                const username = await usernames.getUsername()
-                console.log(username)
-                if (!username) {
-                    setLoading(false)
-                    goToUsername()
-                    return
-                }
-
-                delegateManager.setUsername(username)
-
-                const userAccount = await account.getAccount()
-
-                // INFO: Ideally the code below will never run but jsut in case
-
-                if (!userAccount) {
-                    goToUsername()
-                    setLoading(false)
-                    return
-                }
-
-                // This won't register an inbox for most tesnet accounts if they choose to sign in via seed phrase
+            try { 
 
                 const profile = await client.query({
                     query: GET_MY_PROFILE,
@@ -101,12 +83,83 @@ const SeedPhrase = () => {
                 await account.markAsRegistered()
 
                 if (account.isProfileRegistered) {
+                    const canDelegate = await account.canDelegate()
+                    if (canDelegate) {
+                        setLoading(false)
+                        goToFeed()
+                        return
+                    }
+                }
+
+                const username = await usernames.getUsername()
+
+                if (!username) {
                     setLoading(false)
-                    goToFeed()
+                    goToUsername()
                     return
-                }   
-                setLoading(false)
-                goToProfile()
+                }
+
+                delegateManager.setUsername(username)
+
+                const userAccount = await account.getAccount()
+
+
+                if (!userAccount && !username) {
+                    goToUsername()
+                    setLoading(false)
+                    return
+                }
+
+                if (!userAccount && username) {
+                    delegateManager.setUsername(username)
+                    const resultEither = await account.setupWithSelfDelegate()
+                    Either.match(resultEither, {
+                        onLeft(left) {
+                            console.log('Delegate failed to setup', left)
+                            throw left
+                        },
+                        onRight: async (right) => {
+                            console.log('Delegate setup')
+                            if (account.isProfileRegistered) {
+                                goToFeed()
+                                return
+                            }
+                            setLoading(false)
+                            goToProfile()
+                        },
+                    })
+                    return 
+                }
+
+
+
+
+
+
+
+                const registerDelegateEither = await account.registerAsSelfDelegate()
+
+                await Either.match(registerDelegateEither, {
+                    onLeft(left) {
+                        console.log('Delegate failed to register', left)
+                        Toast.show({
+                            type: 'error',
+                            text1: 'Uh oh!',
+                            text2: 'Failed to setup account, please try again.'
+                        })
+                    },
+                    onRight: async (right) => {
+                        console.log('Delegate registered')
+                        if (account.isProfileRegistered) {
+                            goToFeed()
+                            return
+                        }
+                        setLoading(false)
+                        goToProfile()
+                    },
+                })
+
+
                 return
 
 
@@ -115,8 +168,8 @@ const SeedPhrase = () => {
                 Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error)
                 Toast.show({
                     type: 'error',
-                    text1: 'Unable to get username',
-                    text2: 'Failed to get username'
+                    text1: 'Unable to complete setup',
+                    text2: 'Please try again later.'
                 })
                 setLoading(false)
                 console.log(`SOMETHING WENT WRONG:: ${e}`)

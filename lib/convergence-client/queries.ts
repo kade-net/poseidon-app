@@ -178,3 +178,12 @@ export const DELETE_ACCOUNT = gql(/* GraphQL */`
         adminRemoveAccount(input: $input)
     }
 `)
+
+export const SETUP_SELF_DELEGATE = gql(/* GraphQL */`
+    mutation setupSelfDelegate($input: setupSelfDelegateArgs!) {
+        setupSelfDelegate(input: $input) {
+            raw_transaction
+            signature
+        }
+    }
+`)

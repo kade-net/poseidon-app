@@ -18,6 +18,9 @@ import { Link } from 'expo-router'
 import { Utils } from '../../utils'
 import * as Haptics from 'expo-haptics'
 import Toast from 'react-native-toast-message'
+import { useQuery as uzQuery } from 'react-query'
+import { aptos } from '../../contract'
+import AptosIcon from '../../assets/svgs/aptos-icon'
 
 interface Props {
     address: string
@@ -97,8 +100,6 @@ const ProfileDetails = (props: Props) => {
         skip: !address
     })
 
-    console.log("Profile query", profileQuery.loading)
-
     const accountStatsQuery = useQuery(GET_ACCOUNT_STATS, {
         variables: {
             accountAddress: address
@@ -112,6 +113,23 @@ const ProfileDetails = (props: Props) => {
             viewerAddress: delegateManager.owner!
         },
         skip: !address || IS_SAME_ACCOUNT
+    })
+
+    const aptosName = uzQuery({
+        queryFn: async () => {
+            try {
+                const ansName = await aptos.getPrimaryName({
+                    address: address
+                })
+
+                return ansName
+
+            }
+            catch (e) {
+                return null
+            }
+        },
+        queryKey: ['aptosName', address]
     })
 
     const handleFollowToggle = async () => {
@@ -187,7 +205,7 @@ const ProfileDetails = (props: Props) => {
                                 bg="lightgray"
                             />
                         </Avatar>
-                        <YStack>
+                        <YStack justifyContent='space-between' >
                             <Text fontWeight="bold" color={"$text"} fontSize={"$md"}>
                                 {
                                     profileQuery.data?.account?.profile?.display_name
@@ -198,6 +216,13 @@ const ProfileDetails = (props: Props) => {
                                     profileQuery.data?.account?.username?.username
                                 }
                             </Text>
+                            {aptosName.data && <XStack alignItems='center' columnGap={5} >
+                                <AptosIcon size={12} color='white' />
+                                <Text color="$primary" fontSize={"$sm"} >
+                                    {aptosName.data}.apt
+                                </Text>
+                            </XStack>}
+
                         </YStack>
                     </XStack>
                     <XStack>

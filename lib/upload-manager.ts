@@ -83,8 +83,13 @@ class UploadManager {
 
             const timestamp = new Date().getTime().toString()
             const res = await FileSystem.downloadAsync(uri, `${FileSystem.documentDirectory}${timestamp}.jpg`)
-            await MediaLibrary.saveToLibraryAsync(res.uri)
-            Alert.alert('Image saved')
+            const { granted } = await MediaLibrary.requestPermissionsAsync()
+
+            if (granted) {
+
+                await MediaLibrary.saveToLibraryAsync(res.uri)
+                Alert.alert('Image saved')
+            }
         }
         catch (e) {
             console.log(`SOMETHING WENT WRONG:: ${e}`)

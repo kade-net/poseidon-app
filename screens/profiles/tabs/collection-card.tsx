@@ -7,6 +7,7 @@ import { Utils } from '../../../utils'
 import { Link, useGlobalSearchParams } from 'expo-router'
 import { Anchor, Lock, Unlock } from '@tamagui/lucide-icons'
 import { LinearGradient } from 'expo-linear-gradient'
+import { SvgUri } from 'react-native-svg'
 
 type COLLECTION = GetAccountCollectionsWithOwnedTokenResponse['0'] & { first_uri: string, is_internal?: boolean, is_locked?: boolean, description?: string }
 
@@ -107,10 +108,37 @@ const CollectionCard = (props: Props) => {
                         </ImageBackground>
                     ) : (
                             <YStack aspectRatio={1} borderRadius={5} overflow='hidden'  >
-                    <Image
-                                    src={ImageData?.data ?? data.first_uri ?? ''}
+                                {
+                                    ImageData?.data ? (
+                                        <>
+                                            {
+                                                ImageData?.data?.is_svg ? (
+                                                    <YStack
+                                                        w="100%"
+                                                        h="100%"
+                                                    >
+                                                        <SvgUri
+                                                            width={'100%'}
+                                                            height={'100%'}
+                                                            uri={ImageData?.data?.image ?? ''}
+                                                        />
+                                                    </YStack>
+                                                ) : (
+                                                    <Image
+                                                        src={ImageData?.data?.image ?? data.first_uri ?? ''}
+                                                        aspectRatio={1}
+                                                    />
+                                                )
+                                            }
+                                        </>
+                                    ) : (
+                                            <Image
+                                                src={data.first_uri ?? ''}
                         aspectRatio={1}
                     />
+                                    )
+                                }
+
                 </YStack>
                     )
                 }

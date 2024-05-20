@@ -13,7 +13,7 @@ const index = () => {
                     header(props) {
                         return (
                             <TopBarWithBack
-                                title={'Wallet'}
+                                title={'Delegate Wallet'}
                                 navigation={props.navigation}
                             />
                         )

@@ -86,7 +86,7 @@ class Collected {
             for (const collection of data) {
 
                 collections.push({
-                    first_uri: collection.image,
+                    first_uri: collection.image?.startsWith("ipfs://") ? '' : collection?.image,
                     collection_name: collection.name,
                     description: collection.description,
                     collection_id: collection.address,
