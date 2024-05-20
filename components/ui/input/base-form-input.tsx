@@ -29,6 +29,7 @@ const BaseFormInput = (props: P) => {
                     }
                 </XStack>
                 <Input
+                    backgroundColor={"$backgroundTransparent"}
                     p={0}
                     borderWidth={0}
                     {...rest}
