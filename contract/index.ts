@@ -38,7 +38,7 @@ export const ACCOUNT_VIEW_FUNCTIONS = {
     get_account: `${ACCOUNT_CONTRACT}::get_account`,
     delegate_get_owner: `${ACCOUNT_CONTRACT}::delegate_get_owner`,
     get_current_username: `${ACCOUNT_CONTRACT}::get_current_username` as const,
-}
+} as const
 
 export const PUBLICATION_ENTRY_FUNCTIONS = {
     create_publication: `${PUBLICATION_CONTRACT}::create_publication`,

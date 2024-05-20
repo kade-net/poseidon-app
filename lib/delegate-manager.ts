@@ -104,6 +104,7 @@ class DelegateManager {
             if (user_kid == '0') {
                 // delegate owns itself
                 this.setOwner(delegate_address)
+                SecureStore.setItem('mnemonic', mnemonic)
                 return
             }
 

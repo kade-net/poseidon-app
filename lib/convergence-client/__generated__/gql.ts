@@ -31,6 +31,7 @@ const documents = {
     "\n    mutation init_delegate($input: registerDelegateOnKadeAndHermesArgs!){\n        registerDelegateOnKadeAndHermes(input: $input) {\n            raw_transaction\n            signature\n        }\n    }\n": types.Init_DelegateDocument,
     "\n    query AnchorTransactions($user_address: String!) {\n        anchorTransactions(\n            user_address: $user_address\n        ) {\n            sender_address\n            receiver_address\n            anchor_amount\n            timestamp\n            type\n        }\n    }\n\n": types.AnchorTransactionsDocument,
     "\n    mutation AdminRemoveAccount($input: adminRemoveAccountArgs!) {\n        adminRemoveAccount(input: $input)\n    }\n": types.AdminRemoveAccountDocument,
+    "\n    mutation setupSelfDelegate($input: setupSelfDelegateArgs!) {\n        setupSelfDelegate(input: $input) {\n            raw_transaction\n            signature\n        }\n    }\n": types.SetupSelfDelegateDocument,
 };
 
 /**
@@ -119,6 +120,10 @@ export function gql(source: "\n    query AnchorTransactions($user_address: Strin
  * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function gql(source: "\n    mutation AdminRemoveAccount($input: adminRemoveAccountArgs!) {\n        adminRemoveAccount(input: $input)\n    }\n"): (typeof documents)["\n    mutation AdminRemoveAccount($input: adminRemoveAccountArgs!) {\n        adminRemoveAccount(input: $input)\n    }\n"];
+/**
+ * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function gql(source: "\n    mutation setupSelfDelegate($input: setupSelfDelegateArgs!) {\n        setupSelfDelegate(input: $input) {\n            raw_transaction\n            signature\n        }\n    }\n"): (typeof documents)["\n    mutation setupSelfDelegate($input: setupSelfDelegateArgs!) {\n        setupSelfDelegate(input: $input) {\n            raw_transaction\n            signature\n        }\n    }\n"];
 
 export function gql(source: string) {
   return (documents as any)[source] ?? {};

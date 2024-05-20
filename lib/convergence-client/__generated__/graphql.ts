@@ -134,6 +134,7 @@ export type Inbox = {
 export type Mutation = {
   __typename?: 'Mutation';
   acceptRequest: SerializedTransaction;
+  addDelegateToKadeAndHermes: SerializedTransaction;
   adminRemoveAccount: Scalars['Boolean']['output'];
   cleanAnchorOrder?: Maybe<Scalars['String']['output']>;
   confirmAnchorOrder?: Maybe<Scalars['Boolean']['output']>;
@@ -149,20 +150,28 @@ export type Mutation = {
   delegateRequestConversation: SerializedTransaction;
   delegateSendEnvelope: SerializedTransaction;
   denyRequest: SerializedTransaction;
+  initKadeAccountWithHermesInboxAndDelegate: SerializedTransaction;
   initSelfDelegateKadeAccountWithHermesInbox: SerializedTransaction;
   registerDelegate: SerializedTransaction;
   registerDelegateOnKadeAndHermes: SerializedTransaction;
+  registerInboxAndDelegate: SerializedTransaction;
   registerRequestInbox: SerializedTransaction;
   removeDelegate: SerializedTransaction;
   removeFromPhoneBook: SerializedTransaction;
   requestConversation: SerializedTransaction;
   send: SerializedTransaction;
+  setupSelfDelegate: SerializedTransaction;
   updateConnection?: Maybe<Scalars['Boolean']['output']>;
 };
 
 
 export type MutationAcceptRequestArgs = {
   input: AcceptRequestArgs;
+};
+
+
+export type MutationAddDelegateToKadeAndHermesArgs = {
+  input: AddDelegateToKadeAndHermesArgs;
 };
 
 
@@ -241,6 +250,11 @@ export type MutationDenyRequestArgs = {
 };
 
 
+export type MutationInitKadeAccountWithHermesInboxAndDelegateArgs = {
+  input: InitKadeAccountWithHermesInboxAndDelegateArgs;
+};
+
+
 export type MutationInitSelfDelegateKadeAccountWithHermesInboxArgs = {
   input: InitSelfDelegateKadeAccountWithHermesInboxArgs;
 };
@@ -253,6 +267,11 @@ export type MutationRegisterDelegateArgs = {
 
 export type MutationRegisterDelegateOnKadeAndHermesArgs = {
   input: RegisterDelegateOnKadeAndHermesArgs;
+};
+
+
+export type MutationRegisterInboxAndDelegateArgs = {
+  input: RegisterInboxAndDelegateArg;
 };
 
 
@@ -278,6 +297,11 @@ export type MutationRequestConversationArgs = {
 
 export type MutationSendArgs = {
   input: SendArgs;
+};
+
+
+export type MutationSetupSelfDelegateArgs = {
+  input: SetupSelfDelegateArgs;
 };
 
 
@@ -376,6 +400,11 @@ export type SubscriptionLiveInboxArgs = {
   viewer: Scalars['String']['input'];
 };
 
+export type AddDelegateToKadeAndHermesArgs = {
+  delegate_address: Scalars['String']['input'];
+  sender_address: Scalars['String']['input'];
+};
+
 export type AdminRemoveAccountArgs = {
   user_address: Scalars['String']['input'];
 };
@@ -412,6 +441,13 @@ export type CreateConnectionInput = {
   user_address: Scalars['String']['input'];
 };
 
+export type InitKadeAccountWithHermesInboxAndDelegateArgs = {
+  delegate_address: Scalars['String']['input'];
+  public_key: Scalars['String']['input'];
+  sender_address: Scalars['String']['input'];
+  username: Scalars['String']['input'];
+};
+
 export type InitSelfDelegateKadeAccountWithHermesInboxArgs = {
   public_key: Scalars['String']['input'];
   sender_address: Scalars['String']['input'];
@@ -422,6 +458,16 @@ export type RegisterDelegateOnKadeAndHermesArgs = {
   public_key: Scalars['String']['input'];
   sender_address: Scalars['String']['input'];
   user_address: Scalars['String']['input'];
+};
+
+export type RegisterInboxAndDelegateArg = {
+  delegate_address: Scalars['String']['input'];
+  public_key: Scalars['String']['input'];
+  sender_address: Scalars['String']['input'];
+};
+
+export type SetupSelfDelegateArgs = {
+  sender_address: Scalars['String']['input'];
 };
 
 export type UpdateConnectionInput = {
@@ -558,6 +604,13 @@ export type AdminRemoveAccountMutationVariables = Exact<{
 
 export type AdminRemoveAccountMutation = { __typename?: 'Mutation', adminRemoveAccount: boolean };
 
+export type SetupSelfDelegateMutationVariables = Exact<{
+  input: SetupSelfDelegateArgs;
+}>;
+
+
+export type SetupSelfDelegateMutation = { __typename?: 'Mutation', setupSelfDelegate: { __typename?: 'SerializedTransaction', raw_transaction: Array<number>, signature: Array<number> } };
+
 
 export const RegisterRequestInboxDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"RegisterRequestInbox"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"args"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"RegisterRequestInboxInputArgs"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"registerRequestInbox"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"args"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"raw_transaction"}},{"kind":"Field","name":{"kind":"Name","value":"signature"}}]}}]}}]} as unknown as DocumentNode<RegisterRequestInboxMutation, RegisterRequestInboxMutationVariables>;
 export const RequestConversationDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"RequestConversation"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"args"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"RequestConversationArgs"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"requestConversation"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"args"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"raw_transaction"}},{"kind":"Field","name":{"kind":"Name","value":"signature"}}]}}]}}]} as unknown as DocumentNode<RequestConversationMutation, RequestConversationMutationVariables>;
@@ -577,3 +630,4 @@ export const Init_Account_And_InboxDocument = {"kind":"Document","definitions":[
 export const Init_DelegateDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"init_delegate"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"registerDelegateOnKadeAndHermesArgs"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"registerDelegateOnKadeAndHermes"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"raw_transaction"}},{"kind":"Field","name":{"kind":"Name","value":"signature"}}]}}]}}]} as unknown as DocumentNode<Init_DelegateMutation, Init_DelegateMutationVariables>;
 export const AnchorTransactionsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"AnchorTransactions"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"user_address"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"anchorTransactions"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"user_address"},"value":{"kind":"Variable","name":{"kind":"Name","value":"user_address"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"sender_address"}},{"kind":"Field","name":{"kind":"Name","value":"receiver_address"}},{"kind":"Field","name":{"kind":"Name","value":"anchor_amount"}},{"kind":"Field","name":{"kind":"Name","value":"timestamp"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}}]}}]} as unknown as DocumentNode<AnchorTransactionsQuery, AnchorTransactionsQueryVariables>;
 export const AdminRemoveAccountDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"AdminRemoveAccount"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"adminRemoveAccountArgs"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"adminRemoveAccount"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}]}]}}]} as unknown as DocumentNode<AdminRemoveAccountMutation, AdminRemoveAccountMutationVariables>;
+export const SetupSelfDelegateDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"setupSelfDelegate"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"setupSelfDelegateArgs"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"setupSelfDelegate"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"raw_transaction"}},{"kind":"Field","name":{"kind":"Name","value":"signature"}}]}}]}}]} as unknown as DocumentNode<SetupSelfDelegateMutation, SetupSelfDelegateMutationVariables>;
