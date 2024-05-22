@@ -3,6 +3,7 @@ import { GetAccountCollectionsWithOwnedTokenResponse, GetAccountOwnedTokensFromC
 import delegateManager from "../../lib/delegate-manager";
 import { uniqBy } from "lodash";
 import axios from "axios";
+import { Utils } from "../../utils";
 
 type VARIANT = {
     timestamp: Date | null;
@@ -86,11 +87,11 @@ class Collected {
             for (const collection of data) {
 
                 collections.push({
-                    first_uri: collection.image?.startsWith("ipfs://") ? '' : collection?.image,
+                    first_uri: Utils.parseCollectionImage(collection.image),
                     collection_name: collection.name,
                     description: collection.description,
                     collection_id: collection.address,
-                    uri: collection.image,
+                    uri: Utils.parseCollectionImage(collection.image),
                     max_supply: collection.max_supply,
                     is_internal: true,
                     anchor_amount: collection.anchor_amount ?? 0,

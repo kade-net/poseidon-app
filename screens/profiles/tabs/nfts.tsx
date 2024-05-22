@@ -1,5 +1,5 @@
 import { View, Text, YStack, XStack, Spinner } from 'tamagui'
-import React from 'react'
+import React, { memo, useCallback } from 'react'
 import { ProfileTabsProps, SceneProps, ScrollManager } from './common'
 import { Animated, Platform } from 'react-native'
 import { useQuery } from 'react-query'
@@ -19,6 +19,14 @@ const NftsTab = (props: ProfileTabsProps) => {
         queryKey: ['collections', address],
     })
 
+    const renderCollection = useCallback(({ item }: any) => {
+        return (
+            <CollectionCard
+                data={item}
+            />
+        )
+    }, [])
+
     if (nftsQuery.isLoading) return (
         <YStack flex={1} w="100%" h="100%" alignItems='center' justifyContent='center' >
             <Spinner />
@@ -27,14 +35,6 @@ const NftsTab = (props: ProfileTabsProps) => {
 
 
 
-    const renderCollection = ({ item }: any) => {
-        console.log(item)
-        return (
-            <CollectionCard
-                data={item}
-            />
-        )
-    }
 
     return (
         <YStack w="100%" h="100%" px={5} >
@@ -103,12 +103,7 @@ const NftsTab = (props: ProfileTabsProps) => {
                         </YStack>
                     )
                 }}
-                renderItem={({ item, index }) => (
-                    <CollectionCard
-                        data={item}
-                        key={index}
-                    />
-                )}
+                renderItem={renderCollection}
                 ListFooterComponent={() => {
                     if (nftsQuery.isLoading) return (
                         <XStack p={20} alignItems='center' justifyContent='center' >
@@ -122,4 +117,4 @@ const NftsTab = (props: ProfileTabsProps) => {
     )
 }
 
-export default NftsTab
+export default memo(NftsTab)

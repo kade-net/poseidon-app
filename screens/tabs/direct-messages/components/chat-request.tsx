@@ -62,7 +62,10 @@ const ChatRequest = (props: Props) => {
         <XStack w="100%" alignItems='center' mb={5} flex={1} columnGap={10} pb={5} borderColor={"$sideText"} borderBottomWidth={0.5}>
             <Avatar circular size="$4" >
                 <Avatar.Image
-                    src={profileQuery?.data?.account?.profile?.pfp ?? Utils.diceImage(address ?? '')}
+                    src={
+                        // profileQuery?.data?.account?.profile?.pfp ?? Utils.diceImage(address ?? '')
+                        Utils.parseAvatarImage(address ?? '', profileQuery?.data?.account?.profile?.pfp ?? null)
+                    }
                 />
                 <Avatar.Fallback
                     bg="$pink10"

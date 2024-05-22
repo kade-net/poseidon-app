@@ -200,7 +200,9 @@ const ProfileDetails = (props: Props) => {
                 >
                     <XStack w="100%" py={10} columnGap={10} >
                         <Avatar circular size={"$6"} >
-                            <Avatar.Image source={{ uri: profileQuery.data?.account?.profile?.pfp ?? Utils.diceImage(address) }} />
+                            <Avatar.Image source={{
+                                uri: Utils.parseAvatarImage(address, profileQuery.data?.account?.profile?.pfp as string ?? null)
+                            }} />
                             <Avatar.Fallback
                                 bg="lightgray"
                             />

@@ -178,7 +178,12 @@ const Home = () => {
                     <Avatar circular size={"$4"} >
                         <Avatar.Image
                             accessibilityLabel='Profile Picture'
-                            src={profileQuery?.data?.account?.profile?.pfp as string ?? Utils.diceImage(delegateManager.owner!)}
+                            src={
+                                Utils.parseAvatarImage(
+                                    delegateManager.owner!,
+                                    profileQuery?.data?.account?.profile?.pfp as string
+                                )
+                            }
                         />
                         <Avatar.Fallback
                             backgroundColor={'$pink10'}

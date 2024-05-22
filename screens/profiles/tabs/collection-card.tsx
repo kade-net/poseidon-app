@@ -1,5 +1,5 @@
 import { View, Text, YStack, Image, Spinner, XStack } from 'tamagui'
-import React, { useEffect } from 'react'
+import React, { memo, useEffect } from 'react'
 import { GetAccountCollectionsWithOwnedTokenResponse } from '@aptos-labs/ts-sdk'
 import { ImageBackground, TouchableOpacity } from 'react-native'
 import { useQuery } from 'react-query'
@@ -20,25 +20,25 @@ const CollectionCard = (props: Props) => {
     const { data } = props
     const validateImageQuery = useQuery({
         queryKey: [data.collection_id, data.first_uri],
-        queryFn: () => Utils.validateImageUri(data.first_uri ?? '')
+        queryFn: () => Utils.validateImageUri(Utils.parseCollectionImage(data.first_uri ?? ''))
     })
 
     const ImageData = useQuery({
         queryKey: [data.collection_id, data.first_uri, 'data'],
-        queryFn: () => Utils.getImageData(data.first_uri ?? ''),
+        queryFn: () => Utils.getImageData(Utils.parseCollectionImage(data.first_uri ?? '')),
         enabled: (!validateImageQuery.isFetching && !validateImageQuery.isLoading && !validateImageQuery.data)
     })
 
-    useEffect(() => {
-        ; (async () => {
-            if (!validateImageQuery.isFetching) {
-                const json = await Utils.getImageData(data.first_uri ?? '')
-            }
+    // useEffect(() => {
+    //     ; (async () => {
+    //         if (!validateImageQuery.isFetching) {
+    //             const json = await Utils.getImageData(data.first_uri ?? '')
+    //         }
 
-        })()
-    }, [validateImageQuery.isFetching])
+    //     })()
+    // }, [validateImageQuery.isFetching])
 
-    if (validateImageQuery.isLoading || ImageData.isLoading) return (
+    if (validateImageQuery.isLoading) return (
         <YStack flex={1} aspectRatio={1} alignItems='center' justifyContent='center' >
             <Spinner />
         </YStack>
@@ -120,12 +120,12 @@ const CollectionCard = (props: Props) => {
                                                         <SvgUri
                                                             width={'100%'}
                                                             height={'100%'}
-                                                            uri={ImageData?.data?.image ?? ''}
+                                                            uri={Utils.parseCollectionImage(ImageData?.data?.image ?? '')}
                                                         />
                                                     </YStack>
                                                 ) : (
                                                     <Image
-                                                        src={ImageData?.data?.image ?? data.first_uri ?? ''}
+                                                            src={Utils.parseCollectionImage(ImageData?.data?.image ?? data.first_uri ?? '')}
                                                         aspectRatio={1}
                                                     />
                                                 )
@@ -133,7 +133,7 @@ const CollectionCard = (props: Props) => {
                                         </>
                                     ) : (
                                             <Image
-                                                src={data.first_uri ?? ''}
+                                                src={Utils.parseCollectionImage(data.first_uri ?? '')}
                         aspectRatio={1}
                     />
                                     )
@@ -148,4 +148,4 @@ const CollectionCard = (props: Props) => {
     )
 }
 
-export default CollectionCard
+export default memo(CollectionCard)

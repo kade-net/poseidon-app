@@ -63,7 +63,10 @@ const ChatPreview = (props: Props) => {
                 <XStack w="100%" alignItems='center' columnGap={10} >
                     <Avatar circular size="$4" >
                         <Avatar.Image
-                            src={profileQuery?.data?.account?.profile?.pfp ?? Utils.diceImage(address ?? '')}
+                            src={
+                                // profileQuery?.data?.account?.profile?.pfp ?? Utils.diceImage(address ?? '')
+                                Utils.parseAvatarImage(address ?? '', profileQuery?.data?.account?.profile?.pfp ?? null)
+                            }
                         />
                         <Avatar.Fallback
                             bg="$pink10"

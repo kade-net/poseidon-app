@@ -15,7 +15,9 @@ const SimpleProfileCard = (props: Props) => {
     <XStack backgroundColor={"$background"} w="100%" alignItems='center' columnGap={10} px={10} py={10} >
       <Avatar circular size={'$3'} >
         <Avatar.Image
-          src={data?.pfp! ?? Utils.diceImage(data?.address! ?? '1')}
+          src={
+            Utils.parseAvatarImage(data?.address! ?? '1', data?.pfp! ?? null)
+          }
           accessibilityLabel='Profile Picture'
         />
         <Avatar.Fallback

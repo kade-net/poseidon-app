@@ -101,7 +101,9 @@ function BaseContentContainer(props: BaseContentContainerProps) {
                     >
                         <Avatar circular size={"$3"} >
                             <Avatar.Image
-                                src={data?.creator?.profile?.pfp as string ?? Utils.diceImage(data?.creator?.address! ?? '1')}
+                                src={
+                                    Utils.parseAvatarImage(data?.creator?.address ?? '1', data?.creator?.profile?.pfp as string)
+                                }
                                 accessibilityLabel="Profile Picture"
                             />
                             <Avatar.Fallback

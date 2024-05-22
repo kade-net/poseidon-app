@@ -33,7 +33,10 @@ const ChatTopBar = (props: Props) => {
                     <ArrowLeft />
                     <XStack columnGap={10} >
                         <Avatar circular size="$3" >
-                            <Avatar.Image src={profileQuery?.data?.account?.profile?.pfp ?? Utils.diceImage(other_user ?? '1')} />
+                            <Avatar.Image src={
+                                // profileQuery?.data?.account?.profile?.pfp ?? Utils.diceImage(other_user ?? '1')
+                                Utils.parseAvatarImage(other_user ?? '1', profileQuery?.data?.account?.profile?.pfp)
+                            } />
                             <Avatar.Fallback
                                 backgroundColor={'$pink10'}
                             />

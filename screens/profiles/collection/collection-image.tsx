@@ -15,7 +15,7 @@ import { SvgUri } from 'react-native-svg'
 
 const getSize = async (image: string) => {
     return new Promise<{ width: number, height: number }>((res, rej) => {
-        Image.getSize(image, (width, height) => {
+        Image.getSize(Utils.parseCollectionImage(image), (width, height) => {
             res({ width, height })
         }, (error) => {
             rej(error)
@@ -42,7 +42,7 @@ const CollectionImage = (props: Props) => {
 
     const validateImageQuery = useQuery({
         queryKey: [image],
-        queryFn: () => Utils.validateImageUri(image ?? '')
+        queryFn: () => Utils.validateImageUri(Utils.parseCollectionImage(image ?? ''))
     })
 
     const aspectRatioQuery = useQuery({
@@ -106,7 +106,7 @@ const CollectionImage = (props: Props) => {
                         height={300}
                         uri={image}
                     /> : <Image
-                src={image ?? ''}
+                        src={Utils.parseCollectionImage(image ?? '')}
                 aspectRatio={aspectRatioQuery?.data ?? 16 / 9}
             />
             }

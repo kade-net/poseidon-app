@@ -64,7 +64,10 @@ const SearchTopBar = (props: P) => {
                         <Avatar circular size={"$2"} >
                             <Avatar.Image
                                 accessibilityLabel='Profile Picture'
-                                src={profileQuery?.data?.account?.profile?.pfp as string ?? Utils.diceImage(delegateManager.owner!)}
+                                src={
+                                    Utils.parseAvatarImage(delegateManager.owner!, profileQuery?.data?.account?.profile?.pfp as string)
+                                    // profileQuery?.data?.account?.profile?.pfp as string ?? Utils.diceImage(delegateManager.owner!)
+                                }
                             />
                             <Avatar.Fallback
                                 backgroundColor={'$pink10'}
