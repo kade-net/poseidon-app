@@ -219,6 +219,9 @@ class PoseidonWallet {
             amount: BigInt(amount * 100000000),
             recipient,
             sender: delegateManager.account?.address().toString()!,
+            options: {
+                maxGasAmount: 1000,
+            }
         })
 
         const committedTxn = await aptos.transaction.signAndSubmitTransaction({
