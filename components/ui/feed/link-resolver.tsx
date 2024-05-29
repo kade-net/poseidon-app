@@ -70,7 +70,7 @@ const LinkResolver = (props: Props) => {
         })
     }
 
-    if (link.startsWith("https://portals.poseidon.ac")) {
+    if (link.includes("https://portals.poseidon.ac") || link.includes("http://192.168.100.211:3000")) {
         return <PortalRenderer
             kid={kid}
             post_ref={publication_ref}

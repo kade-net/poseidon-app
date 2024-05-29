@@ -3445,14 +3445,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@kade-net/portals-parser@npm:^0.0.11":
-  version: 0.0.11
-  resolution: "@kade-net/portals-parser@npm:0.0.11"
+"@kade-net/portals-parser@npm:^0.0.13":
+  version: 0.0.13
+  resolution: "@kade-net/portals-parser@npm:0.0.13"
   dependencies:
     html-entities: "npm:^2.5.2"
   peerDependencies:
     effect: ^3.0.7
-  checksum: 50c21920c68810621c716fbe103dadc8f84f4976f93dc276f1cbdd7eb31c8bef9f17ec307ae5a897e32d4aef2248ed95e41f4060fe0a8a1c84789edc941a1818
+  checksum: c12ddc4758f62c8e306da8e58624be6a77e44a84c102d596b63b3397932e8cb6e5912e752010e77292b4738dcb8ddb6d7283faececc79528616f56feb1f61eb7
   languageName: node
   linkType: hard
 
@@ -14563,7 +14563,7 @@ __metadata:
     "@graphql-codegen/typescript-operations": "npm:^4.2.0"
     "@graphql-typed-document-node/core": "npm:^3.2.0"
     "@hookform/resolvers": "npm:^3.3.4"
-    "@kade-net/portals-parser": "npm:^0.0.11"
+    "@kade-net/portals-parser": "npm:^0.0.13"
     "@react-native-async-storage/async-storage": "npm:1.23.1"
     "@react-navigation/native": "npm:^6.0.2"
     "@tamagui/config": "npm:^1.90.6"

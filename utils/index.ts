@@ -157,4 +157,10 @@ export namespace Utils {
 
     return image
   }
+
+  export const convertAspectRatio = (aspect_ratio: string) => {
+    if (!aspect_ratio || aspect_ratio.length === 0) return 1
+    const [width, height] = aspect_ratio.split(':')
+    return Number(width) / Number(height)
+  }
 }

@@ -55,7 +55,9 @@ export const config = createTamagui({
       bottomSheet: 'rgb(20, 29, 54)',
       searchBar: '#3c3c3e',
       incomingChatBubble:"#3c3c3e",
-
+      portalBackground: '#2a2432',
+      portalButton: '#ffffff1a',
+      portalBorderColor: '#4c3a4e80'
       
     },
     light: {
@@ -80,7 +82,9 @@ export const config = createTamagui({
       baseBackround: configBase.themes.light.background,
       searchBar: '#d5d5d7',
       incomingChatBubble:"#d5d5d7",
-
+      portalBackground: '#f5f6f9',
+      portalButton: '#cccfd9',
+      portalBorderColor: '#f1f5f9'
     }
   },
   fonts: {

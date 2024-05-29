@@ -53,7 +53,7 @@ const HighlightMentions = (props: Props) => {
                 mentions={mentions}
             />
         } else if (Utils.urlRegex.test(part)) {
-            return <Text fontFamily={"$body"} fontSize={"$sm"} lineHeight={"$sm"} fontWeight={"$3"} key={index} color={'$COAText'}>{part}</Text>
+            return <Text fontFamily={"$body"} fontSize={"$sm"} lineHeight={"$sm"} fontWeight={"$3"} key={index} color={'$COAText'}></Text>
         }
         return <Text fontFamily={"$body"} fontSize={"$sm"} lineHeight={"$sm"} fontWeight={"$3"} color={'$text'} key={index}>{part}</Text>
     })

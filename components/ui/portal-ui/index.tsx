@@ -1,11 +1,12 @@
-import { View, Text, YStack, Spinner, Input, Button } from 'tamagui'
+import { View, Text, YStack, Spinner, Input, Button, XStack } from 'tamagui'
 import React, { useState } from 'react'
 import usePortal from '../../../lib/portals/use-portal'
-import { Image } from 'react-native'
+import { FlatList, Image } from 'react-native'
 import { sortBy } from 'lodash'
 import useDisclosure from '../../hooks/useDisclosure'
 import TransactionSheet from '../action-sheets/in-app-transactions/transaction-sheet'
 import { PortalButton } from '@kade-net/portals-parser'
+import { Utils } from '../../../utils'
 
 interface Props {
     url: string
@@ -18,10 +19,8 @@ const PortalRenderer = (props: Props) => {
     const [activeButton, setActiveButton] = React.useState<PortalButton | null>(null)
     const { isOpen, onClose, onOpen, onToggle } = useDisclosure()
     const { portal, loading, setPortal, error, handleButtonPress } = usePortal({
-        initialUrl: url
+        initialUrl: url?.trim()
     })
-
-    console.log(JSON.stringify(portal))
 
     const handleMint = (button: PortalButton | null) => {
         setActiveButton(button)
@@ -36,7 +35,8 @@ const PortalRenderer = (props: Props) => {
                 button: activeButton,
                 kid,
                 ref,
-                hash
+                hash,
+                input
             })
         }
     }
@@ -49,7 +49,9 @@ const PortalRenderer = (props: Props) => {
                 width={'100%'}
                 borderRadius={10}
                 padding={10}
-                backgroundColor={'rgb(12,12,45)'}
+                backgroundColor={'$portalBackground'}
+                borderColor={'$portalBorderColor'}
+                borderWidth={1}
                 alignItems='center'
                 justifyContent='center'
             >
@@ -61,10 +63,13 @@ const PortalRenderer = (props: Props) => {
     return (
         <YStack
             width={'100%'}
-            backgroundColor={'rgb(12,12,45)'}
-            borderRadius={10}
+            backgroundColor={'$portalBackground'}
+            borderRadius={5}
+            borderColor={'$portalBorderColor'}
+            borderWidth={1}
+            overflow='hidden'
         >
-            <YStack w={"100%"} p={5} aspectRatio={1.91 / 1} >
+            <YStack w={"100%"} aspectRatio={portal?.components?.image?.aspect_ratio ? Utils.convertAspectRatio(portal?.components?.image?.aspect_ratio) : 1.91 / 1} >
                 <Image
                     style={{
                         width: '100%',
@@ -79,34 +84,54 @@ const PortalRenderer = (props: Props) => {
                 p={5}
             >
                 {
-                    portal?.components?.input && <Input
-                        value={input ?? ''}
-                        onChangeText={setInput}
-                        placeholder={portal?.components?.input?.input || ""}
-                    />
+                    portal?.components?.input &&
+                    <XStack w="100%" px={10} py={5} >
+                        <Input
+                            // p={0}
+                            w="100%"
+                            height={30}
+                            borderRadius={5}
+                            value={input ?? ''}
+                            onChangeText={setInput}
+                            placeholder={portal?.components?.input?.input || ""}
+                                autoCapitalize='none'
+                            />
+                        </XStack>
                 }
-                <YStack w="100%" rowGap={10}  >
-                    {
-                        sortBy(portal?.components.buttons, 'index').map((button) => {
-                            return (
-                                <Button key={button.index} onPress={() => {
-                                    if (button.type === 'mint') {
-                                        handleMint(button)
-                                    } else {
-                                        handleButtonPress({
-                                            button,
-                                            kid,
-                                            ref,
+                <FlatList
 
-                                        })
-                                    }
-                                }} >
-                                    {button.title}
-                                </Button>
-                            )
-                        })
-                    }
-                </YStack>
+                    data={sortBy(portal?.components.buttons, 'index') ?? []}
+                    keyExtractor={(item) => item.index.toString()}
+                    numColumns={2}
+                    style={{
+                        padding: 10,
+                        borderTopWidth: 1,
+                        borderTopColor: "#4c3a4e80",
+                        rowGap: 10
+                    }}
+                    columnWrapperStyle={{
+                        columnGap: 10,
+                        rowGap: 10,
+                    }}
+                    renderItem={({ item }) => {
+                        return (
+                            <Button size={'$3'} key={item.index} flex={1} onPress={() => {
+                                if (item.type === 'mint') {
+                                    handleMint(item)
+                                } else {
+                                    handleButtonPress({
+                                        button: item,
+                                        kid,
+                                        ref,
+                                        input
+                                    })
+                                }
+                            }} backgroundColor={'$portalButton'} >
+                                {item.title}
+                            </Button>
+                        )
+                    }}
+                />
             </YStack>
             <TransactionSheet
                 isOpen={isOpen}
