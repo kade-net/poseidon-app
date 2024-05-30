@@ -25,7 +25,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="feed"
         options={{
-          tabBarIcon: ({ focused }) => <Home size={focused?30:'unset'} fill={focused?tamaguiTheme.text.val:tamaguiTheme.colorTransparent.val} color={focused?'$background':'$text'} />,
+          tabBarIcon: ({ focused }) => <Home size={focused ? 30 : 'unset'} fill={focused ? tamaguiTheme.primary.val : tamaguiTheme.colorTransparent.val} color={focused ? '$background' : '$text'} />,
           tabBarActiveBackgroundColor: tamaguiTheme.background.val,
           tabBarInactiveBackgroundColor : tamaguiTheme.background.val,        
         }}
@@ -33,7 +33,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="search"
         options={{
-          tabBarIcon: ({ focused }) => <Search strokeWidth={focused?4:undefined} borderWidth={10} />,
+          tabBarIcon: ({ focused }) => <Search color={focused ? '$primary' : undefined} strokeWidth={focused ? 4 : undefined} borderWidth={10} />,
           tabBarActiveBackgroundColor: tamaguiTheme.background.val,
           tabBarInactiveBackgroundColor : tamaguiTheme.background.val
         }}
@@ -41,7 +41,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="communities"
         options={{
-          tabBarIcon: ({ focused }) => <SquareSlash size={focused?30:'unset'} fill={focused?tamaguiTheme.text.val:tamaguiTheme.colorTransparent.val} color={focused?'$background':'$text'}/>,
+          tabBarIcon: ({ focused }) => <SquareSlash size={focused ? 30 : 'unset'} fill={focused ? tamaguiTheme.primary.val : tamaguiTheme.colorTransparent.val} color={focused ? '$background' : '$text'} />,
           tabBarActiveBackgroundColor: tamaguiTheme.background.val,
           tabBarInactiveBackgroundColor : tamaguiTheme.background.val
         }}
@@ -49,7 +49,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="notifications"
         options={{
-          tabBarIcon: ({ focused }) => <Bell fill={focused?tamaguiTheme.text.val:tamaguiTheme.colorTransparent.val} color={tamaguiTheme.text.val}/>,
+          tabBarIcon: ({ focused }) => <Bell strokeWidth={focused ? 3 : undefined} fill={tamaguiTheme.colorTransparent.val} color={focused ? '$primary' : tamaguiTheme.text.val} />,
           tabBarActiveBackgroundColor: tamaguiTheme.background.val,
           tabBarInactiveBackgroundColor : tamaguiTheme.background.val
         }}
@@ -59,7 +59,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="direct-messages"
         options={{
-          tabBarIcon: ({ focused }) => <Mail size={focused?30:'unset'} fill={focused?tamaguiTheme.text.val:tamaguiTheme.colorTransparent.val} color={focused?'$background':'$text'} />,
+          tabBarIcon: ({ focused }) => <Mail size={focused ? 30 : 'unset'} fill={focused ? tamaguiTheme.primary.val : tamaguiTheme.colorTransparent.val} color={focused ? '$background' : '$text'} />,
           tabBarActiveBackgroundColor: tamaguiTheme.background.val,
           tabBarInactiveBackgroundColor : tamaguiTheme.background.val
         }}

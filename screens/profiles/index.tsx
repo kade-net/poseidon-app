@@ -18,6 +18,9 @@ import { Link } from 'expo-router'
 import { Utils } from '../../utils'
 import * as Haptics from 'expo-haptics'
 import Toast from 'react-native-toast-message'
+import { useQuery as uzQuery } from 'react-query'
+import { aptos } from '../../contract'
+import AptosIcon from '../../assets/svgs/aptos-icon'
 
 interface Props {
     address: string
@@ -112,6 +115,23 @@ const ProfileDetails = (props: Props) => {
         skip: !address || IS_SAME_ACCOUNT
     })
 
+    const aptosName = uzQuery({
+        queryFn: async () => {
+            try {
+                const ansName = await aptos.getPrimaryName({
+                    address: address
+                })
+
+                return ansName
+
+            }
+            catch (e) {
+                return null
+            }
+        },
+        queryKey: ['aptosName', address]
+    })
+
     const handleFollowToggle = async () => {
         Haptics.selectionAsync()
         try {
@@ -180,12 +200,14 @@ const ProfileDetails = (props: Props) => {
                 >
                     <XStack w="100%" py={10} columnGap={10} >
                         <Avatar circular size={"$6"} >
-                            <Avatar.Image source={{ uri: profileQuery.data?.account?.profile?.pfp ?? Utils.diceImage(address) }} />
+                            <Avatar.Image source={{
+                                uri: Utils.parseAvatarImage(address, profileQuery.data?.account?.profile?.pfp as string ?? null)
+                            }} />
                             <Avatar.Fallback
                                 bg="lightgray"
                             />
                         </Avatar>
-                        <YStack>
+                        <YStack justifyContent='space-between' >
                             <Text fontWeight="bold" color={"$text"} fontSize={"$md"}>
                                 {
                                     profileQuery.data?.account?.profile?.display_name
@@ -196,6 +218,13 @@ const ProfileDetails = (props: Props) => {
                                     profileQuery.data?.account?.username?.username
                                 }
                             </Text>
+                            {aptosName.data && <XStack alignItems='center' columnGap={5} >
+                                <AptosIcon size={12} color='white' />
+                                <Text color="$primary" fontSize={"$sm"} >
+                                    {aptosName.data}.apt
+                                </Text>
+                            </XStack>}
+
                         </YStack>
                     </XStack>
                     <XStack>
@@ -257,6 +286,7 @@ const ProfileDetails = (props: Props) => {
             </Animated.View>
             <YStack flex={1} w="100%" h="100%" >
                 <TabView
+                    swipeEnabled={false}
                     navigationState={{
                         index: currentTabIndex,
                         routes: tabRoutes

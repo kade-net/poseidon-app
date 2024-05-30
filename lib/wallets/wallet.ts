@@ -3,6 +3,7 @@ import { aptos } from "../../contract";
 import delegateManager from "../delegate-manager";
 import { CoinActivityFieldsFragment, poseidonIndexerClient } from "../indexer-client";
 import { isEmpty } from "lodash";
+import posti from "../posti";
 
 const IS_SELF_DELEGATE = delegateManager.owner! == delegateManager.account?.address().toString()
 const ADDRESS = IS_SELF_DELEGATE ? delegateManager.owner! : delegateManager.account?.address().toString()!
@@ -213,11 +214,14 @@ class PoseidonWallet {
     sendApt = async (args: SEND_ARGS) => {
         const { recipient, amount } = args
         if (isEmpty(recipient) || amount <= 0) throw new Error("Invalid recipient or amount")
-
+        console.log("Amount::", amount * 100000000)
         const transaction = await aptos.coin.transferCoinTransaction({
-            amount: parseInt(`${amount * (10 ** 8)}`),
+            amount: BigInt(amount * 100000000),
             recipient,
             sender: delegateManager.account?.address().toString()!,
+            options: {
+                maxGasAmount: 1000,
+            }
         })
 
         const committedTxn = await aptos.transaction.signAndSubmitTransaction({
@@ -231,6 +235,11 @@ class PoseidonWallet {
 
 
         if (!status.success) {
+            posti.capture("Transaction failed", {
+                hash: committedTxn.hash,
+                committedTxn,
+                status
+            })
             throw new Error("Transaction failed")
         }
         else {

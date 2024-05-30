@@ -22,8 +22,8 @@ const Empty = (props: Props & Parameters<typeof YStack>[0]) => {
             {...rest}
         >
             <XStack columnGap={10} alignItems='center' justifyContent='center' >
-                <Inbox />
-                <Text>
+                <Inbox color={'$primary'} />
+                <Text color={'$primary'} >
                     {emptyText ? emptyText : 'No data found'}
                 </Text>
             </XStack>
@@ -32,7 +32,7 @@ const Empty = (props: Props & Parameters<typeof YStack>[0]) => {
                 w="100%"
                 onPress={onRefetch}
             >
-                <Text>
+                <Text color={'white'} >
                     Refresh
                 </Text>
             </BaseButton>}

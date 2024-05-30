@@ -1,8 +1,8 @@
 import { View, Text, Heading, Input, TextArea, Button, Image, Avatar, Spinner } from 'tamagui'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { ChevronRight, Plus } from '@tamagui/lucide-icons'
-import { TouchableOpacity } from 'react-native'
+import { BackHandler, NativeEventSubscription, TouchableOpacity } from 'react-native'
 import { useRouter } from 'expo-router'
 import { z } from 'zod'
 import { Controller, useForm } from 'react-hook-form'
@@ -58,6 +58,27 @@ const Profile = () => {
         }
 
     }
+
+    const preventBackFlow = (): boolean => {
+        Toast.show({
+            type: 'info',
+            text2: `Please complete profile creation`,
+        })
+
+        return true
+    }
+
+    useEffect(() => {
+
+        const subscription: NativeEventSubscription = BackHandler.addEventListener('hardwareBackPress', preventBackFlow)
+
+
+        return () => {
+            
+            subscription.remove()
+        }
+
+    },[])
 
     const handleSubmit = async (values: TPROFILE) => {
         Haptics.selectionAsync()
@@ -123,11 +144,9 @@ const Profile = () => {
 
     return (
         <View
-            pt={insets.top}
-            pb={insets.bottom}
             flex={1}
             justifyContent='space-between'
-            px={Utils.dynamicWidth(5)}
+            px={20}
             backgroundColor={"$background"}
         >
             <View>
@@ -182,7 +201,7 @@ const Profile = () => {
                         render={({ field: { onChange, value }, fieldState }) => {
                             return (
                                 <BaseFormInput
-                                    backgroundColor={"$colorTransparent"}
+                                    backgroundColor={"$backgroundTransparent"}
                                     placeholder='Display Name'
                                     value={value}
                                     onChangeText={onChange}

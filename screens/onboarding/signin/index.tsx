@@ -23,12 +23,10 @@ const SignIn = () => {
 
     return (
         <View
-            pt={insets.top}
-            pb={insets.bottom}
             flex={1}
             w="100%"
             backgroundColor={"$background"}
-            paddingHorizontal={Utils.dynamicWidth(5)}
+            paddingHorizontal={20}
         >
             <View w="100%" >
                 <UnstyledButton callback={goBack} icon={<ChevronLeft/>} label={"Back"}/>  
@@ -51,7 +49,7 @@ const SignIn = () => {
                         <Text
                             color={'$blue10'}
                         >
-                            Sign in with Kade Connect will only work after the mainnet launch!
+                            Sign in with Kade Connect will only work if you already have a username!
                         </Text>
                     </XStack>
                     <Button onPress={goToKadeConnect} iconAfter={<MonitorUp />} backgroundColor={"$button"} color="$buttonText">

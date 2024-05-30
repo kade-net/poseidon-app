@@ -12,6 +12,7 @@ import { UpdateCommunitySchema, updateSchema } from '../../../../schema'
 import communityModule from '../../../../contract/modules/community'
 import * as ImagePicker from 'expo-image-picker'
 import uploadManager from '../../../../lib/upload-manager'
+import BaseButton from '../../../../components/ui/buttons/base-button'
 
 const schema = z.object({
     image: z.string()
@@ -60,7 +61,6 @@ const CommunityImageEdit = () => {
     }
 
     const addImage = async () => {
-        setUploading(true)
         const result = await ImagePicker.launchImageLibraryAsync({
             mediaTypes: ImagePicker.MediaTypeOptions.Images,
             allowsEditing: true,
@@ -69,13 +69,13 @@ const CommunityImageEdit = () => {
         });
 
         if (result.canceled) {
-            setUploading(false)
             return
         }
 
         const image = result.assets.at(0)
 
         if (image) {
+            setUploading(true)
             try {
                 const upload = await uploadManager.uploadFile(image.uri, {
                     type: image.type,
@@ -96,7 +96,7 @@ const CommunityImageEdit = () => {
     }
 
     return (
-        <YStack flex={1} w="100%" h="100%" p={20} justifyContent='space-between' >
+        <YStack flex={1} w="100%" h="100%" p={20} justifyContent='space-between' backgroundColor={'$background'} >
             <YStack flex={1} w="100%" alignItems='center' rowGap={20} >
 
                 <Controller
@@ -104,27 +104,9 @@ const CommunityImageEdit = () => {
                     name="image"
                     render={({ field: { value } }) => {
                         return (
-                            <View py={30} alignItems='center' justifyContent='center' w="100%" >
+                            <YStack alignItems='center' rowGap={10} >
 
-                                {!value && <TouchableOpacity onPress={addImage}
-                                    style={{
-                                        padding: 50,
-                                        borderWidth: 1,
-                                        borderColor: 'white',
-                                        alignItems: 'center',
-                                        justifyContent: 'center',
-                                        borderRadius: 100,
-                                        position: "relative",
-                                        overflow: 'hidden'
-                                    }} >
-                                    {!uploading && <Plus
-                                        color="white"
-                                    />}
-                                    {
-                                        uploading && <Spinner />
-                                    }
-                                </TouchableOpacity>}
-                                {value && <TouchableOpacity onPress={addImage} >
+
                                     <Avatar
                                         size={"$10"}
                                         circular
@@ -134,11 +116,14 @@ const CommunityImageEdit = () => {
                                             bg="lightgray"
 
                                         />
-                                    </Avatar>
-                                </TouchableOpacity>}
+                                </Avatar>
 
-
-                            </View>
+                                <BaseButton onPress={addImage} type='outlined' >
+                                    <Text>
+                                        Change Image
+                                    </Text>
+                                </BaseButton>
+                            </YStack>
                         )
                     }}
                 />
@@ -150,15 +135,11 @@ const CommunityImageEdit = () => {
                 }
             </YStack>
 
-            <Button onPress={form.handleSubmit(handleSubmit)} w="100%"  >
-                {
-                    saving ? <XStack columnGap={10} >
-                        <Spinner />
-                        <Text>Saving...</Text>
-                    </XStack> :
-                        'Save changes'
-                }
-            </Button>
+            <BaseButton w="100%" onPress={form.handleSubmit(handleSubmit)} loading={saving} >
+                <Text>
+                    Save Changes
+                </Text>
+            </BaseButton>
         </YStack>
     )
 }

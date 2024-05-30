@@ -70,7 +70,10 @@ const PublicationContent = (props: Props) => {
                             <Avatar circular  >
                                 <Avatar.Image
                                     accessibilityLabel='Profile Picture'
-                                    src={data?.publication?.creator?.profile?.pfp as string}
+                                    src={
+                                        // data?.publication?.creator?.profile?.pfp as string
+                                        Utils.parseAvatarImage(data?.publication?.creator?.address!, data?.publication?.creator?.profile?.pfp as string ?? null)
+                                    }
                                 />
                                 <Avatar.Fallback
                                     backgroundColor={'$pink10'}

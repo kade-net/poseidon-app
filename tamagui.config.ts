@@ -53,12 +53,17 @@ export const config = createTamagui({
       colourlessButton: 'rgb(12,18,34)',
       borderColor: 'rgba(151,151,156,0.4)',
       bottomSheet: 'rgb(20, 29, 54)',
+      searchBar: '#3c3c3e',
+      incomingChatBubble:"#3c3c3e",
+      portalBackground: '#2a2432',
+      portalButton: '#ffffff1a',
+      portalBorderColor: '#4c3a4e80'
       
     },
     light: {
       ...configBase.themes.light,
       primary: 'rgb(10, 132, 255)',
-      background: 'rgb(250,250,250)',
+      background: '#ffffff',
       card: 'rgb(18, 18, 18)',
       text: 'rgb(13,12,12)',
       sideText: 'rgb(151,151,156)',
@@ -75,8 +80,11 @@ export const config = createTamagui({
       borderColor: 'rgba(151,151,156,0.4)',
       bottomSheet: 'rgb(237, 230, 230)',
       baseBackround: configBase.themes.light.background,
-
-
+      searchBar: '#d5d5d7',
+      incomingChatBubble:"#d5d5d7",
+      portalBackground: '#f5f6f9',
+      portalButton: '#cccfd9',
+      portalBorderColor: '#f1f5f9'
     }
   },
   fonts: {

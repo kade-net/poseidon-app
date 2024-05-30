@@ -10,12 +10,17 @@ import account from '../../../contract/modules/account'
 import delegateManager from '../../../lib/delegate-manager'
 import usernames from '../../../contract/modules/usernames'
 import { Utils } from '../../../utils'
-import client from '../../../data/apollo'
+import client, { hermesClient } from '../../../data/apollo'
 import { GET_MY_PROFILE } from '../../../utils/queries'
 import UnstyledButton from '../../../components/ui/buttons/unstyled-button'
 import Toast from 'react-native-toast-message'
 import { aptos } from '../../../contract'
 import * as Haptics from 'expo-haptics'
+import { Effect, Either } from 'effect'
+import BaseButton from '../../../components/ui/buttons/base-button'
+import { getPhoneBook } from '../../../lib/hermes-client/queries'
+import hermes from '../../../contract/modules/hermes'
+import posti from '../../../lib/posti'
 
 // The seed phrase will be a list of 12 words each separated by a space
 const schema = z.object({
@@ -62,56 +67,7 @@ const SeedPhrase = () => {
 
             await account.markAsImported()
 
-            try {
-                const username = await usernames.getUsername()
-                console.log(username)
-                if (!username) {
-                    setLoading(false)
-                    goToUsername()
-                    return
-                }
-
-                delegateManager.setUsername(username)
-
-                const userAccount = await account.getAccount()
-
-                // INFO: Ideally the code below will never run but jsut in case
-
-                if (!userAccount) {
-                    try {
-                        const committed_txn = await account.setupWithSelfDelegate()
-
-                        const status = await aptos.waitForTransaction({
-                            transactionHash: committed_txn.hash
-                        })
-
-                        if (status.success) {
-                            goToUsername()
-                        }
-                        else {
-                            Toast.show({
-                                type: 'error',
-                                text1: 'Error',
-                                text2: 'Failed to setup account'
-                            })
-
-
-                        }
-
-                    }
-                    catch (e) {
-                        Toast.show({
-                            type: 'error',
-                            text1: 'Error',
-                            text2: 'Failed to setup account'
-                        })
-                        console.log(`SOMETHING WENT WRONG:: ${e}`)
-                    }
-                    finally {
-                        setLoading(false)
-                    }
-                    return
-                }
+            try { 
 
                 const profile = await client.query({
                     query: GET_MY_PROFILE,
@@ -127,12 +83,83 @@ const SeedPhrase = () => {
                 await account.markAsRegistered()
 
                 if (account.isProfileRegistered) {
+                    const canDelegate = await account.canDelegate()
+                    if (canDelegate) {
+                        setLoading(false)
+                        goToFeed()
+                        return
+                    }
+                }
+
+                const username = await usernames.getUsername()
+
+                if (!username) {
                     setLoading(false)
-                    goToFeed()
+                    goToUsername()
                     return
-                }   
-                setLoading(false)
-                goToProfile()
+                }
+
+                delegateManager.setUsername(username)
+
+                const userAccount = await account.getAccount()
+
+
+                if (!userAccount && !username) {
+                    goToUsername()
+                    setLoading(false)
+                    return
+                }
+
+                if (!userAccount && username) {
+                    delegateManager.setUsername(username)
+                    const resultEither = await account.setupWithSelfDelegate()
+                    Either.match(resultEither, {
+                        onLeft(left) {
+                            console.log('Delegate failed to setup', left)
+                            throw left
+                        },
+                        onRight: async (right) => {
+                            console.log('Delegate setup')
+                            if (account.isProfileRegistered) {
+                                goToFeed()
+                                return
+                            }
+                            setLoading(false)
+                            goToProfile()
+                        },
+                    })
+                    return 
+                }
+
+
+
+
+
+
+
+                const registerDelegateEither = await account.registerAsSelfDelegate()
+
+                await Either.match(registerDelegateEither, {
+                    onLeft(left) {
+                        console.log('Delegate failed to register', left)
+                        Toast.show({
+                            type: 'error',
+                            text1: 'Uh oh!',
+                            text2: 'Failed to setup account, please try again.'
+                        })
+                    },
+                    onRight: async (right) => {
+                        console.log('Delegate registered')
+                        if (account.isProfileRegistered) {
+                            goToFeed()
+                            return
+                        }
+                        setLoading(false)
+                        goToProfile()
+                    },
+                })
+
+
                 return
 
 
@@ -141,8 +168,8 @@ const SeedPhrase = () => {
                 Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error)
                 Toast.show({
                     type: 'error',
-                    text1: 'Unable to get username',
-                    text2: 'Failed to get username'
+                    text1: 'Unable to complete setup',
+                    text2: 'Please try again later.'
                 })
                 setLoading(false)
                 console.log(`SOMETHING WENT WRONG:: ${e}`)
@@ -163,14 +190,15 @@ const SeedPhrase = () => {
     }
 
     return (
-        <View pt={insets.top} px={Utils.dynamicWidth(5)} pb={insets.bottom} flex={1} backgroundColor={"$background"}>
+        <View px={20} flex={1} pb={20} backgroundColor={"$background"}>
             <View w="100%" columnGap={20} >
                 <UnstyledButton callback={goBack} icon={<ChevronLeft/>} label={"Back"}/>
             </View>
             <View
-                flex={1}
                 alignItems='center'
                 justifyContent='space-between'
+                flex={1}
+                w="100%"
             >
                 <View w="100%" rowGap={10} >
                     <Heading color={"$text"}>
@@ -196,14 +224,17 @@ const SeedPhrase = () => {
                         }}
                     />
                 </View>
-                <Button disabled={loading} onPress={form.handleSubmit(handleSubmit)} w="100%" backgroundColor={"$button"} color="$buttonText" marginBottom={Utils.dynamicHeight(5)}>
-                    {
-                        loading ? <XStack columnGap={20} >
-                            <Spinner />
-                            <Text>Verifying...</Text>
-                        </XStack> : "Done"
-                    }
-                </Button>
+                <View w="100%" >
+                    <BaseButton
+                        loading={loading}
+                        onPress={form.handleSubmit(handleSubmit)}
+                        w="100%"
+                    >
+                        <Text>
+                            Done
+                        </Text>
+                    </BaseButton>
+                </View>
             </View>
         </View>
     )

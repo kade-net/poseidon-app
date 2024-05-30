@@ -1,12 +1,21 @@
-import { View, Text } from 'react-native'
-import React from 'react'
+import { View } from 'react-native'
+import React, { useState } from 'react'
 import { useQuery } from 'react-query'
 import { Utils } from '../../../utils'
-import { Image, Spinner, YStack } from 'tamagui'
+import { Image, Spinner, YStack, Text, XStack } from 'tamagui'
+import BaseButton from '../../../components/ui/buttons/base-button'
+import { useLocalSearchParams } from 'expo-router'
+import delegateManager from '../../../lib/delegate-manager'
+import { GET_MY_PROFILE } from '../../../utils/queries'
+import { useQuery as useApolloQuery } from '@apollo/client'
+import * as Haptics from 'expo-haptics'
+import account from '../../../contract/modules/account'
+import Toast from 'react-native-toast-message'
+import { SvgUri } from 'react-native-svg'
 
 const getSize = async (image: string) => {
     return new Promise<{ width: number, height: number }>((res, rej) => {
-        Image.getSize(image, (width, height) => {
+        Image.getSize(Utils.parseCollectionImage(image), (width, height) => {
             res({ width, height })
         }, (error) => {
             rej(error)
@@ -19,10 +28,21 @@ interface Props {
     name: string
 }
 const CollectionImage = (props: Props) => {
+    const params = useLocalSearchParams()
+    const address = params?.['address'] as string
+    const IS_OWNER = address === delegateManager.owner!
+    const profile = useApolloQuery(GET_MY_PROFILE, {
+        variables: {
+            address: delegateManager.owner!
+        },
+        skip: !IS_OWNER
+    })
+    const [uploading, setUploading] = useState(false)
     const { image, name } = props
+
     const validateImageQuery = useQuery({
         queryKey: [image],
-        queryFn: () => Utils.validateImageUri(image ?? '')
+        queryFn: () => Utils.validateImageUri(Utils.parseCollectionImage(image ?? ''))
     })
 
     const aspectRatioQuery = useQuery({
@@ -30,14 +50,38 @@ const CollectionImage = (props: Props) => {
         queryFn: async () => {
             try {
                 const { width, height } = await getSize(image)
-                return width / height
+                const aspectRatio = width / height
+                const newAspectRatio = isNaN(aspectRatio) ? 16 / 9 : aspectRatio == 0 ? 1 : aspectRatio
+                return newAspectRatio
             }
             catch (e) {
                 return 16 / 9
             }
         },
-        enabled: !!image
+        enabled: !!image && !validateImageQuery.data?.is_svg
     })
+
+    const handleSetPfp = async () => {
+        Haptics.selectionAsync()
+        setUploading(true)
+        try {
+            await account.updateProfile({
+                pfp: image,
+                bio: profile.data?.account?.profile?.bio ?? undefined,
+                display_name: profile.data?.account?.profile?.display_name ?? undefined
+            })
+        }
+        catch (e) {
+            Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error)
+            Toast.show({
+                type: 'error',
+                text1: 'Something went wrong'
+            })
+        }
+        finally {
+            setUploading(false)
+        }
+    }
 
     if (validateImageQuery.isLoading) return (
         <YStack flex={1} alignItems='center' justifyContent='center' >
@@ -54,10 +98,28 @@ const CollectionImage = (props: Props) => {
     )
 
     return (
-        <Image
-            src={image ?? ''}
-            aspectRatio={aspectRatioQuery?.data ?? 16 / 9}
-        />
+        <YStack w="100%" rowGap={10} >
+            {
+                validateImageQuery?.data?.is_svg ?
+                    <SvgUri
+                        width={'100%'}
+                        height={300}
+                        uri={image}
+                    /> : <Image
+                        src={Utils.parseCollectionImage(image ?? '')}
+                aspectRatio={aspectRatioQuery?.data ?? 16 / 9}
+            />
+            }
+
+            {(IS_OWNER && !validateImageQuery?.data?.is_svg) && <XStack>
+
+                <BaseButton loading={uploading} onPress={handleSetPfp} size="$2" py={3} type="outlined" >
+                    <Text>
+                        Set as PFP
+                    </Text>
+                </BaseButton>
+            </XStack>}
+        </YStack>
     )
 }
 

@@ -1,4 +1,4 @@
-import { View, Text, YStack, Spinner } from 'tamagui'
+import { View, Text, YStack, Spinner, XStack } from 'tamagui'
 import React, { useCallback } from 'react'
 import { useQuery } from '@apollo/client'
 import { COMMUNITY_QUERY, GET_COMMUNITY_PUBLICATIONS, GET_MEMBERSHIP } from '../../../../utils/queries'
@@ -11,6 +11,10 @@ import PublicationEditor from '../../../../components/ui/editor/publication-edit
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import delegateManager from '../../../../lib/delegate-manager'
 import { getMutedUsers, getRemovedFromFeed } from '../../../../contract/modules/store-getters'
+import Loading from '../../../../components/ui/feedback/loading'
+import Empty from '../../../../components/ui/feedback/empty'
+import { isEmpty } from 'lodash'
+import * as Haptics from 'expo-haptics'
 
 interface Props {
     name: string
@@ -60,7 +64,9 @@ const CommunityFeed = (props: Props) => {
             const results = await fetchMore({
                 variables: {
                     page: nextPage,
-                    size: 20
+                    size: 20,
+                    hide: getRemovedFromFeed(),
+                    muted: getMutedUsers()
                 }
             })
 
@@ -73,12 +79,15 @@ const CommunityFeed = (props: Props) => {
     }
 
     const handleFetchTop = async () => {
+        Haptics.selectionAsync()
         console.log("Start reached")
         try {
             await fetchMore({
                 variables: {
                     page: 0,
-                    size: 20
+                    size: 20,
+                    hide: getRemovedFromFeed(),
+                    muted: getMutedUsers()
                 }
             })
 
@@ -109,7 +118,7 @@ const CommunityFeed = (props: Props) => {
 
             }} >
                 <FlatList
-                    refreshing={loading}
+                    refreshing={false}
                     onRefresh={handleFetchTop}
                     onEndReached={handleFetchMore}
                     onEndReachedThreshold={1}
@@ -128,6 +137,24 @@ const CommunityFeed = (props: Props) => {
                                 <Spinner />
                             </>}
                         </View>
+                    }}
+                    ListEmptyComponent={() => {
+                        if (loading) return <Loading p={20} flex={1} w="100%" h="100%" />
+                        return <Empty
+                            flex={1}
+                            p={20}
+                            w="100%"
+                            h="100%"
+                            emptyText='No posts yet. Be the first to post!'
+                            onRefetch={handleFetchTop}
+                        />
+                    }}
+
+                    ListHeaderComponent={() => {
+                        if (isEmpty(data?.communityPublications)) return null
+                        if (loading) return <XStack w="100%" p={5} >
+                            <Spinner />
+                        </XStack>
                     }}
 
                 />

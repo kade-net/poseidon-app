@@ -4,7 +4,9 @@ import PickUserName from '../../screens/onboarding/username'
 
 const UserNameScreen = () => {
     return (
+
         <PickUserName />
+
     )
 }
 

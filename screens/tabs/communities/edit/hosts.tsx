@@ -35,8 +35,11 @@ const HostsEdit = () => {
     }, [search])
 
     return (
-        <YStack flex={1} w="100%" h="100%" p={20} >
-            <XStack w="100%" columnGap={10} alignItems='center'  >
+        <YStack flex={1} w="100%" h="100%" p={20} backgroundColor={'$background'} >
+            <Text>
+                Coming soon!
+            </Text>
+            {/* <XStack w="100%" columnGap={10} alignItems='center'  >
                 <Input
                     value={search}
                     onChangeText={setSearch}
@@ -65,7 +68,7 @@ const HostsEdit = () => {
                     }}
                     ItemSeparatorComponent={() => <Separator />}
                 />
-            </YStack>
+            </YStack> */}
         </YStack>
     )
 }

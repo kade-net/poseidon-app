@@ -5,6 +5,9 @@ import UnstyledButton from "../../../../components/ui/buttons/unstyled-button"
 import { ChevronRight } from "@tamagui/lucide-icons"
 import { router } from "expo-router"
 import CommunitiesChoice from "./communities-choice"
+import Toast from "react-native-toast-message"
+import { useEffect } from "react"
+import { BackHandler, NativeEventSubscription } from "react-native"
 
 const CommunitiesInterest =  () => {
     const insets = useSafeAreaInsets()
@@ -17,8 +20,30 @@ const CommunitiesInterest =  () => {
         goToNext()
     }
 
+    const preventBackFlow = (): boolean => {
+        Toast.show({
+            type: 'info',
+            text2: `Please complete profile creation`,
+        })
+
+        return true
+    }
+
+    useEffect(() => {
+
+        const subscription: NativeEventSubscription = BackHandler.addEventListener('hardwareBackPress', preventBackFlow)
+
+
+        return () => {
+            
+            subscription.remove()
+        }
+
+    },[])
+
+
     return(
-        <View pt={insets.top} px={Utils.dynamicWidth(5)} pb={insets.bottom} flex={1} backgroundColor={"$background"}>
+        <View px={20} flex={1} backgroundColor={"$background"}>
             <YStack>
                 <View flexDirection='row' w="100%" justifyContent='space-between' alignItems='center'>
                     <Heading size={"$md"} color={"$text"} >

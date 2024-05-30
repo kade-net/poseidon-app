@@ -8,6 +8,7 @@ import { useRouter } from 'expo-router'
 import { Utils } from '../../../utils'
 import Toast from 'react-native-toast-message'
 import * as Haptics from 'expo-haptics'
+import { BackHandler, NativeEventSubscription } from 'react-native'
 
 const CreatedSeedPhrase = () => {
     const insets = useSafeAreaInsets()
@@ -35,6 +36,28 @@ const CreatedSeedPhrase = () => {
     const goToNext = async () => {
         router.push('/onboard/profile')
     }
+
+    const preventBackFlow = (): boolean => {
+        Toast.show({
+            type: 'info',
+            text2: `Please complete profile creation`,
+        })
+
+        return true
+    }
+
+    useEffect(() => {
+
+        const subscription: NativeEventSubscription = BackHandler.addEventListener('hardwareBackPress', preventBackFlow)
+
+
+        return () => {
+            
+            subscription.remove()
+        }
+
+    },[])
+
 
     return (
         <View

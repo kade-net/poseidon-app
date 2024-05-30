@@ -8,6 +8,10 @@ import { Controller, useForm } from 'react-hook-form'
 import { UpdateCommunitySchema, updateSchema } from '../../../../schema'
 import { zodResolver } from '@hookform/resolvers/zod'
 import communityModule from '../../../../contract/modules/community'
+import BaseFormTextArea from '../../../../components/ui/input/base-form-textarea'
+import BaseButton from '../../../../components/ui/buttons/base-button'
+import * as Haptics from 'expo-haptics'
+import Toast from 'react-native-toast-message'
 
 const Description = () => {
     const [saving, setSaving] = useState(false)
@@ -35,12 +39,18 @@ const Description = () => {
     })
 
     const handleSubmit = async (values: UpdateCommunitySchema) => {
+        Haptics.selectionAsync()
         setSaving(true)
         try {
             await communityModule.updateCommunity(values)
             router.back()
         }
         catch (e) {
+            Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error)
+            Toast.show({
+                type: 'error',
+                text1: 'Something went wrong'
+            })
             console.log(`Something went wrong: ${e}`)
         }
         finally {
@@ -48,27 +58,25 @@ const Description = () => {
         }
     }
     return (
-        <YStack flex={1} w="100%" h="100%" p={20} justifyContent='space-between' >
+        <YStack flex={1} w="100%" h="100%" p={20} justifyContent='space-between' backgroundColor={'$background'} >
             <Controller
                 control={form.control}
                 name='description'
                 render={({ field }) => {
                     return (
-                        <TextArea
+                        <BaseFormTextArea
+                            maxLength={80}
                             onChangeText={field.onChange}
                             value={field.value}
                             placeholder='Tell people why they should join your community.'
                         />
                     )
                 }} />
-            <Button disabled={saving} onPress={form.handleSubmit(handleSubmit)} w="100%" >
-                {
-                    saving ? <XStack columnGap={10} >
-                        <Spinner />
-                        <Text>Saving...</Text>
-                    </XStack> : 'Save changes'
-                }
-            </Button>
+            <BaseButton w="100%" loading={saving} onPress={form.handleSubmit(handleSubmit)}  >
+                <Text>
+                    Save changes
+                </Text>
+            </BaseButton>
         </YStack>
     )
 }

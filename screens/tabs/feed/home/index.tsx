@@ -27,16 +27,15 @@ import { getMutedUsers, getRemovedFromFeed } from '../../../../contract/modules/
 import { Utils } from '../../../../utils'
 import Empty from '../../../../components/ui/feedback/empty'
 import Loading from '../../../../components/ui/feedback/loading'
-import { useIsFocused, useScrollToTop } from '@react-navigation/native';
-import network from '../../../../lib/network'
-import Toast from 'react-native-toast-message'
+import * as Haptics from 'expo-haptics'
+import { useScrollToTop } from '@react-navigation/native'
+import PullDownButton from './pull-down-button'
 
 const Home = () => {
+    const flatlistRef = useRef<FlatList>(null)
     const [refetching, setRefetching] = useState(false)
 
-    const flatListRef = useRef(null);
-    useScrollToTop(flatListRef);
-
+    useScrollToTop(flatlistRef)
 
     const publicationsQuery = useQuery(GET_PUBLICATIONS, {
         variables: {
@@ -48,19 +47,14 @@ const Home = () => {
         },
         fetchPolicy: 'cache-and-network'
     })
-    const { data, fetchMore, loading } = publicationsQuery
 
     const tamaguiTheme = useTheme()
 
     useFocusEffect(
         useCallback(() => {
             const onBackPress = () => {
-                const canGoBack: boolean = router.canGoBack()
 
-                if(!canGoBack){
-                    BackHandler.exitApp()
-                    return true
-                }
+                return true
             }
 
             const subscription = BackHandler.addEventListener('hardwareBackPress', onBackPress)
@@ -100,72 +94,57 @@ const Home = () => {
     }
 
     const handleFetchMore = async () => {
-        const isConnected: boolean =  await network.isNetworkConnected()
+        if (publicationsQuery.loading || refetching || (publicationsQuery.data?.publications?.length ?? 0) < 20) {
+            return
+        }
+        setRefetching(true)
+        try {
+            const totalPublications = publicationsQuery?.data?.publications?.length ?? 0 
+            const nextPage = (Math.floor(totalPublications / 20) - 1) + 1
 
-        if(isConnected){
-            setRefetching(true)
-            try {
-                const totalPublications = data?.publications?.length ?? 0 
-                const nextPage = (Math.floor(totalPublications / 20) - 1) + 1
-
-                await fetchMore({
-                    variables: {
-                        page: nextPage,
-                        size: 20,
-                        types: [1, 2],
-                        muted: isEmpty(account.mutedUsers) ? undefined : account.mutedUsers,
-                        hide: isEmpty(publications.hiddenPublications) ? undefined : publications.hiddenPublications
-                    }
-                })
-            }
-            catch (e) {
-                console.log("Error fetching more", e)
-            }
-            finally {
-                setRefetching(false)
-            }
-        } else {
-            Toast.show({
-                type: 'error',
-                text1: `No internet connection`
+            await publicationsQuery?.fetchMore({
+                variables: {
+                    page: nextPage,
+                    size: 20,
+                    types: [1, 2],
+                    muted: isEmpty(account.mutedUsers) ? undefined : account.mutedUsers,
+                    hide: isEmpty(publications.hiddenPublications) ? undefined : publications.hiddenPublications
+                }
             })
         }
-        
+        catch (e) {
+            console.log("Error fetching more", e)
+        }
+        finally {
+            setRefetching(false)
+        }
     }
 
     const handleFetchTop = async () => {
-        const isConnected: boolean =  await network.isNetworkConnected()
-
-        if(isConnected){
-            await publications.loadRemovedFromFeed()
-            setRefetching(true)
-            try {
-                await publicationsQuery.fetchMore({
-                    variables: {
-                        page: 0,
-                        size: 20,
-                        types: [1, 2],
-                        muted: isEmpty(account.mutedUsers) ? undefined : account.mutedUsers,
-                        hide: isEmpty(publications.hiddenPublications) ? undefined : publications.hiddenPublications
-                    },
-                })
-            }
-            catch (e) {
-                console.log("Error fetching more", e)
-            }
-            finally {
-                setRefetching(false)
-            }
-        } else {
-            Toast.show({
-                type: 'error',
-                text1: `No internet connection`
+        if (refetching || publicationsQuery.loading) {
+            return
+        }
+        Haptics.selectionAsync()
+        await publications.loadRemovedFromFeed()
+        setRefetching(true)
+        try {
+            await publicationsQuery.fetchMore({
+                variables: {
+                    page: 0,
+                    size: 20,
+                    types: [1, 2],
+                    muted: isEmpty(account.mutedUsers) ? undefined : account.mutedUsers,
+                    hide: isEmpty(publications.hiddenPublications) ? undefined : publications.hiddenPublications
+                },
             })
         }
-        
+        catch (e) {
+            console.log("Error fetching more", e)
+        }
+        finally {
+            setRefetching(false)
+        }
     }
-
-    const isFocused = useIsFocused();
 
     const renderPublication = useCallback(({ item }: any) => {
         return (
@@ -199,7 +178,12 @@ const Home = () => {
                     <Avatar circular size={"$4"} >
                         <Avatar.Image
                             accessibilityLabel='Profile Picture'
-                            src={profileQuery?.data?.account?.profile?.pfp as string ?? Utils.diceImage(delegateManager.owner!)}
+                            src={
+                                Utils.parseAvatarImage(
+                                    delegateManager.owner!,
+                                    profileQuery?.data?.account?.profile?.pfp as string
+                                )
+                            }
                         />
                         <Avatar.Fallback
                             backgroundColor={'$pink10'}
@@ -220,6 +204,7 @@ const Home = () => {
 
             }} >
                 <Animated.FlatList
+                    ref={flatlistRef}
                     style={
                         [
                             {
@@ -255,27 +240,24 @@ const Home = () => {
                             top: 80
                         }
                     })}
-                    ref={flatListRef}
                     onRefresh={handleFetchTop}
                     onEndReached={handleFetchMore}
                     onEndReachedThreshold={1}
                     showsVerticalScrollIndicator={false}
-                    data={data?.publications ?? []}
+                    data={publicationsQuery?.data?.publications ?? []}
                     maxToRenderPerBatch={20}
                     initialNumToRender={20}
                     keyExtractor={(item, i) => item.publication_ref ?? item?.id?.toString() ?? i.toString()}
                     renderItem={renderPublication}
                     ListHeaderComponent={() => {
-                        if ((data?.publications?.length ?? 0) === 0) return null
+                        if ((publicationsQuery?.data?.publications?.length ?? 0) === 0) return null
                         return <XStack w="100%" p={10} alignItems='center' justifyContent='center' >
                             {refetching && <Spinner />}
-                            {!refetching && <Text>
-                                Pull down to refresh
-                            </Text>}
+                            {!refetching && <PullDownButton />}
                         </XStack>
                     }}
                     ListFooterComponent={() => {
-                        if (data?.publications?.length === 0) return null
+                        if (publicationsQuery?.data?.publications?.length === 0) return null
                         if (!refetching) return null
                         return <View w="100%" flexDirection='row' alignItems='center' p={20} justifyContent='center' columnGap={10} >
 

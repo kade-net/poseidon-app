@@ -2,6 +2,9 @@ import { InMemoryCache, ApolloClient, Reference, defaultDataIdFromObject, FieldF
 import { Publication, AccountStats, PublicationInteractionsByViewerQuery } from "../__generated__/graphql"
 import { clone, cloneDeep, isNumber, isUndefined, uniqBy } from "lodash"
 import ephemeralCache from "../lib/local-store/ephemeral-cache"
+import config from "../config"
+import { GraphQLWsLink } from "@apollo/client/link/subscriptions";
+import { createClient } from "graphql-ws";
 
 function publicationMerge(_existing: Array<Reference> = [], incoming: Array<Reference> = [], options: FieldFunctionOptions) {
 
@@ -106,9 +109,9 @@ const cache = new InMemoryCache({
             case "Account": {
                 return object.address
             }
-            case "Profile": {
-                return object.creator
-            }
+            // case "Profile": {
+            //     return object.address
+            // }
             default: {
                 return defaultDataIdFromObject(object)
             }
@@ -262,6 +265,23 @@ const cache = new InMemoryCache({
                     }
                 }
             }
+        },
+        Account: {
+            fields: {
+                profile: {
+                    // keyArgs: ['address'],
+                    merge(existing, incoming, options) {
+                        const lastProfileUpdate = ephemeralCache.get(`lastProfileUpdate:${incoming?.address ?? existing?.address}`)
+
+                        if (lastProfileUpdate) {
+                            console.log("Last Profile Update", lastProfileUpdate)
+                            return lastProfileUpdate
+                        }
+
+                        return incoming
+                    }
+                }
+            }
         }
     }
 })
@@ -269,7 +289,7 @@ const cache = new InMemoryCache({
 
 const client = new ApolloClient({
     cache,
-    uri: "https://trawler.poseidon.ac",
+    uri: config.TRAWLER_API,
 
 })
 
@@ -288,5 +308,27 @@ export const barnicleClient = new ApolloClient({
             }
         }
     }),
-    uri: "https://barnicle.poseidon.ac"
+    uri: config.BARNICLE_API
+})
+
+
+export const convergenceClient = new ApolloClient({
+    cache: new InMemoryCache(),
+    uri: config.CONVERGENCE_URL
+})
+
+export const hermesClient = new ApolloClient({
+    cache: new InMemoryCache(),
+    uri: config.HERMES_API_URL
+})
+
+export const convergenceLink = new GraphQLWsLink(
+    createClient({
+        url: config.CONVERGENCE_URL?.replace("https", "wss") + "/subscriptions",
+    }),
+);
+
+export const convergenceWebSocketClient = new ApolloClient({
+    link: convergenceLink,
+    cache: new InMemoryCache()
 })

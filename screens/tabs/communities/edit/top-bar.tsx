@@ -13,7 +13,7 @@ interface Props {
 const CommunitiesEditTopBar = (props: Props) => {
 
     return (
-        <YStack w="100%" alignItems='center' justifyContent='space-between' >
+        <YStack w="100%" alignItems='center' justifyContent='space-between' backgroundColor={'$background'} >
             <XStack w="100%" alignItems='center' columnGap={20} px={20} py={20} >
                 <TouchableOpacity onPress={props?.navigation?.goBack} >
                     <ArrowLeft />

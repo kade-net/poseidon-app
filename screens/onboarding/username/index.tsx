@@ -16,6 +16,8 @@ import UnstyledButton from '../../../components/ui/buttons/unstyled-button'
 import Toast from 'react-native-toast-message'
 import posti from '../../../lib/posti'
 import * as Haptics from 'expo-haptics'
+import { Either } from 'effect'
+import BaseButton from '../../../components/ui/buttons/base-button'
 
 const schema = z.object({
     username: z.string().regex(Utils.USERNAME_REGEX).min(3).max(20).trim()
@@ -52,7 +54,7 @@ const PickUserName = () => {
         setChecking(true)
         console.log(`CHECKING USERNAME:: ${values.username}`)
         try {
-            const available = await usernames.checkUsernameAvailability(values.username)
+            const available = await usernames.checkUsernameAvailability(values.username?.toLowerCase())
             console.log(`USERNAME IS AVAILABLE:: ${available}`)
             setIsAvailable(available)
 
@@ -81,50 +83,41 @@ const PickUserName = () => {
 
     const claimUsernameAndCreateAccount = async (values: TSchema) => {
         Haptics.selectionAsync()
-        const username = values.username
+        const username = values.username?.toLowerCase()
         delegateManager.setUsername(username)
         setClaiming(true)
-        try {
-            const txn = await account.setupWithSelfDelegate()
-            console.log(`ACCOUNT SETUP TXN:: ${txn}`)
-            const hash = txn.hash
+        const eitherResult = await account.setupWithSelfDelegate()
 
-            const resp = await aptos.transaction.waitForTransaction({
-                transactionHash: hash
-            })
+        if (Either.isEither(eitherResult)) {
+            if (Either.isLeft(eitherResult)) {
+                Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error)
+                posti.capture('claim-username-error', {
+                    error: eitherResult.left
+                })
+                Toast.show({
+                    text1: 'Error claiming username',
+                    text2: 'Please try again',
+                    type: 'error',
 
-            console.log(`ACCOUNT SETUP RESPONSE:: ${resp}`)
-
-            if (resp.success) {
-                await account.markAsRegistered()
+                })
+                console.log(`SOMETHING WENT WRONG:: `, eitherResult.left)
+            }
+            if (Either.isRight(eitherResult)) {
+                const data = eitherResult.right
+                console.log(`Transaction  Hash::`, data.hash)
                 if (account.isImported) {
                     setClaiming(false)
                     goToProfile()
                     return
+                } else {
+                    setClaiming(false)
+                    goToNext()
+                    return
                 }
-                setClaiming(false)
-                goToNext()
-                return
             }
-            console.log(`ACCOUNT SETUP FAILED:: ${resp}`)
-        }
-        catch (e) {
-            Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error)
-            posti.capture('claim-username-error', {
-                error: e
-            })
-            Toast.show({
-                text1: 'Error claiming username',
-                text2: 'Please try again',
-                type: 'error',
-
-            })
-            console.log(`SOMETHING WENT WRONG:: ${e}`)
-        }
-        finally {
-            setClaiming(false)
         }
 
+        setClaiming(false)
     }
 
 
@@ -133,7 +126,7 @@ const PickUserName = () => {
     }
 
     return (
-        <View pt={insets.top} backgroundColor={"$background"} flex={1} justifyContent='space-between' px={Utils.dynamicWidth(5)} pb={insets.bottom}>
+        <View backgroundColor={"$background"} flex={1} justifyContent='space-between' px={20} pb={40} >
             <View w="100%" rowGap={20}>
                 <UnstyledButton callback={goBack} icon={<ChevronLeft/>} label={"Back"}/>
                 <View w="100%" rowGap={10} >
@@ -182,21 +175,24 @@ const PickUserName = () => {
                     </XStack>
                 </View>
             </View>
-            <Button disabled={claiming || checking} backgroundColor={"$button"} color={"$buttonText"} onPress={form.handleSubmit(isAvailable ? claimUsernameAndCreateAccount : checkUsername)} marginBottom={Utils.dynamicHeight(5)}>
+            <XStack w="100%" >
                 {
-                    isAvailable ? <View>
-                        {claiming ? <XStack columnGap={10} >
-                            <Spinner />
-                            <Text fontSize={"$sm"} >Claiming...</Text>
-                        </XStack> : <Text fontSize={"$sm"} >Claim username</Text>}
-                    </View> : <View>
-                            {checking ? <XStack columnGap={10} >
-                                <Spinner />
-                                <Text fontSize={"$sm"} >Checking...</Text>
-                            </XStack> : <Text fontSize={"$sm"} >Check availability</Text>}
-                    </View>
+                    isAvailable ?
+                        <BaseButton onPress={form.handleSubmit(claimUsernameAndCreateAccount)} flex={1} loading={claiming} loadingText='Claiming' >
+                            <Text color={"$buttonText"}>
+
+                                Claim username
+                            </Text>
+                        </BaseButton>
+                        :
+                        <BaseButton onPress={form.handleSubmit(checkUsername)} flex={1} loading={checking} loadingText='Checking'   >
+                            <Text color={"$buttonText"}>
+                                Check availability
+                            </Text>
+                        </BaseButton>
+
                 }
-            </Button>
+            </XStack>
         </View>
     )
 }

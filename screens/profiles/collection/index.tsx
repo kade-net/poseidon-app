@@ -1,4 +1,4 @@
-import { View, Text, Image, H3, Separator, Button } from 'tamagui'
+import { View, Text, Image, H3, Separator, Button, ScrollView } from 'tamagui'
 import React, { useEffect } from 'react'
 import { XStack, YStack } from 'tamagui'
 import CollectionImage from './collection-image'
@@ -28,6 +28,14 @@ const Collection = () => {
         queryKey: ['collection', collection_id],
         queryFn: () => collected.getCollection(collection_id, address),
     })
+
+    const ImageData = useQuery({
+        queryKey: [collection_id, collection?.data?.first_uri, 'data'],
+        queryFn: () => Utils.getImageData(collection?.data?.first_uri ?? ''),
+        enabled: (!collection.isLoading && !collection.isFetching && !collection.data)
+    })
+    // console.log("Images data")
+
     const tokenQuery = useQuery({
         queryFn: () => collected.getTokens(collection_id, address),
         queryKey: ['tokens', collection_id, address]
@@ -46,13 +54,13 @@ const Collection = () => {
 
 
     return (
-        <YStack
+        <ScrollView
             flex={1}
             backgroundColor={'$background'}
             px={Utils.dynamicWidth(3)}
         >
 
-            <CollectionImage image={collection.data?.first_uri!} name={collection?.data?.collection_name ?? 'Untitled'} />
+            <CollectionImage image={ImageData?.data?.image ?? collection.data?.first_uri!} name={collection?.data?.collection_name ?? 'Untitled'} />
 
             <YStack w="100%" px={5} py={10} rowGap={20} >
                 <XStack w="100%" columnGap={10} >
@@ -95,7 +103,7 @@ const Collection = () => {
                     </Button>
                 </Link>
             </YStack>
-        </YStack>
+        </ScrollView>
     )
 }
 

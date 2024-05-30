@@ -13,7 +13,7 @@ const BaseFormInput = (props: P) => {
     const { label, invalid, error, ...rest } = props
     return (
         <YStack w="100%" >
-            <YStack bg={'$baseBackround'} borderRadius={5} borderColor={invalid ? '$red10' : '$primary'} borderWidth={1} px={10} py={5} >
+            <YStack bg={'$backgroundTransparent'} borderRadius={5} borderColor={invalid ? '$red10' : '$primary'} borderWidth={1} px={10} py={5} >
                 <XStack w="100%" alignItems='center' justifyContent='space-between' >
 
                     {
@@ -29,6 +29,7 @@ const BaseFormInput = (props: P) => {
                     }
                 </XStack>
                 <Input
+                    backgroundColor={"$backgroundTransparent"}
                     p={0}
                     borderWidth={0}
                     {...rest}

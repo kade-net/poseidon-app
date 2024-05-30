@@ -6,9 +6,10 @@ import { ChevronRight } from "@tamagui/lucide-icons"
 import { Utils } from "../../../../utils"
 import topics, { Topic } from "../../../../contract/modules/topics"
 import { useQuery } from "react-query"
-import { useState } from "react"
-import { Pressable } from "react-native"
+import { useEffect, useState } from "react"
+import { BackHandler, NativeEventSubscription, Pressable } from "react-native"
 import Toast from 'react-native-toast-message'
+import posti from "../../../../lib/posti"
 
 const TopicsInterest = () => {
     const topicsQuery = useQuery({
@@ -39,22 +40,52 @@ const TopicsInterest = () => {
 
 
         try {
+            console.log("Active interests::", activeInterests)
             await topics.createInterest(activeInterests)
         }
         catch (e) {
-            Toast.show({
-                text1: 'Error saving interests',
-                text2: 'Please try again, or skip this step.',
-                type: 'error',
+            // silent fail
+            posti.capture('add-topic-interests', {
+                activeInterests,
             })
+            // Toast.show({
+            //     text1: 'Error saving interests',
+            //     text2: 'Please try again, or skip this step.',
+            //     type: 'error',
+            // })
+        }
+        finally {
+            setSaving(false)
         }
 
 
         goToNext()
     }
 
+    const preventBackFlow = (): boolean => {
+        Toast.show({
+            type: 'info',
+            text2: `Please complete profile creation`,
+        })
+
+        return true
+    }
+
+    useEffect(() => {
+
+        const subscription: NativeEventSubscription = BackHandler.addEventListener('hardwareBackPress', preventBackFlow)
+
+
+        return () => {
+            
+            subscription.remove()
+        }
+
+    },[])
+
+
     return(
-        <View  pt={insets.top} px={Utils.dynamicWidth(5)} pb={insets.bottom} flex={1} backgroundColor={"$background"}>
+        <View px={20} flex={1} backgroundColor={"$background"}>
             <YStack height={"100%"}>
                 <View flexDirection='row' w="100%" justifyContent='space-between' alignItems='center'>
                     <Heading size={"$md"} color={"$text"} >

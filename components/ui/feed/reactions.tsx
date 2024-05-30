@@ -13,6 +13,7 @@ import useDisclosure from '../../hooks/useDisclosure'
 import PublicationEditor from '../editor/publication-editor'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import * as Haptics from 'expo-haptics'
+import BaseButton from '../buttons/base-button'
 
 interface Props {
     initialStats?: PublicationStats,
@@ -46,7 +47,8 @@ const PublicationReactions = (props: Props) => {
             ref: publication_ref!
         },
         skip: !publication_ref || !delegateManager.owner,
-        fetchPolicy: 'cache-and-network'
+        fetchPolicy: 'cache-and-network',
+        // pollInterval: 120000
     })
 
     const handleReact = async () => {
@@ -88,12 +90,6 @@ const PublicationReactions = (props: Props) => {
         }
     }
 
-    useEffect(() => {
-        if (isOpen && repostOpen) {
-            closeRepost()
-        }
-    }, [isOpen])
-
     const handleQuote = () => {
         const currentState = userInteractions.data?.publicationInteractionsByViewer
         if (currentState?.quoted) {
@@ -106,7 +102,7 @@ const PublicationReactions = (props: Props) => {
                 console.log("Something went wrong", e)
             }
             finally {
-                closeRepost()
+                // closeRepost()
                 setQuoteLoading(false)
             }
             return
@@ -182,7 +178,7 @@ const PublicationReactions = (props: Props) => {
             </TouchableOpacity>
 
             {/* Comment Sheet */}
-            {(isOpen && !repostOpen) && <BaseContentSheet
+            {(isOpen) && <BaseContentSheet
                 open={isOpen}
                 onOpenChange={onToggle}
                 snapPoints={[100]}
@@ -199,57 +195,52 @@ const PublicationReactions = (props: Props) => {
                         publicationType={
                             currentPublicationType
                         }
-                        onClose={onClose}
+                        onClose={() => {
+                            onClose()
+                            if (repostOpen) {
+                                closeRepost()
+                            }
+                        }}
                         publication={publication}
                     />
                 </View>
             </BaseContentSheet>}
             {
-                repostOpen && <BaseContentSheet
-                    snapPoints={[20]}
+                (repostOpen) && <BaseContentSheet
+                    snapPoints={[25]}
                     open={repostOpen}
                     onOpenChange={onToggleRepost}
-                    showOverlay={false}
+                    showOverlay={true}
+                    dismissOnOverlayPress
                     animation='medium'
                 >
                     <View
-                        py={5}
+                        py={20}
                         px={5}
                         rowGap={10}
+                        backgroundColor={'$background'}
                     >
-                        <Button
-                            variant='outlined'
-                            icon={<Repeat size={15}/>}
-                            onPress={handleRepost}
-                            borderWidth={1} 
-                            borderColor={"$button"}
+                        <BaseButton icon={<Repeat size={12} />} onPress={handleRepost} type="outlined" loading={repostLoading} >
+                            <Text>
+                                {
+                                    userInteractions.data?.publicationInteractionsByViewer?.reposted ? "Remove Repost" : "Repost"
+                                }
+                            </Text>
+                        </BaseButton>
+                        <BaseButton variant='outlined' icon={<MessageSquarePlus size={12} />} onPress={handleQuote} type="outlined" loading={quoteLoading} >
+                            <Text>
+                                {
+                                    userInteractions.data?.publicationInteractionsByViewer?.quoted ? "Remove Quote" : "Quote"
+                                }
+                            </Text>
+                        </BaseButton>
+                        <BaseButton
+                            onPress={closeRepost}
                         >
-                            {
-                                repostLoading ? <Spinner /> :
-                                    <Text fontSize={"$md"} fontWeight={"$2"}>
-                                        {
-                                            userInteractions.data?.publicationInteractionsByViewer?.reposted ? "Remove Repost" : "Repost"
-                                        }
-                                    </Text>
-                            }
-                        </Button>
-                        <Button
-                            variant='outlined'
-                            icon={<MessageSquarePlus size={15} />}
-                            onPress={handleQuote}
-                            borderWidth={1} 
-                            borderColor={"$button"}
-                        >
-                            {
-                                quoteLoading ? <Spinner /> :
-                                    <Text fontSize={"$md"} fontWeight={"$2"}>
-
-                                        {
-                                            userInteractions.data?.publicationInteractionsByViewer?.quoted ? "Remove Quote" : "Quote"
-                                        }
-                                    </Text>
-                            }
-                        </Button>
+                            <Text>
+                                Cancel
+                            </Text>
+                        </BaseButton>
                     </View>
                 </BaseContentSheet>
             }

@@ -1,4 +1,4 @@
-import { View, Text, XStack, YStack, Avatar, Input } from 'tamagui'
+import { View, Text, XStack, YStack, Avatar, Input, useTheme } from 'tamagui'
 import React, { useContext, useEffect, useRef, useState } from 'react'
 import { SceneRendererProps } from 'react-native-tab-view'
 import { Animated, TouchableOpacity } from 'react-native'
@@ -22,6 +22,7 @@ type P = Props & SceneRendererProps
 
 const SearchTopBar = (props: P) => {
     const { search, setSearch } = useContext(searchContext)
+    const theme = useTheme()
 
     const profileQuery = useQuery(GET_MY_PROFILE, {
         variables: {
@@ -63,7 +64,10 @@ const SearchTopBar = (props: P) => {
                         <Avatar circular size={"$2"} >
                             <Avatar.Image
                                 accessibilityLabel='Profile Picture'
-                                src={profileQuery?.data?.account?.profile?.pfp as string ?? Utils.diceImage(delegateManager.owner!)}
+                                src={
+                                    Utils.parseAvatarImage(delegateManager.owner!, profileQuery?.data?.account?.profile?.pfp as string)
+                                    // profileQuery?.data?.account?.profile?.pfp as string ?? Utils.diceImage(delegateManager.owner!)
+                                }
                             />
                             <Avatar.Fallback
                                 backgroundColor={'$pink10'}
@@ -71,9 +75,7 @@ const SearchTopBar = (props: P) => {
                         </Avatar>
                     </TouchableOpacity>
                 </Link>
-                <SearchInput value={search} onChangeText={setSearch} onBlur={() => {
-                    setSearch('')
-                }} />
+                <SearchInput value={search} onChangeText={setSearch} />
 
             </XStack>
 
@@ -114,7 +116,7 @@ const SearchTopBar = (props: P) => {
                         position: 'absolute',
                         bottom: 0,
                         height: 2,
-                        backgroundColor: "white",
+                        backgroundColor: theme.primary.val,
                         width: tabLayoutDetails[routes[currentIndex].key]?.width,
                         left: 0,
                         transform: [

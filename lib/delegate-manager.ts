@@ -6,15 +6,17 @@ import * as SecureStore from 'expo-secure-store';
 import { ACCOUNT_ENTRY_FUNCTIONS, ACCOUNT_VIEW_FUNCTIONS, APP_SUPPORT_API, KADE_ACCOUNT_ADDRESS, aptos } from '../contract';
 import { Account, AccountAddress, AccountAuthenticator, Deserializer, Ed25519PrivateKey, RawTransaction, Serializer } from '@aptos-labs/ts-sdk';
 import axios from 'axios';
-import client from '../data/apollo';
+import client, { convergenceClient } from '../data/apollo';
 import { GET_MY_PROFILE } from '../utils/queries';
 import Constants from 'expo-constants'
 import posti from './posti';
+import config from '../config';
+import { CONFIRM_DELEGATE_LINKED, CREATE_ACCOUNT_LINK_INTENT, INIT_DELEGATE, UPDATE_CONNECTION } from './convergence-client/queries';
+import { Connection } from './convergence-client/__generated__/graphql';
+import { isEmpty } from 'lodash';
 
 
 const DERIVATION_PATH = "m/44'/637'/0'/0'/0'"
-
-const CONNECT_URL = Constants.expoConfig?.extra?.CONNECT_URL
 
 
 
@@ -25,23 +27,45 @@ class DelegateManager {
     signer: Account | null = null;
 
     get isDeligateRegistered() {
-        const registered = SecureStore.getItem('deligate')
-        if (registered) {
-            return true
+        try {
+            const registered = SecureStore.getItem('deligate')
+            if (registered) {
+                return true
+            }
+            return false
+
         }
-        return false
+        catch (e) {
+            return false
+        }
     }
 
     get owner() {
-        let current = this._owner
-        if (!current) {
-            current = SecureStore.getItem('owner')
+        try {
+            let current = this._owner
+            if (!current) {
+                current = SecureStore.getItem('owner')
+            }
+            return current
+
         }
-        return current
+        catch (e) {
+            return null
+        }
     }
 
     get mnemonic() {
-        return SecureStore.getItem('mnemonic')
+        try {
+            return SecureStore.getItem('mnemonic')
+
+        }
+        catch (e) {
+            return null
+        }
+    }
+
+    get isDelegateOwner() {
+        return this.owner === this.account?.address()?.toString()
     }
 
     constructor() {
@@ -80,6 +104,7 @@ class DelegateManager {
             if (user_kid == '0') {
                 // delegate owns itself
                 this.setOwner(delegate_address)
+                SecureStore.setItem('mnemonic', mnemonic)
                 return
             }
 
@@ -290,16 +315,18 @@ class DelegateManager {
             this.setOwner(this.account?.address()?.toString())
         }
         else {
-            this.setOwner(delegate_owner_address)
+            if (delegate_owner_address) {
+                this.setOwner(delegate_owner_address)
+            }
 
-            const profile = await client.query({
+            const profile = this.owner ? await client.query({
                 query: GET_MY_PROFILE,
                 variables: {
                     address: this.owner!
                 }
-            })
+            }) : null
 
-            if (profile.data.account) {
+            if (profile?.data.account) {
                 console.log('Profile::', profile.data.account)
                 SecureStore.setItem('profile', 'registered')
                 SecureStore.setItem('account', 'registered')
@@ -315,12 +342,14 @@ class DelegateManager {
 
         console.log('Owner::', this.owner)
 
-        await client.query({
-            query: GET_MY_PROFILE,
-            variables: {
-                address: this.owner!
-            }
-        })
+        if (this.owner) {
+            await client.query({
+                query: GET_MY_PROFILE,
+                variables: {
+                    address: this.owner!
+                }
+            })
+        }
 
 
     }
@@ -336,7 +365,9 @@ class DelegateManager {
 
     async setOwner(owner: string) {
         this._owner = owner
-        SecureStore.setItem('owner', owner)
+        if (!isEmpty(owner)) {
+            SecureStore.setItem('owner', owner)
+        }
     }
 
     async setUsername(username: string) {
@@ -347,63 +378,108 @@ class DelegateManager {
         return SecureStore.getItem('username')
     }
 
-    async linkAccount(session_id: string | null) {
-
-        if (!session_id) {
+    async linkAccount(connection: Connection, id: string) {
+        const delegate_address = this.account?.address()?.toString()
+        if (!connection || !connection.user_address || connection.delegate_address !== delegate_address) {
             throw new Error('No session found')
         }
 
-        if (!this.private_key) {
-            throw new Error('No private key found')
-        }
-        if (!this.owner) {
-            throw new Error('No owner found')
-        }
-        let delegate = Account.fromPrivateKey({
-            privateKey: new Ed25519PrivateKey(new HexString(this.private_key).toUint8Array())
-        })
-
-        const transaction = await aptos.transaction.build.simple({
-            sender: delegate.accountAddress,
-            withFeePayer: true,
-            data: {
-                function: ACCOUNT_ENTRY_FUNCTIONS.account_link_intent as any,
-                functionArguments: [this.owner],
-                typeArguments: []
+        const serialized_data = await convergenceClient.mutate({
+            mutation: INIT_DELEGATE,
+            variables: {
+                input: {
+                    public_key: this.account?.pubKey()?.toString()!,
+                    sender_address: this.account?.address()?.toString()!,
+                    user_address: connection.user_address,
+                }
             }
         })
 
-        const txn_serializer = new Serializer()
-        transaction.rawTransaction.serialize(txn_serializer)
-        const u8_array = txn_serializer.toUint8Array()
+        const data = serialized_data.data?.registerDelegateOnKadeAndHermes
 
-        const signature = aptos.transaction.sign({
-            signer: delegate,
-            transaction,
+        if (!data) {
+            throw new Error('Unable to create account link intent')
+        }
+
+        const { raw_transaction, signature } = data
+
+        const txn_deserializer = new Deserializer(new Uint8Array(raw_transaction))
+        const signature_deserializer = new Deserializer(new Uint8Array(signature))
+        const rawTransaction = RawTransaction.deserialize(txn_deserializer)
+        const feePayerAuthenticator = AccountAuthenticator.deserialize(signature_deserializer)
+
+        const accountSignature = aptos.transaction.sign({
+            signer: this.signer!,
+            transaction: {
+                rawTransaction,
+                feePayerAddress: AccountAddress.from(KADE_ACCOUNT_ADDRESS)
+            }
         })
 
-        const sig_serializer = new Serializer()
-        signature.serialize(sig_serializer)
-        const sig_u8_array = sig_serializer.toUint8Array()
+        const commited_txn = await aptos.transaction.submit.simple({
+            senderAuthenticator: accountSignature,
+            transaction: {
+                rawTransaction,
+                feePayerAddress: AccountAddress.from(KADE_ACCOUNT_ADDRESS)
+            },
+            feePayerAuthenticator: feePayerAuthenticator
+        })
 
-        const n_array = sig_u8_array.map(x => x)
+        const txn_status = await aptos.transaction.waitForTransaction({
+            transactionHash: commited_txn.hash
+        })
 
-        // TODO: send transaction to the backend for fee sponsorship and submission
+        if (!txn_status.success) {
+            throw new Error('Unable to link account')
+        }
 
-        const response = await axios.post(`${CONNECT_URL}/api/link-account`, {
-            delegate_address: this.account?.address()?.toString(),
-            signature: Array.from(sig_u8_array),
-            transaction: Array.from(u8_array)
-        },
-            {
-                headers: {
-                    'Authorization': `Bearer ${session_id}`,
+        try {
+            await convergenceClient.mutate({
+                mutation: CONFIRM_DELEGATE_LINKED,
+                variables: {
+                    input: {
+                        connection_id: id
+                    }
+                }
+            })
+        }
+        catch (e) {
+            console.log("Failed to link delegate", e)
+        }
+
+        this.setOwner(connection.user_address)
+
+        try {
+            const profileQuery = await client.query({
+                query: GET_MY_PROFILE,
+                variables: {
+                    address: connection.user_address
                 }
             })
 
-        console.log("Sponsorship response::", response.data)
+            if (profileQuery.data.account) {
+                SecureStore.setItem('profile', 'registered')
+                SecureStore.setItem('account', 'registered')
+                SecureStore.setItem('deligate', 'registered')
+                SecureStore.setItem('imported', 'true')
+                profileQuery.data.account?.username?.username && SecureStore.setItem('username', profileQuery.data.account?.username?.username)
 
-        SecureStore.setItem('deligate', 'registered')
+            }
+            SecureStore.setItem('account', 'registered')
+            SecureStore.setItem('deligate', 'registered')
+            SecureStore.setItem('imported', 'true')
+
+            return profileQuery.data?.account
+        }
+        catch (e) {
+            SecureStore.setItem('account', 'registered')
+            SecureStore.setItem('deligate', 'registered')
+            SecureStore.setItem('imported', 'true')
+            console.log('Unable to get profile')
+            console.log("Error::", e)
+            // TODO: caoture with posti
+        }
+
     }
 
     async markAsRegistered() {

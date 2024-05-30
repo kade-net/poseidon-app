@@ -71,7 +71,7 @@ class LocalStore {
                     display_name: profile?.account?.profile?.display_name,
                     pfp: profile?.account?.profile?.pfp,
                     bio: profile?.account?.profile?.bio,
-                    creator: profile?.account?.profile?.creator
+                    address: delegateManager.owner!
                 } as Profile,
                 username: {
                     username: profile?.account?.username?.username!
@@ -552,7 +552,7 @@ class LocalStore {
         const oldState = currentPublicationInteractions?.publicationInteractionsByViewer
 
         ephemeralCache.set(`interaction::reaction::${ref}`, 'unreact')
-        ephemeralCache.set(`stats::reactions::${ref}`, (publicationStatsQuery?.publicationStats?.reactions ?? 0) - 1)
+        ephemeralCache.set(`stats::reactions::${ref}`, (publicationStatsQuery?.publicationStats?.reactions ?? 1) - 1)
 
         client.writeQuery({
             query: GET_PUBLICATION_STATS,
@@ -563,7 +563,7 @@ class LocalStore {
                 publicationStats: {
                     comments: publicationStatsQuery?.publicationStats?.comments ?? 0,
                     quotes: publicationStatsQuery?.publicationStats?.quotes ?? 0,
-                    reactions: (publicationStatsQuery?.publicationStats?.reactions ?? 0) - 1,
+                    reactions: (publicationStatsQuery?.publicationStats?.reactions ?? 1) - 1,
                     reposts: publicationStatsQuery?.publicationStats?.reposts ?? 0,
                     ref: publicationStatsQuery?.publicationStats?.ref ?? ref,
                     __typename: "PublicationStats"
@@ -620,18 +620,22 @@ class LocalStore {
             }
         }
 
+        const _newProfile = {
+            ...profile,
+            __typename: "Profile" as const,
+            bio: profile.bio ?? "",
+            display_name: profile.display_name ?? "",
+            pfp: profile.pfp ?? "",
+            address: delegateManager.owner!
+        }
+
+        ephemeralCache.set(`lastProfileUpdate:${delegateManager.owner}`, _newProfile)
+
         client.writeQuery({
             query: GET_MY_PROFILE,
             data: {
-                ...(currentProfile ? currentProfile : {
-                }),
                 account: {
-                    ...(currentProfile?.account ? currentProfile.account : {}),
-                    profile: {
-                        ...profile,
-                        __typename: "Profile",
-                        creator: currentProfile?.account?.profile?.creator ?? Date.now()
-                    },
+                    profile: _newProfile,
                     username: {
                         __typename: "Username",
                         username: username ?? "_u38",

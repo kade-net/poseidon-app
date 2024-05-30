@@ -7,6 +7,7 @@ import dayjs from 'dayjs'
 import FeedImage from './image'
 import { trim, truncate } from 'lodash'
 import { Link } from 'expo-router'
+import { Utils } from '../../../utils'
 dayjs.extend(relativeTime)
 
 interface Props {
@@ -26,7 +27,10 @@ const ContentPreviewContainer = (props: Props) => {
             <YStack p={5} borderRadius={5} borderWidth={1} rowGap={5} borderColor={"gray"} >
                 <XStack w="100%" alignItems='center' columnGap={5} >
                     <Avatar circular size={"$1"} >
-                        <Avatar.Image src={props.data?.creator?.profile?.pfp as string ?? null} />
+                        <Avatar.Image src={
+                            Utils.parseAvatarImage(props?.data?.creator?.address!, props?.data?.creator?.profile?.pfp as string ?? null)
+                            // props.data?.creator?.profile?.pfp as string ?? null
+                        } />
                         <Avatar.Fallback backgroundColor={"$pink10"} ></Avatar.Fallback>
                     </Avatar>
                     <XStack flex={1} flexWrap='wrap' alignItems='center' columnGap={5} >

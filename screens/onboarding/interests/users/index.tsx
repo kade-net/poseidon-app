@@ -6,6 +6,9 @@ import { ChevronRight } from "@tamagui/lucide-icons"
 import { router } from "expo-router"
 import PeopleSearch from "../../../tabs/search/tabs/people"
 import UsersAccounts from "./users-accounts"
+import Toast from "react-native-toast-message"
+import { useEffect } from "react"
+import { BackHandler, NativeEventSubscription } from "react-native"
 
 const UsersInterest =  () => {
     const insets = useSafeAreaInsets()
@@ -14,8 +17,30 @@ const UsersInterest =  () => {
         router.push('/onboard/interests/topics/')
     }
 
+    const preventBackFlow = (): boolean => {
+        Toast.show({
+            type: 'info',
+            text2: `Please complete profile creation`,
+        })
+
+        return true
+    }
+
+    useEffect(() => {
+
+        const subscription: NativeEventSubscription = BackHandler.addEventListener('hardwareBackPress', preventBackFlow)
+
+
+        return () => {
+            
+            subscription.remove()
+        }
+
+    },[])
+
+
     return(
-        <View pt={insets.top} px={Utils.dynamicWidth(5)} pb={insets.bottom} flex={1} backgroundColor={"$background"}>
+        <View px={20} flex={1} backgroundColor={"$background"}>
             <YStack>
                 <View flexDirection='row' w="100%" justifyContent='space-between' alignItems='center'>
                     <Heading size={"$md"} color={"$text"} >

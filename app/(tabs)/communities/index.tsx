@@ -1,4 +1,4 @@
-import { TouchableOpacity } from 'react-native'
+import { Platform, TouchableOpacity } from 'react-native'
 import React from 'react'
 import Communities from '../../../screens/tabs/communities'
 import { Link, Stack, useRouter } from 'expo-router'
@@ -33,7 +33,7 @@ const CommunitiesScreen = () => {
             flex={1}
             w="100%"
             h="100%"
-
+            backgroundColor={'$background'}
         >
             <Stack.Screen
                 options={{
@@ -44,9 +44,9 @@ const CommunitiesScreen = () => {
                                     <Text fontFamily={"$heading"} fontSize={"$sm"}>
                                         Your Communities
                                     </Text>
-                                    <TouchableOpacity onPress={handleCreateCommunity} >
+                                    {Platform.OS == 'android' && <TouchableOpacity onPress={handleCreateCommunity} >
                                         <PlusSquare />
-                                    </TouchableOpacity>
+                                    </TouchableOpacity>}
                                 </XStack>
                                 <Separator />
                             </YStack>

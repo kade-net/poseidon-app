@@ -3,9 +3,10 @@ import React, { memo, useMemo } from 'react'
 // @ts-ignore
 import { OpenGraphAwareInput, OpenGraphDisplay, OpenGraphParser } from 'react-native-opengraph-kit';
 import { useQuery } from 'react-query';
-import { TouchableWithoutFeedback, useColorScheme } from 'react-native';
+import { Alert, TouchableWithoutFeedback, useColorScheme } from 'react-native';
 import * as Linking from 'expo-linking'
 import * as browser from 'expo-web-browser'
+import PortalRenderer from '../portal-ui';
 
 interface OGData {
     creator: string
@@ -18,6 +19,8 @@ interface OGData {
 
 interface Props {
     link: string
+    publication_ref: string
+    kid: number
 }
 
 // TODO: add linking white list
@@ -25,15 +28,18 @@ const LINK_WHITELIST = [
 
 ]
 
+const PORTALS_URL = [
+    "https://portals.poseidon.ac"
+]
+
 const LinkResolver = (props: Props) => {
-    const { link = '' } = props
+    const { link = '', kid, publication_ref } = props
 
     const linkMetaQuery = useQuery({
         queryKey: ['link', link],
         queryFn: async (): Promise<OGData[]> => {
             try {
                 const data = await OpenGraphParser?.extractMeta?.(link?.trim() ?? "")
-
                 return data
             }
             catch (e) {
@@ -44,19 +50,35 @@ const LinkResolver = (props: Props) => {
         enabled: !!link?.trim()
     })
 
-    const handleOpenUrl = () => {
+    const handleOpenUrl = async () => {
         const _link = link.trim()
         return Linking.canOpenURL(_link).then(async (supported) => {
-            console.log("supported", supported)
             if (supported) {
-                Linking.openURL(_link)
+                Alert.alert("Leaving app", "You are about to leave the app, and pose a risk of being redirected to a malicious website. Are you sure you want to continue?", [
+                    {
+                        text: "Cancel",
+                        onPress: () => { }
+                    },
+                    {
+                        text: "Continue",
+                        onPress: () => Linking.openURL(_link)
+                    }
+                ])
             } else {
                 await browser.openBrowserAsync(_link)
             }
         })
     }
 
-    if (!link || link.length === 0 || !linkMetaQuery.data?.[0] || !linkMetaQuery.data?.[0]?.url || !linkMetaQuery.data?.[0]?.title || !linkMetaQuery.data?.[0]?.description) {
+    if (link.includes("https://portals.poseidon.ac") || link.includes("http://192.168.100.211:3000")) {
+        return <PortalRenderer
+            kid={kid}
+            post_ref={publication_ref}
+            url={link}
+        />
+    }
+
+    if (!link || link.length === 0 || !linkMetaQuery.data?.[0] || !linkMetaQuery.data?.[0]?.url || !linkMetaQuery.data?.[0]?.title) {
         return <XStack w={0} h={0} />
     }
 

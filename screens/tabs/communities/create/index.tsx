@@ -12,12 +12,13 @@ import { values } from 'lodash'
 import community from '../../../../contract/modules/community'
 import { useRouter } from 'expo-router'
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context'
+import BaseFormInput from '../../../../components/ui/input/base-form-input'
+import BaseFormTextArea from '../../../../components/ui/input/base-form-textarea'
 
 const CreateCommunity = () => {
     const [uploading, setUploading] = useState(false)
     const [loading, setLoading] = useState(false)
     const router = useRouter()
-    const insets = useSafeAreaInsets()
     const form = useForm<COMMUNITY>({
         resolver: zodResolver(communitySchema)
     })
@@ -139,8 +140,8 @@ const CreateCommunity = () => {
                         render={({ field: { onChange, value }, fieldState }) => {
                             return (
                                 <YStack w="100%" >
-                                    <Input
-                                        backgroundColor={"$colorTransparent"}
+                                    <BaseFormInput
+                                        maxLength={20}
                                         placeholder='What do you want to call your community?'
                                         value={value}
                                         onChangeText={onChange}
@@ -165,11 +166,12 @@ const CreateCommunity = () => {
                         render={({ field: { onChange, value }, fieldState }) => {
                             return (
                                 <YStack>
-                                    <TextArea
+                                    <BaseFormTextArea
                                         backgroundColor={"$colorTransparent"}
                                         placeholder='Why should people join your community?'
                                         value={value}
                                         onChangeText={onChange}
+                                        maxLength={80}
                                     />
                                     {
                                         fieldState.invalid &&

@@ -3,8 +3,8 @@ import { Utils } from "../utils";
 
 export const profileSchema = z.object({
     pfp: z.string().min(5).optional(),
-    bio: z.string().max(80, {
-        message: "Bio cannot be longer than 80 characters"
+    bio: z.string().max(100, {
+        message: "Bio cannot be longer than 100 characters"
     }).optional(),
     display_name: z.string().max(50, {
         message: "Display name cannot be longer than 50 characters"
@@ -41,6 +41,16 @@ export const updateSchema = z.object({
     display_name: z.string().optional(),
     image: z.string().optional()
 })
+
+export const dmSchema = z.object({
+    content: z.string().optional().default(''),
+    media: z.array(z.object({
+        type: z.enum(['image', 'video', 'audio', 'file', 'gif']),
+        url: z.string()
+    })).optional().default([]),
+})
+
+export type TDM = z.infer<typeof dmSchema>
 
 
 export type UpdateCommunitySchema = z.infer<typeof updateSchema>

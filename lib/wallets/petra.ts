@@ -73,7 +73,7 @@ class PetraWallet {
             appInfo: {
                 domain: "host.exp.exponent" // TODO: change with the app's bundle id later
             },
-            redirectLink: `${Linking.createURL("/settings/petra")}`,
+            redirectLink: `${Linking.createURL("/settings/connect")}`,
             dappEncryptionPublicKey: Buffer.from(this.latestKeyPair.publicKey).toString('hex')
         }
 
@@ -84,6 +84,8 @@ class PetraWallet {
         console.log("ENCODED::", encoded)
 
         const url = `${PETRA_APP_LINK}/connect?data=${encoded}`
+
+        // const url = `https://petra.app/explore?link=https://connect.poseidon.ac`
 
         console.log("URL::", url)
 

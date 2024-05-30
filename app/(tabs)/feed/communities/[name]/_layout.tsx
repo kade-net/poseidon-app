@@ -102,7 +102,7 @@ const _layout = () => {
                                                 communityQuery.data?.community?.description
                                             }
                                         </Text>
-                                        <XStack alignItems='center' columnGap={20} w="100%" >
+                                        {(communityQuery?.data?.community?.id != communityQuery?.data?.community?.timestamp) && <XStack alignItems='center' columnGap={20} w="100%" >
 
                                             {
                                                 membershipQuery.data?.membership?.type == 0 ? <Link asChild href={{
@@ -122,7 +122,7 @@ const _layout = () => {
                                                             Follow
                                                         </Button>
                                             }
-                                        </XStack>
+                                        </XStack>}
                                         <XStack py={10} alignItems='center' columnGap={10} >
                                             <Users color={'$sideText'} size={"$xxs"} />
                                             <Text color={'$sideText'} fontSize={"$xxs"} >

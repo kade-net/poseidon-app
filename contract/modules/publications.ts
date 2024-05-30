@@ -59,8 +59,6 @@ class PublicationsContract {
 
         const data = parsed ? parsed.data : null
 
-        console.log("Data::", data)
-
         const txn_details = await getAuthenticatorsAndRawTransaction(`${APP_SUPPORT_API}/contract/publications/create-publication`, {
             type: publication_type,
             reference_kid,

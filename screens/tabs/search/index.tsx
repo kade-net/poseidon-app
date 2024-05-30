@@ -72,6 +72,7 @@ const _Search = () => {
     return (
         <YStack flex={1} w="100%" h="100%" backgroundColor={"$background"}>
             <TabView
+                swipeEnabled={false}
                 navigationState={{
                     index: currentTabIndex,
                     routes: tabRoutes
