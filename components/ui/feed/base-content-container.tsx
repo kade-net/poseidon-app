@@ -213,6 +213,8 @@ function BaseContentContainer(props: BaseContentContainerProps) {
                                             <LinkResolver
                                                 link={link}
                                                 key={i}
+                                                publication_ref={data?.publication_ref ?? ''}
+                                                kid={data?.id ?? 0}
                                             />
                                         )
                                     })

@@ -3445,13 +3445,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@kade-net/portals-parser@npm:^0.0.3":
-  version: 0.0.3
-  resolution: "@kade-net/portals-parser@npm:0.0.3"
+"@kade-net/portals-parser@npm:^0.0.13":
+  version: 0.0.13
+  resolution: "@kade-net/portals-parser@npm:0.0.13"
   dependencies:
-    effect: "npm:^3.0.7"
     html-entities: "npm:^2.5.2"
-  checksum: 7bf0b3c257479a0235d91f87af945d79148c37781d984e6c766d78cafbdd394cdb2603de72ec2f5cdaf0d97581937f42536890d7b11192c9af09b1351aa55cd4
+  peerDependencies:
+    effect: ^3.0.7
+  checksum: c12ddc4758f62c8e306da8e58624be6a77e44a84c102d596b63b3397932e8cb6e5912e752010e77292b4738dcb8ddb6d7283faececc79528616f56feb1f61eb7
   languageName: node
   linkType: hard
 
@@ -6410,6 +6411,22 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@xstate/react@npm:^4.1.1":
+  version: 4.1.1
+  resolution: "@xstate/react@npm:4.1.1"
+  dependencies:
+    use-isomorphic-layout-effect: "npm:^1.1.2"
+    use-sync-external-store: "npm:^1.2.0"
+  peerDependencies:
+    react: ^16.8.0 || ^17.0.0 || ^18.0.0
+    xstate: ^5.11.0
+  peerDependenciesMeta:
+    xstate:
+      optional: true
+  checksum: 89591416ee615ece703adc9011b457609822eeb1dde8efc1deaa9d006bb2111147e4bf383999212d16d4b366edb3bfcf0b5f2247ca2e7e943f7150ae6a1f9855
+  languageName: node
+  linkType: hard
+
 "@zxing/text-encoding@npm:0.9.0":
   version: 0.9.0
   resolution: "@zxing/text-encoding@npm:0.9.0"
@@ -8674,13 +8691,6 @@ __metadata:
   version: 1.1.1
   resolution: "ee-first@npm:1.1.1"
   checksum: 1b4cac778d64ce3b582a7e26b218afe07e207a0f9bfe13cc7395a6d307849cfe361e65033c3251e00c27dd060cab43014c2d6b2647676135e18b77d2d05b3f4f
-  languageName: node
-  linkType: hard
-
-"effect@npm:^3.0.7":
-  version: 3.1.2
-  resolution: "effect@npm:3.1.2"
-  checksum: 45e6da6e467a7490eaf37eda3bf1c663a6b2438742a1edc8c2e26796f270c44a5705f1cb802fc2c67c8ef2937929556b4d1934c9c5f09813d7c61ff835361089
   languageName: node
   linkType: hard
 
@@ -14553,7 +14563,7 @@ __metadata:
     "@graphql-codegen/typescript-operations": "npm:^4.2.0"
     "@graphql-typed-document-node/core": "npm:^3.2.0"
     "@hookform/resolvers": "npm:^3.3.4"
-    "@kade-net/portals-parser": "npm:^0.0.3"
+    "@kade-net/portals-parser": "npm:^0.0.13"
     "@react-native-async-storage/async-storage": "npm:1.23.1"
     "@react-navigation/native": "npm:^6.0.2"
     "@tamagui/config": "npm:^1.90.6"
@@ -14564,6 +14574,7 @@ __metadata:
     "@types/lodash": "npm:^4"
     "@types/react": "npm:~18.2.79"
     "@types/react-native-get-random-values": "npm:^1"
+    "@xstate/react": "npm:^4.1.1"
     aptos: "npm:^1.21.0"
     axios: "npm:^1.6.7"
     babel-preset-expo: "npm:~11.0.0"
@@ -14624,6 +14635,7 @@ __metadata:
     tweetnacl: "npm:^1.0.3"
     tweetnacl-util: "npm:^0.15.1"
     typescript: "npm:^5.3.3"
+    xstate: "npm:^5.13.0"
     zod: "npm:^3.22.4"
     zustand: "npm:^4.5.1"
   languageName: unknown
@@ -17647,6 +17659,18 @@ __metadata:
   languageName: node
   linkType: hard
 
+"use-isomorphic-layout-effect@npm:^1.1.2":
+  version: 1.1.2
+  resolution: "use-isomorphic-layout-effect@npm:1.1.2"
+  peerDependencies:
+    react: ^16.8.0 || ^17.0.0 || ^18.0.0
+  peerDependenciesMeta:
+    "@types/react":
+      optional: true
+  checksum: fd3787ed19f6cfbf70e2c5822d01bebbf96b00968195840d5ad61082b8e6ca7a8e2e46270c4096537d18a38ea57f4e4e9668cce5eec36fa4697ddba2ef1203fd
+  languageName: node
+  linkType: hard
+
 "use-latest-callback@npm:^0.1.5, use-latest-callback@npm:^0.1.7":
   version: 0.1.9
   resolution: "use-latest-callback@npm:0.1.9"
@@ -17678,6 +17702,15 @@ __metadata:
   peerDependencies:
     react: ^16.8.0 || ^17.0.0 || ^18.0.0
   checksum: a676216affc203876bd47981103f201f28c2731361bb186367e12d287a7566763213a8816910c6eb88265eccd4c230426eb783d64c373c4a180905be8820ed8e
+  languageName: node
+  linkType: hard
+
+"use-sync-external-store@npm:^1.2.0":
+  version: 1.2.2
+  resolution: "use-sync-external-store@npm:1.2.2"
+  peerDependencies:
+    react: ^16.8.0 || ^17.0.0 || ^18.0.0
+  checksum: 671e9c190aab9a8374a5d468c6ba17f52c38b6fae970110bc196fc1e2b57204149aea9619be49a1bb5207fb6e51d8afd19c3bcb94afe61813fed039821461dc0
   languageName: node
   linkType: hard
 
@@ -18131,6 +18164,13 @@ __metadata:
   version: 11.0.1
   resolution: "xmlbuilder@npm:11.0.1"
   checksum: c8c3d208783718db5b285101a736cd8e6b69a5c265199a0739abaa93d1a1b7de5489fd16df4e776e18b2c98cb91f421a7349e99fd8c1ebeb44ecfed72a25091a
+  languageName: node
+  linkType: hard
+
+"xstate@npm:^5.13.0":
+  version: 5.13.0
+  resolution: "xstate@npm:5.13.0"
+  checksum: f43a6e2920c3719603dd445a809e9ec84848eec47763e8d8ab26e11b4324c381c29d2a131c742b14ce0cce47091fd6eaf8c741f75612b67fc476333841400bdc
   languageName: node
   linkType: hard
 

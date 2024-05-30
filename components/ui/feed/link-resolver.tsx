@@ -6,6 +6,7 @@ import { useQuery } from 'react-query';
 import { Alert, TouchableWithoutFeedback, useColorScheme } from 'react-native';
 import * as Linking from 'expo-linking'
 import * as browser from 'expo-web-browser'
+import PortalRenderer from '../portal-ui';
 
 interface OGData {
     creator: string
@@ -18,6 +19,8 @@ interface OGData {
 
 interface Props {
     link: string
+    publication_ref: string
+    kid: number
 }
 
 // TODO: add linking white list
@@ -25,8 +28,12 @@ const LINK_WHITELIST = [
 
 ]
 
+const PORTALS_URL = [
+    "https://portals.poseidon.ac"
+]
+
 const LinkResolver = (props: Props) => {
-    const { link = '' } = props
+    const { link = '', kid, publication_ref } = props
 
     const linkMetaQuery = useQuery({
         queryKey: ['link', link],
@@ -43,7 +50,7 @@ const LinkResolver = (props: Props) => {
         enabled: !!link?.trim()
     })
 
-    const handleOpenUrl = () => {
+    const handleOpenUrl = async () => {
         const _link = link.trim()
         return Linking.canOpenURL(_link).then(async (supported) => {
             if (supported) {
@@ -61,6 +68,14 @@ const LinkResolver = (props: Props) => {
                 await browser.openBrowserAsync(_link)
             }
         })
+    }
+
+    if (link.includes("https://portals.poseidon.ac") || link.includes("http://192.168.100.211:3000")) {
+        return <PortalRenderer
+            kid={kid}
+            post_ref={publication_ref}
+            url={link}
+        />
     }
 
     if (!link || link.length === 0 || !linkMetaQuery.data?.[0] || !linkMetaQuery.data?.[0]?.url || !linkMetaQuery.data?.[0]?.title) {
