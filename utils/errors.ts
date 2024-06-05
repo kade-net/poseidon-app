@@ -1,3 +1,4 @@
+import { Data } from "effect"
 
 export class NoOwner {
     readonly _tag = 'NoOwner'
@@ -217,3 +218,28 @@ export class UnableToFetchDelegateStatus {
         this.initialError = error
     }
 }
+
+export class PetraConnectionRejected extends Data.TaggedError("PetraConnectionRejected")<{
+    initialError: any
+}> { }
+
+export class NoPrivateKeyFound extends Data.TaggedError("NoPrivateKeyFound")<{
+    initialError: any
+}> { }
+
+
+export class UnableToDeserializePetraResponse extends Data.TaggedError("UnableToDeserializePetraResponse")<{
+    initialError: any
+}> { }
+
+export class UnableToGeneratePetraSharedSecret extends Data.TaggedError("UnableToGeneratePetraSharedSecret")<{
+    initialError: any
+}> { }
+
+export class UnableToStorePetraSharedSecret extends Data.TaggedError("UnableToStorePetraSharedSecret")<{
+    initialError: any
+}> { }
+
+export class NoPrivateKey extends Data.TaggedError("NoPrivateKey")<{
+    initialError: any
+}> { }

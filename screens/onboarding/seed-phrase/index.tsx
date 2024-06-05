@@ -142,6 +142,7 @@ const SeedPhrase = () => {
                 await Either.match(registerDelegateEither, {
                     onLeft(left) {
                         console.log('Delegate failed to register', left)
+                        posti.capture("Delegate failed to register", left)
                         Toast.show({
                             type: 'error',
                             text1: 'Uh oh!',
@@ -165,6 +166,9 @@ const SeedPhrase = () => {
 
             }
             catch (e) {
+                posti.capture("Failed to complete setup", {
+                    error: e
+                })
                 Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error)
                 Toast.show({
                     type: 'error',
@@ -176,6 +180,9 @@ const SeedPhrase = () => {
             }
         }
         catch (e) {
+            posti.capture("Failed to verify seed phrase", {
+                error: e
+            })
             Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error)
             console.log(`SOMETHING WENT WRONG:: ${e}`)
             Toast.show({

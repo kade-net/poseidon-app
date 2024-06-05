@@ -19,6 +19,11 @@ import * as Notifications from 'expo-notifications'
 import localStore from '../lib/local-store'
 import { queryClient } from '../data/query'
 import hermes from '../contract/modules/hermes'
+import petra from '../lib/wallets/petra'
+import settings from '../lib/settings'
+
+// petra.RESTRICTED_resetKeys()
+// settings.RESTRICKTED__nuke()
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({

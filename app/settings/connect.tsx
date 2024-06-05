@@ -5,11 +5,15 @@ import petra from '../../lib/wallets/petra'
 
 const Connect = () => {
     const params = useLocalSearchParams()
-    console.log("Params::", params)
+    const data = params.data as string
+    if (data) {
+        console.log("Params::", Buffer.from(data, 'base64').toString())
+    }
 
     const handleConnect = () => {
         petra.connect()
     }
+
     return (
         <YStack py={40} px={20} >
             <Button onPress={handleConnect} >

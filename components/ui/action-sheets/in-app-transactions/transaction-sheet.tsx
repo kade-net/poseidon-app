@@ -2,6 +2,7 @@ import { View, Text, YStack } from 'tamagui'
 import React from 'react'
 import BaseContentSheet from '../base-content-sheet'
 import InAppTransactions from '.'
+import TransactionWrapper from './transaction-wrapper'
 
 interface Props {
     isOpen: boolean
@@ -20,18 +21,20 @@ const TransactionSheet = (props: Props) => {
         <BaseContentSheet
             open={isOpen}
             onOpenChange={onToggle}
-            snapPoints={[30]}
+            snapPoints={[50]}
         >
-            <YStack flex={1} w="100%" h="100%" >
-                <InAppTransactions
-                    module_arguments={module_arguments}
-                    module_function={module_function}
-                    type_arguments={type_arguments}
-                    onClose={(hash) => {
-                        onClose(hash)
-                    }}
-                />
-            </YStack>
+            <TransactionWrapper>
+                <YStack flex={1} w="100%" h="100%" >
+                    <InAppTransactions
+                        module_arguments={module_arguments}
+                        module_function={module_function}
+                        type_arguments={type_arguments}
+                        onClose={(hash) => {
+                            onClose(hash)
+                        }}
+                    />
+                </YStack>
+            </TransactionWrapper>
         </BaseContentSheet>
     )
 }

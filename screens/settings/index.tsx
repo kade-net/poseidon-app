@@ -1,7 +1,7 @@
 import { View, Text, YStack, XStack, Separator, H4, Button, Spinner } from 'tamagui'
 import React, { useEffect, useState } from 'react'
 import { Platform, TouchableOpacity } from 'react-native'
-import { Anchor, ArrowRight, Bell, ChevronRight, KeySquare, Layout, LayoutGrid, Trash, Wallet } from '@tamagui/lucide-icons'
+import { Anchor, ArrowRight, Bell, ChevronRight, KeySquare, Layout, LayoutGrid, Settings2, Trash, Wallet } from '@tamagui/lucide-icons'
 import { Link, useFocusEffect, useNavigation, useRouter } from 'expo-router'
 import account from '../../contract/modules/account'
 import delegateManager from '../../lib/delegate-manager'
@@ -120,27 +120,8 @@ const Settings = () => {
                     : null
             }
             <YStack w="100%" flex={1} >
-                {Platform.OS == 'android' && <Link
-                    href="/settings/anchors"
-                    asChild
-                >
-                    <YStack style={{
-                        width: "100%",
-                    }} >
-                        <XStack w="100%" p={20} justifyContent='space-between' >
-                            <XStack columnGap={20} >
-                                <Anchor />
-                                <H4 textTransform='none' >
-                                    Anchors
-                                </H4>
-                            </XStack>
-                            <ChevronRight />
-                        </XStack>
-                        <Separator />
-                    </YStack>
-                </Link>}
                 <Link
-                    href="/settings/codes"
+                    href="/settings/preferences"
                     asChild
                 >
                     <YStack style={{
@@ -148,9 +129,9 @@ const Settings = () => {
                     }} >
                         <XStack w="100%" p={20} justifyContent='space-between' >
                             <XStack columnGap={20} >
-                                <KeySquare />
+                                <Settings2 />
                                 <H4 textTransform='none' >
-                                    Recovery Phrase
+                                    Preferences
                                 </H4>
                             </XStack>
                             <ChevronRight />
@@ -177,6 +158,46 @@ const Settings = () => {
                         <Separator />
                     </YStack>
                 </Link>
+                <Link
+                    href="/settings/codes"
+                    asChild
+                >
+                    <YStack style={{
+                        width: "100%",
+                    }} >
+                        <XStack w="100%" p={20} justifyContent='space-between' >
+                            <XStack columnGap={20} >
+                                <KeySquare />
+                                <H4 textTransform='none' >
+                                    Recovery Phrase
+                                </H4>
+                            </XStack>
+                            <ChevronRight />
+                        </XStack>
+                        <Separator />
+                    </YStack>
+                </Link>
+                {Platform.OS == 'android' && <Link
+                    href="/settings/anchors"
+                    asChild
+                >
+                    <YStack style={{
+                        width: "100%",
+                    }} >
+                        <XStack w="100%" p={20} justifyContent='space-between' >
+                            <XStack columnGap={20} >
+                                <Anchor />
+                                <H4 textTransform='none' >
+                                    Anchors
+                                </H4>
+                            </XStack>
+                            <ChevronRight />
+                        </XStack>
+                        <Separator />
+                    </YStack>
+                </Link>}
+
+
                 <Link
                     href="/settings/wallet/"
                     asChild

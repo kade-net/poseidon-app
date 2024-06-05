@@ -1,6 +1,6 @@
-import { View, Text, Image, Spinner, YStack, XStack } from 'tamagui'
+import { View, Text, Spinner, YStack, XStack } from 'tamagui'
 import React, { memo, useEffect, useState } from 'react'
-import { TouchableOpacity } from 'react-native'
+import { Image, TouchableOpacity } from 'react-native'
 import { Cross, ImageDown, X } from '@tamagui/lucide-icons'
 import { head, isUndefined } from 'lodash'
 import { useQuery } from 'react-query'
@@ -119,9 +119,10 @@ const FeedImage = (props: FeedImageProps) => {
                     source={{ uri: image }}
                     style={{
                         width: '100%',
-                        height: '100%'
+                        height: '100%',
+                        aspectRatio: aspectRatio
                     }}
-                    aspectRatio={aspectRatio}
+                    // aspectRatio={aspectRatio}
                 />
 
             </TouchableOpacity>
@@ -154,9 +155,10 @@ const FeedImage = (props: FeedImageProps) => {
                             source={{ uri: image }}
                             style={{
                                 width: '100%',
-                                height: '100%'
+                                height: '100%',
+                                aspectRatio: aspectRatio
                             }}
-                            aspectRatio={aspectRatio}
+                            // aspectRatio={aspectRatio}
                         />
                     </YStack>
 

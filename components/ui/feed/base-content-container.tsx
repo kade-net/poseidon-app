@@ -219,6 +219,13 @@ function BaseContentContainer(props: BaseContentContainerProps) {
                                         )
                                     })
                                 }
+                                {
+                                    data?.id === 1269 && <LinkResolver
+                                        link={"http://192.168.100.211:3000/txn"}
+                                        publication_ref={data?.publication_ref ?? ''}
+                                        kid={data?.id ?? 0}
+                                    />
+                                }
                             </YStack>
                             <View flexDirection="row" flexWrap="wrap" w="100%" columnGap={10} rowGap={10} >
                                 {

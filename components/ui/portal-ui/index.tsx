@@ -7,6 +7,7 @@ import useDisclosure from '../../hooks/useDisclosure'
 import TransactionSheet from '../action-sheets/in-app-transactions/transaction-sheet'
 import { PortalButton } from '@kade-net/portals-parser'
 import { Utils } from '../../../utils'
+import { ExternalLink, Zap } from '@tamagui/lucide-icons'
 
 interface Props {
     url: string
@@ -116,7 +117,7 @@ const PortalRenderer = (props: Props) => {
                     renderItem={({ item }) => {
                         return (
                             <Button size={'$3'} key={item.index} flex={1} onPress={() => {
-                                if (item.type === 'mint') {
+                                if (item.type === 'mint' || item.type == 'tx') {
                                     handleMint(item)
                                 } else {
                                     handleButtonPress({
@@ -126,7 +127,13 @@ const PortalRenderer = (props: Props) => {
                                         input
                                     })
                                 }
-                            }} backgroundColor={'$portalButton'} >
+                            }} backgroundColor={'$portalButton'}
+                                iconAfter={
+                                    item.type === 'link' ? <ExternalLink color={'$sideText'} /> :
+                                        item.type === 'mint' ? <Zap color={'$primary'} /> :
+                                            item.type === 'tx' ? <Zap color={'$yellow'} /> : null
+                                }
+                            >
                                 {item.title}
                             </Button>
                         )
@@ -136,9 +143,11 @@ const PortalRenderer = (props: Props) => {
             <TransactionSheet
                 isOpen={isOpen}
                 onClose={(hash) => {
-                    console.log("hash", hash)
+                    // console.log("hash", hash)
                     if (hash) {
                         handleClose(hash)
+                    } else {
+                        onClose()
                     }
                 }}
                 module_arguments={activeButton?.module_arguments || ''}
