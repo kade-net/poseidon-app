@@ -180,6 +180,27 @@ function BaseContentContainer(props: BaseContentContainerProps) {
                             </Text>
                         </XStack>
                     }
+                    {!inCommunityFeed && <XStack w="100%" >
+                        {data?.community &&
+                            <Link asChild href={{
+                                pathname: '/(tabs)/feed/communities/[name]/',
+                                params: {
+                                    "name": data?.community?.name
+                                }
+                            }} >
+                                <XStack alignItems="center" columnGap={10} borderRadius={5} px={4} py={2} backgroundColor={'$portalBackground'} >
+                                    <Avatar circular size={"$1"} >
+                                        <Avatar.Image src={data?.community?.image} />
+                                        <Avatar.Fallback bg="$pink10" />
+                                    </Avatar>
+                                    <Text fontSize={12} >
+                                        {data?.community?.name}
+                                    </Text>
+                                </XStack>
+                            </Link>
+
+                        }
+                    </XStack>}
                     <Link
                         href={{
                             pathname: '/(tabs)/feed/[post-id]/',
@@ -246,27 +267,7 @@ function BaseContentContainer(props: BaseContentContainerProps) {
                             <ContentPreviewContainer data={data?.parent} />
                         </View>
                     }
-                    {!inCommunityFeed && <XStack w="100%" >
-                        {data?.community &&
-                            <Link asChild href={{
-                                pathname: '/(tabs)/feed/communities/[name]/',
-                                params: {
-                                    "name": data?.community?.name
-                                }
-                            }} >
-                                <XStack columnGap={10} borderRadius={5} px={4} py={1} borderWidth={1} borderColor={"$blue10"} >
-                                    <Avatar circular size={"$1"} >
-                                        <Avatar.Image src={data?.community?.image} />
-                                        <Avatar.Fallback bg="$pink10" />
-                                    </Avatar>
-                                    <Text color="$blue10" fontSize={12} >
-                                        /{data?.community?.name}
-                                    </Text>
-                                </XStack>
-                            </Link>
 
-                        }
-                    </XStack>}
 
                     <View flexDirection="row" columnGap={20} w="100%" >
                         <PublicationReactions

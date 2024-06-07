@@ -171,8 +171,8 @@ const Home = () => {
                 elevation: 4,
                 width: '100%',
                 paddingHorizontal: 12,
-                borderBottomWidth: 2,
-                borderBottomColor: theme.gray1.val,
+                // borderBottomWidth: 2,
+                // borderBottomColor: theme.gray1.val,
             }} >
                 <TouchableOpacity onPress={goToProfile} >
                     <Avatar circular size={"$4"} >
@@ -251,7 +251,7 @@ const Home = () => {
                     renderItem={renderPublication}
                     ListHeaderComponent={() => {
                         if ((publicationsQuery?.data?.publications?.length ?? 0) === 0) return null
-                        return <XStack w="100%" p={10} alignItems='center' justifyContent='center' >
+                        return <XStack w="100%" alignItems='center' justifyContent='center' pl={56} pr={36} >
                             {refetching && <Spinner />}
                             {!refetching && <PullDownButton />}
                         </XStack>

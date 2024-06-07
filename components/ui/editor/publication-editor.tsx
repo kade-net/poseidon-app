@@ -227,7 +227,7 @@ const PublicationEditor = (props: Props) => {
         }, [])
     )
 
-    const textContent = form.watch('content')
+    const textContent = form.watch('content')?.trim()
     const currentLength = textContent?.length ?? 0
 
     return (
@@ -239,9 +239,13 @@ const PublicationEditor = (props: Props) => {
                 py={5}
                 px={10}
             >
-                <UnstyledButton callback={onClose} label={'Cancel'}/> 
+                {/* <UnstyledButton callback={onClose} label={'Cancel'}/>  */}
 
-                <Button disabled={uploading || publishing}  backgroundColor={(uploading || publishing) ? "$disabledButton" : "$button"} color={"$buttonText"} onPress={form.handleSubmit(handlePublish, console.log)} w={100} >
+                <TouchableOpacity onPress={onClose} >
+                    <X size={'$1'} />
+                </TouchableOpacity>
+
+                <Button size={'$3'} fontWeight={'bold'} disabled={uploading || publishing || currentLength == 0} backgroundColor={(uploading || publishing || currentLength == 0) ? "$disabledButton" : "$primary"} color={"$buttonText"} onPress={form.handleSubmit(handlePublish, console.log)}  >
                     {
                         publishing ? <View flexDirection='row' rowGap={5} >
                             <Text color={'white'} >
@@ -257,7 +261,7 @@ const PublicationEditor = (props: Props) => {
                     }
                 </Button>
             </View>
-            <Separator />
+            {/* <Separator /> */}
             <Sheet.ScrollView flex={1} w="100%" rowGap={20} px={10} >
                 {props.publication ?
                     <PostReplyTextEditor
@@ -297,7 +301,8 @@ const PublicationEditor = (props: Props) => {
                                 placeholder={`What's on your mind?`}
                                 onChangeText={(text) => form.setValue('content', text)}
                                 autoFocus
-                                maxLength={160}
+                                maxLength={320}
+                                disabled={publishing}
                             >
                                 <HighlightMentions form={form} />
                             </TextArea>
@@ -392,8 +397,8 @@ const PublicationEditor = (props: Props) => {
                         </XStack>
                         <XStack>
                             {
-                                <Text color={currentLength > 130 ? "$red10" : undefined} >
-                                    {currentLength} / 160
+                                <Text color={currentLength > 280 ? "$red10" : undefined} >
+                                    {currentLength} / 320
                                 </Text>
                             }
                         </XStack>

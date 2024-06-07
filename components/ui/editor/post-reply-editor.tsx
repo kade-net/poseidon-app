@@ -173,7 +173,7 @@ const PostReplyTextEditor = (props: PostReplyTextEditorProps) => {
                         placeholder={`What's on your mind?`}
                         onChangeText={(text) => form.setValue('content', text)}
                         autoFocus
-                        maxLength={160}
+                        maxLength={320}
                     >
                         <HighlightMentions form={form} />
                     </TextArea>

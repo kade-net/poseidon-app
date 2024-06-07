@@ -4,6 +4,7 @@ import { ACCOUNTS_SEARCH_QUERY, MENTION_USER_SEARCH } from '../../../utils/queri
 import { useQuery } from '@apollo/client'
 import { FlatList, SectionList, TouchableOpacity } from 'react-native'
 import delegateManager from '../../../lib/delegate-manager'
+import { Utils } from '../../../utils'
 
 interface Props {
     search: string
@@ -57,7 +58,9 @@ const UserMentionsSearch = (props: Props) => {
                             <TouchableOpacity style={{ flex: 1, width: '100%' }} onPress={() => handleSelect(item?.username?.username!, item?.address)} >
                                 <XStack w="100%" columnGap={10} p={20} >
                                     <Avatar circular size={"$3"} >
-                                        <Avatar.Image src={item?.profile?.pfp ?? ''} />
+                                        <Avatar.Image src={
+                                            Utils.parseAvatarImage(item?.address, item?.profile?.pfp)
+                                        } />
                                         <Avatar.Fallback bg="$pink10" />
                                     </Avatar>
                                     <YStack>

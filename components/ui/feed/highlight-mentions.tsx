@@ -39,7 +39,7 @@ function Mention(props: MentionProps) {
 
 }
 
-const MemoedMention = memo(Mention)
+export const MemoedMention = memo(Mention)
 
 const HighlightMentions = (props: Props) => {
     const { content = '', tags = [], mentions } = props

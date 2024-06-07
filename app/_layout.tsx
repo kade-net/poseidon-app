@@ -61,7 +61,13 @@ export default function RootLayout() {
   const [interLoaded, interError] = useFonts({
     Inter: require('@tamagui/font-inter/otf/Inter-Medium.otf'),
     InterBold: require('@tamagui/font-inter/otf/Inter-Bold.otf'),
-    Roboto: require('../assets/fonts/Roboto-Regular.ttf')
+    Roboto: require('../assets/fonts/Roboto-Regular.ttf'),
+    RobotoBold: require('../assets/fonts/roboto/Roboto-Bold.ttf'),
+    RobotoMedium: require('../assets/fonts/roboto/Roboto-Medium.ttf'),
+    RobotoLight: require('../assets/fonts/roboto/Roboto-Light.ttf'),
+    RobotoThin: require('../assets/fonts/roboto/Roboto-Thin.ttf'),
+    RobotoBlack: require('../assets/fonts/roboto/Roboto-Black.ttf'),
+
   })
   const responseListener = useRef();
 
