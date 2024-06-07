@@ -1,4 +1,4 @@
-import { Bell, Home, Mail, Search, SquareSlash, Users } from '@tamagui/lucide-icons'
+import { Bell, Home, Mail, Search, SquareSlash, Squircle, Users } from '@tamagui/lucide-icons'
 import { Link, Tabs } from 'expo-router'
 import { useState } from 'react'
 import { Pressable, useColorScheme } from 'react-native'
@@ -39,6 +39,14 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
+        name="portals"
+        options={{
+          tabBarIcon: ({ focused }) => <Squircle size={focused ? 30 : 'unset'} fill={focused ? tamaguiTheme.primary.val : tamaguiTheme.colorTransparent.val} color={focused ? '$background' : '$text'} />,
+          tabBarActiveBackgroundColor: tamaguiTheme.background.val,
+          tabBarInactiveBackgroundColor: tamaguiTheme.background.val
+        }}
+      />
+      <Tabs.Screen
         name="communities"
         options={{
           tabBarIcon: ({ focused }) => <SquareSlash size={focused ? 30 : 'unset'} fill={focused ? tamaguiTheme.primary.val : tamaguiTheme.colorTransparent.val} color={focused ? '$background' : '$text'} />,
@@ -46,6 +54,7 @@ export default function TabLayout() {
           tabBarInactiveBackgroundColor : tamaguiTheme.background.val
         }}
       />
+
       <Tabs.Screen
         name="notifications"
         options={{

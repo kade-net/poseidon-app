@@ -92,6 +92,7 @@ const _Chat = (props: Props) => {
 const Chat = () => {
   const params = useLocalSearchParams()
   const inbox_name = params.inbox_name as string
+  console.log("Inbox Name::", inbox_name)
   const other_user = params.other_user as string
   const view_timestamp = useMemo(() => {
     return Date.now()

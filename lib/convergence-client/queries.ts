@@ -187,3 +187,18 @@ export const SETUP_SELF_DELEGATE = gql(/* GraphQL */`
         }
     }
 `)
+
+export const GET_PORTALS = gql(/* GraphQL */`
+    query Portals {
+        portals {
+            name
+            description
+            icon
+            url
+            post_id
+            user_kid
+            username
+            created_at
+        }
+    }
+`)

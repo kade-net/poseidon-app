@@ -74,7 +74,10 @@ const LinkResolver = (props: Props) => {
         return <PortalRenderer
             kid={kid}
             post_ref={publication_ref}
-            url={link}
+            url={
+                __DEV__ ? link?.replace("https://portals.poseidon.ac", "http://192.168.100.211:3000") :
+                    link
+            }
         />
     }
 

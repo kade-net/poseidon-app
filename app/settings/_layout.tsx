@@ -95,6 +95,21 @@ const _layout = () => {
                     }}
                 />
 
+                <Stack.Screen
+                    name='preferences'
+                    options={{
+                        header(props) {
+                            return (
+                                <TopBarWithBack
+                                    title={'Preferences'}
+                                    navigation={props.navigation}
+                                />
+                            )
+                        },
+                        headerShown: true
+                    }}
+                />
+
             </Stack>
         </SafeAreaView>
     )

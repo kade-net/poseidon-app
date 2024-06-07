@@ -1,7 +1,8 @@
-import { BasePortal, PortalButton, PortalPacket, findHTMLMetaTags, generatePortalDefinition, parseMetaTags } from '@kade-net/portals-parser'
+import { BasePortal, PortalButton, PortalPacket, findHTMLMetaTags, generatePortalDefinition, parseMetaTags, signPortalPacket } from '@kade-net/portals-parser'
 import { Effect, Either } from 'effect'
 import { GeneratePortalDefinitionError, PortalDeserializerError, UnableToFetchNewPortalError } from './errors'
 import delegateManager from '../delegate-manager'
+import * as Linking from 'expo-linking'
 
 interface loadAndParsePortalLinkArgs {
     url: string
@@ -53,7 +54,7 @@ interface onPortalButtonPressedArgs {
 export async function onPortalButtonPressed(args: onPortalButtonPressedArgs) {
     const { button, callback, input, hash, post_kid, post_ref } = args
 
-    const portalPacket = JSON.stringify({
+    const packet = {
         active_button: {
             index: button.index,
             target: button.target,
@@ -67,11 +68,28 @@ export async function onPortalButtonPressed(args: onPortalButtonPressedArgs) {
         delegate_address: delegateManager.account?.address().toString(),
         input_text: input,
         timestamp: Date.now(),
-        user_address: delegateManager.owner
-    } as PortalPacket)
+        user_address: delegateManager.owner,
+        post_kid: post_kid?.toString(),
+        post_ref: post_ref,
+    } as PortalPacket
+
+    const signature = signPortalPacket({
+        hex_string: delegateManager.signer?.privateKey.toString()!,
+        packet
+    })
+
+    packet.portal_signature = signature
+
+    const portalPacket = JSON.stringify(packet)
 
     switch (button.type) {
         case "link": {
+            const canOpen = await Linking.canOpenURL(button.target)
+            if (canOpen) {
+                await Linking.openURL(button.target)
+            } else {
+                console.warn('Cannot open URL:', button.target)
+            }
             callback({
                 portal: null,
                 button
@@ -171,10 +189,48 @@ export async function onPortalButtonPressed(args: onPortalButtonPressedArgs) {
             break
         }
         case 'tx': {
-            console.log("TX", button)
-            callback({
-                portal: null,
-                button
+            const task = Effect.tryPromise({
+                try: async () => {
+                    const response = await fetch(button.target ?? button.post_url, {
+                        method: 'POST',
+                        body: portalPacket
+                    })
+                    const new_portal_url = response.url
+                    if (!new_portal_url) {
+                        throw new Error('No Location header')
+                    }
+
+                    return new_portal_url
+                },
+                catch(error) {
+                    return new UnableToFetchNewPortalError({
+                        initialError: error
+                    })
+                },
+            }).pipe(
+                Effect.flatMap((new_portal_url) => {
+                    console.log("New Portal URL", new_portal_url)
+                    return loadAndParsePortalLink({ url: new_portal_url })
+                }
+                ))
+
+            const resultEither = await Effect.runPromise(Effect.either(task))
+
+            Either.match(resultEither, {
+                onLeft(left) {
+                    console.log("Left", left)
+                    callback({
+                        portal: null,
+                        button
+                    }, left)
+                },
+                onRight(right) {
+                    console.log("Right", right)
+                    callback({
+                        portal: right,
+                        button: button
+                    })
+                },
             })
             break
         }

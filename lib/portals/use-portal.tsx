@@ -23,6 +23,7 @@ function usePortal(props: usePortalProps) {
                     setError(error)
                 }
                 if (arg.portal) {
+
                     setPortal(arg.portal)
                 }
                 setLoading(false)

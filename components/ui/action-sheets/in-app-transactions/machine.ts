@@ -4,6 +4,10 @@ import { AccountChanges, buildPortalTransaction, getSimulationResult, submitPort
 import { aptos } from '../../../../contract'
 import { Effect, Either } from 'effect'
 import { MachineParams } from './types'
+import petra from '../../../../lib/wallets/petra'
+import { FunctionParameter } from '@kade-net/portals-parser'
+import delegateManager from '../../../../lib/delegate-manager'
+import settings from '../../../../lib/settings'
 
 interface Context {
     simpleTransaction: SimpleTransaction | null
@@ -14,6 +18,7 @@ interface Context {
     module_arguments: string | null
     module_function: string | null
     type_arguments: string | null
+    currentWallet: 'petra' | 'delegate' | null
 }
 
 type Events = MachineParams<{
@@ -21,11 +26,17 @@ type Events = MachineParams<{
         module_arguments: string
         module_function: string
         type_arguments: string | null
+        currentWallet?: 'petra' | 'delegate' | null
     }
-    submit: {}
+    submit: {
+        current_location?: string
+    }
     cancel: {}
     fail: {
         errorMessage: string
+        module_arguments?: string
+        module_function?: string
+        type_arguments?: string | null
     }
     error: {
         errorMessage: string
@@ -38,10 +49,21 @@ type Events = MachineParams<{
         module_function: string
         type_arguments: string | null
     },
+    connectionSucceded: {
+        module_arguments: string
+        module_function: string
+        type_arguments: string | null
+        currentWallet: 'petra' | 'delegate'
+    },
     transactionSuccessful: {
         transactionHash: string
-
-    }
+    },
+    connect: {
+        module_arguments: string
+        module_function: string
+        type_arguments: string | null
+        currentWallet: 'petra' | 'delegate' | null
+    },
 }>
 
 export const inAppTransactionsMachine = setup({
@@ -50,14 +72,25 @@ export const inAppTransactionsMachine = setup({
         events: {} as Events
     },
     actions: {
-        startSimulation: async ({ context, event, self }, params: { module_arguments: string, module_function: string, type_arguments: string | null }) => {
-            const { module_arguments, module_function, type_arguments } = params
-            console.log("Starting simulation::", module_arguments, module_function)
+        onConnect: assign((_, params: { module_arguments: string, module_function: string, type_arguments: string | null, currentWallet: 'petra' | 'delegate' | null }) => {
+            return {
+                module_arguments: params.module_arguments,
+                module_function: params.module_function,
+                type_arguments: params.type_arguments,
+                currentWallet: params.currentWallet
+            }
+        }),
+        startSimulation: async ({ context, event, self }, params: { module_arguments: string, module_function: string, type_arguments: string | null, connectWallet: 'petra' | 'delegate' | null }) => {
+            const { module_arguments, module_function, type_arguments, connectWallet } = params
+            const currentWallet = settings.active?.preffered_wallet ?? connectWallet
+            console.log("Current Wallet:", currentWallet)
+            const CURRENT_ADDRESS = currentWallet === 'petra' ? petra.sharedSecret?.address : currentWallet == 'delegate' ? delegateManager.account?.address()?.toString() : null
             const result = await Effect.runPromise(
                 Effect.either(buildPortalTransaction(aptos, {
-                    module_arguments,
-                    module_function,
-                    type_arguments: type_arguments ? type_arguments : undefined
+                    module_arguments: module_arguments ?? context.module_arguments,
+                    module_function: module_function ?? context.module_function,
+                    type_arguments: type_arguments ?? context.type_arguments ?? undefined,
+                    user_address: CURRENT_ADDRESS! // TODO: this assumption may be false
                 }))
             )
 
@@ -67,7 +100,10 @@ export const inAppTransactionsMachine = setup({
                     self.send({
                         type: 'fail',
                         params: {
-                            errorMessage: left._tag == 'TransactionBuildError' ? 'Transaction build error' : 'Generic build error'
+                            errorMessage: left._tag == 'TransactionBuildError' ? 'Transaction build error' : 'Generic build error',
+                            module_arguments: module_arguments ?? context.module_arguments,
+                            module_function: module_function ?? context.module_function,
+                            type_arguments: type_arguments ?? context.type_arguments ?? undefined
                         }
                     })
                 },
@@ -76,17 +112,26 @@ export const inAppTransactionsMachine = setup({
                     const simpleTransaction = right
                     const simulationResult = await Effect.runPromise(
                         Effect.either(getSimulationResult(aptos, {
-                            transaction: right!
+                            transaction: right!,
+                            user_public_key: currentWallet === 'delegate' ? delegateManager.account?.pubKey()?.toString()! : petra.sharedSecret?.user_public_key!
                         }))
                     )
 
                     Either.match(simulationResult, {
                         onLeft(left) {
-                            console.log("Error::", left.originalError)
+                            const MSG = left.originalError?.message
+
                             self.send({
                                 type: 'fail',
                                 params: {
-                                    errorMessage: left._tag == 'TransactionSimulationError' ? 'Transaction simulation error' : 'Generic simulation error'
+                                    errorMessage: left._tag == 'TransactionSimulationError' ?
+                                        MSG == "INSUFFICIENT_BALANCE_FOR_TRANSACTION_FEE" ?
+                                            'Insufficient balance' : left?.originalError?.message ??
+                                            'Transaction simulation error'
+                                        : 'Generic simulation error',
+                                    module_arguments: module_arguments ?? context.module_arguments,
+                                    module_function: module_function ?? context.module_function,
+                                    type_arguments: type_arguments ?? context.type_arguments ?? undefined
                                 }
                             })
                         },
@@ -114,44 +159,72 @@ export const inAppTransactionsMachine = setup({
             module_function: string,
             type_arguments: string | null
         }) => {
+
             return {
-                accountChanges: params.changes,
-                simpleTransaction: params.transaction,
-                module_arguments: params.module_arguments,
-                module_function: params.module_function,
-                type_arguments: params.type_arguments
+                accountChanges: params.changes ?? _.context.accountChanges,
+                simpleTransaction: params.transaction ?? _.context.simpleTransaction,
+                module_arguments: params.module_arguments ?? _.context.module_arguments,
+                module_function: params.module_function ?? _.context.module_function,
+                type_arguments: params.type_arguments ?? _.context.type_arguments
             }
         }),
-        startConfirmation: async ({ self, context, event }) => {
-            const transactionResult = await Effect.runPromise(
-                Effect.either(submitPortalTransaction(aptos, context.simpleTransaction!))
-            )
+        startConfirmation: async ({ self, context, event }, params: { current_location?: string }) => {
 
-            Either.match(transactionResult, {
-                onLeft(left) {
-                    console.log("Error::", left)
-                    self.send({
-                        type: 'fail',
-                        params: {
-                            errorMessage: left._tag == "TransactionSubmissionError" ? "Unable to submit transaction" :
-                                left._tag == "TransactionFailedError" ? "Transaction failed" : "Generic submission error"
-                        }
-                    })
-                },
-                onRight(right) {
-                    self.send({
-                        type: 'transactionSuccessful',
-                        params: {
-                            transactionHash: right ?? ""
+            try {
+
+                const active = settings.active
+
+                if (active?.preffered_wallet == 'delegate') {
+                    const transactionResult = await Effect.runPromise(
+                        Effect.either(submitPortalTransaction(aptos, context.simpleTransaction!))
+                    )
+
+                    Either.match(transactionResult, {
+                        onLeft(left) {
+
+                            self.send({
+                                type: 'fail',
+                                params: {
+                                    errorMessage: left._tag == "TransactionSubmissionError" ? "Unable to submit transaction" :
+                                        left._tag == "TransactionFailedError" ? "Transaction failed" : "Generic submission error"
+                                }
+                            })
+                        },
+                        onRight(right) {
+                            self.send({
+                                type: 'transactionSuccessful',
+                                params: {
+                                    transactionHash: right ?? ""
+                                }
+                            })
                         }
                     })
                 }
-            })
+                else {
+                    await petra.signAndSumbitTransaction({
+                        functionArguments: FunctionParameter.prepareForSubmission(FunctionParameter.deserializeAll(context.module_arguments!)),
+                        transactionFunction: context.module_function!,
+                        type: "entry_function_payload"
+                    }, params?.current_location)
+
+                }
+
+            }
+            catch (error) {
+                self.send({
+                    type: 'fail',
+                    params: {
+                        errorMessage: "Unable to open petra"
+                    }
+                })
+            }
         },
-        onError: assign((_, params: { errorMessage: string }) => {
+        onError: assign(({ context }, params: { errorMessage: string }) => {
             console.log("Error::", params.errorMessage)
+            console.log("Context::", context)
             return {
-                errorMessage: params.errorMessage
+                ...(context ?? null),
+                ...(params ?? null)
             }
         }),
         onCancel: async ({ context, event }) => {
@@ -164,7 +237,10 @@ export const inAppTransactionsMachine = setup({
             return {
                 transactionHash: params.transactionHash
             }
-        })
+        }),
+        onConnectionRetry: async ({ context, event }) => {
+
+        }
     },
 }).createMachine({
     initial: 'closed',
@@ -176,23 +252,99 @@ export const inAppTransactionsMachine = setup({
     } as Context,
     states: {
         closed: {
+
+            on: {
+                // simulate: {
+                //     target: 'simulating',
+                //     actions: {
+                //         type: 'startSimulation',
+                //         params: ({ event }) => {
+                //             console.log("Event::", event)
+                //             return {
+                //                 module_arguments: event.params.module_arguments,
+                //                 module_function: event.params.module_function,
+                //                 type_arguments: event.params.type_arguments
+                //             }
+                //         }
+                //     }
+                // },
+                connect: {
+                    target: 'connection',
+                    actions: {
+                        type: 'onConnect',
+                        params: ({ event }) => {
+                            return {
+                                module_arguments: event.params.module_arguments,
+                                module_function: event.params.module_function,
+                                type_arguments: event.params.type_arguments,
+                                currentWallet: event.params.currentWallet
+                            }
+                        }
+                    }
+                }
+            },
+        },
+        connection: {
             on: {
                 simulate: {
                     target: 'simulating',
                     actions: {
                         type: 'startSimulation',
                         params: ({ event }) => {
-                            console.log("Event::", event)
                             return {
                                 module_arguments: event.params.module_arguments,
                                 module_function: event.params.module_function,
-                                type_arguments: event.params.type_arguments
+                                type_arguments: event.params.type_arguments,
+                                connectWallet: event.params.currentWallet ?? null
                             }
                         }
                     }
+                },
+                connect: {
+                    target: 'connecting',
+                    actions: {
+                        type: 'onConnect',
+                        params({ context, event }) {
+                            return {
+                                module_arguments: event.params.module_arguments,
+                                module_function: event.params.module_function,
+                                type_arguments: event.params.type_arguments,
+                                currentWallet: event.params.currentWallet
+                            }
+                        },
+                    }
                 }
-            },
+            }
+        },
+        connecting: {
+            on: {
+                connectionSucceded: {
+                    target: 'simulating',
+                    actions: {
+                        type: 'startSimulation',
+                        params: ({ event, context }) => {
 
+                            return {
+                                module_arguments: event.params.module_arguments!,
+                                module_function: event.params.module_function,
+                                type_arguments: event.params.type_arguments,
+                                connectWallet: event.params.currentWallet
+                            }
+                        }
+                    }
+                },
+                fail: {
+                    target: "failedConnection",
+                    actions: {
+                        type: "onError",
+                        params: ({ event }) => {
+                            return {
+                                errorMessage: event.params.errorMessage
+                            }
+                        },
+                    }
+                }
+            }
         },
         simulating: {
             on: {
@@ -218,7 +370,7 @@ export const inAppTransactionsMachine = setup({
                         params: ({ event }) => {
                             console.log("Event Error::", event.params)
                             return {
-                                errorMessage: event.params.errorMessage
+                                ...event.params
                             }
 
                         }
@@ -230,10 +382,18 @@ export const inAppTransactionsMachine = setup({
             on: {
                 submit: {
                     target: 'submitting',
-                    actions: 'startConfirmation'
+                    actions: {
+                        type: 'startConfirmation',
+                        params: ({ event, context }) => {
+                            return {
+                                current_location: event.params.current_location
+                            }
+                        }
+                    }
+
                 },
                 cancel: {
-                    target: 'closed',
+                    target: 'done',
                     actions: 'onCancel'
                 }
             }
@@ -263,17 +423,20 @@ export const inAppTransactionsMachine = setup({
         failedSimulation: {
             on: {
                 cancel: {
-                    target: 'closed'
+                    target: 'done'
                 },
                 retry: {
                     target: 'simulating',
                     actions: {
                         type: 'startSimulation',
                         params: ({ event, context }) => {
+                            console.log("Context Data::", context)
+                            console.log("Event Data::", event)
                             return {
                                 module_arguments: context.module_arguments!,
                                 module_function: context.module_function!,
-                                type_arguments: context.type_arguments
+                                type_arguments: context.type_arguments,
+                                connectWallet: context.currentWallet! // TODO: this assumes this would have already been set
                             }
                         }
                     }
@@ -285,13 +448,27 @@ export const inAppTransactionsMachine = setup({
         failedSubmission: {
             on: {
                 cancel: {
-                    target: 'closed'
+                    target: 'done'
                 },
                 retry: {
                     target: 'simulated',
                     actions: 'onRetry'
                 },
             }
+        },
+        failedConnection: {
+            on: {
+                cancel: {
+                    target: 'done'
+                },
+                retry: {
+                    target: 'connecting',
+                    actions: 'onConnectionRetry'
+                }
+            }
+        },
+        done: {
+            type: 'final'
         }
     }
 })

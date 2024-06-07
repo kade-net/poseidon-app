@@ -88,9 +88,9 @@ const PullDownButton = () => {
             w="100%"
             alignItems='center'
             justifyContent='center'
-
+            paddingHorizontal={12}
         >
-            <Text>
+            <Text color={'$sideText'} >
                 Pull down to refresh
             </Text>
         </XStack>

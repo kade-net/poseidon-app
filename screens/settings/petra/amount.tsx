@@ -47,7 +47,6 @@ const Amount = () => {
     })
     const params = useLocalSearchParams()
     const RECIPIENT_ADDRESS = params['recipient'] as string
-    console.log("Params::", params)
 
     const form = useForm<TSCHEMA>({
         resolver: zodResolver(schema)
@@ -57,7 +56,7 @@ const Amount = () => {
     const CURRENT_VALUE = form.watch('amount') ?? 0
 
 
-    const SEND_DISABLED = CURRENT_VALUE == 0 || CURRENT_VALUE < 0 || CURRENT_VALUE > (balanceQuery.data ?? 0)
+    const SEND_DISABLED = CURRENT_VALUE == 0 || CURRENT_VALUE < 0 || CURRENT_VALUE > (balanceQuery.data ?? 0) || !RECIPIENT_ADDRESS || CURRENT_VALUE == (balanceQuery.data ?? 0)
 
     const handleConfirm = () => {
         if (SEND_DISABLED) return
@@ -119,6 +118,11 @@ const Amount = () => {
                     />
 
                 </YStack>
+                <XStack w="100%" alignItems='center' justifyContent='center' p={10} >
+                    <Text color={'$green10'} >
+                        Balance: {balanceQuery.data} APT
+                    </Text>
+                </XStack>
             </YStack>
             <Separator />
             <YStack

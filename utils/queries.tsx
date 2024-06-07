@@ -66,8 +66,8 @@ export const GET_PUBLICATIONS = gql(/* GraphQL */`
 
 
 export const GET_MY_PROFILE = gql(/* GraphQL */`
-    query MyProfile($address: String!) {
-    account(address: $address) {
+    query MyProfile($address: String, $id: Int) {
+    account(address: $address, id: $id) {
         id
         address
         profile {
@@ -108,8 +108,8 @@ export const GET_ACCOUNT_VIEWER_STATS = gql(/* GraphQL */`
 
 
 export const GET_PUBLICATION = gql(/* GraphQL */`
-    query Publication($postRef: String!){
-        publication(ref: $postRef){
+    query Publication($postRef: String, $id: Int){
+        publication(ref: $postRef, id: $id){
             __typename
             id,
                 timestamp

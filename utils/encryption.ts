@@ -1,6 +1,8 @@
 import nacl from 'tweetnacl'
 import naclUtil from 'tweetnacl-util'
 import ed2curve from 'ed2curve'
+import { PortalPacket } from '@kade-net/portals-parser';
+import delegateManager from '../lib/delegate-manager';
 
 export function encryptMessageSecretBox(message: string, key: string) {
     const nonce = nacl.randomBytes(nacl.secretbox.nonceLength);
