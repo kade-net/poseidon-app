@@ -116,7 +116,11 @@ const SeedPhrase = () => {
                     Either.match(resultEither, {
                         onLeft(left) {
                             console.log('Delegate failed to setup', left)
-                            posti.capture("Delegate failed to setup", left)
+                            posti.capture("Delegate failed to setup", {
+                                left,
+                                delegate: delegateManager.account?.address().toString(),
+                                owner: delegateManager.owner
+                            })
                             throw left
                         },
                         onRight: async (right) => {
@@ -143,7 +147,11 @@ const SeedPhrase = () => {
                 await Either.match(registerDelegateEither, {
                     onLeft(left) {
                         console.log('Delegate failed to register', left)
-                        posti.capture("Delegate failed to register", left)
+                        posti.capture("Delegate failed to register", {
+                            left,
+                            delegate: delegateManager.account?.address().toString(),
+                            owner: delegateManager.owner
+                        })
                         Toast.show({
                             type: 'error',
                             text1: 'Uh oh!',
