@@ -116,6 +116,7 @@ const SeedPhrase = () => {
                     Either.match(resultEither, {
                         onLeft(left) {
                             console.log('Delegate failed to setup', left)
+                            posti.capture("Delegate failed to setup", left)
                             throw left
                         },
                         onRight: async (right) => {
