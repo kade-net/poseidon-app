@@ -156,7 +156,7 @@ const FeedImage = (props: FeedImageProps) => {
                             style={{
                                 width: '100%',
                                 height: '100%',
-                                aspectRatio: aspectRatio
+                                // aspectRatio: aspectRatio
                             }}
                             // aspectRatio={aspectRatio}
                         />
