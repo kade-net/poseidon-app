@@ -99,43 +99,13 @@ export interface buildPortalTransactionArgs {
 
 export function buildPortalTransaction(aptos: Aptos, args: buildPortalTransactionArgs) {
     const { module_arguments, module_function, type_arguments, user_address } = args
+    console.log("Args::", args)
 
-    // console.log("Args::", args)
-
-    // return Effect.tryPromise({
-    //     try: async () => {
-    //         console.log("Address::", delegateManager.account?.address().toString())
-    //         const transaction = await aptos.transferCoinTransaction({
-    //             amount: 5,
-    //             sender: delegateManager.account?.address().toString()!,
-    //             recipient: AccountAddress.from("0xf6391863cca7d50afc4c998374645c8306e92988c93c6eb4b56972dd571f8467"),
-    //             options: {
-    //                 maxGasAmount: 1000,
-    //             }
-    //         })
-
-    //         // await aptos.transaction.signAndSubmitTransaction({
-    //         //     signer: delegateManager.signer!,
-    //         //     transaction
-    //         // })
-
-    //         return transaction
-    //     },
-    //     catch(error) {
-    //         return new TransactionBuildError({
-    //             originalError: error
-    //         })
-    //     },
-    // })
-
-
-
-    const task = Effect.tryPromise({
+    const task = Effect.tryPromise({ 
         try: async () => {
             const functionArguments = FunctionParameter.prepareForSubmission(FunctionParameter.deserializeAll(module_arguments))
-            console.log("User_address::", user_address)
             const transaction = await aptos.transaction.build.simple({
-                sender: user_address,
+                sender: AccountAddress.from(user_address),
                 data: {
                     function: module_function as any,
                     functionArguments,
@@ -143,7 +113,7 @@ export function buildPortalTransaction(aptos: Aptos, args: buildPortalTransactio
                 },
                 options: {
                     expireTimestamp: Date.now() + 1000 * 60 * 60 * 24,
-                    maxGasAmount: 1000
+                    maxGasAmount: 100000,
                 }
             })
 
@@ -151,6 +121,7 @@ export function buildPortalTransaction(aptos: Aptos, args: buildPortalTransactio
 
         },
         catch(error) {
+            console.log("First Error::", error)
             return new TransactionBuildError({
                 originalError: error
             })
@@ -173,6 +144,8 @@ export function getSimulationResult(aptos: Aptos, args: getSimulationResultArgs)
     // )
     const { transaction, user_public_key } = args
 
+    console.log("User Public Key::", user_public_key)
+
     const task = Effect.tryPromise({
         try: async () => {
             const [_transaction] = await aptos.transaction.simulate.simple({
@@ -191,6 +164,7 @@ export function getSimulationResult(aptos: Aptos, args: getSimulationResultArgs)
 
         },
         catch(error) {
+            console.log("Sim Error::", error)
             return new TransactionSimulationError({
                 originalError: error
             })

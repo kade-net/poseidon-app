@@ -114,13 +114,13 @@ const PublicationReactions = (props: Props) => {
 
 
     return (
-        <View flexDirection='row' alignItems='center' w="full" columnGap={50} >
+        <View flexDirection='row' alignItems='center' w="full" columnGap={20} >
             <TouchableOpacity onPress={() => {
                 Haptics.selectionAsync()
                 setCurrentPublicationType(3)
                 onOpen()
             }} style={styles.action_container} >
-                <MessageSquare size={15} mr={10} color={userInteractions.data?.publicationInteractionsByViewer?.commented ? "$activeReaction" : "$reactionBorderColor"}
+                <MessageSquare strokeWidth={3} size={15} mr={10} color={userInteractions.data?.publicationInteractionsByViewer?.commented ? "$activeReaction" : "$reactionBorderColor"}
                     fill={
                         userInteractions.data?.publicationInteractionsByViewer?.commented ? theme.activeReaction.val : theme.background.val
                     }
@@ -130,13 +130,13 @@ const PublicationReactions = (props: Props) => {
                         userInteractions.data?.publicationInteractionsByViewer?.commented ? '$activeReaction' : '$reactionTextColor'
                     }
                 >
-                    {
+                    {publicationStatsQuery.data?.publicationStats?.comments == 0 ? "" :
                         publicationStatsQuery.data?.publicationStats?.comments ?? initialStats?.comments ?? 0
                     }
                 </Text>}
             </TouchableOpacity>
             <TouchableOpacity onPress={openRepost} style={styles.action_container} >
-                <Repeat size={15} mr={10} color={(userInteractions.data?.publicationInteractionsByViewer?.reposted
+                <Repeat strokeWidth={3} size={15} mr={10} color={(userInteractions.data?.publicationInteractionsByViewer?.reposted
                             || userInteractions.data?.publicationInteractionsByViewer?.quoted
                         )?"$activeReaction":"$reactionBorderColor"}
                     fill={
@@ -152,7 +152,7 @@ const PublicationReactions = (props: Props) => {
                         ) ? '$activeReaction' : '$reactionTextColor'
                     }
                 >
-                    {
+                    {((publicationStatsQuery.data?.publicationStats?.reposts ?? 0) == 0 && publicationStatsQuery.data?.publicationStats?.quotes == 0) ? "" :
                         (publicationStatsQuery.data?.publicationStats?.reposts ?? initialStats?.reposts ?? 0) +
                         (publicationStatsQuery.data?.publicationStats?.quotes ?? initialStats?.quotes ?? 0)
                     }
@@ -160,7 +160,7 @@ const PublicationReactions = (props: Props) => {
             </TouchableOpacity>
 
             <TouchableOpacity onPress={handleReact} style={styles.action_container} >
-                <Heart size={15} mr={10} color={userInteractions.data?.publicationInteractionsByViewer?.reacted ? "$activeReaction" : "$reactionBorderColor"} borderStyle='dotted'
+                <Heart strokeWidth={3} size={15} mr={10} color={userInteractions.data?.publicationInteractionsByViewer?.reacted ? "$activeReaction" : "$reactionBorderColor"} borderStyle='dotted'
                     fill={
                         userInteractions.data?.publicationInteractionsByViewer?.reacted ? theme.activeReaction.val : theme.background.val
                     }
@@ -171,7 +171,7 @@ const PublicationReactions = (props: Props) => {
                         userInteractions.data?.publicationInteractionsByViewer?.reacted ? '$activeReaction' : '$reactionTextColor'
                     }
                 >
-                    {
+                    {(publicationStatsQuery.data?.publicationStats?.reactions ?? 0) == 0 ? "" :
                         publicationStatsQuery.data?.publicationStats?.reactions ?? initialStats?.reactions ?? 0
                     }
                 </Text>}
