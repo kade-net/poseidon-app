@@ -57,6 +57,9 @@ function BaseContentContainer(props: BaseContentContainerProps) {
             ?.replace(" month ago", "mo")
             ?.replace(" years ago", "y")
             ?.replace(" year ago", "y")
+            ?.replace("anh", '1h')
+            ?.replace("am", '1m')
+            ?.replace("ad", '1d')
     }, [data?.timestamp])
 
     if (hide) return null

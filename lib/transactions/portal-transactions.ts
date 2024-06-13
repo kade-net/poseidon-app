@@ -8,6 +8,7 @@ import { FunctionParameter } from "@kade-net/portals-parser"
 import { concat } from "lodash"
 import settings from "../settings"
 import petra from "../wallets/petra"
+import posti from "../posti"
 
 const WITHDRAW_EVENT_TYPE = "0x1::coin::WithdrawEvent"
 const DEPOSIT_EVENT_TYPE = "0x1::coin::DepositEvent"
@@ -122,6 +123,9 @@ export function buildPortalTransaction(aptos: Aptos, args: buildPortalTransactio
         },
         catch(error) {
             console.log("First Error::", error)
+            posti.capture('build_error', {
+                error: error
+            })
             return new TransactionBuildError({
                 originalError: error
             })
@@ -164,6 +168,9 @@ export function getSimulationResult(aptos: Aptos, args: getSimulationResultArgs)
 
         },
         catch(error) {
+            posti.capture('simulation_error', {
+                error: error
+            })
             console.log("Sim Error::", error)
             return new TransactionSimulationError({
                 originalError: error
@@ -191,6 +198,9 @@ export function submitPortalTransaction(aptos: Aptos, transaction: SimpleTransac
             return commitedTxn
         },
         catch(error) {
+            posti.capture('submission_error', {
+                error: error
+            })
             console.log("Error::", error)
             return new TransactionSubmissionError(error)
         }
