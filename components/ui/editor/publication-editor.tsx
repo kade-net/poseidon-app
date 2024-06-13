@@ -357,6 +357,16 @@ const PublicationEditor = (props: Props) => {
                 style={{
                     width: '100%',
                 }}
+                behavior={
+                    Platform.select({
+                        ios: 'padding',
+                        android: undefined
+                    })
+                }
+                keyboardVerticalOffset={Platform.select({
+                    ios: 50,
+                    android: 0
+                })}
             >
 
                 <YStack>
