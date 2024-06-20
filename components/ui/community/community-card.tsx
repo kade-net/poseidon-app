@@ -7,6 +7,7 @@ import communityModule from '../../../contract/modules/community';
 import { Link } from 'expo-router';
 import { Utils } from '../../../utils';
 import * as Haptics from 'expo-haptics';
+import BaseButton from '../buttons/base-button';
 interface COMMUNITY {
     __typename?: "Community" | undefined;
     id: number;
@@ -85,11 +86,11 @@ const CommunityCard = (props: Props) => {
                                 </Text>
                             </YStack>
                         </Link>
-                        {membershipQuery?.data?.membership?.type !== 0 && <Button backgroundColor={ membershipQuery?.data?.membership ? "$colourlessButton":"$button"} borderWidth={ membershipQuery?.data?.membership ? 1 : 0} borderColor={"$button"} color={membershipQuery?.data?.membership ?  "$text" : "$buttonText"} onPress={handleToggleFollow} size='$3' >
+                        {membershipQuery?.data?.membership?.type !== 0 && <BaseButton rounded='large' type={membershipQuery?.data?.membership ? "outlined" : "primary"} onPress={handleToggleFollow} size='$3' >
                             {
                                 membershipQuery?.data?.membership ? "Following" : "Follow"
                             }
-                        </Button>}
+                        </BaseButton>}
                     </XStack>
                     <Text pb={10} fontSize={"$sm"}>
                         {community?.description}

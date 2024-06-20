@@ -8,6 +8,7 @@ import delegateManager from '../../../lib/delegate-manager'
 import { Link } from 'expo-router'
 import { Utils } from '../../../utils'
 import * as Haptics from 'expo-haptics'
+import BaseButton from '../buttons/base-button'
 
 
 interface Props {
@@ -98,13 +99,12 @@ const ProfileCard = (props: Props) => {
 
                         </View>
                         <View>
-                            {queryData?.loading ? <Spinner /> : <Button onPress={handleFollowToggle} size={"$3"} backgroundColor={queryData?.data?.accountRelationship?.follows ? "$colourlessButton" : "$button"} borderWidth={queryData?.data?.accountRelationship?.follows ? 1 : 0} borderColor={"$button"} color={queryData?.data?.accountRelationship?.follows ? "$text" : "$buttonText"} mr={10}
-                                variant={queryData?.data?.accountRelationship?.follows ? "outlined" : undefined}
+                            <BaseButton loading={queryData?.loading} rounded='large' onPress={handleFollowToggle} size={"$3"} type={queryData?.data?.accountRelationship?.follows ? "outlined" : "primary"} mr={10}
                             >
                                 {
                                     queryData?.data?.accountRelationship?.follows ? "Following" : "Follow"
                                 }
-                            </Button>}
+                            </BaseButton>
                         </View>
                     </View>
                     {/* Bio */}

@@ -231,7 +231,7 @@ const PublicationEditor = (props: Props) => {
     const currentLength = textContent?.length ?? 0
 
     return (
-        <View flex={1} w="100%" h="100%" backgroundColor={"$background"}>
+        <View flex={1} w="100%" h="100%" backgroundColor={"$inputBackground"}>
             <View
                 flexDirection='row'
                 alignItems='center'

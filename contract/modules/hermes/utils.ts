@@ -293,3 +293,27 @@ export async function saveIncomingMessage(envelope: Envelope) {
 
     return Effect.runPromise(Effect.either(task))
 }
+
+
+const GM_SEARCH_REGEX = /(^|\s)gm(\s|$)|gmgm/gi
+const LFG_SEARCH_REGEX = /(^|\s)lfg(\s|$)|lfglfg/gi
+const LFM_SEARCH_REGEX = /(^|\s)lfm(\s|$)|lfmlfm/gi
+const GN_SEARCH_REGEX = /(^|\s)gn(\s|$)|gngn/gi
+
+const TEXT_MAP = {
+    "GM": GM_SEARCH_REGEX,
+    "LFG": LFG_SEARCH_REGEX,
+    "LFM": LFM_SEARCH_REGEX,
+    "GN": GN_SEARCH_REGEX,
+} as const
+
+export const getReactionType = (content: string) => {
+    for (const key in TEXT_MAP) {
+        const k: keyof typeof TEXT_MAP = key as any
+        if (TEXT_MAP?.[k]?.test(content)) {
+            return key
+        }
+    }
+    return null
+
+}

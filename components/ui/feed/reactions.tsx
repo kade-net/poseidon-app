@@ -1,5 +1,5 @@
 import { View, Text, useTheme, Button, Spinner } from 'tamagui'
-import React, { memo, useEffect, useTransition } from 'react'
+import React, { memo, useEffect, useMemo, useTransition } from 'react'
 import { StyleSheet, TouchableOpacity } from 'react-native'
 import { Heart, MessageSquare, MessageSquarePlus, Repeat } from '@tamagui/lucide-icons'
 import { Publication, PublicationStats } from '../../../__generated__/graphql'
@@ -14,6 +14,9 @@ import PublicationEditor from '../editor/publication-editor'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import * as Haptics from 'expo-haptics'
 import BaseButton from '../buttons/base-button'
+import { getReactionType } from '../../../contract/modules/hermes/utils'
+
+
 
 interface Props {
     initialStats?: PublicationStats,
@@ -33,6 +36,23 @@ const PublicationReactions = (props: Props) => {
     const { isOpen: repostOpen, onOpen: openRepost, onClose: closeRepost, onToggle: onToggleRepost } = useDisclosure()
     const [isQuoting, setIsQuoting] = React.useState(false)
     const [_, transition] = useTransition()
+
+    const CUSTOM_REACTION = useMemo(() => {
+        if (publication?.content?.content) {
+            const reaction = getReactionType(publication?.content?.content as string)
+            return reaction
+        }
+        return null
+    }, [publication?.content?.content])
+
+    // if (publication?.id == 1769) {
+    //     const HAS_GM = GM_SEARCH_REGEX.test((publication?.content?.content as string)?.toLowerCase() ?? '')
+    //     console.log("Publication", publication)
+    //     console.log("HAS GM", HAS_GM)
+    // }
+
+
+
     const publicationStatsQuery = useQuery(GET_PUBLICATION_STATS, {
         variables: {
             publication_ref: publication_ref!
@@ -112,7 +132,6 @@ const PublicationReactions = (props: Props) => {
     }
 
 
-
     return (
         <View flexDirection='row' alignItems='center' w="full" columnGap={20} >
             <TouchableOpacity onPress={() => {
@@ -160,12 +179,23 @@ const PublicationReactions = (props: Props) => {
             </TouchableOpacity>
 
             <TouchableOpacity onPress={handleReact} style={styles.action_container} >
-                <Heart strokeWidth={3} size={15} mr={10} color={userInteractions.data?.publicationInteractionsByViewer?.reacted ? "$activeReaction" : "$reactionBorderColor"} borderStyle='dotted'
+                {
+                    CUSTOM_REACTION ? <Text
+                        fontWeight={'bold'}
+                        color={
+                            userInteractions.data?.publicationInteractionsByViewer?.reacted ? '$activeReaction' : '$reactionTextColor'
+                        }
+                    >
+                        {CUSTOM_REACTION} {" "}
+                    </Text> : 
+                        <Heart strokeWidth={3} size={15} mr={10} color={userInteractions.data?.publicationInteractionsByViewer?.reacted ? "$activeReaction" : "$reactionBorderColor"} borderStyle='dotted'
                     fill={
                         userInteractions.data?.publicationInteractionsByViewer?.reacted ? theme.activeReaction.val : theme.background.val
                     }
 
                 />
+                }
+
                 {showNumbers && <Text fontSize={"$sm"}
                     color={
                         userInteractions.data?.publicationInteractionsByViewer?.reacted ? '$activeReaction' : '$reactionTextColor'
@@ -182,6 +212,7 @@ const PublicationReactions = (props: Props) => {
                 open={isOpen}
                 onOpenChange={onToggle}
                 snapPoints={[100]}
+                level={9}
             >
                 <View
                     flex={1}
@@ -213,6 +244,7 @@ const PublicationReactions = (props: Props) => {
                     showOverlay={true}
                     dismissOnOverlayPress
                     animation='medium'
+                    level={1}
                 >
                     <View
                         py={20}

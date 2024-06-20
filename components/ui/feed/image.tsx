@@ -1,6 +1,6 @@
 import { View, Text, Spinner, YStack, XStack } from 'tamagui'
 import React, { memo, useEffect, useState } from 'react'
-import { Image, TouchableOpacity } from 'react-native'
+import { Dimensions, Image, TouchableOpacity } from 'react-native'
 import { Cross, ImageDown, X } from '@tamagui/lucide-icons'
 import { head, isUndefined } from 'lodash'
 import { useQuery } from 'react-query'
@@ -18,6 +18,9 @@ interface FeedImageProps {
     id?: string | number
 }
 
+const DEVICE_HEIGHT = Dimensions.get('screen').height
+const DEVICE_WIDTH = Dimensions.get('screen').width - 40
+const IMAGE_HEIGHT_THRESHOLD = DEVICE_HEIGHT * 0.5
 
 
 const getSize = async (image: string) => {
@@ -39,10 +42,18 @@ const FeedImage = (props: FeedImageProps) => {
         queryFn: async () => {
 
             const { width, height } = await getSize(image)
-                return width / height
+            const aspect_ratio = width / height
+
+            const DISPLAY_HEIGHT = DEVICE_WIDTH / aspect_ratio
+
+            return {
+                aspect_ratio,
+                width,
+                height,
+                is_large: DISPLAY_HEIGHT > IMAGE_HEIGHT_THRESHOLD
+            }
 
         },
-        initialData: 16 / 9
     })
 
 
@@ -82,18 +93,19 @@ const FeedImage = (props: FeedImageProps) => {
 
     if (error) return null
 
+    if (!aspectRatio) return null
+
     return (
         <View
             position='relative'
             flex={1}
-            aspectRatio={aspectRatio}
+            aspectRatio={aspectRatio?.is_large ? undefined : aspectRatio?.aspect_ratio}
             width={"100%"}
-            height={"100%"}
+            height={aspectRatio?.is_large ? IMAGE_HEIGHT_THRESHOLD : "100%"}
             borderRadius={5}
             overflow='hidden'
             borderWidth={editable ? 1 : undefined}
             borderColor={editable ? '$borderColor' : undefined}
-
         >
             {editable && <TouchableOpacity
                 style={{
@@ -115,14 +127,15 @@ const FeedImage = (props: FeedImageProps) => {
                 onOpen()
             }} >
                 <Image
-                    resizeMode='contain'
+                    resizeMode={
+                        aspectRatio?.is_large ? 'cover' : 'contain'
+                    }
                     source={{ uri: image }}
                     style={{
                         width: '100%',
                         height: '100%',
-                        aspectRatio: aspectRatio
+                        aspectRatio: aspectRatio?.is_large ? undefined : aspectRatio?.aspect_ratio
                     }}
-                    // aspectRatio={aspectRatio}
                 />
 
             </TouchableOpacity>
@@ -130,7 +143,7 @@ const FeedImage = (props: FeedImageProps) => {
             <BaseContentSheet
                 open={isOpen}
                 onOpenChange={onToggle}
-                level={8}
+                level={10}
             >
 
                 <YStack pt={insets.top} pb={insets.bottom} flex={1} w="100%" h="100%" >
