@@ -125,19 +125,19 @@ const PublicationAnimatedFlatList = (props: ProfileTabsProps & {
           android: {
             // flexGrow: 1,
             paddingBottom: 40,
-            paddingTop: props.topSectionHeight + 40
+            paddingTop: props.topSectionHeight + 50
           },
 
         })}
         contentOffset={Platform.select({
           ios: {
-            y: -(props.topSectionHeight + 40),
+            y: -(props.topSectionHeight + 50),
             x: 0
           }
         })}
         contentInset={Platform.select({
           ios: {
-            top: props.topSectionHeight + 40,
+            top: props.topSectionHeight + 50,
           }
         })}
         onRefresh={handleFetchTop}

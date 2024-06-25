@@ -24,9 +24,9 @@ const ContentPreviewContainer = (props: Props) => {
                 }
             }}
         >
-            <YStack p={5} borderRadius={5} borderWidth={1} rowGap={5} borderColor={"gray"} >
+            <YStack p={10} borderRadius={'$6'} borderWidth={1} rowGap={10} borderColor={"$lightButton"} >
                 <XStack w="100%" alignItems='center' columnGap={5} >
-                    <Avatar circular size={"$1"} >
+                    <Avatar circular size={"$3"} >
                         <Avatar.Image src={
                             Utils.parseAvatarImage(props?.data?.creator?.address!, props?.data?.creator?.profile?.pfp as string ?? null)
                             // props.data?.creator?.profile?.pfp as string ?? null
@@ -51,7 +51,7 @@ const ContentPreviewContainer = (props: Props) => {
                         </Text>
                     </XStack>
                 </XStack>
-                <Text w="100%" >
+                <Text w="100%" color={'$sideText'} >
                     {
                         props?.data?.content?.content
                     }

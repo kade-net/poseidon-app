@@ -4,7 +4,7 @@ import { Stack, useGlobalSearchParams, useRouter } from 'expo-router'
 import { useQuery } from '@apollo/client'
 import { GET_MY_PROFILE } from '../../../utils/queries'
 import { TouchableOpacity, useColorScheme } from 'react-native'
-import { ArrowLeft, Edit3, MoreVertical } from '@tamagui/lucide-icons'
+import { ArrowLeft, ChevronLeft, Edit3, MoreVertical } from '@tamagui/lucide-icons'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import BaseContentSheet from '../../../components/ui/action-sheets/base-content-sheet'
 import useDisclosure from '../../../components/hooks/useDisclosure'
@@ -65,22 +65,26 @@ const _layout = () => {
                                             style={{
                                                 flexDirection: 'row',
                                                 columnGap: 10,
-                                                alignItems: 'center'
+                                                alignItems: 'center',
+                                                flex: 1,
+                                                width: '100%'
                                             }}
                                             onPress={goBack}
                                         >
-                                            <ArrowLeft />
-                                            {profileQuery.data?.account?.username?.username && <H4 textTransform='none' >
+                                            <XStack backgroundColor={'$lightButton'} alignItems='center' justifyContent='center' p={5} borderRadius={5} >
+                                                <ChevronLeft />
+                                            </XStack>
+                                            {/* {profileQuery.data?.account?.username?.username && <H4 textTransform='none' >
                                                 @{
                                                     profileQuery.data?.account?.username?.username
                                                 }
-                                            </H4>}
+                                            </H4>} */}
                                         </TouchableOpacity>
                                         {IS_SAME_ACCOUNT && <View>
                                             <Button onPress={onOpen} variant='outlined' icon={<MoreVertical />} />
                                         </View>}
                                     </View>
-                                    <Separator />
+                                    {/* <Separator /> */}
                                 </View>
                             )
                         }

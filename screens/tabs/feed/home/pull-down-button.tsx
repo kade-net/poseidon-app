@@ -19,6 +19,13 @@ const PullDownButton = () => {
 
                 if (update.isAvailable) {
                     setUpdatesReady(true)
+                    try {
+                        await fetchUpdatate()
+                    } catch (e) {
+                        posti.capture('error fetching update', {
+                            error: e ?? 'Unable to trigger update fetch',
+                        })
+                    }
                 } else {
                     setUpdatesReady(false)
                 }

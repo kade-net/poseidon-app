@@ -7,6 +7,10 @@ import { Alert, TouchableWithoutFeedback, useColorScheme } from 'react-native';
 import * as Linking from 'expo-linking'
 import * as browser from 'expo-web-browser'
 import PortalRenderer from '../portal-ui';
+import { Globe } from '@tamagui/lucide-icons';
+import { truncate } from 'lodash';
+
+const HOST_REGEX = /^(?:https?:\/\/)?(?:[^@\n]+@)?(?:www\.)?([^:/\n?]+)/img
 
 interface OGData {
     creator: string
@@ -70,12 +74,12 @@ const LinkResolver = (props: Props) => {
         })
     }
 
-    if (link.includes("https://portals.poseidon.ac") || link.includes("http://192.168.100.211:3000")) {
+    if (link.includes("https://portals.poseidon.ac") || link.includes("http://192.168.1.7:3000")) {
         return <PortalRenderer
             kid={kid}
             post_ref={publication_ref}
             url={
-                __DEV__ ? link?.replace("https://portals.poseidon.ac", "http://192.168.100.211:3000") :
+                __DEV__ ? link?.replace("https://portals.poseidon.ac", "http://192.168.1.7:3000") :
                     link
             }
         />

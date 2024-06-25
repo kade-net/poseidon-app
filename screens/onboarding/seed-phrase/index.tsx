@@ -1,7 +1,7 @@
 import { View, Text, Button, Heading, TextArea, XStack, Spinner } from 'tamagui'
-import React from 'react'
+import React, { useRef } from 'react'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
-import { ChevronLeft } from '@tamagui/lucide-icons'
+import { Check, ChevronLeft } from '@tamagui/lucide-icons'
 import { useRouter } from 'expo-router'
 import { z } from 'zod'
 import { Controller, useForm } from 'react-hook-form'
@@ -21,6 +21,7 @@ import BaseButton from '../../../components/ui/buttons/base-button'
 import { getPhoneBook } from '../../../lib/hermes-client/queries'
 import hermes from '../../../contract/modules/hermes'
 import posti from '../../../lib/posti'
+import { Keyboard, KeyboardAvoidingView, Platform, TextInput } from 'react-native'
 
 // The seed phrase will be a list of 12 words each separated by a space
 const schema = z.object({
@@ -36,6 +37,13 @@ const SeedPhrase = () => {
     const insets = useSafeAreaInsets()
     const router = useRouter()
     const [loading, setLoading] = React.useState(false)
+    const [focused, setFocused] = React.useState(false)
+    const textAreaRef = useRef<TextInput>(null)
+
+    const handleBlur = () => {
+        setFocused(false)
+        textAreaRef.current?.blur()
+    }
 
     const form = useForm<TSchema>({
         resolver: zodResolver(schema)
@@ -205,6 +213,17 @@ const SeedPhrase = () => {
         }
     }
 
+    const handleError = (error: any) => {
+        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error)
+        console.log(`SOMETHING WENT WRONG:: ${error}`)
+        Toast.show({
+            type: 'error',
+            text1: 'Error',
+            text2: 'Please enter a valid seed phrase.'
+        })
+
+    }
+
     return (
         <View px={20} flex={1} pb={20} backgroundColor={"$background"}>
             <View w="100%" columnGap={20} >
@@ -225,7 +244,9 @@ const SeedPhrase = () => {
                         name="seedPhrase"
                         render={({ field }) => {
                             return (
+                                <>
                                 <TextArea
+                                        ref={textAreaRef}
                                     backgroundColor={"$colorTransparent"}
                                     onChangeText={field.onChange}
                                     value={field.value}
@@ -234,23 +255,48 @@ const SeedPhrase = () => {
                                     fontSize={"$sm"}
                                     height={100}
                                     w={'100%'}
+                                        onFocus={() => setFocused(true)}
                                     placeholder='Enter your seed phrase here...'
+                                        blurOnSubmit
+                                        onSubmitEditing={Keyboard.dismiss}
                                 />
+                                    {
+                                        Platform.OS === 'ios' && focused && (
+
+                                            <XStack w="100%" >
+                                                <BaseButton
+                                                    width={100}
+                                                    size={"$2"}
+                                                    onPress={handleBlur}
+                                                    borderRadius={20}
+                                                    icon={<Check />}
+                                                >
+                                                    <Text>
+                                                        Done
+                                                    </Text>
+                                                </BaseButton>
+                                            </XStack>
+                                        )
+                                    }
+                                </>
                             )
                         }}
                     />
                 </View>
-                <View w="100%" >
+                <KeyboardAvoidingView style={{
+                    width: '100%',
+
+                }} >
                     <BaseButton
                         loading={loading}
-                        onPress={form.handleSubmit(handleSubmit)}
+                        onPress={form.handleSubmit(handleSubmit, handleError)}
                         w="100%"
                     >
                         <Text>
-                            Done
+                            Continue
                         </Text>
                     </BaseButton>
-                </View>
+                </KeyboardAvoidingView>
             </View>
         </View>
     )
