@@ -1,4 +1,4 @@
-import { View, Text, Spinner, XStack, Avatar, YStack, Button, H3, H4, H5, H6, useTheme } from 'tamagui'
+import { View, Text, Spinner, XStack, Avatar, YStack, Button, H3, H4, H5, H6, useTheme, Separator } from 'tamagui'
 import React, { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useQuery } from '@apollo/client'
 import { GET_ACCOUNT_STATS, GET_MY_PROFILE, GET_RELATIONSHIP } from '../../utils/queries'
@@ -21,6 +21,7 @@ import Toast from 'react-native-toast-message'
 import { useQuery as uzQuery } from 'react-query'
 import { aptos } from '../../contract'
 import AptosIcon from '../../assets/svgs/aptos-icon'
+import BaseButton from '../../components/ui/buttons/base-button'
 
 interface Props {
     address: string
@@ -199,7 +200,7 @@ const ProfileDetails = (props: Props) => {
                     px={10}
                 >
                     <XStack w="100%" py={10} columnGap={10} >
-                        <Avatar circular size={"$6"} >
+                        <Avatar circular size={"$7"} >
                             <Avatar.Image source={{
                                 uri: Utils.parseAvatarImage(address, profileQuery.data?.account?.profile?.pfp as string ?? null)
                             }} />
@@ -207,23 +208,39 @@ const ProfileDetails = (props: Props) => {
                                 bg="lightgray"
                             />
                         </Avatar>
-                        <YStack justifyContent='space-between' >
-                            <Text fontWeight="bold" color={"$text"} fontSize={"$md"}>
-                                {
-                                    profileQuery.data?.account?.profile?.display_name
+                        <YStack justifyContent='space-between' w="100%" flex={1} >
+                            <XStack w="100%" justifyContent='flex-end' flex={1} >
+                                {!IS_SAME_ACCOUNT &&
+                                    <BaseButton rounded='large' size={'$3'} type={relationshipQuery?.data?.accountRelationship?.follows ? "outlined" : "primary"} onPress={handleFollowToggle}
+                                    >
+                                        {
+                                            relationshipQuery?.data?.accountRelationship?.follows ? "Following" : "Follow"
+                                        }
+                                    </BaseButton>
+
                                 }
-                            </Text>
-                            <Text color="$sideText" fontSize={"$sm"}>
-                                @{
-                                    profileQuery.data?.account?.username?.username
-                                }
-                            </Text>
-                            {aptosName.data && <XStack alignItems='center' columnGap={5} >
-                                <AptosIcon size={12} color='white' />
-                                <Text color="$primary" fontSize={"$sm"} >
-                                    {aptosName.data}.apt
+                            </XStack>
+                            <YStack>
+                                <Text fontWeight="bold" color={"$text"} fontSize={"$lg"}>
+                                    {
+                                        profileQuery.data?.account?.profile?.display_name
+                                    }
                                 </Text>
-                            </XStack>}
+                                <XStack columnGap={5} >
+                                    <Text color="$sideText" fontSize={"$sm"}>
+                                        @{
+                                            profileQuery.data?.account?.username?.username
+                                        }
+                                    </Text>
+                                    {aptosName.data && <Separator vertical />}
+                                    {aptosName.data && <XStack alignItems='center' columnGap={5} >
+                                        <AptosIcon size={12} color='white' />
+                                        <Text color="$primary" fontSize={"$sm"} >
+                                            {aptosName.data}.apt
+                                        </Text>
+                                    </XStack>}
+                                </XStack>
+                            </YStack>
 
                         </YStack>
                     </XStack>
@@ -271,18 +288,7 @@ const ProfileDetails = (props: Props) => {
                         </Link>
                     </XStack>
                 </XStack>
-                {!IS_SAME_ACCOUNT && <XStack px={10} w="100%" alignItems='center' columnGap={5} py={10} >
-                    <Button fontSize={"$sm"} borderColor={"$button"} color={relationshipQuery?.data?.accountRelationship?.follows ? "$text" : "$buttonText"} backgroundColor={relationshipQuery?.data?.accountRelationship?.follows ? "$colourlessButton" : "$button"} w="100%" onPress={handleFollowToggle} variant={
-                        relationshipQuery?.data?.accountRelationship?.follows ? "outlined" : undefined
-                    }
 
-                    >
-                        {
-                            relationshipQuery?.data?.accountRelationship?.follows ? "Following" : "Follow"
-                        }
-                    </Button>
-                    
-                </XStack>}
             </Animated.View>
             <YStack flex={1} w="100%" h="100%" >
                 <TabView

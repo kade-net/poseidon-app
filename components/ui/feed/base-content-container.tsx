@@ -45,15 +45,32 @@ function BaseContentContainer(props: BaseContentContainerProps) {
 
     }, [, data?.content?.content])
 
+    const DATE_VALUE = useMemo(() => {
+        return dayjs(data?.timestamp).fromNow()
+            ?.replace(" hours ago", "h")
+            ?.replace(" hour ago", "h")
+            ?.replace(" minutes ago", "m")
+            ?.replace(" minute ago", "m")
+            ?.replace(" days ago", "d")
+            ?.replace(" day ago", "d")
+            ?.replace(" months ago", "mo")
+            ?.replace(" month ago", "mo")
+            ?.replace(" years ago", "y")
+            ?.replace(" year ago", "y")
+            ?.replace("anh", '1h')
+            ?.replace("am", '1m')
+            ?.replace("ad", '1d')
+    }, [data?.timestamp])
+
     if (hide) return null
     if (getMutedUsers()?.includes(data?.creator?.id!)) return null
     if (getRemovedFromFeed()?.includes(data?.publication_ref!)) return null
 
-    const HAS_LONG_USERNAME = (data?.creator?.username?.username.length ?? 0) > 10
-    const HAS_LONG_DISPLAY_NAME = (data?.creator?.profile?.display_name?.length ?? 0) > 10
+    const HAS_LONG_USERNAME = (data?.creator?.username?.username.length ?? 0) > 16
+    const HAS_LONG_DISPLAY_NAME = (data?.creator?.profile?.display_name?.length ?? 0) > 16
 
     return (
-        <YStack w="100%" borderBottomWidth={0.5} borderColor={'$borderColor'} py={9} px={Utils.dynamicWidth(4)} pb={10} >
+        <YStack w="100%" borderBottomWidth={0.5} borderColor={'$borderColor'} py={10} px={20} pb={10} >
             {
                 _data?.type == 4 &&
                 <Link
@@ -88,8 +105,10 @@ function BaseContentContainer(props: BaseContentContainerProps) {
                     </View>
                     </Link>
             }
-            <View w="100%" flexDirection="row" columnGap={6}  >
-                <YStack w="10%" >
+
+
+            <View w="100%" rowGap={10} >
+                <XStack columnGap={10} >
                     <Link
                         asChild
                         href={{
@@ -99,7 +118,7 @@ function BaseContentContainer(props: BaseContentContainerProps) {
                             }
                         }}
                     >
-                        <Avatar circular size={"$3"} >
+                        <Avatar circular size={'$4'} >
                             <Avatar.Image
                                 src={
                                     Utils.parseAvatarImage(data?.creator?.address ?? '1', data?.creator?.profile?.pfp as string)
@@ -111,26 +130,7 @@ function BaseContentContainer(props: BaseContentContainerProps) {
                             />
                         </Avatar>
                     </Link>
-                    <Link
-                        href={{
-                            pathname: '/(tabs)/feed/[post-id]/',
-                            params: {
-                                "post-id": data?.publication_ref!
-                            }
-                        }}
-                        style={{
-                            width: '100%'
-                        }}
-                        asChild
-                    >
-
-                        <YStack flex={1} w="100%" >
-
-                        </YStack>
-                    </Link>
-                </YStack>
-                <View w="90%" rowGap={10} >
-                    <View flexDirection="row" alignItems="flex-start" justifyContent="space-between" >
+                    <View flex={1} flexDirection="row" alignItems="flex-start" justifyContent="space-between" >
                         <Link
                             href={{
                                 pathname: '/profiles/[address]/',
@@ -140,38 +140,41 @@ function BaseContentContainer(props: BaseContentContainerProps) {
                             }}
                             asChild
                         >
-                            <YStack flex={1} >
-                                <XStack alignItems="center" columnGap={2} >
-                                    <Text fontSize={"$sm"} fontWeight={"$5"}>
+
+                            <YStack >
+                                <Text fontSize={"$xs"} fontWeight={"$5"}>
                                         {
                                             HAS_LONG_DISPLAY_NAME ?
                                                 `${data?.creator?.profile?.display_name?.slice(0, 10)}...` :
                                                 data?.creator?.profile?.display_name
                                         }
                                     </Text>
-                                    <Text color={'$sideText'} fontSize={"$sm"}>
+                                <Text color={'$sideText'} fontSize={"$xs"}>
                                         @{
                                             HAS_LONG_USERNAME ?
                                                 `${data?.creator?.username?.username.slice(0, 10)}...` :
                                                 data?.creator?.username?.username
-                                        }
-                                    </Text>
-                                </XStack>
-                                <Text fontSize={'$sm'} color={'$sideText'} >
-                                    {dayjs(data?.timestamp).fromNow()}
+                                    }
                                 </Text>
                             </YStack>
+
                         </Link>
                         {/* <MoreHorizontal /> */}
-                        <PublicationAction
-                            publicationId={data?.id ?? 0}
-                            publicationRef={data?.publication_ref ?? ""}
-                            userAddress={data?.creator?.address ?? ""}
-                            userId={data?.creator?.id ?? 0} // OPtimistically making the assumption a value will always be present
-                            triggerHide={triggerHide}
-                            publication_type={data?.type ?? 1}
-                        />
+                        <XStack alignItems="center" >
+                            <Text color={'$sideText'} >
+                                {DATE_VALUE}
+                            </Text>
+                            <PublicationAction
+                                publicationId={data?.id ?? 0}
+                                publicationRef={data?.publication_ref ?? ""}
+                                userAddress={data?.creator?.address ?? ""}
+                                userId={data?.creator?.id ?? 0} // OPtimistically making the assumption a value will always be present
+                                triggerHide={triggerHide}
+                                publication_type={data?.type ?? 1}
+                            />
+                        </XStack>
                     </View>
+                </XStack>
                     {
                         data?.type == 4 && <XStack w="100%" alignItems="center" columnGap={5} >
                             <Repeat2/>
@@ -207,18 +210,13 @@ function BaseContentContainer(props: BaseContentContainerProps) {
                             params: {
                                 "post-id": data?.publication_ref!
                             }
-                        }}
-                        style={{
-                            width: '100%'
-                        }}
+                    }}
                         asChild
                     >
                         {/* Content */}
                         <View w="100%" flex={1} >
-                            <YStack w="100%"
-                                mb={
-                                    ((data?.content?.media?.length ?? 0) > 0) ? 8 : 0
-                                }
+                        <YStack w="100%"
+                            paddingBottom={10}
                             >
 
                                 <Text color={"$text"}>
@@ -240,13 +238,13 @@ function BaseContentContainer(props: BaseContentContainerProps) {
                                         )
                                     })
                                 }
-                                {
-                                    data?.id === 1269 && <LinkResolver
-                                        link={"http://192.168.100.211:3000/txn"}
+                            {/* {
+                                    data?.id === 1366 && <LinkResolver
+                                        link={"http://192.168.1.7:3000/boots"}
                                         publication_ref={data?.publication_ref ?? ''}
                                         kid={data?.id ?? 0}
                                     />
-                                }
+                                } */}
                             </YStack>
                             <View flexDirection="row" flexWrap="wrap" w="100%" columnGap={10} rowGap={10} >
                                 {
@@ -278,7 +276,7 @@ function BaseContentContainer(props: BaseContentContainerProps) {
                         />
                     </View>
                 </View>
-            </View>
+
         </YStack>
     )
 }

@@ -1,10 +1,12 @@
-import { View, Text, YStack, ScrollView, H3, H4, Select, Adapt, Sheet } from 'tamagui'
+import { View, Text, YStack, ScrollView, H3, H4, Select, Adapt, Sheet, Button, XStack } from 'tamagui'
 import React, { useEffect } from 'react'
 import { Check, ChevronDown } from '@tamagui/lucide-icons'
 import { z } from 'zod'
 import { Controller, useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import settings from '../../../lib/settings'
+import petra from '../../../lib/wallets/petra'
+import * as Haptics from 'expo-haptics'
 
 const preferenceSchema = z.object({
     preffered_wallet: z.string().optional()
@@ -35,6 +37,15 @@ const Preferences = () => {
             subscription.unsubscribe()
         }
     }, [form.watch])
+
+
+    const handleUnlinkPetra = async () => {
+        Haptics.selectionAsync()
+        await petra.RESTRICTED_resetKeys()
+        settings.updateSettings({
+            preffered_wallet: 'delegate'
+        })
+    }
 
     return (
         <YStack flex={1} w="100%" h="100%" bg='$background' >
@@ -109,6 +120,20 @@ const Preferences = () => {
                         />
                     </YStack>
                 </YStack>
+                {petra.sharedSecret && <YStack rowGap={5}>
+                    <H3>
+                        Unlink Petra
+                    </H3>
+                    <Text>
+                        If you changed the active address on your petra wallet, or revoked Poseidon's connection.
+                    </Text>
+                    <XStack>
+
+                        <Button w="50%" onPress={handleUnlinkPetra} size={'$3'} >
+                            Unlink Petra
+                        </Button>
+                    </XStack>
+                </YStack>}
             </ScrollView>
         </YStack>
     )

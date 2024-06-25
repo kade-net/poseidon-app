@@ -10,11 +10,38 @@ import account from '../../../contract/modules/account'
 import { Utils } from '../../../utils'
 import { BackHandler, useColorScheme } from 'react-native'
 import * as Linking from 'expo-linking'
+import * as Updates from 'expo-updates'
+import posti from '../../../lib/posti'
 
 
 const WelcomeScreen = () => {
     const router = useRouter()
     const colorSchem = useColorScheme()
+
+    useEffect(() => {
+        (async () => {
+            try {
+                const update = await Updates.checkForUpdateAsync();
+
+                if (update.isAvailable) {
+                    try {
+                        await Updates.fetchUpdateAsync();
+                    } catch (e) {
+                        posti.capture('error fetching update', {
+                            error: e ?? 'Unable to trigger update fetch',
+                        })
+                    }
+                } else {
+
+                }
+            }
+            catch (e) {
+                posti.capture('error fetching update', {
+                    error: e ?? 'Unable to trigger update fetch',
+                })
+            }
+        })();
+    }, [])
 
     // back handler
     useFocusEffect(

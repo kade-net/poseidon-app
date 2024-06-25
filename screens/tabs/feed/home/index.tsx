@@ -30,6 +30,7 @@ import Loading from '../../../../components/ui/feedback/loading'
 import * as Haptics from 'expo-haptics'
 import { useScrollToTop } from '@react-navigation/native'
 import PullDownButton from './pull-down-button'
+import posti from '../../../../lib/posti'
 
 const Home = () => {
     const flatlistRef = useRef<FlatList>(null)
@@ -94,6 +95,14 @@ const Home = () => {
     }
 
     const handleFetchMore = async () => {
+        if (publicationsQuery.error) {
+            console.log("Error fetching more", publicationsQuery.error?.message)
+            posti.capture('home fetching more error', {
+                error: publicationsQuery.error,
+
+            })
+            return
+        }
         if (publicationsQuery.loading || refetching || (publicationsQuery.data?.publications?.length ?? 0) < 20) {
             return
         }

@@ -7,6 +7,10 @@ import { Alert, TouchableWithoutFeedback, useColorScheme } from 'react-native';
 import * as Linking from 'expo-linking'
 import * as browser from 'expo-web-browser'
 import PortalRenderer from '../portal-ui';
+import { Globe } from '@tamagui/lucide-icons';
+import { truncate } from 'lodash';
+
+const HOST_REGEX = /^(?:https?:\/\/)?(?:[^@\n]+@)?(?:www\.)?([^:/\n?]+)/img
 
 interface OGData {
     creator: string
@@ -70,12 +74,12 @@ const LinkResolver = (props: Props) => {
         })
     }
 
-    if (link.includes("https://portals.poseidon.ac") || link.includes("http://192.168.100.211:3000")) {
+    if (link.includes("https://portals.poseidon.ac") || link.includes("http://192.168.1.7:3000")) {
         return <PortalRenderer
             kid={kid}
             post_ref={publication_ref}
             url={
-                __DEV__ ? link?.replace("https://portals.poseidon.ac", "http://192.168.100.211:3000") :
+                __DEV__ ? link?.replace("https://portals.poseidon.ac", "http://192.168.1.7:3000") :
                     link
             }
         />
@@ -89,26 +93,30 @@ const LinkResolver = (props: Props) => {
         <TouchableWithoutFeedback
             onPress={handleOpenUrl}
         >
-            <YStack borderColor={'$borderColor'} borderWidth={1} borderRadius={5} w="100%" mt={5} >
-                <XStack w="100%" columnGap={10} borderWidth={
-                    linkMetaQuery.data?.[0]?.image ? 1 : 0
-                } borderColor={'$borderColor'} borderRadius={5} p={5} >
-                    {linkMetaQuery.data?.at(0)?.image && <Image
+            <YStack borderColor={'$lightButton'} borderWidth={1} borderRadius={'$6'} w="100%" mt={5} >
+                <XStack w="100%" columnGap={10} borderColor={'$borderColor'} borderRadius={5} p={5} >
+                    {linkMetaQuery.data?.at(0)?.image ? <Image
+
                         height={70}
                         aspectRatio={1}
                         resizeMode='cover'
                         source={{ uri: linkMetaQuery.data?.[0]?.image }}
-                        borderRadius={2}
-                    />}
+                        borderRadius={'$6'}
+                    /> : <XStack h={70} aspectRatio={1} alignItems='center' justifyContent='center' bg="$lightButton" borderRadius={'$6'} >
+                        <Globe size={30} />
+                    </XStack>}
                     <YStack rowGap={5} flex={1} >
                         {linkMetaQuery.data?.[0]?.title && <Text w="100%" >
                             {linkMetaQuery.data?.[0]?.title}
                         </Text>}
                         {linkMetaQuery.data?.[0]?.description && <Text fontSize={12} w="100%" >
-                            {linkMetaQuery.data?.[0]?.description}
+                            {truncate(linkMetaQuery.data?.[0]?.description, {
+                                length: 80,
+                                omission: '...'
+                            })}
                         </Text>}
                         <Text fontSize={12} color={'$blue10'} w="100%" >
-                            {linkMetaQuery.data?.[0]?.url}
+                            {linkMetaQuery.data?.[0]?.url?.match(HOST_REGEX)?.[0]}
                         </Text>
                     </YStack>
                 </XStack>

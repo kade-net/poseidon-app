@@ -1,5 +1,5 @@
 import { View, Text, YStack, Spinner, Input, Button, XStack } from 'tamagui'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import usePortal from '../../../lib/portals/use-portal'
 import { FlatList, Image } from 'react-native'
 import { sortBy } from 'lodash'
@@ -8,11 +8,16 @@ import TransactionSheet from '../action-sheets/in-app-transactions/transaction-s
 import { PortalButton } from '@kade-net/portals-parser'
 import { Utils } from '../../../utils'
 import { ExternalLink, Zap } from '@tamagui/lucide-icons'
+import { useRouter } from 'expo-router'
 
 interface Props {
     url: string
     kid: number
     post_ref: string
+}
+const currentParams = {
+    data: "",
+    response: ""
 }
 const PortalRenderer = (props: Props) => {
     const { url, kid, post_ref: ref } = props
@@ -23,13 +28,22 @@ const PortalRenderer = (props: Props) => {
         initialUrl: url?.trim()
     })
 
+    const router = useRouter()
+
     const handleMint = (button: PortalButton | null) => {
+        router.setParams(currentParams)
         setActiveButton(button)
         onOpen()
     }
 
+    useEffect(() => {
+        if (!isOpen) {
+            router.setParams(currentParams)
+        }
+    }, [isOpen])
+
     const handleClose = async (hash: string) => {
-        console.log("hash", hash)
+        router.setParams(currentParams)
         onClose()
         if (activeButton) {
             await handleButtonPress({

@@ -13,7 +13,7 @@ const SearchInput = (props: P) => {
     const { ...rest } = props
     const [active, setActive] = useState(false)
     return (
-    <XStack flex={1} alignItems='center' backgroundColor={'$searchBar'} borderRadius={30} px={20}   >
+        <XStack flex={1} alignItems='center' backgroundColor={'$inputBackground'} borderRadius={30} px={20}   >
             {active && <XStack w="100%" alignItems='center'   >
                 <Search size={16} color={'$primary'} />
                 <Input backgroundColor={"$backgroundTransparent"} {...rest} autoFocus autoCapitalize='none' borderWidth={0} placeholder='' flex={1} />
@@ -26,7 +26,7 @@ const SearchInput = (props: P) => {
                     <XCircle color={'$red10'} size={16} />
                 </TouchableOpacity>
             </XStack>}
-            {!active && <XStack onPress={() => {
+            {!active && <XStack backgroundColor={'$inputBackground'} onPress={() => {
                 setActive(true)
             }} w="100%" alignItems='center' justifyContent='center' columnGap={10} py={10} >
                 <Search size={12} color={'$primary'} />

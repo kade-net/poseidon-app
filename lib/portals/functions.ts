@@ -71,6 +71,7 @@ export async function onPortalButtonPressed(args: onPortalButtonPressedArgs) {
         user_address: delegateManager.owner,
         post_kid: post_kid?.toString(),
         post_ref: post_ref,
+        hash
     } as PortalPacket
 
     const signature = signPortalPacket({

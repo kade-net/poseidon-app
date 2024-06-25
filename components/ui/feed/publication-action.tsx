@@ -1,7 +1,7 @@
 import { View, Text, YStack, Button, Spinner } from 'tamagui'
 import React, { memo, useState } from 'react'
 import { Alert, TouchableOpacity } from 'react-native'
-import { Ban, MoreHorizontal, Trash2 } from '@tamagui/lucide-icons'
+import { Ban, MoreHorizontal, MoreVertical, Trash2 } from '@tamagui/lucide-icons'
 import useDisclosure from '../../hooks/useDisclosure'
 import BaseContentSheet from '../action-sheets/base-content-sheet'
 import delegateManager from '../../../lib/delegate-manager'
@@ -83,8 +83,8 @@ const PublicationActions = (props: Props) => {
 
     return (
         <>
-            <TouchableOpacity style={{ paddingHorizontal: 10 }} onPress={onOpen} >
-                <MoreHorizontal />
+            <TouchableOpacity onPress={onOpen} style={{ paddingLeft: 10 }} >
+                <MoreVertical size={'$1'} color={'$sideText'} />
             </TouchableOpacity>
             {isOpen && <BaseContentSheet
                 open={isOpen}

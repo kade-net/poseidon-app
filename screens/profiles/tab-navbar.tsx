@@ -2,8 +2,9 @@ import { Animated, Platform, TouchableOpacity, useColorScheme } from 'react-nati
 import React, { useEffect, useMemo, useRef, useState } from 'react'
 import { SceneRendererProps, NavigationState } from 'react-native-tab-view';
 import { ScrollManager } from './tabs/common';
-import { XStack, Text, useTheme } from 'tamagui';
+import { XStack, Text, useTheme, ScrollView } from 'tamagui';
 import { clone } from 'lodash';
+import BaseButton from '../../components/ui/buttons/base-button';
 
 interface Props extends SceneRendererProps {
   navigationState: NavigationState<{
@@ -27,14 +28,6 @@ const TabNavbar = (props: Props) => {
 
   const tamaguiTheme = useTheme()
 
-
-  const handleTabChange = (key: string) => {
-    Animated.timing(TAB_SLIDER_X, {
-      toValue: tabLayoutDetails[key]?.x,
-      duration: 200,
-      useNativeDriver: true
-    }).start()
-  }
 
   const TabOffset = useMemo(() => {
     return Platform.OS === 'ios' ? topSectionHeight : 0
@@ -60,64 +53,45 @@ const TabNavbar = (props: Props) => {
         ]
       }}
     >
-      <XStack
-        position='relative'
+      <ScrollView
         w="100%"
-        justifyContent='space-between'
-        bg={'$background'}
+        horizontal
+        showsHorizontalScrollIndicator={false}
       >
-        {
-          props.navigationState.routes.map((route, index) => {
-            return (
-              <TouchableOpacity
-                key={index}
-                style={{
-                  flex: 1,
-                  paddingVertical: 10,
-                  alignItems: "center",
-                  justifyContent: "center"
-                }}
-                onPress={() => {
-                  props.jumpTo(route.key)
-                  handleTabChange(route.key)
-                }}
-                onLayout={(event) => {
-                  const layout = clone(event?.nativeEvent?.layout)
+        <XStack
+          position='relative'
+          w="100%"
+          px={10}
+          pb={20}
+          justifyContent='flex-start'
+          bg={'$background'}
+          columnGap={20}
+        >
+          {
+            props.navigationState.routes.map((route, index) => {
+              const is_active = currentTabIndex == index 
+              return (
 
-                  setTabLayoutDetails((prev) => {
-                    return {
-                      ...prev,
-                      [route.key]: {
-                        width: layout?.width ?? 0,
-                        x: layout?.x ?? 0
-                      }
-                    }
-                  })
-                }}
-              >
-                <Text color={route.title===tabRoutes[currentTabIndex].title?'$text':"$sideText"} fontWeight={"$5"} fontSize={"$xs"} numberOfLines={1} >
+                <BaseButton
+                  key={index}
+                  size={'$3'}
+                  rounded='large'
+                  type={
+                    "outlined"
+                  }
+                  backgroundColor={!is_active ? '#071E22' : undefined}
+                  onPress={() => {
+                    props.jumpTo(route.key)
+                  }}
+                >
                   {route.title}
-                </Text>
-              </TouchableOpacity>
-            )
-          })
-        }
-        <Animated.View
-          style={{
-            position: "absolute",
-            bottom: 0,
-            height: 2,
-            backgroundColor: tamaguiTheme.sideText.val,
-            width: tabLayoutDetails[props.navigationState.routes[currentTabIndex].key]?.width,
-            left: 0,
-            transform: [
-              {
-                translateX: TAB_SLIDER_X
-              }
-            ]
-          }}
-        />
-      </XStack>
+                </BaseButton>
+
+              )
+            })
+          }
+        </XStack>
+      </ScrollView>
     </Animated.View>
   )
 }
