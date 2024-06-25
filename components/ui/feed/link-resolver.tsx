@@ -97,6 +97,34 @@ const LinkResolver = (props: Props) => {
 
     const linkDomain: string = extractDomain(link)
 
+    const getSize = async (image: string) => {
+        return new Promise<{ width: number, height: number }>((res, rej) => {
+            Image.getSize(image, (width, height) => {
+                res({ width, height })
+            }, (error) => {
+                rej(error)
+            })
+        })
+    }
+
+    const { data: aspectRatio, isLoading, error } = useQuery({
+        queryKey: ['aspectRatio:feed', linkMetaQuery.data?.[0]?.image],
+        queryFn: async () => {
+
+            const { width, height } = await getSize(linkMetaQuery.data?.[0]?.image)
+                return width / height
+
+        },
+        initialData: 16 / 9
+    })
+    
+    const maxAspectRatio = 1.8
+    let finalAspectRatio;
+
+    if(aspectRatio){
+        finalAspectRatio = aspectRatio < maxAspectRatio ? maxAspectRatio : aspectRatio
+    }
+
     return (
         <TouchableWithoutFeedback
             onPress={handleOpenUrl}
@@ -106,11 +134,8 @@ const LinkResolver = (props: Props) => {
                     linkMetaQuery.data?.[0]?.image ? 1 : 0
                 } borderColor={'$borderColor'} borderRadius={5} p={5} >
                     {linkMetaQuery.data?.at(0)?.image && <Image
-                        // height={160}
-                        backgroundColor={"red"}
                         w="100%"
-                        aspectRatio={1.8}
-                        resizeMode='cover'
+                        aspectRatio={finalAspectRatio}
                         source={{ uri: linkMetaQuery.data?.[0]?.image }}
                         borderTopLeftRadius={9}
                         borderTopRightRadius={9}
@@ -124,12 +149,9 @@ const LinkResolver = (props: Props) => {
                         {linkMetaQuery.data?.[0]?.title && <SizableText numberOfLines={2} size={"$sm"}  w="100%" >
                             {linkMetaQuery.data?.[0]?.title}
                         </SizableText>}
-                        {/* {linkMetaQuery.data?.[0]?.description && <Text fontSize={12} w="100%" >
+                        {linkMetaQuery.data?.[0]?.description && <SizableText numberOfLines={3} mt={2} fontSize={12} w="100%" >
                             {linkMetaQuery.data?.[0]?.description}
-                        </Text>} */}
-                        {/* <Text fontSize={12} color={'$blue10'} w="100%" >
-                            {linkMetaQuery.data?.[0]?.url}
-                        </Text> */}
+                        </SizableText>}
                     </YStack>
                 </YStack>
             </YStack>
