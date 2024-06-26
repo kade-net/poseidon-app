@@ -6,8 +6,7 @@ const UnstyledButton = (props:{callback?: any,icon?: any, label: string, after?:
         <Button
             onPress={props.callback}
             icon={props.after? null : props.icon}
-            iconAfter={props.after? props.icon : null}
-            backgroundColor={"$colourlessButton"}
+            iconAfter={props.after ? props.icon : null}
             color="$text"
             fontSize={"$md"}
             unstyled={true}
