@@ -127,15 +127,15 @@ function RootLayoutNav() {
 
   useEffect(() => {
     if (Platform.OS === 'android') {
-      Navigator.setBackgroundColorAsync(colorScheme === 'dark' ? 'rgb(12,18,34)' : 'rgb(250,250,250)')
+      Navigator.setBackgroundColorAsync(colorScheme === 'dark' ? '#071E22' : '#071E22')
     }
   }, [colorScheme])
 
   return (
     <ApolloProvider client={client}>
       <QueryClientProvider client={queryClient}>
-        <TamaguiProvider config={config} defaultTheme={colorScheme as any}>
-          <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+        <TamaguiProvider config={config} defaultTheme={"dark"}>
+          <ThemeProvider value={DarkTheme}>
             <Stack
               screenOptions={{
                 headerShown: false

@@ -1,10 +1,11 @@
 import { View, Text, Button, Heading, XStack } from 'tamagui'
 import React from 'react'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
-import { ChevronLeft, Info, KeySquare, MonitorUp } from '@tamagui/lucide-icons'
+import { ChevronLeft, Info, KeySquare, MonitorUp, Wallet } from '@tamagui/lucide-icons'
 import { useRouter } from 'expo-router'
 import { Utils } from '../../../utils'
 import UnstyledButton from '../../../components/ui/buttons/unstyled-button'
+import BaseButton from '../../../components/ui/buttons/base-button'
 
 const SignIn = () => {
     const insets = useSafeAreaInsets()
@@ -21,6 +22,10 @@ const SignIn = () => {
         router.replace('/onboard/kade-connect/scan')
     }
 
+    const goToPetra = () => {
+        router.replace('/onboard/petra-signin')
+    }
+
     return (
         <View
             flex={1}
@@ -34,7 +39,6 @@ const SignIn = () => {
             <View
                 flex={1}
                 alignItems='center'
-                justifyContent='center'
                 px={20}
                 rowGap={40}
             >
@@ -52,12 +56,15 @@ const SignIn = () => {
                             Sign in with Kade Connect will only work if you already have a username!
                         </Text>
                     </XStack>
-                    <Button onPress={goToKadeConnect} iconAfter={<MonitorUp />} backgroundColor={"$button"} color="$buttonText">
+                    <BaseButton onPress={goToKadeConnect} iconAfter={<MonitorUp />} >
                         Sign in with Kade Connect
-                    </Button>
-                    <Button onPress={goToSeedPhrase} iconAfter={<KeySquare />} backgroundColor={"$button"} color="$buttonText">
+                    </BaseButton>
+                    <BaseButton onPress={goToSeedPhrase} iconAfter={<KeySquare />} >
                         Sign in with Seed Phrase
-                    </Button>
+                    </BaseButton>
+                    {/* <BaseButton onPress={goToPetra} iconAfter={<Wallet />} >
+                        Sign in with Petra
+                    </BaseButton> */}
                 </View>
             </View>
         </View>
