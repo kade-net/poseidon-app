@@ -9,6 +9,7 @@ import * as browser from 'expo-web-browser'
 import PortalRenderer from '../portal-ui';
 import { Globe } from '@tamagui/lucide-icons';
 import { truncate } from 'lodash';
+import LinkImage from './linkImage';
 
 const HOST_REGEX = /^(?:https?:\/\/)?(?:[^@\n]+@)?(?:www\.)?([^:/\n?]+)/img
 
@@ -101,34 +102,6 @@ const LinkResolver = (props: Props) => {
 
     const linkDomain: string = extractDomain(link)
 
-    const getSize = async (image: string) => {
-        return new Promise<{ width: number, height: number }>((res, rej) => {
-            Image.getSize(image, (width, height) => {
-                res({ width, height })
-            }, (error) => {
-                rej(error)
-            })
-        })
-    }
-
-    const { data: aspectRatio, isLoading, error } = useQuery({
-        queryKey: ['aspectRatio:feed', linkMetaQuery.data?.[0]?.image],
-        queryFn: async () => {
-
-            const { width, height } = await getSize(linkMetaQuery.data?.[0]?.image)
-                return width / height
-
-        },
-        initialData: 16 / 9
-    })
-    
-    const maxAspectRatio = 1.8
-    let finalAspectRatio;
-
-    if(aspectRatio){
-        finalAspectRatio = aspectRatio < maxAspectRatio ? maxAspectRatio : aspectRatio
-    }
-
     return (
         <TouchableWithoutFeedback
             onPress={handleOpenUrl}
@@ -137,15 +110,7 @@ const LinkResolver = (props: Props) => {
                 <YStack w="100%" columnGap={10} borderWidth={
                     linkMetaQuery.data?.[0]?.image ? 1 : 0
                 } borderColor={'$borderColor'} borderRadius={5} p={5} >
-                    {linkMetaQuery.data?.at(0)?.image && <Image
-                        w="100%"
-                        aspectRatio={finalAspectRatio}
-                        source={{ uri: linkMetaQuery.data?.[0]?.image }}
-                        borderTopLeftRadius={9}
-                        borderTopRightRadius={9}
-                        mb={10}
-
-                    />}
+                    {linkMetaQuery.data?.at(0)?.image && <LinkImage url={linkMetaQuery.data?.at(0)?.image!}/>}
                     <YStack rowGap={5} flex={1} >
                         {linkDomain.length>0 && <SizableText color={"$sideText"} ellipse={true} w="100%" >
                             {linkDomain}
