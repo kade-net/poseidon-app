@@ -1,4 +1,4 @@
-import { View, Text, YStack, useTheme, XStack, Image } from 'tamagui'
+import { View, Text, YStack, useTheme, XStack, Image, SizableText } from 'tamagui'
 import React, { memo, useMemo } from 'react'
 // @ts-ignore
 import { OpenGraphAwareInput, OpenGraphDisplay, OpenGraphParser } from 'react-native-opengraph-kit';
@@ -9,6 +9,7 @@ import * as browser from 'expo-web-browser'
 import PortalRenderer from '../portal-ui';
 import { Globe } from '@tamagui/lucide-icons';
 import { truncate } from 'lodash';
+import LinkImage from './linkImage';
 
 const HOST_REGEX = /^(?:https?:\/\/)?(?:[^@\n]+@)?(?:www\.)?([^:/\n?]+)/img
 
@@ -89,37 +90,39 @@ const LinkResolver = (props: Props) => {
         return <XStack w={0} h={0} />
     }
 
+    const extractDomain = (url: string): string  => {
+        try {
+            const { hostname } = new URL(url);
+            return hostname.replace(/^www\./, '');
+        } catch (error) {
+            console.error('Invalid URL:', error);
+            return '';
+        }
+    }
+
+    const linkDomain: string = extractDomain(link)
+
     return (
         <TouchableWithoutFeedback
             onPress={handleOpenUrl}
         >
-            <YStack borderColor={'$lightButton'} borderWidth={1} borderRadius={'$6'} w="100%" mt={5} >
-                <XStack w="100%" columnGap={10} borderColor={'$borderColor'} borderRadius={5} p={5} >
-                    {linkMetaQuery.data?.at(0)?.image ? <Image
-
-                        height={70}
-                        aspectRatio={1}
-                        resizeMode='cover'
-                        source={{ uri: linkMetaQuery.data?.[0]?.image }}
-                        borderRadius={'$6'}
-                    /> : <XStack h={70} aspectRatio={1} alignItems='center' justifyContent='center' bg="$lightButton" borderRadius={'$6'} >
-                        <Globe size={30} />
-                    </XStack>}
+            <YStack borderRadius={5} w="100%" mt={5} >
+                <YStack w="100%" columnGap={10} borderWidth={
+                    linkMetaQuery.data?.[0]?.image ? 1 : 0
+                } borderColor={'$borderColor'} borderRadius={5} p={5} >
+                    {linkMetaQuery.data?.at(0)?.image && <LinkImage url={linkMetaQuery.data?.at(0)?.image!}/>}
                     <YStack rowGap={5} flex={1} >
-                        {linkMetaQuery.data?.[0]?.title && <Text w="100%" >
+                        {linkDomain.length>0 && <SizableText color={"$sideText"} ellipse={true} w="100%" >
+                            {linkDomain}
+                        </SizableText>}
+                        {linkMetaQuery.data?.[0]?.title && <SizableText numberOfLines={2} size={"$sm"}  w="100%" >
                             {linkMetaQuery.data?.[0]?.title}
-                        </Text>}
-                        {linkMetaQuery.data?.[0]?.description && <Text fontSize={12} w="100%" >
-                            {truncate(linkMetaQuery.data?.[0]?.description, {
-                                length: 80,
-                                omission: '...'
-                            })}
-                        </Text>}
-                        <Text fontSize={12} color={'$blue10'} w="100%" >
-                            {linkMetaQuery.data?.[0]?.url?.match(HOST_REGEX)?.[0]}
-                        </Text>
+                        </SizableText>}
+                        {linkMetaQuery.data?.[0]?.description && <SizableText numberOfLines={3} mt={2} fontSize={12} w="100%" >
+                            {linkMetaQuery.data?.[0]?.description}
+                        </SizableText>}
                     </YStack>
-                </XStack>
+                </YStack>
             </YStack>
         </TouchableWithoutFeedback>
     )
