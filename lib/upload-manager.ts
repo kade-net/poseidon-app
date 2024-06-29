@@ -1,11 +1,16 @@
 import axios from "axios"
-import { APP_SUPPORT_API } from "../contract"
+import { APP_SUPPORT_API, KADE_ACCOUNT_ADDRESS } from "../contract"
 import delegateManager from "./delegate-manager"
 import * as FileSystem from 'expo-file-system'
 import { Buffer } from 'buffer'
 import posti from "./posti"
 import * as MediaLibrary from 'expo-media-library'
 import { Alert, Platform } from "react-native"
+import { constructConvergenceTransaction, settleConvergenceTransaction } from "../utils/transactions"
+import { UploadFileInput } from "./convergence-client/__generated__/graphql"
+import { useQuery } from "@apollo/client"
+import { uploadFile } from "./convergence-client/queries"
+import { convergenceClient } from "../data/apollo"
 
 
 const cloudfront_url = 'https://dw26fem5oa72i.cloudfront.net/'
@@ -39,16 +44,30 @@ class UploadManager {
     async uploadFile(uri: string, file: Partial<File>, dimesnions?: DIMENSIONS) {
         try {
             const file_buffer = await this.getFileBuffer(uri)
-            const response = await axios.post<{ file_url: string, upload_url: string }>(`${APP_SUPPORT_API}/upload`, {
-                file_name: file.name,
-                file_byte_size: file_buffer.byteLength,
-                file_type: file.type,
-                delegate_address: delegateManager.account?.address()?.toString(),
-                dimesnions
+
+            const account = delegateManager.account
+
+            if (!account || !delegateManager.signer) {
+                throw new Error("No account found")
+            }
+
+            const response = await convergenceClient.mutate({
+                mutation: uploadFile,
+                variables:{
+                    args: {
+                        file_name: file.name,
+                        file_type: file.type,
+                        file_byte_size: file_buffer.byteLength,
+                        delegate_address:  account.address().hex(),
+                        dimensions: dimesnions
+                    } as UploadFileInput
+                }
             })
 
             const data = response.data
-            const { file_url, upload_url } = data ?? {}
+            
+            const { file_url, upload_url } = data?.uploadFile ?? {}
+
 
             if (!file_url || !upload_url) {
                 throw new Error('No URLS were sent down')

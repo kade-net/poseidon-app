@@ -20,6 +20,8 @@ import { BuildTransactionError, DeserializationError, TransactionFetchError, Tra
 import { INIT_ACCOUNT_AND_INBOX, SETUP_SELF_DELEGATE } from '../../lib/convergence-client/queries';
 import { enableDirectMessagingCacheUpdate } from './hermes/cache';
 import usernames from './usernames';
+import { constructConvergenceTransaction, settleConvergenceTransaction } from '../../utils/transactions';
+import { FollowAccountInput, UnfollowAccountInput, UpdateProfileInput } from '../../lib/convergence-client/__generated__/graphql';
 
 class AccountContract {
 
@@ -75,8 +77,10 @@ class AccountContract {
     }
 
     async updateProfile(profile: TPROFILE) {
+        const account = delegateManager.account
+        
         console.log("PROFILE:: ", profile)
-        if (!delegateManager.signer) {
+        if (!delegateManager.signer || !account) {
             throw new Error("No account found")
         }
 
@@ -89,47 +93,29 @@ class AccountContract {
 
         const data = parsed.data
 
-        const response = await axios.post<{ raw_txn: Array<number>, signature: Array<number> }>(`${APP_SUPPORT_API}/contract/account/update-profile`, {
-            ...data,
-            delegate_address: delegateManager.account?.address()?.toString()
+        const task = constructConvergenceTransaction({
+            fee_payer_address: KADE_ACCOUNT_ADDRESS,
+            name: 'updateProfile',
+            variables: {
+                delegate_address: account.address().hex(),
+                bio: data.bio ,
+                pfp: data.pfp,
+                display_name: data.display_name,
+
+            } as UpdateProfileInput
         })
 
-        const { raw_txn, signature } = response.data
-
-        const txn_deserializer = new Deserializer(new Uint8Array(raw_txn))
-        const signature_deserializer = new Deserializer(new Uint8Array(signature))
-
-        const raw_txn_deserialized = RawTransaction.deserialize(txn_deserializer)
-        const signature_deserialized = AccountAuthenticator.deserialize(signature_deserializer)
-
-        const accountSignature = aptos.transaction.sign({
-            signer: delegateManager.signer,
-            transaction: {
-                rawTransaction: raw_txn_deserialized,
-                feePayerAddress: AccountAddress.from(KADE_ACCOUNT_ADDRESS)
+        await settleConvergenceTransaction({
+            task,
+            onSettled: async () => {
+                console.log('settled')
+                await this.markProfileAsRegistered()
+            },
+            onError: async() =>{
+                await localStore.removeProfile()
+                throw new Error("Transaction failed")
             }
         })
-
-        const commited_txn = await aptos.transaction.submit.simple({
-            senderAuthenticator: accountSignature,
-            transaction: {
-                rawTransaction: raw_txn_deserialized,
-                feePayerAddress: AccountAddress.from(KADE_ACCOUNT_ADDRESS)
-            },
-            feePayerAuthenticator: signature_deserialized
-        })
-
-        const status = await aptos.transaction.waitForTransaction({
-            transactionHash: commited_txn.hash
-        })
-
-        if (status.success) {
-            await this.markProfileAsRegistered()
-        }
-        else {
-            await localStore.removeProfile()
-            throw new Error("Transaction failed")
-        }
     }
 
     async setupWithSelfDelegate() {
@@ -368,9 +354,12 @@ class AccountContract {
 
     async followAccount(following_address: string, search?: string, storeUpdated?: boolean) {
 
-        if (!delegateManager.signer) {
+        const account = delegateManager.account
+        
+        if (!account || !delegateManager.signer) {
             throw new Error("No account found")
         }
+        
 
         if (!storeUpdated) {
             await localStore.addFollow(following_address, search)
@@ -385,31 +374,29 @@ class AccountContract {
         }
 
         try {
-            const txn_details = await getAuthenticatorsAndRawTransaction(`${APP_SUPPORT_API}/contract/account/follow`, {
-                following_address,
-                delegate_address: delegateManager.account?.address()?.toString()
-            })
+            
+        const task = constructConvergenceTransaction({
+            fee_payer_address: KADE_ACCOUNT_ADDRESS,
+            name: 'followAccount',
+            variables: {
+                following_address: following_address,
+                delegate_address:account.address().hex(),
 
-            const { raw_txn_desirialized, sender_signature, fee_payer_signature } = txn_details
+            } as FollowAccountInput
+        })
 
-            const commited_txn = await aptos.transaction.submit.simple({
-                senderAuthenticator: sender_signature,
-                transaction: {
-                    rawTransaction: raw_txn_desirialized,
-                    feePayerAddress: AccountAddress.from(KADE_ACCOUNT_ADDRESS)
-                },
-                feePayerAuthenticator: fee_payer_signature
-            })
+        let returnBoolean: boolean = false 
 
-            const status = await aptos.transaction.waitForTransaction({
-                transactionHash: commited_txn.hash
-            })
 
-            if (status.success) {
+        await settleConvergenceTransaction({
+            task,
+            onSettled: async () => {
                 this.unlock()
-                return true
-            }
-            else {
+
+                returnBoolean = true;
+
+            },
+            onError: async(error) => {
                 posti.capture('follow-account', {
                     user: delegateManager.owner,
                     delegate: delegateManager.account?.address(),
@@ -419,6 +406,11 @@ class AccountContract {
                 await localStore.removeFollow(following_address)
                 this.unlock()
                 throw new Error("Transaction failed")
+            },
+        })
+
+            if (returnBoolean) {
+                return true
             }
 
         }
@@ -430,7 +422,10 @@ class AccountContract {
     }
 
     async unFollowAccount(unfollowing_address: string, search?: string, storeUpdated?: boolean) {
-        if (!delegateManager.signer) {
+        console.log('unfollowing')
+        const account = delegateManager.account
+        
+        if (!account || !delegateManager.signer) {
             throw new Error("No account found")
         }
 
@@ -447,41 +442,42 @@ class AccountContract {
         }
 
         try {
-            const txn_details = await getAuthenticatorsAndRawTransaction(`${APP_SUPPORT_API}/contract/account/unfollow`, {
-                unfollowing_address,
-                delegate_address: delegateManager.account?.address()?.toString()
+            const task = constructConvergenceTransaction({
+                fee_payer_address: KADE_ACCOUNT_ADDRESS,
+                name: 'unfollowAccount',
+                variables: {
+                    unfollowing_address: unfollowing_address,
+                    delegate_address:account.address().hex(),
+    
+                } as UnfollowAccountInput
             })
-
-            const { raw_txn_desirialized, sender_signature, fee_payer_signature } = txn_details
-
-            const commited_txn = await aptos.transaction.submit.simple({
-                senderAuthenticator: sender_signature,
-                transaction: {
-                    rawTransaction: raw_txn_desirialized,
-                    feePayerAddress: AccountAddress.from(KADE_ACCOUNT_ADDRESS)
+    
+            let returnBoolean: boolean = false 
+    
+    
+            await settleConvergenceTransaction({
+                task,
+                onSettled: async () => {
+                    this.unlock()
+    
+                    returnBoolean = true;
+    
                 },
-                feePayerAuthenticator: fee_payer_signature
+                onError: async(error) => {
+                    posti.capture('unfollow-account-error', {
+                        user: delegateManager.owner,
+                        delegate: delegateManager.account?.address(),
+                        error: 'Unable to unfollow account',
+                        unfollowing_address
+                    })
+                    await localStore.addFollow(unfollowing_address)
+                    this.unlock()
+                    throw new Error("Transaction failed")
+                },
             })
 
-
-            const status = await aptos.transaction.waitForTransaction({
-                transactionHash: commited_txn.hash
-            })
-
-            if (status.success) {
-                this.unlock()
+            if (returnBoolean) {
                 return true
-            }
-            else {
-                posti.capture('unfollow-account-error', {
-                    user: delegateManager.owner,
-                    delegate: delegateManager.account?.address(),
-                    error: 'Unable to unfollow account',
-                    unfollowing_address
-                })
-                await localStore.addFollow(unfollowing_address)
-                this.unlock()
-                throw new Error("Transaction failed")
             }
 
         }

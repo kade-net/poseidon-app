@@ -8,7 +8,9 @@ import localStore from "../../lib/local-store";
 import { z } from "zod";
 import posti from "../../lib/posti";
 import { Utils } from "../../utils";
-
+import { convergenceClient } from "../../data/apollo";
+import { AddHostInput, CreateCommunityInput, DeleteCommunityInput, JoinCommunityInput, RemoveCommunityHostInput, UpdateCommunityInput } from "../../lib/convergence-client/__generated__/graphql";
+import { communityAddHost, createCommunity, deleteCommunity, joinCommunity, removeCommunityHost, updateCommunity } from "../../lib/convergence-client/queries";
 interface Community {
     id: string;
     name: string;
@@ -71,6 +73,8 @@ class CommunityModule {
     }
 
     async createCommunity(data: COMMUNITY) {
+        console.log('creating communiity')
+
 
         const profile = client.readQuery({
             query: GET_MY_PROFILE,
@@ -78,7 +82,6 @@ class CommunityModule {
                 address: delegateManager.owner!
             }
         })
-
 
         if (!profile) {
             posti.capture('create-community-failed', {
@@ -89,15 +92,31 @@ class CommunityModule {
             throw new Error("Profile not found")
         }
 
-        const response = await axios.post<{
-            community_id: string,
-            membership_id: string
-        }>(`${COMMUNITY_SUPPORT_API}/api/community/create`, {
+        
+
+        console.log('here is user address',delegateManager.owner)
+        console.log({
             ...data,
-            creator_address: delegateManager.owner!,
+            creator_address: delegateManager.owner,
             username: profile?.account?.username?.username!,
-            topic_ids: [] // TODO: Add topics later
+            sender_address: delegateManager.owner,
+            topics: [""]
         })
+
+        const response = await convergenceClient.mutate({
+            mutation: createCommunity,
+            variables: {
+                args: {
+                    ...data,
+                    creator_address: delegateManager.owner,
+                    username: profile?.account?.username?.username!,
+                    sender_address: delegateManager.owner,
+                    topics: [""]
+                } as CreateCommunityInput
+            }
+        })
+
+        console.log('here is create communityis response',JSON.stringify(response))
 
         await localStore.createCommunity(data.name, data.description, data.image)
 
@@ -105,6 +124,7 @@ class CommunityModule {
     }
 
     async follow(communityName: string, storeUpdated?: boolean) {
+        console.log('we following')
 
         const profile = client.readQuery({
             query: GET_MY_PROFILE,
@@ -112,6 +132,7 @@ class CommunityModule {
                 address: delegateManager.owner!
             }
         })
+        console.log('got profile')
 
         if (!profile) {
             throw new Error("Profile not found")
@@ -130,11 +151,23 @@ class CommunityModule {
         }
         try {
 
-            await axios.post(`${COMMUNITY_SUPPORT_API}/api/community/join`, {
-                community_name: communityName,
-                user_address: delegateManager.owner!,
-                username: profile.account?.username?.username
+           
+
+           const response = await convergenceClient.mutate({
+                mutation: joinCommunity,
+                variables: {
+                    args: {
+                        community_name: communityName,
+                        user_address: delegateManager.owner,
+                        username: profile.account?.username?.username,
+                        sender_address: delegateManager.owner
+                    } as JoinCommunityInput
+                }
             })
+
+            console.log(JSON.stringify(response))
+            console.log('follow complete')
+    
             this.unlock()
         }
         catch (e) {
@@ -143,7 +176,7 @@ class CommunityModule {
                 user: delegateManager.owner!,
                 delegate: delegateManager.account?.address().toString()
             })
-            console.log("Error: ", e)
+            console.log("Error: ", JSON.stringify(e))
             localStore.removeMembership(communityName)
             this.unlock()
             throw e
@@ -177,11 +210,22 @@ class CommunityModule {
             this.lock()
         }
         try {
-            await axios.post(`${COMMUNITY_SUPPORT_API}/api/community/delete-membership`, {
-                community_name: communityName,
-                user_address: delegateManager.owner!,
-                username: profile.account?.username?.username
+            
+
+            const response = await convergenceClient.mutate({
+                mutation: deleteCommunity,
+                variables: {
+                    args: {
+                        community_name: communityName,
+                        user_address: delegateManager.owner,
+                        username: profile.account?.username?.username,
+                        sender_address: delegateManager.owner
+                    } as DeleteCommunityInput
+                }
             })
+
+            console.log(JSON.stringify(response))
+            console.log('iunfollow complete')
 
             this.unlock()
         }
@@ -254,11 +298,21 @@ class CommunityModule {
             community: data.community,
             description: data.description ?? community?.community.description,
             display_name: data.display_name ?? community?.community.display_name,
-            image: data.image ?? community?.community.image
+            image: data.image ?? community?.community.image,
+            sender_address: delegateManager.owner
         }
 
         try {
-            const response = await axios.post(`${COMMUNITY_SUPPORT_API}/api/community/update`, submissionData)
+
+            const response = await convergenceClient.mutate({
+                mutation: updateCommunity,
+                variables: {
+                    args: {
+                        ...submissionData,
+                    } as UpdateCommunityInput
+                }
+            })
+
             await localStore.updateCommunity(data)
         }
         catch (e) {
@@ -301,12 +355,22 @@ class CommunityModule {
         const submissionData = {
             ...parsed.data,
             host_address: delegateManager.owner,
-            host_username: profile?.account?.username?.username
+            host_username: profile?.account?.username?.username,
+            sender_address:delegateManager.owner
         }
 
         try {
             localStore.changeMembershipType(data.community_name, data.member_address, 1)
-            await axios.post(`${COMMUNITY_SUPPORT_API}/api/community/add-host`, submissionData)
+
+            await convergenceClient.mutate({
+                mutation: communityAddHost,
+                variables: {
+                    args: {
+                        ...submissionData
+                    } as AddHostInput
+                }
+            })
+
         }
         catch (e) {
             localStore.changeMembershipType(data.community_name, data.member_address, 2)
@@ -342,12 +406,22 @@ class CommunityModule {
         const submissionData = {
             ...parsed.data,
             host_address: delegateManager.owner,
-            host_username: profile?.account?.username?.username
+            host_username: profile?.account?.username?.username,
+            sender_address:delegateManager.owner
+
         }
 
         try {
             localStore.changeMembershipType(data.community_name, data.member_address, 2)
-            await axios.post(`${COMMUNITY_SUPPORT_API}/api/community/remove-host`, submissionData)
+
+            await convergenceClient.mutate({
+                mutation: removeCommunityHost,
+                variables: {
+                    args: {
+                        ...submissionData
+                    } as RemoveCommunityHostInput
+                }
+            })
         }
         catch (e) {
             localStore.changeMembershipType(data.community_name, data.member_address, 1)

@@ -72,6 +72,12 @@ export type CreateDelegateLinkIntentArgs = {
   sender_address: Scalars['String']['input'];
 };
 
+export type CreatePublicationReturnType = {
+  __typename?: 'CreatePublicationReturnType';
+  client_ref: Scalars['String']['output'];
+  txn: SerializedTransaction;
+};
+
 export type Delegate = {
   __typename?: 'Delegate';
   address: Scalars['String']['output'];
@@ -131,37 +137,61 @@ export type Inbox = {
   timestamp?: Maybe<Scalars['Date']['output']>;
 };
 
+export type KeyValuePair = {
+  key: Scalars['String']['input'];
+  value: Scalars['String']['input'];
+};
+
 export type Mutation = {
   __typename?: 'Mutation';
   acceptRequest: SerializedTransaction;
   addDelegateToKadeAndHermes: SerializedTransaction;
   adminRemoveAccount: Scalars['Boolean']['output'];
   cleanAnchorOrder?: Maybe<Scalars['String']['output']>;
+  communityAddHost: Scalars['String']['output'];
   confirmAnchorOrder?: Maybe<Scalars['Boolean']['output']>;
   confirmDelegate?: Maybe<Scalars['Boolean']['output']>;
   confirmIntent?: Maybe<Scalars['Boolean']['output']>;
+  createAccountAndDelegateLinkIntent: SerializedTransaction;
   createAccountLinkIntent: SerializedTransaction;
   createAnchorOrder?: Maybe<Scalars['String']['output']>;
+  createCommunity: Scalars['String']['output'];
   createConnection?: Maybe<Scalars['String']['output']>;
   createDelegateLinkIntent: SerializedTransaction;
+  createPublication: CreatePublicationReturnType;
+  createPublicationWithRef: CreatePublicationReturnType;
+  createReaction: SerializedTransaction;
+  createReactionWithRef: SerializedTransaction;
   delegateAcceptRequest: SerializedTransaction;
   delegateDenyRequest: SerializedTransaction;
   delegateRemoveFromPhoneBook: SerializedTransaction;
   delegateRequestConversation: SerializedTransaction;
   delegateSendEnvelope: SerializedTransaction;
+  deleteCommunity: Scalars['String']['output'];
   denyRequest: SerializedTransaction;
+  followAccount: SerializedTransaction;
   initKadeAccountWithHermesInboxAndDelegate: SerializedTransaction;
   initSelfDelegateKadeAccountWithHermesInbox: SerializedTransaction;
+  joinCommunity: Scalars['String']['output'];
   registerDelegate: SerializedTransaction;
   registerDelegateOnKadeAndHermes: SerializedTransaction;
   registerInboxAndDelegate: SerializedTransaction;
   registerRequestInbox: SerializedTransaction;
+  removeCommunityHost: Scalars['String']['output'];
   removeDelegate: SerializedTransaction;
   removeFromPhoneBook: SerializedTransaction;
+  removePublication: CreatePublicationReturnType;
+  removePublicationWithRef: SerializedTransaction;
+  removeReaction: SerializedTransaction;
+  removeReactionWithRef: SerializedTransaction;
   requestConversation: SerializedTransaction;
   send: SerializedTransaction;
   setupSelfDelegate: SerializedTransaction;
+  unfollowAccount: SerializedTransaction;
+  updateCommunity: Scalars['String']['output'];
   updateConnection?: Maybe<Scalars['Boolean']['output']>;
+  updateProfile: SerializedTransaction;
+  uploadFile: UploadedFileResponse;
 };
 
 
@@ -185,6 +215,11 @@ export type MutationCleanAnchorOrderArgs = {
 };
 
 
+export type MutationCommunityAddHostArgs = {
+  input: AddHostInput;
+};
+
+
 export type MutationConfirmAnchorOrderArgs = {
   input: ConfirmAnchorOrderInput;
 };
@@ -200,6 +235,11 @@ export type MutationConfirmIntentArgs = {
 };
 
 
+export type MutationCreateAccountAndDelegateLinkIntentArgs = {
+  input: CreateAccountAndDelegateLinkIntentInput;
+};
+
+
 export type MutationCreateAccountLinkIntentArgs = {
   input: CreateAccountLinkIntentInput;
 };
@@ -210,6 +250,11 @@ export type MutationCreateAnchorOrderArgs = {
 };
 
 
+export type MutationCreateCommunityArgs = {
+  input: CreateCommunityInput;
+};
+
+
 export type MutationCreateConnectionArgs = {
   input: CreateConnectionInput;
 };
@@ -217,6 +262,26 @@ export type MutationCreateConnectionArgs = {
 
 export type MutationCreateDelegateLinkIntentArgs = {
   input: CreateDelegateLinkIntentArgs;
+};
+
+
+export type MutationCreatePublicationArgs = {
+  input: CreatePublicationInput;
+};
+
+
+export type MutationCreatePublicationWithRefArgs = {
+  input: CreatePublicationWithRefInput;
+};
+
+
+export type MutationCreateReactionArgs = {
+  input: CreateReactionInput;
+};
+
+
+export type MutationCreateReactionWithRefArgs = {
+  input: CreateReactionWithRefInput;
 };
 
 
@@ -245,8 +310,18 @@ export type MutationDelegateSendEnvelopeArgs = {
 };
 
 
+export type MutationDeleteCommunityArgs = {
+  input: DeleteCommunityInput;
+};
+
+
 export type MutationDenyRequestArgs = {
   input: DenyRequestArgs;
+};
+
+
+export type MutationFollowAccountArgs = {
+  input: FollowAccountInput;
 };
 
 
@@ -257,6 +332,11 @@ export type MutationInitKadeAccountWithHermesInboxAndDelegateArgs = {
 
 export type MutationInitSelfDelegateKadeAccountWithHermesInboxArgs = {
   input: InitSelfDelegateKadeAccountWithHermesInboxArgs;
+};
+
+
+export type MutationJoinCommunityArgs = {
+  input: JoinCommunityInput;
 };
 
 
@@ -280,6 +360,11 @@ export type MutationRegisterRequestInboxArgs = {
 };
 
 
+export type MutationRemoveCommunityHostArgs = {
+  input: RemoveCommunityHostInput;
+};
+
+
 export type MutationRemoveDelegateArgs = {
   input: RemoveDelegateArgs;
 };
@@ -287,6 +372,26 @@ export type MutationRemoveDelegateArgs = {
 
 export type MutationRemoveFromPhoneBookArgs = {
   input: RemoveFromPhoneBookArgs;
+};
+
+
+export type MutationRemovePublicationArgs = {
+  input: RemovePublicationInput;
+};
+
+
+export type MutationRemovePublicationWithRefArgs = {
+  input: RemovePublicationWithRefInput;
+};
+
+
+export type MutationRemoveReactionArgs = {
+  input: RemoveReactionInput;
+};
+
+
+export type MutationRemoveReactionWithRefArgs = {
+  input: RemoveReactionWithRefInput;
 };
 
 
@@ -305,8 +410,28 @@ export type MutationSetupSelfDelegateArgs = {
 };
 
 
+export type MutationUnfollowAccountArgs = {
+  input: UnfollowAccountInput;
+};
+
+
+export type MutationUpdateCommunityArgs = {
+  input: UpdateCommunityInput;
+};
+
+
 export type MutationUpdateConnectionArgs = {
   input: UpdateConnectionInput;
+};
+
+
+export type MutationUpdateProfileArgs = {
+  input: UpdateProfileInput;
+};
+
+
+export type MutationUploadFileArgs = {
+  input: UploadFileInput;
 };
 
 export type PhoneBook = {
@@ -413,8 +538,36 @@ export type SubscriptionLiveInboxArgs = {
   viewer: Scalars['String']['input'];
 };
 
+export type UploadFileDimensions = {
+  height: Scalars['Int']['input'];
+  width: Scalars['Int']['input'];
+};
+
+export type UploadFileInput = {
+  delegate_address: Scalars['String']['input'];
+  dimensions?: InputMaybe<UploadFileDimensions>;
+  file_byte_size: Scalars['Int']['input'];
+  file_name: Scalars['String']['input'];
+  file_type: Scalars['String']['input'];
+};
+
+export type UploadedFileResponse = {
+  __typename?: 'UploadedFileResponse';
+  file_url: Scalars['String']['output'];
+  upload_url: Scalars['String']['output'];
+};
+
 export type AddDelegateToKadeAndHermesArgs = {
   delegate_address: Scalars['String']['input'];
+  sender_address: Scalars['String']['input'];
+};
+
+export type AddHostInput = {
+  community_name: Scalars['String']['input'];
+  host_address: Scalars['String']['input'];
+  host_username: Scalars['String']['input'];
+  member_address: Scalars['String']['input'];
+  member_username: Scalars['String']['input'];
   sender_address: Scalars['String']['input'];
 };
 
@@ -439,6 +592,11 @@ export type ConfirmIntentInput = {
   connection_id: Scalars['String']['input'];
 };
 
+export type CreateAccountAndDelegateLinkIntentInput = {
+  delegate_address: Scalars['String']['input'];
+  username: Scalars['String']['input'];
+};
+
 export type CreateAccountLinkIntentInput = {
   delegate_address: Scalars['String']['input'];
   user_address: Scalars['String']['input'];
@@ -450,8 +608,69 @@ export type CreateAnchorOrderInput = {
   user_address: Scalars['String']['input'];
 };
 
+export type CreateCommunityInput = {
+  creator_address: Scalars['String']['input'];
+  description: Scalars['String']['input'];
+  image: Scalars['String']['input'];
+  name: Scalars['String']['input'];
+  sender_address: Scalars['String']['input'];
+  topics: Array<Scalars['String']['input']>;
+  username: Scalars['String']['input'];
+};
+
 export type CreateConnectionInput = {
   user_address: Scalars['String']['input'];
+};
+
+export type CreatePublicationInput = {
+  delegate_address: Scalars['String']['input'];
+  payload?: InputMaybe<CreatePublicationPayload>;
+  reference_kid?: InputMaybe<Scalars['Int']['input']>;
+  type?: InputMaybe<Scalars['Int']['input']>;
+};
+
+export type CreatePublicationMedia = {
+  type: Scalars['String']['input'];
+  url: Scalars['String']['input'];
+};
+
+export type CreatePublicationPayload = {
+  community?: InputMaybe<Scalars['String']['input']>;
+  content: Scalars['String']['input'];
+  media?: InputMaybe<Array<CreatePublicationMedia>>;
+  mentions?: InputMaybe<Array<KeyValuePair>>;
+  tags?: InputMaybe<Array<Scalars['String']['input']>>;
+};
+
+export type CreatePublicationWithRefInput = {
+  delegate_address: Scalars['String']['input'];
+  parent_ref: Scalars['String']['input'];
+  payload?: InputMaybe<CreatePublicationPayload>;
+  type?: InputMaybe<Scalars['Int']['input']>;
+};
+
+export type CreateReactionInput = {
+  delegate_address: Scalars['String']['input'];
+  reaction: Scalars['Int']['input'];
+  reference_kid: Scalars['Int']['input'];
+};
+
+export type CreateReactionWithRefInput = {
+  delegate_address: Scalars['String']['input'];
+  reaction: Scalars['Int']['input'];
+  ref: Scalars['String']['input'];
+};
+
+export type DeleteCommunityInput = {
+  community_name: Scalars['String']['input'];
+  sender_address: Scalars['String']['input'];
+  user_address: Scalars['String']['input'];
+  username: Scalars['String']['input'];
+};
+
+export type FollowAccountInput = {
+  delegate_address: Scalars['String']['input'];
+  following_address: Scalars['String']['input'];
 };
 
 export type InitKadeAccountWithHermesInboxAndDelegateArgs = {
@@ -467,6 +686,13 @@ export type InitSelfDelegateKadeAccountWithHermesInboxArgs = {
   username: Scalars['String']['input'];
 };
 
+export type JoinCommunityInput = {
+  community_name: Scalars['String']['input'];
+  sender_address: Scalars['String']['input'];
+  user_address: Scalars['String']['input'];
+  username: Scalars['String']['input'];
+};
+
 export type RegisterDelegateOnKadeAndHermesArgs = {
   public_key: Scalars['String']['input'];
   sender_address: Scalars['String']['input'];
@@ -479,13 +705,64 @@ export type RegisterInboxAndDelegateArg = {
   sender_address: Scalars['String']['input'];
 };
 
+export type RemoveCommunityHostInput = {
+  community_name: Scalars['String']['input'];
+  host_address: Scalars['String']['input'];
+  host_username: Scalars['String']['input'];
+  member_address: Scalars['String']['input'];
+  member_username: Scalars['String']['input'];
+  sender_address: Scalars['String']['input'];
+};
+
+export type RemovePublicationInput = {
+  delegate_address: Scalars['String']['input'];
+  kid: Scalars['Int']['input'];
+};
+
+export type RemovePublicationWithRefInput = {
+  delegate_address: Scalars['String']['input'];
+  ref: Scalars['String']['input'];
+};
+
+export type RemoveReactionInput = {
+  delegate_address: Scalars['String']['input'];
+  kid: Scalars['Int']['input'];
+};
+
+export type RemoveReactionWithRefInput = {
+  delegate_address: Scalars['String']['input'];
+  ref: Scalars['String']['input'];
+};
+
 export type SetupSelfDelegateArgs = {
   sender_address: Scalars['String']['input'];
+};
+
+export type UnfollowAccountInput = {
+  delegate_address: Scalars['String']['input'];
+  unfollowing_address: Scalars['String']['input'];
+};
+
+export type UpdateCommunityInput = {
+  community: Scalars['String']['input'];
+  description: Scalars['String']['input'];
+  display_name: Scalars['String']['input'];
+  image: Scalars['String']['input'];
+  sender_address: Scalars['String']['input'];
+  user_address: Scalars['String']['input'];
+  username: Scalars['String']['input'];
 };
 
 export type UpdateConnectionInput = {
   connection_id: Scalars['String']['input'];
   delegate_address: Scalars['String']['input'];
+};
+
+export type UpdateProfileInput = {
+  bio?: InputMaybe<Scalars['String']['input']>;
+  delegate_address: Scalars['String']['input'];
+  display_name?: InputMaybe<Scalars['String']['input']>;
+  pfp?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type RegisterRequestInboxMutationVariables = Exact<{
@@ -624,10 +901,138 @@ export type SetupSelfDelegateMutationVariables = Exact<{
 
 export type SetupSelfDelegateMutation = { __typename?: 'Mutation', setupSelfDelegate: { __typename?: 'SerializedTransaction', raw_transaction: Array<number>, signature: Array<number> } };
 
+
+export type CreatePublicationMutationVariables = Exact<{
+  args: CreatePublicationInput;
+}>;
+
+
+export type CreatePublicationMutation = { __typename?: 'Mutation', createPublication: { __typename?: 'CreatePublicationReturnType', client_ref: string, txn: { __typename?: 'SerializedTransaction', raw_transaction: Array<number>, signature: Array<number> } } };
+
+export type CreatePublicationWithRefMutationVariables = Exact<{
+  args: CreatePublicationWithRefInput;
+}>;
+
+
+export type CreatePublicationWithRefMutation = { __typename?: 'Mutation', createPublicationWithRef: { __typename?: 'CreatePublicationReturnType', client_ref: string, txn: { __typename?: 'SerializedTransaction', raw_transaction: Array<number>, signature: Array<number> } } };
+
+export type RemovePublicationMutationVariables = Exact<{
+  args: RemovePublicationInput;
+}>;
+
+
+export type RemovePublicationMutation = { __typename?: 'Mutation', removePublication: { __typename?: 'CreatePublicationReturnType', client_ref: string, txn: { __typename?: 'SerializedTransaction', raw_transaction: Array<number>, signature: Array<number> } } };
+
+export type RemovePublicationWithRefMutationVariables = Exact<{
+  args: RemovePublicationWithRefInput;
+}>;
+
+
+export type RemovePublicationWithRefMutation = { __typename?: 'Mutation', removePublicationWithRef: { __typename?: 'SerializedTransaction', raw_transaction: Array<number>, signature: Array<number> } };
+
+export type CreateReactionMutationVariables = Exact<{
+  args: CreateReactionInput;
+}>;
+
+
+export type CreateReactionMutation = { __typename?: 'Mutation', createReaction: { __typename?: 'SerializedTransaction', raw_transaction: Array<number>, signature: Array<number> } };
+
+export type CreateReactionWithRefMutationVariables = Exact<{
+  args: CreateReactionWithRefInput;
+}>;
+
+
+export type CreateReactionWithRefMutation = { __typename?: 'Mutation', createReactionWithRef: { __typename?: 'SerializedTransaction', raw_transaction: Array<number>, signature: Array<number> } };
+
+export type RemoveReactionWithRefMutationVariables = Exact<{
+  args: RemoveReactionWithRefInput;
+}>;
+
+
+export type RemoveReactionWithRefMutation = { __typename?: 'Mutation', removeReactionWithRef: { __typename?: 'SerializedTransaction', raw_transaction: Array<number>, signature: Array<number> } };
+
+export type RemoveReactionMutationVariables = Exact<{
+  args: RemoveReactionInput;
+}>;
+
+
+export type RemoveReactionMutation = { __typename?: 'Mutation', removeReaction: { __typename?: 'SerializedTransaction', raw_transaction: Array<number>, signature: Array<number> } };
+
+export type UploadFileMutationVariables = Exact<{
+  args: UploadFileInput;
+}>;
+
+
+export type UploadFileMutation = { __typename?: 'Mutation', uploadFile: { __typename?: 'UploadedFileResponse', upload_url: string, file_url: string } };
+
+export type UpdateProfileMutationVariables = Exact<{
+  args: UpdateProfileInput;
+}>;
+
+
+export type UpdateProfileMutation = { __typename?: 'Mutation', updateProfile: { __typename?: 'SerializedTransaction', raw_transaction: Array<number>, signature: Array<number> } };
+
+export type FollowAccountMutationVariables = Exact<{
+  args: FollowAccountInput;
+}>;
+
+
+export type FollowAccountMutation = { __typename?: 'Mutation', followAccount: { __typename?: 'SerializedTransaction', raw_transaction: Array<number>, signature: Array<number> } };
+
+export type UnfollowAccountMutationVariables = Exact<{
+  args: UnfollowAccountInput;
+}>;
+
+
+export type UnfollowAccountMutation = { __typename?: 'Mutation', unfollowAccount: { __typename?: 'SerializedTransaction', raw_transaction: Array<number>, signature: Array<number> } };
+
+export type CreateCommunityMutationVariables = Exact<{
+  args: CreateCommunityInput;
+}>;
+
+
+export type CreateCommunityMutation = { __typename?: 'Mutation', createCommunity: string };
+
+export type CommunityAddHostMutationVariables = Exact<{
+  args: AddHostInput;
+}>;
+
+
+export type CommunityAddHostMutation = { __typename?: 'Mutation', communityAddHost: string };
+
+export type JoinCommunityMutationVariables = Exact<{
+  args: JoinCommunityInput;
+}>;
+
+
+export type JoinCommunityMutation = { __typename?: 'Mutation', joinCommunity: string };
+
+export type RemoveCommunityHostMutationVariables = Exact<{
+  args: RemoveCommunityHostInput;
+}>;
+
+
+export type RemoveCommunityHostMutation = { __typename?: 'Mutation', removeCommunityHost: string };
+
+export type UpdateCommunityMutationVariables = Exact<{
+  args: UpdateCommunityInput;
+}>;
+
+
+export type UpdateCommunityMutation = { __typename?: 'Mutation', updateCommunity: string };
+
+export type DeleteCommunityMutationVariables = Exact<{
+  args: DeleteCommunityInput;
+}>;
+
+
+export type DeleteCommunityMutation = { __typename?: 'Mutation', deleteCommunity: string };
+
 export type PortalsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
 export type PortalsQuery = { __typename?: 'Query', portals?: Array<{ __typename?: 'Portal', name?: string | null, description?: string | null, icon?: string | null, url: string, post_id: number, user_kid: number, username?: string | null, created_at?: any | null }> | null };
+
 
 
 export const RegisterRequestInboxDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"RegisterRequestInbox"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"args"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"RegisterRequestInboxInputArgs"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"registerRequestInbox"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"args"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"raw_transaction"}},{"kind":"Field","name":{"kind":"Name","value":"signature"}}]}}]}}]} as unknown as DocumentNode<RegisterRequestInboxMutation, RegisterRequestInboxMutationVariables>;
@@ -649,4 +1054,22 @@ export const Init_DelegateDocument = {"kind":"Document","definitions":[{"kind":"
 export const AnchorTransactionsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"AnchorTransactions"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"user_address"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"anchorTransactions"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"user_address"},"value":{"kind":"Variable","name":{"kind":"Name","value":"user_address"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"sender_address"}},{"kind":"Field","name":{"kind":"Name","value":"receiver_address"}},{"kind":"Field","name":{"kind":"Name","value":"anchor_amount"}},{"kind":"Field","name":{"kind":"Name","value":"timestamp"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}}]}}]} as unknown as DocumentNode<AnchorTransactionsQuery, AnchorTransactionsQueryVariables>;
 export const AdminRemoveAccountDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"AdminRemoveAccount"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"adminRemoveAccountArgs"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"adminRemoveAccount"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}]}]}}]} as unknown as DocumentNode<AdminRemoveAccountMutation, AdminRemoveAccountMutationVariables>;
 export const SetupSelfDelegateDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"setupSelfDelegate"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"setupSelfDelegateArgs"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"setupSelfDelegate"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"raw_transaction"}},{"kind":"Field","name":{"kind":"Name","value":"signature"}}]}}]}}]} as unknown as DocumentNode<SetupSelfDelegateMutation, SetupSelfDelegateMutationVariables>;
+export const CreatePublicationDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"createPublication"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"args"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"createPublicationInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"createPublication"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"args"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"client_ref"}},{"kind":"Field","name":{"kind":"Name","value":"txn"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"raw_transaction"}},{"kind":"Field","name":{"kind":"Name","value":"signature"}}]}}]}}]}}]} as unknown as DocumentNode<CreatePublicationMutation, CreatePublicationMutationVariables>;
+export const CreatePublicationWithRefDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"CreatePublicationWithRef"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"args"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"createPublicationWithRefInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"createPublicationWithRef"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"args"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"client_ref"}},{"kind":"Field","name":{"kind":"Name","value":"txn"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"raw_transaction"}},{"kind":"Field","name":{"kind":"Name","value":"signature"}}]}}]}}]}}]} as unknown as DocumentNode<CreatePublicationWithRefMutation, CreatePublicationWithRefMutationVariables>;
+export const RemovePublicationDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"RemovePublication"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"args"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"removePublicationInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"removePublication"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"args"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"client_ref"}},{"kind":"Field","name":{"kind":"Name","value":"txn"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"raw_transaction"}},{"kind":"Field","name":{"kind":"Name","value":"signature"}}]}}]}}]}}]} as unknown as DocumentNode<RemovePublicationMutation, RemovePublicationMutationVariables>;
+export const RemovePublicationWithRefDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"RemovePublicationWithRef"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"args"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"removePublicationWithRefInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"removePublicationWithRef"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"args"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"raw_transaction"}},{"kind":"Field","name":{"kind":"Name","value":"signature"}}]}}]}}]} as unknown as DocumentNode<RemovePublicationWithRefMutation, RemovePublicationWithRefMutationVariables>;
+export const CreateReactionDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"CreateReaction"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"args"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"createReactionInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"createReaction"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"args"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"raw_transaction"}},{"kind":"Field","name":{"kind":"Name","value":"signature"}}]}}]}}]} as unknown as DocumentNode<CreateReactionMutation, CreateReactionMutationVariables>;
+export const CreateReactionWithRefDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"CreateReactionWithRef"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"args"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"createReactionWithRefInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"createReactionWithRef"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"args"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"raw_transaction"}},{"kind":"Field","name":{"kind":"Name","value":"signature"}}]}}]}}]} as unknown as DocumentNode<CreateReactionWithRefMutation, CreateReactionWithRefMutationVariables>;
+export const RemoveReactionWithRefDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"RemoveReactionWithRef"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"args"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"removeReactionWithRefInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"removeReactionWithRef"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"args"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"raw_transaction"}},{"kind":"Field","name":{"kind":"Name","value":"signature"}}]}}]}}]} as unknown as DocumentNode<RemoveReactionWithRefMutation, RemoveReactionWithRefMutationVariables>;
+export const RemoveReactionDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"RemoveReaction"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"args"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"removeReactionInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"removeReaction"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"args"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"raw_transaction"}},{"kind":"Field","name":{"kind":"Name","value":"signature"}}]}}]}}]} as unknown as DocumentNode<RemoveReactionMutation, RemoveReactionMutationVariables>;
+export const UploadFileDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"UploadFile"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"args"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"UploadFileInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"uploadFile"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"args"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"upload_url"}},{"kind":"Field","name":{"kind":"Name","value":"file_url"}}]}}]}}]} as unknown as DocumentNode<UploadFileMutation, UploadFileMutationVariables>;
+export const UpdateProfileDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"UpdateProfile"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"args"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"updateProfileInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"updateProfile"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"args"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"raw_transaction"}},{"kind":"Field","name":{"kind":"Name","value":"signature"}}]}}]}}]} as unknown as DocumentNode<UpdateProfileMutation, UpdateProfileMutationVariables>;
+export const FollowAccountDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"FollowAccount"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"args"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"followAccountInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"followAccount"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"args"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"raw_transaction"}},{"kind":"Field","name":{"kind":"Name","value":"signature"}}]}}]}}]} as unknown as DocumentNode<FollowAccountMutation, FollowAccountMutationVariables>;
+export const UnfollowAccountDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"UnfollowAccount"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"args"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"unfollowAccountInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"unfollowAccount"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"args"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"raw_transaction"}},{"kind":"Field","name":{"kind":"Name","value":"signature"}}]}}]}}]} as unknown as DocumentNode<UnfollowAccountMutation, UnfollowAccountMutationVariables>;
+export const CreateCommunityDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"CreateCommunity"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"args"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"createCommunityInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"createCommunity"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"args"}}}]}]}}]} as unknown as DocumentNode<CreateCommunityMutation, CreateCommunityMutationVariables>;
+export const CommunityAddHostDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"CommunityAddHost"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"args"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"addHostInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"communityAddHost"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"args"}}}]}]}}]} as unknown as DocumentNode<CommunityAddHostMutation, CommunityAddHostMutationVariables>;
+export const JoinCommunityDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"JoinCommunity"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"args"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"joinCommunityInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"joinCommunity"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"args"}}}]}]}}]} as unknown as DocumentNode<JoinCommunityMutation, JoinCommunityMutationVariables>;
+export const RemoveCommunityHostDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"RemoveCommunityHost"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"args"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"removeCommunityHostInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"removeCommunityHost"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"args"}}}]}]}}]} as unknown as DocumentNode<RemoveCommunityHostMutation, RemoveCommunityHostMutationVariables>;
+export const UpdateCommunityDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"UpdateCommunity"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"args"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"updateCommunityInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"updateCommunity"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"args"}}}]}]}}]} as unknown as DocumentNode<UpdateCommunityMutation, UpdateCommunityMutationVariables>;
+export const DeleteCommunityDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"DeleteCommunity"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"args"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"deleteCommunityInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"deleteCommunity"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"args"}}}]}]}}]} as unknown as DocumentNode<DeleteCommunityMutation, DeleteCommunityMutationVariables>;
 export const PortalsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"Portals"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"portals"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"icon"}},{"kind":"Field","name":{"kind":"Name","value":"url"}},{"kind":"Field","name":{"kind":"Name","value":"post_id"}},{"kind":"Field","name":{"kind":"Name","value":"user_kid"}},{"kind":"Field","name":{"kind":"Name","value":"username"}},{"kind":"Field","name":{"kind":"Name","value":"created_at"}}]}}]}}]} as unknown as DocumentNode<PortalsQuery, PortalsQueryVariables>;

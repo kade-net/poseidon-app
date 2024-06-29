@@ -188,6 +188,163 @@ export const SETUP_SELF_DELEGATE = gql(/* GraphQL */`
     }
 `)
 
+export const createPublication = gql(/* GraphQL */`
+    mutation createPublication($args: createPublicationInput!) {
+        createPublication(input: $args) {
+            client_ref
+            txn {
+                raw_transaction
+                signature
+            }
+        }
+    }
+`)
+
+export const createPublicationWithRef = gql(/* GraphQL */`
+    mutation CreatePublicationWithRef($args: createPublicationWithRefInput!) {
+        createPublicationWithRef(input: $args) {
+            client_ref
+            txn {
+                raw_transaction
+                signature
+            }
+        }
+    }
+`)
+
+export const removePublication = gql(/* GraphQL */`
+    mutation RemovePublication($args: removePublicationInput!) {
+        removePublication(input: $args) {
+            client_ref
+            txn {
+                raw_transaction
+                signature
+            }
+        }
+    }
+`)
+
+export const removePublicationWithRef = gql(/* GraphQL */`
+    mutation RemovePublicationWithRef($args: removePublicationWithRefInput!) {
+        removePublicationWithRef(input: $args) {
+            raw_transaction
+            signature
+        }
+    }
+`)
+
+export const createReaction = gql(/* GraphQL */`
+    mutation CreateReaction($args: createReactionInput!) {
+        createReaction(input: $args) {
+            raw_transaction
+            signature
+        }
+    }
+`)
+
+export const createReactionWithRef = gql(/* GraphQL */`
+    mutation CreateReactionWithRef($args: createReactionWithRefInput!) {
+        createReactionWithRef(input: $args) {
+            raw_transaction
+            signature
+        }
+    }
+`)
+
+export const removeReactionWithRef = gql(/* GraphQL */`
+    mutation RemoveReactionWithRef($args: removeReactionWithRefInput!) {
+        removeReactionWithRef(input: $args) {
+            raw_transaction
+            signature
+        }
+    }
+`)
+
+export const removeReaction = gql(/* GraphQL */`
+    mutation RemoveReaction($args: removeReactionInput!) {
+        removeReaction(input: $args) {
+            raw_transaction
+            signature
+        }
+    }
+`)
+
+export const uploadFile = gql(/* GraphQL */`
+    mutation UploadFile($args: UploadFileInput!) {
+        uploadFile(input: $args) {
+            upload_url
+            file_url
+        }
+    }
+`)
+
+export const updateProfile = gql(/* GraphQL */`
+        mutation UpdateProfile($args: updateProfileInput!) {
+            updateProfile(input: $args) {
+                raw_transaction
+                signature
+            }
+        }
+`)
+
+export const followAccount = gql(/* GraphQL */`
+    mutation FollowAccount($args: followAccountInput!) {
+        followAccount(input: $args) {
+            raw_transaction
+            signature
+        }
+    }
+`)
+
+export const unfollowAccount = gql(/* GraphQL */`
+    mutation UnfollowAccount($args: unfollowAccountInput!) {
+        unfollowAccount(input: $args) {
+            raw_transaction
+            signature
+        }
+    }
+
+`)
+
+export const createCommunity =  gql(/* GraphQL */`
+    mutation CreateCommunity($args: createCommunityInput!) {
+        createCommunity(input: $args)
+    }
+`)
+
+export const communityAddHost =  gql(/* GraphQL */`
+    mutation CommunityAddHost($args: addHostInput!) {
+        communityAddHost(input: $args)
+    }
+`)
+
+export const joinCommunity =  gql(/* GraphQL */`
+    mutation JoinCommunity($args: joinCommunityInput!) {
+        joinCommunity(input: $args)
+    }
+`)
+
+
+export const removeCommunityHost =  gql(/* GraphQL */`
+    mutation RemoveCommunityHost($args: removeCommunityHostInput!) {
+        removeCommunityHost(input: $args)
+    }
+`)
+
+
+export const updateCommunity =  gql(/* GraphQL */`
+    mutation UpdateCommunity($args: updateCommunityInput!) {
+        updateCommunity(input: $args)
+    }
+`)
+
+export const deleteCommunity =  gql(/* GraphQL */`
+    mutation DeleteCommunity($args: deleteCommunityInput!) {
+        deleteCommunity(input: $args)
+    }
+`)
+
+
 export const GET_PORTALS = gql(/* GraphQL */`
     query Portals {
         portals {

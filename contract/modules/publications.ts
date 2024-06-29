@@ -12,7 +12,15 @@ import storage from "../../lib/storage";
 import client from "../../data/apollo";
 import { GET_PUBLICATIONS } from "../../utils/queries";
 import { Utils } from "../../utils";
+import { constructConvergenceTransaction, settleConvergenceTransaction } from "../../utils/transactions";
+import { CreatePublicationInput, CreatePublicationWithRefInput, CreateReactionInput, CreateReactionWithRefInput, RegisterRequestInboxInputArgs, RemovePublicationInput, RemovePublicationWithRefInput, RemoveReactionInput, RemoveReactionWithRefInput } from "../../lib/convergence-client/__generated__/graphql";
+import ephemeralCache from "../../lib/local-store/ephemeral-cache";
 
+
+interface KeyValuePair {
+    key: string;
+    value: string;
+}
 
 class PublicationsContract {
 
@@ -41,7 +49,18 @@ class PublicationsContract {
         })
     }
 
+    convertMentions(mentions: Record<string, string>): KeyValuePair[] {
+        let keyvaluepair: KeyValuePair[] = [];
+    
+        let entries = Object.entries(mentions);
+        for (const e of entries) {
+            keyvaluepair.push({key: e[0], value: e[1]})
+        }
+    
+        return keyvaluepair
+    }
 
+    
 
     async createPublication(publication: TPUBLICATION | null, publication_type: 1 | 2 | 3 | 4 = 1, reference_kid?: number, parent_ref?: string, count?: number) {
 
@@ -51,6 +70,7 @@ class PublicationsContract {
             throw new Error("No account found")
         }
 
+
         const parsed = publication ? publicationSchema.safeParse(publication) : null
 
         if (parsed && !parsed.success) {
@@ -59,71 +79,95 @@ class PublicationsContract {
 
         const data = parsed ? parsed.data : null
 
-        const txn_details = await getAuthenticatorsAndRawTransaction(`${APP_SUPPORT_API}/contract/publications/create-publication`, {
-            type: publication_type,
-            reference_kid,
-            ...(data ? { payload: data } : null)
+        
+
+        const task = constructConvergenceTransaction({
+            fee_payer_address: KADE_ACCOUNT_ADDRESS,
+            name: 'createPublication',
+            variables: {
+                type:publication_type,
+                delegate_address: account.address().hex(),
+                reference_kid: reference_kid,
+                payload: {
+                    content: data?.content,
+                    tags: data?.tags,
+                    mentions: data?.mentions? this.convertMentions(data?.mentions) : [],
+                    media: data?.media,
+                    community: data?.community
+                }
+
+            } as CreatePublicationInput
         })
 
-        const commited_txn = await aptos.transaction.submit.simple({
-            senderAuthenticator: txn_details.sender_signature,
-            transaction: {
-                rawTransaction: txn_details.raw_txn_desirialized,
-                feePayerAddress: AccountAddress.from(KADE_ACCOUNT_ADDRESS)
+        let client_ref:string;
+
+        await settleConvergenceTransaction({
+            task,
+            onSettled: async () => {
+                const cached = ephemeralCache.get('client_ref_cache')
+                
+                if (typeof cached === 'string') {
+                    client_ref = cached
+                    await localStore.addPublication(
+                        data,
+                        publication_type,
+                        client_ref,
+                        cached!,
+                        count
+                    )
+                }
+
             },
-            feePayerAuthenticator: txn_details.fee_payer_signature
+            onError(error) {
+                throw new Error("Transaction failed")
+            },
         })
 
-        const status = await aptos.waitForTransaction({
-            transactionHash: commited_txn.hash
-        })
 
-        if (status.success) {
-            await localStore.addPublication(
-                data,
-                publication_type,
-                parent_ref ?? "",
-                txn_details.client_ref!,
-                count
-            )
-        }
-        else {
-            throw new Error("Transaction failed")
-        }
-
-
-        return txn_details.client_ref!
+        return client_ref!
     }
 
     async removePublication(publication_id: number, ref?: string, publication_type?: 1 | 2 | 3 | 4) {
+        const account = delegateManager.account
+        
+        if (!account || !delegateManager.signer) {
+            throw new Error("No account found")
+        }
+
         if (!isNumber(publication_id)) {
             throw new Error("Invalid publication id")
         }
 
-        const { fee_payer_signature, raw_txn_desirialized, sender_signature } = await getAuthenticatorsAndRawTransaction(`${APP_SUPPORT_API}/contract/publications/remove-publication`, {
-            kid: publication_id
+        const task = constructConvergenceTransaction({
+            fee_payer_address: KADE_ACCOUNT_ADDRESS,
+            name: 'removePublication',
+            variables: {
+                kid: publication_id,
+                delegate_address:account.address().hex(),
+
+            } as RemovePublicationInput
         })
 
-        const commited_txn = await aptos.transaction.submit.simple({
-            senderAuthenticator: sender_signature,
-            transaction: {
-                rawTransaction: raw_txn_desirialized,
-                feePayerAddress: AccountAddress.from(KADE_ACCOUNT_ADDRESS)
+
+        await settleConvergenceTransaction({
+            task,
+            onSettled: async () => {
+                const cached = ephemeralCache.get('client_ref_cache')
+                
+                if (typeof cached === 'string') {
+                    const client_ref = cached
+                    
+                    if (ref) {
+                        await localStore.removePublication(client_ref, publication_type ?? 1)
+                    }
+                }
+
             },
-            feePayerAuthenticator: fee_payer_signature
+            onError(error) {
+                throw new Error("Transaction failed")
+            },
         })
 
-        const status = await aptos.waitForTransaction({
-            transactionHash: commited_txn.hash
-        })
-
-        if (!status.success) {
-            throw new Error("Transaction failed")
-        } else {
-            if (ref) {
-                await localStore.removePublication(ref, publication_type ?? 1)
-            }
-        }
     }
 
 
@@ -145,40 +189,53 @@ class PublicationsContract {
 
 
         try {
-            const txn_details = await getAuthenticatorsAndRawTransaction(`${APP_SUPPORT_API}/contract/publications/create-publication-with-ref`, {
-                type: publication_type,
-                parent_ref: ref,
-                ...(data ? { payload: data } : null)
+
+            const task = constructConvergenceTransaction({
+                fee_payer_address: KADE_ACCOUNT_ADDRESS,
+                name: 'createPublicationWithRef',
+                variables: {
+                    type:publication_type,
+                    parent_ref:ref,
+                    delegate_address: account.address().hex(),
+                    payload: {
+                        content: data?.content ? data?.content : '',
+                        tags: data?.tags,
+                        mentions: data?.mentions? this.convertMentions(data?.mentions) : [],
+                        media: data?.media,
+                        community: data?.community
+                    }
+    
+                } as CreatePublicationWithRefInput
             })
 
-            await localStore.addPublication(
-                data,
-                publication_type,
-                ref,
-                txn_details.client_ref!,
-                count
-            )
+            let client_ref:string;
 
-            const commited_txn = await aptos.transaction.submit.simple({
-                senderAuthenticator: txn_details.sender_signature,
-                transaction: {
-                    rawTransaction: txn_details.raw_txn_desirialized,
-                    feePayerAddress: AccountAddress.from(KADE_ACCOUNT_ADDRESS)
+            await settleConvergenceTransaction({
+                task,
+                onSettled: async () => {
+                    const cached = ephemeralCache.get('client_ref_cache')
+
+                    
+                    if (typeof cached === 'string') {
+                        client_ref = cached
+
+                        await localStore.addPublication(
+                            data,
+                            publication_type,
+                            ref,
+                            client_ref,
+                            count
+                        )
+                    }
+    
                 },
-                feePayerAuthenticator: txn_details.fee_payer_signature
+                onError(error) {
+                    console.log('error is',error)
+                    throw new Error("Transaction failed")
+                },
             })
 
-            const status = await aptos.waitForTransaction({
-                transactionHash: commited_txn.hash
-            })
-
-            if (status.success) {
-
-            } else {
-                throw new Error("Transaction failed")
-            }
-
-            return txn_details.client_ref!
+            return client_ref!
 
         }
         catch (e) {
@@ -190,35 +247,40 @@ class PublicationsContract {
 
 
     async removePublicationWithRef(publication_ref: string, publication_type?: 1 | 2 | 3 | 4, parent_ref?: string) {
+
+        const account = delegateManager.account
+
+        if (!account || !delegateManager.signer) {
+            throw new Error("No account found")
+        }
+
         if (!isString(publication_ref)) {
             throw new Error("Invalid publication ref")
         }
+        
 
         await localStore.removePublication(publication_ref, publication_type ?? 1, parent_ref)
+        
 
         try {
-            const { fee_payer_signature, raw_txn_desirialized, sender_signature } = await getAuthenticatorsAndRawTransaction(`${APP_SUPPORT_API}/contract/publications/remove-publication-with-ref`, {
-                ref: publication_ref
+            const task = constructConvergenceTransaction({
+                fee_payer_address: KADE_ACCOUNT_ADDRESS,
+                name: 'removePublicationWithRef',
+                variables: {
+                    ref:publication_ref,
+                    delegate_address: account.address().hex(),
+    
+                } as RemovePublicationWithRefInput
             })
-            const commited_txn = await aptos.transaction.submit.simple({
-                senderAuthenticator: sender_signature,
-                transaction: {
-                    rawTransaction: raw_txn_desirialized,
-                    feePayerAddress: AccountAddress.from(KADE_ACCOUNT_ADDRESS)
+
+            await settleConvergenceTransaction({
+                task,
+                onSettled: async () => {
                 },
-                feePayerAuthenticator: fee_payer_signature
+                onError(error) {
+                    throw new Error("Transaction failed")
+                },
             })
-
-            const status = await aptos.waitForTransaction({
-                transactionHash: commited_txn.hash
-            })
-
-            if (status.success) {
-            }
-            else {
-                throw new Error("Transaction failed")
-            }
-
         }
         catch (e) {
             await localStore.addPublication(null, publication_type ?? 1, parent_ref ?? "", publication_ref)
@@ -229,36 +291,47 @@ class PublicationsContract {
 
 
     async createReaction(reaction: number, reference_kid: number) {
+        const account = delegateManager.account
+
+        if (!account || !delegateManager.signer) {
+            throw new Error("No account found")
+        }
+
         if (!isNumber(reaction) || !isNumber(reference_kid)) {
             throw new Error("Invalid reaction")
         }
 
-        const { fee_payer_signature, raw_txn_desirialized, sender_signature } = await getAuthenticatorsAndRawTransaction(`${APP_SUPPORT_API}/contract/publications/create-reaction`, {
-            reaction,
-            reference_kid
+        const task = constructConvergenceTransaction({
+            fee_payer_address: KADE_ACCOUNT_ADDRESS,
+            name: 'createReaction',
+            variables: {
+                reaction: reaction,
+                reference_kid: reference_kid,
+                delegate_address: account.address().hex(),
+
+            } as CreateReactionInput
         })
 
-        const commited_txn = await aptos.transaction.submit.simple({
-            senderAuthenticator: sender_signature,
-            transaction: {
-                rawTransaction: raw_txn_desirialized,
-                feePayerAddress: AccountAddress.from(KADE_ACCOUNT_ADDRESS)
+        await settleConvergenceTransaction({
+            task,
+            onSettled: async () => {
             },
-            feePayerAuthenticator: fee_payer_signature
+            onError(error) {
+                throw new Error("Transaction failed")
+            },
         })
-
-        const status = await aptos.waitForTransaction({
-            transactionHash: commited_txn.hash
-        })
-
-        if (!status.success) {
-            throw new Error("Transaction failed")
-        }
 
     }
 
 
     createReactionWithRef = async (reaction: number, ref: string) => {
+
+        const account = delegateManager.account
+
+        if (!account || !delegateManager.signer) {
+            throw new Error("No account found")
+        }
+
         if (!isNumber(reaction) || !isString(ref)) {
             throw new Error("Invalid reaction")
         }
@@ -274,30 +347,27 @@ class PublicationsContract {
         }
 
         try {
-            const { fee_payer_signature, raw_txn_desirialized, sender_signature } = await getAuthenticatorsAndRawTransaction(`${APP_SUPPORT_API}/contract/publications/create-reaction-with-ref`, {
-                reaction,
-                ref
-            })
 
-            const commited_txn = await aptos.transaction.submit.simple({
-                senderAuthenticator: sender_signature,
-                transaction: {
-                    rawTransaction: raw_txn_desirialized,
-                    feePayerAddress: AccountAddress.from(KADE_ACCOUNT_ADDRESS)
+            const task = constructConvergenceTransaction({
+                fee_payer_address: KADE_ACCOUNT_ADDRESS,
+                name: 'createReactionWithRef',
+                variables: {
+                    reaction: reaction,
+                    ref: ref,
+                    delegate_address: account.address().hex(),
+    
+                } as CreateReactionWithRefInput
+            })
+    
+            await settleConvergenceTransaction({
+                task,
+                onSettled: async () => {
+                    this.unlock()
                 },
-                feePayerAuthenticator: fee_payer_signature
+                onError(error) {
+                    throw new Error("Transaction failed",error)
+                },
             })
-
-            const status = await aptos.waitForTransaction({
-                transactionHash: commited_txn.hash
-            })
-
-            if (!status.success) {
-                throw new Error("Transaction failed")
-            } else {
-                this.unlock()
-            }
-
         }
         catch (e) {
             this.unlock()
@@ -308,33 +378,45 @@ class PublicationsContract {
 
 
     async removeReaction(reaction_id: number) {
+        const account = delegateManager.account
+
+        if (!account || !delegateManager.signer) {
+            throw new Error("No account found")
+        }
+
+
         if (!isNumber(reaction_id)) {
             throw new Error("Invalid reaction id")
         }
 
-        const { fee_payer_signature, raw_txn_desirialized, sender_signature } = await getAuthenticatorsAndRawTransaction(`${APP_SUPPORT_API}/contract/publications/remove-reaction`, {
-            kid: reaction_id
+        const task = constructConvergenceTransaction({
+            fee_payer_address: KADE_ACCOUNT_ADDRESS,
+            name: 'removeReaction',
+            variables: {
+                kid: reaction_id,
+                delegate_address: account.address().hex(),
+
+            } as RemoveReactionInput
         })
 
-        const commited_txn = await aptos.transaction.submit.simple({
-            senderAuthenticator: sender_signature,
-            transaction: {
-                rawTransaction: raw_txn_desirialized,
-                feePayerAddress: AccountAddress.from(KADE_ACCOUNT_ADDRESS)
+        await settleConvergenceTransaction({
+            task,
+            onSettled: async () => {
             },
-            feePayerAuthenticator: fee_payer_signature
+            onError(error) {
+                throw new Error("Transaction failed",error)
+            },
         })
-
-        const status = await aptos.waitForTransaction({
-            transactionHash: commited_txn.hash
-        })
-
-        if (!status.success) {
-            throw new Error("Transaction failed")
-        }
     }
 
     async removeReactionWithRef(publication_ref: string) {
+
+        const account = delegateManager.account
+
+        if (!account || !delegateManager.signer) {
+            throw new Error("No account found")
+        }
+
         if (!isString(publication_ref)) {
             throw new Error("Invalid publication ref")
         }
@@ -350,29 +432,26 @@ class PublicationsContract {
         }
 
         try {
-            const { fee_payer_signature, raw_txn_desirialized, sender_signature } = await getAuthenticatorsAndRawTransaction(`${APP_SUPPORT_API}/contract/publications/remove-reaction-with-ref`, {
-                ref: publication_ref
+            const task = constructConvergenceTransaction({
+                fee_payer_address: KADE_ACCOUNT_ADDRESS,
+                name: 'removeReactionWithRef',
+                variables: {
+                    ref: publication_ref,
+                    delegate_address: account.address().hex(),
+    
+                } as RemoveReactionWithRefInput
             })
-
-            const commited_txn = await aptos.transaction.submit.simple({
-                senderAuthenticator: sender_signature,
-                transaction: {
-                    rawTransaction: raw_txn_desirialized,
-                    feePayerAddress: AccountAddress.from(KADE_ACCOUNT_ADDRESS)
+    
+            await settleConvergenceTransaction({
+                task,
+                onSettled: async () => {
+                    this.unlock()
                 },
-                feePayerAuthenticator: fee_payer_signature
+                onError(error) {
+                    throw new Error("Transaction failed")
+                },
             })
-
-            const status = await aptos.waitForTransaction({
-                transactionHash: commited_txn.hash
-            })
-
-            if (!status.success) {
-                throw new Error("Transaction failed")
-            }
-            else {
-                this.unlock()
-            }
+            
 
         }
         catch (e) {
@@ -390,9 +469,7 @@ class PublicationsContract {
 
         let ref = publication_ref?.includes("_") ? publication_ref.split("_")[1] : publication_ref
 
-        // client.refetchQueries({
-        //     include: [GET_PUBLICATIONS]
-        // })
+       
 
         await storage.save({
             key: 'removedFromFeed',

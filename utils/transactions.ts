@@ -6,6 +6,7 @@ import { Effect, Either } from "effect"
 import { convergenceClient } from "../data/apollo"
 import { AccountSignatureError, DeserializationError, EncryptionError, InboxNotFoundError, TransactionFailedError, TransactionFetchError, TransactionGenerationError, TransactionSubmissionError, UnknownError } from "./errors"
 import config from "../config"
+import ephemeralCache from "../lib/local-store/ephemeral-cache"
 
 interface deserializeTransactionArgs {
     raw_transaction: Array<number>
@@ -15,6 +16,7 @@ interface deserializeTransactionArgs {
 
 export function deserializeTransaction(args: deserializeTransactionArgs) {
     const { raw_transaction, signature } = args
+
 
     const transaction_deserializer = new Deserializer(new Uint8Array(raw_transaction))
     const signature_deserializer = new Deserializer(new Uint8Array(signature))
@@ -89,6 +91,15 @@ export function constructConvergenceTransaction<InputArgs = any>(args: construct
             // @ts-ignore // TODO: Fix this
             const data = result?.data?.[args.name]
 
+            //have client ref handling
+            //store in cache, 
+            //ephemeral
+
+            if(data.client_ref) {
+                ephemeralCache.set('client_ref_cache',data.client_ref)
+            }
+
+
             if (!data) throw new Error("Response is null")
 
             return data
@@ -101,7 +112,7 @@ export function constructConvergenceTransaction<InputArgs = any>(args: construct
             Effect.flatMap((data) => {
                 return Effect.try({
                     try: () => {
-                        const deserialized = deserializeTransaction(data)
+                        const deserialized = deserializeTransaction(data.client_ref? data.txn : data)
                         return deserialized
                     },
                     catch(error) {
@@ -114,7 +125,7 @@ export function constructConvergenceTransaction<InputArgs = any>(args: construct
                     try() {
                         const account_signature = generateAccountSignature({
                             ...deserialized,
-                            fee_payer_address: config.HERMES_MODULE_ADDRESS
+                            fee_payer_address: args.fee_payer_address
                         })
 
                         return {
@@ -132,7 +143,7 @@ export function constructConvergenceTransaction<InputArgs = any>(args: construct
                     try() {
                         const transaction = generateUnsubmitedTransaction({
                             ...transactionArgs,
-                            fee_payer_address: config.HERMES_MODULE_ADDRESS
+                            fee_payer_address: args.fee_payer_address
                         })
 
                         return transaction

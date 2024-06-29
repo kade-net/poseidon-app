@@ -5,6 +5,7 @@ import { GET_MEMBERSHIP } from '../../../../utils/queries'
 import { useQuery } from '@apollo/client'
 import delegateManager from '../../../../lib/delegate-manager'
 import communityModule from '../../../../contract/modules/community'
+import BaseButton from '../../../../components/ui/buttons/base-button'
 interface Props {
     data: Partial<Account>
     community: string
@@ -58,12 +59,12 @@ const MemberProfile = (props: Props) => {
                     <XStack>
                         {
                             membership?.data?.membership?.type == 1 ?
-                                <Button onPress={handleToggle} size={'$2'} >
+                                <BaseButton onPress={handleToggle} size={'$2'} >
                                     Remove Host
-                                </Button> :
-                                <Button onPress={handleToggle} size={'$2'} >
+                                </BaseButton> :
+                                <BaseButton onPress={handleToggle} size={'$2'} >
                                     Make Host
-                                </Button>
+                                </BaseButton>
                         }
                     </XStack>
             }

@@ -32,6 +32,24 @@ const documents = {
     "\n    query AnchorTransactions($user_address: String!) {\n        anchorTransactions(\n            user_address: $user_address\n        ) {\n            sender_address\n            receiver_address\n            anchor_amount\n            timestamp\n            type\n        }\n    }\n\n": types.AnchorTransactionsDocument,
     "\n    mutation AdminRemoveAccount($input: adminRemoveAccountArgs!) {\n        adminRemoveAccount(input: $input)\n    }\n": types.AdminRemoveAccountDocument,
     "\n    mutation setupSelfDelegate($input: setupSelfDelegateArgs!) {\n        setupSelfDelegate(input: $input) {\n            raw_transaction\n            signature\n        }\n    }\n": types.SetupSelfDelegateDocument,
+    "\n    mutation createPublication($args: createPublicationInput!) {\n        createPublication(input: $args) {\n            client_ref\n            txn {\n                raw_transaction\n                signature\n            }\n        }\n    }\n": types.CreatePublicationDocument,
+    "\n    mutation CreatePublicationWithRef($args: createPublicationWithRefInput!) {\n        createPublicationWithRef(input: $args) {\n            client_ref\n            txn {\n                raw_transaction\n                signature\n            }\n        }\n    }\n": types.CreatePublicationWithRefDocument,
+    "\n    mutation RemovePublication($args: removePublicationInput!) {\n        removePublication(input: $args) {\n            client_ref\n            txn {\n                raw_transaction\n                signature\n            }\n        }\n    }\n": types.RemovePublicationDocument,
+    "\n    mutation RemovePublicationWithRef($args: removePublicationWithRefInput!) {\n        removePublicationWithRef(input: $args) {\n            raw_transaction\n            signature\n        }\n    }\n": types.RemovePublicationWithRefDocument,
+    "\n    mutation CreateReaction($args: createReactionInput!) {\n        createReaction(input: $args) {\n            raw_transaction\n            signature\n        }\n    }\n": types.CreateReactionDocument,
+    "\n    mutation CreateReactionWithRef($args: createReactionWithRefInput!) {\n        createReactionWithRef(input: $args) {\n            raw_transaction\n            signature\n        }\n    }\n": types.CreateReactionWithRefDocument,
+    "\n    mutation RemoveReactionWithRef($args: removeReactionWithRefInput!) {\n        removeReactionWithRef(input: $args) {\n            raw_transaction\n            signature\n        }\n    }\n": types.RemoveReactionWithRefDocument,
+    "\n    mutation RemoveReaction($args: removeReactionInput!) {\n        removeReaction(input: $args) {\n            raw_transaction\n            signature\n        }\n    }\n": types.RemoveReactionDocument,
+    "\n    mutation UploadFile($args: UploadFileInput!) {\n        uploadFile(input: $args) {\n            upload_url\n            file_url\n        }\n    }\n": types.UploadFileDocument,
+    "\n        mutation UpdateProfile($args: updateProfileInput!) {\n            updateProfile(input: $args) {\n                raw_transaction\n                signature\n            }\n        }\n": types.UpdateProfileDocument,
+    "\n    mutation FollowAccount($args: followAccountInput!) {\n        followAccount(input: $args) {\n            raw_transaction\n            signature\n        }\n    }\n": types.FollowAccountDocument,
+    "\n    mutation UnfollowAccount($args: unfollowAccountInput!) {\n        unfollowAccount(input: $args) {\n            raw_transaction\n            signature\n        }\n    }\n\n": types.UnfollowAccountDocument,
+    "\n    mutation CreateCommunity($args: createCommunityInput!) {\n        createCommunity(input: $args)\n    }\n": types.CreateCommunityDocument,
+    "\n    mutation CommunityAddHost($args: addHostInput!) {\n        communityAddHost(input: $args)\n    }\n": types.CommunityAddHostDocument,
+    "\n    mutation JoinCommunity($args: joinCommunityInput!) {\n        joinCommunity(input: $args)\n    }\n": types.JoinCommunityDocument,
+    "\n    mutation RemoveCommunityHost($args: removeCommunityHostInput!) {\n        removeCommunityHost(input: $args)\n    }\n": types.RemoveCommunityHostDocument,
+    "\n    mutation UpdateCommunity($args: updateCommunityInput!) {\n        updateCommunity(input: $args)\n    }\n": types.UpdateCommunityDocument,
+    "\n    mutation DeleteCommunity($args: deleteCommunityInput!) {\n        deleteCommunity(input: $args)\n    }\n": types.DeleteCommunityDocument,
     "\n    query Portals {\n        portals {\n            name\n            description\n            icon\n            url\n            post_id\n            user_kid\n            username\n            created_at\n        }\n    }\n": types.PortalsDocument,
 };
 
@@ -128,7 +146,79 @@ export function gql(source: "\n    mutation setupSelfDelegate($input: setupSelfD
 /**
  * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
+
+export function gql(source: "\n    mutation createPublication($args: createPublicationInput!) {\n        createPublication(input: $args) {\n            client_ref\n            txn {\n                raw_transaction\n                signature\n            }\n        }\n    }\n"): (typeof documents)["\n    mutation createPublication($args: createPublicationInput!) {\n        createPublication(input: $args) {\n            client_ref\n            txn {\n                raw_transaction\n                signature\n            }\n        }\n    }\n"];
+/**
+ * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function gql(source: "\n    mutation CreatePublicationWithRef($args: createPublicationWithRefInput!) {\n        createPublicationWithRef(input: $args) {\n            client_ref\n            txn {\n                raw_transaction\n                signature\n            }\n        }\n    }\n"): (typeof documents)["\n    mutation CreatePublicationWithRef($args: createPublicationWithRefInput!) {\n        createPublicationWithRef(input: $args) {\n            client_ref\n            txn {\n                raw_transaction\n                signature\n            }\n        }\n    }\n"];
+/**
+ * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function gql(source: "\n    mutation RemovePublication($args: removePublicationInput!) {\n        removePublication(input: $args) {\n            client_ref\n            txn {\n                raw_transaction\n                signature\n            }\n        }\n    }\n"): (typeof documents)["\n    mutation RemovePublication($args: removePublicationInput!) {\n        removePublication(input: $args) {\n            client_ref\n            txn {\n                raw_transaction\n                signature\n            }\n        }\n    }\n"];
+/**
+ * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function gql(source: "\n    mutation RemovePublicationWithRef($args: removePublicationWithRefInput!) {\n        removePublicationWithRef(input: $args) {\n            raw_transaction\n            signature\n        }\n    }\n"): (typeof documents)["\n    mutation RemovePublicationWithRef($args: removePublicationWithRefInput!) {\n        removePublicationWithRef(input: $args) {\n            raw_transaction\n            signature\n        }\n    }\n"];
+/**
+ * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function gql(source: "\n    mutation CreateReaction($args: createReactionInput!) {\n        createReaction(input: $args) {\n            raw_transaction\n            signature\n        }\n    }\n"): (typeof documents)["\n    mutation CreateReaction($args: createReactionInput!) {\n        createReaction(input: $args) {\n            raw_transaction\n            signature\n        }\n    }\n"];
+/**
+ * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function gql(source: "\n    mutation CreateReactionWithRef($args: createReactionWithRefInput!) {\n        createReactionWithRef(input: $args) {\n            raw_transaction\n            signature\n        }\n    }\n"): (typeof documents)["\n    mutation CreateReactionWithRef($args: createReactionWithRefInput!) {\n        createReactionWithRef(input: $args) {\n            raw_transaction\n            signature\n        }\n    }\n"];
+/**
+ * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function gql(source: "\n    mutation RemoveReactionWithRef($args: removeReactionWithRefInput!) {\n        removeReactionWithRef(input: $args) {\n            raw_transaction\n            signature\n        }\n    }\n"): (typeof documents)["\n    mutation RemoveReactionWithRef($args: removeReactionWithRefInput!) {\n        removeReactionWithRef(input: $args) {\n            raw_transaction\n            signature\n        }\n    }\n"];
+/**
+ * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function gql(source: "\n    mutation RemoveReaction($args: removeReactionInput!) {\n        removeReaction(input: $args) {\n            raw_transaction\n            signature\n        }\n    }\n"): (typeof documents)["\n    mutation RemoveReaction($args: removeReactionInput!) {\n        removeReaction(input: $args) {\n            raw_transaction\n            signature\n        }\n    }\n"];
+/**
+ * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function gql(source: "\n    mutation UploadFile($args: UploadFileInput!) {\n        uploadFile(input: $args) {\n            upload_url\n            file_url\n        }\n    }\n"): (typeof documents)["\n    mutation UploadFile($args: UploadFileInput!) {\n        uploadFile(input: $args) {\n            upload_url\n            file_url\n        }\n    }\n"];
+/**
+ * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function gql(source: "\n        mutation UpdateProfile($args: updateProfileInput!) {\n            updateProfile(input: $args) {\n                raw_transaction\n                signature\n            }\n        }\n"): (typeof documents)["\n        mutation UpdateProfile($args: updateProfileInput!) {\n            updateProfile(input: $args) {\n                raw_transaction\n                signature\n            }\n        }\n"];
+/**
+ * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function gql(source: "\n    mutation FollowAccount($args: followAccountInput!) {\n        followAccount(input: $args) {\n            raw_transaction\n            signature\n        }\n    }\n"): (typeof documents)["\n    mutation FollowAccount($args: followAccountInput!) {\n        followAccount(input: $args) {\n            raw_transaction\n            signature\n        }\n    }\n"];
+/**
+ * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function gql(source: "\n    mutation UnfollowAccount($args: unfollowAccountInput!) {\n        unfollowAccount(input: $args) {\n            raw_transaction\n            signature\n        }\n    }\n\n"): (typeof documents)["\n    mutation UnfollowAccount($args: unfollowAccountInput!) {\n        unfollowAccount(input: $args) {\n            raw_transaction\n            signature\n        }\n    }\n\n"];
+/**
+ * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function gql(source: "\n    mutation CreateCommunity($args: createCommunityInput!) {\n        createCommunity(input: $args)\n    }\n"): (typeof documents)["\n    mutation CreateCommunity($args: createCommunityInput!) {\n        createCommunity(input: $args)\n    }\n"];
+/**
+ * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function gql(source: "\n    mutation CommunityAddHost($args: addHostInput!) {\n        communityAddHost(input: $args)\n    }\n"): (typeof documents)["\n    mutation CommunityAddHost($args: addHostInput!) {\n        communityAddHost(input: $args)\n    }\n"];
+/**
+ * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function gql(source: "\n    mutation JoinCommunity($args: joinCommunityInput!) {\n        joinCommunity(input: $args)\n    }\n"): (typeof documents)["\n    mutation JoinCommunity($args: joinCommunityInput!) {\n        joinCommunity(input: $args)\n    }\n"];
+/**
+ * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function gql(source: "\n    mutation RemoveCommunityHost($args: removeCommunityHostInput!) {\n        removeCommunityHost(input: $args)\n    }\n"): (typeof documents)["\n    mutation RemoveCommunityHost($args: removeCommunityHostInput!) {\n        removeCommunityHost(input: $args)\n    }\n"];
+/**
+ * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function gql(source: "\n    mutation UpdateCommunity($args: updateCommunityInput!) {\n        updateCommunity(input: $args)\n    }\n"): (typeof documents)["\n    mutation UpdateCommunity($args: updateCommunityInput!) {\n        updateCommunity(input: $args)\n    }\n"];
+/**
+ * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function gql(source: "\n    mutation DeleteCommunity($args: deleteCommunityInput!) {\n        deleteCommunity(input: $args)\n    }\n"): (typeof documents)["\n    mutation DeleteCommunity($args: deleteCommunityInput!) {\n        deleteCommunity(input: $args)\n    }\n"];
+
 export function gql(source: "\n    query Portals {\n        portals {\n            name\n            description\n            icon\n            url\n            post_id\n            user_kid\n            username\n            created_at\n        }\n    }\n"): (typeof documents)["\n    query Portals {\n        portals {\n            name\n            description\n            icon\n            url\n            post_id\n            user_kid\n            username\n            created_at\n        }\n    }\n"];
+
 
 export function gql(source: string) {
   return (documents as any)[source] ?? {};
