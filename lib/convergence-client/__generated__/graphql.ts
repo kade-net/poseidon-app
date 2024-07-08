@@ -901,7 +901,6 @@ export type SetupSelfDelegateMutationVariables = Exact<{
 
 export type SetupSelfDelegateMutation = { __typename?: 'Mutation', setupSelfDelegate: { __typename?: 'SerializedTransaction', raw_transaction: Array<number>, signature: Array<number> } };
 
-
 export type CreatePublicationMutationVariables = Exact<{
   args: CreatePublicationInput;
 }>;
@@ -1032,7 +1031,6 @@ export type PortalsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
 export type PortalsQuery = { __typename?: 'Query', portals?: Array<{ __typename?: 'Portal', name?: string | null, description?: string | null, icon?: string | null, url: string, post_id: number, user_kid: number, username?: string | null, created_at?: any | null }> | null };
-
 
 
 export const RegisterRequestInboxDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"RegisterRequestInbox"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"args"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"RegisterRequestInboxInputArgs"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"registerRequestInbox"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"args"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"raw_transaction"}},{"kind":"Field","name":{"kind":"Name","value":"signature"}}]}}]}}]} as unknown as DocumentNode<RegisterRequestInboxMutation, RegisterRequestInboxMutationVariables>;

@@ -229,6 +229,7 @@ export type Query = {
   publicationComments?: Maybe<Array<Publication>>;
   publicationInteractionsByViewer?: Maybe<PublicationViewerStats>;
   publicationStats?: Maybe<PublicationStats>;
+  publicationThreads?: Maybe<Array<Publication>>;
   publications?: Maybe<Array<Publication>>;
   userNotifications?: Maybe<Array<Notification>>;
 };
@@ -376,6 +377,12 @@ export type QueryPublicationInteractionsByViewerArgs = {
 
 
 export type QueryPublicationStatsArgs = {
+  id?: InputMaybe<Scalars['Int']['input']>;
+  ref?: InputMaybe<Scalars['String']['input']>;
+};
+
+
+export type QueryPublicationThreadsArgs = {
   id?: InputMaybe<Scalars['Int']['input']>;
   ref?: InputMaybe<Scalars['String']['input']>;
 };

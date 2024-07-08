@@ -295,7 +295,7 @@ export async function saveIncomingMessage(envelope: Envelope) {
 }
 
 
-const GM_SEARCH_REGEX = /(^|\s)gm(\s|$)|gmgm/gi
+const GM_SEARCH_REGEX = /(^|\s)gm(\s|$)|gmgm|gm/gi
 const LFG_SEARCH_REGEX = /(^|\s)lfg(\s|$)|lfglfg/gi
 const LFM_SEARCH_REGEX = /(^|\s)lfm(\s|$)|lfmlfm/gi
 const GN_SEARCH_REGEX = /(^|\s)gn(\s|$)|gngn/gi

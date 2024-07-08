@@ -105,12 +105,13 @@ export function buildPortalTransaction(aptos: Aptos, args: buildPortalTransactio
     const task = Effect.tryPromise({ 
         try: async () => {
             const functionArguments = FunctionParameter.prepareForSubmission(FunctionParameter.deserializeAll(module_arguments))
+            const typeArguments = FunctionParameter.prepareForSubmission(FunctionParameter.deserializeAll(type_arguments ?? ""))
             const transaction = await aptos.transaction.build.simple({
                 sender: AccountAddress.from(user_address),
                 data: {
                     function: module_function as any,
                     functionArguments,
-                    typeArguments: type_arguments ? type_arguments?.split(",") : []
+                    typeArguments: typeArguments as any ?? [] 
                 },
                 options: {
                     expireTimestamp: Date.now() + 1000 * 60 * 60 * 24,

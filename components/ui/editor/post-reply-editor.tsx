@@ -109,7 +109,7 @@ const PostReplyTextEditor = (props: PostReplyTextEditorProps) => {
                                 mentions={publication?.content?.mentions}
                             />
                         </Text>
-                        {
+                        {/* {
                             contentLinks?.map((link, i) => {
                                 return (
                                     <LinkResolver
@@ -118,7 +118,7 @@ const PostReplyTextEditor = (props: PostReplyTextEditorProps) => {
                                     />
                                 )
                             })
-                        }
+                        } */}
                         <View flexDirection="row" flexWrap="wrap" w="100%" columnGap={10} rowGap={10} >
                             {
                                 publication?.content?.media?.filter((media: Entities.Media) => media?.type?.includes("image"))?.map((media: Entities.Media) => {

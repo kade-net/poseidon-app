@@ -7,10 +7,14 @@ interface usePortalProps {
     initialUrl: string
 }
 
+
+const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms))
+
 function usePortal(props: usePortalProps) {
     const [portal, setPortal] = useState<BasePortal | null>(null)
     const [loading, setLoading] = useState<boolean>(false)
     const [error, setError] = useState<any>(null)
+    const [currentURL, setCurrentURL] = useState<string>("")
     const { initialUrl } = props
 
     const handleButtonPress = async (args: { button: PortalButton, input?: string, hash?: string, kid: number, ref: string }) => {
@@ -26,6 +30,8 @@ function usePortal(props: usePortalProps) {
 
                     setPortal(arg.portal)
                 }
+                setCurrentURL(button.target)
+                await sleep(1000)
                 setLoading(false)
             },
             input,
@@ -52,6 +58,7 @@ function usePortal(props: usePortalProps) {
                 setPortal(right)
             },
         })
+        await sleep(1000)
         setLoading(false)
     }, [])
 
@@ -73,7 +80,8 @@ function usePortal(props: usePortalProps) {
         loading,
         error,
         setPortal,
-        handleButtonPress
+        handleButtonPress,
+        currentURL
     }
 }
 

@@ -75,12 +75,12 @@ const LinkResolver = (props: Props) => {
         })
     }
 
-    if (link.includes("https://portals.poseidon.ac") || link.includes("http://192.168.1.5:3000")) {
+    if (link.includes("https://portals.poseidon.ac") || link.includes("http://192.168.1.4:3000") || link.includes('https://shacks.poseidon.ac')) {
         return <PortalRenderer
             kid={kid}
             post_ref={publication_ref}
             url={
-                __DEV__ ? link?.replace("https://portals.poseidon.ac", "http://192.168.1.5:3000") :
+                __DEV__ ? link?.replace("https://portals.poseidon.ac", "http://192.168.1.4:3000") :
                     link
             }
         />

@@ -146,7 +146,6 @@ export function gql(source: "\n    mutation setupSelfDelegate($input: setupSelfD
 /**
  * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-
 export function gql(source: "\n    mutation createPublication($args: createPublicationInput!) {\n        createPublication(input: $args) {\n            client_ref\n            txn {\n                raw_transaction\n                signature\n            }\n        }\n    }\n"): (typeof documents)["\n    mutation createPublication($args: createPublicationInput!) {\n        createPublication(input: $args) {\n            client_ref\n            txn {\n                raw_transaction\n                signature\n            }\n        }\n    }\n"];
 /**
  * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
@@ -216,9 +215,10 @@ export function gql(source: "\n    mutation UpdateCommunity($args: updateCommuni
  * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function gql(source: "\n    mutation DeleteCommunity($args: deleteCommunityInput!) {\n        deleteCommunity(input: $args)\n    }\n"): (typeof documents)["\n    mutation DeleteCommunity($args: deleteCommunityInput!) {\n        deleteCommunity(input: $args)\n    }\n"];
-
+/**
+ * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
 export function gql(source: "\n    query Portals {\n        portals {\n            name\n            description\n            icon\n            url\n            post_id\n            user_kid\n            username\n            created_at\n        }\n    }\n"): (typeof documents)["\n    query Portals {\n        portals {\n            name\n            description\n            icon\n            url\n            post_id\n            user_kid\n            username\n            created_at\n        }\n    }\n"];
-
 
 export function gql(source: string) {
   return (documents as any)[source] ?? {};

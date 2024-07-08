@@ -1,4 +1,4 @@
-import { View, Text, YStack, XStack, H3 } from 'tamagui'
+import { View, Text, YStack, XStack, H3, useTheme } from 'tamagui'
 import React from 'react'
 import { useQuery } from '@apollo/client'
 import { GET_PORTALS } from '../../../lib/convergence-client/queries'
@@ -8,11 +8,17 @@ import { convergenceClient } from '../../../data/apollo'
 import PortalCard from './portal-card'
 import Loading from '../../../components/ui/feedback/loading'
 import Empty from '../../../components/ui/feedback/empty'
+import { Portal } from '../../../lib/convergence-client/__generated__/graphql'
+import { WebView } from 'react-native-webview'
+import BaseButton from '../../../components/ui/buttons/base-button'
+import { useRouter } from 'expo-router'
 
 const Portals = () => {
+    const theme = useTheme()
     const portalsQuery = useQuery(GET_PORTALS, {
         client: convergenceClient
     })
+    const router = useRouter()
 
     return (
         <YStack
@@ -22,14 +28,20 @@ const Portals = () => {
             backgroundColor={'$background'}
             p={20}
         >
-            <XStack w="100%" alignItems='center' pb={20} >
+            <XStack w="100%" alignItems='center' justifyContent='space-between' pb={20} >
                 <H3 fontFamily={'$roboto'} >
                     Portals
                 </H3>
             </XStack>
             <YStack flex={1} w="100%" h="100%" >
                 <FlatList
-                    data={portalsQuery?.data?.portals}
+                    data={__DEV__ ? [
+                        {
+                            url: `http://192.168.1.4:3000/swap`,
+                            post_id: 1,
+                            user_kid: 102,
+                        },
+                    ] : portalsQuery?.data?.portals}
                     keyExtractor={(item) => item.url}
                     contentContainerStyle={{
                         rowGap: 20,

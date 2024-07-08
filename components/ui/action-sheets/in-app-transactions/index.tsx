@@ -327,7 +327,7 @@ function Submitting() {
 }
 
 interface Props {
-    handleClose: () => void
+    handleClose: (hash?: string) => void
 }
 function SuccessfulSubmission(props: Props) {
     const { handleClose } = props
@@ -337,7 +337,7 @@ function SuccessfulSubmission(props: Props) {
 
     const onClose = () => {
 
-        handleClose()
+        handleClose(transactionHash ?? undefined)
 
     }
 
@@ -353,17 +353,17 @@ function SuccessfulSubmission(props: Props) {
         <YStack flex={1} w="100%" h="100%" alignItems='center' justifyContent='center' rowGap={10} >
             <Check size={48} color={'$green10'} />
             <Text color={'$green10'} >Successful</Text>
-            <TouchableOpacity onPress={handleOpenLink} >
+            {/* <TouchableOpacity onPress={handleOpenLink} >
                 <XStack>
                     <Text color={'$blue10'} >View on Explorer</Text>
                     <ExternalLink size={16} color='$blue10' />
                 </XStack>
-            </TouchableOpacity>
-            <BaseButton
+            </TouchableOpacity> */}
+            {/* <BaseButton
                 onPress={onClose}
             >
                 <Text>Done</Text>
-            </BaseButton>
+            </BaseButton> */}
         </YStack>
     )
 
@@ -378,7 +378,14 @@ interface P {
 const InAppTransactions = (props: P) => {
     const { module_arguments, module_function, type_arguments, onClose } = props
     const currentState = TransactionActorContext.useSelector((state) => state.value)
+    const transactionHash = TransactionActorContext.useSelector((state) => state.context.transactionHash)
     const actor = TransactionActorContext.useActorRef()
+
+    useEffect(() => {
+        if (transactionHash) {
+            onClose(transactionHash)
+        }
+    }, [transactionHash])
 
     useEffect(() => {
         if (module_arguments && module_function && currentState == 'closed') {

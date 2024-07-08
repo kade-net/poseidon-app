@@ -126,7 +126,7 @@ export const inAppTransactionsMachine = setup({
                                 params: {
                                     errorMessage: left._tag == 'TransactionSimulationError' ?
                                         MSG == "INSUFFICIENT_BALANCE_FOR_TRANSACTION_FEE" ?
-                                            'Insufficient balance' : left?.originalError?.message ??
+                                            `Insufficient balance, this may happen when you don't have enough to cover the gas fee` : left?.originalError?.message ??
                                             'Transaction simulation error'
                                         : 'Generic simulation error',
                                     module_arguments: module_arguments ?? context.module_arguments,
