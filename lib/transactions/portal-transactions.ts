@@ -100,7 +100,6 @@ export interface buildPortalTransactionArgs {
 
 export function buildPortalTransaction(aptos: Aptos, args: buildPortalTransactionArgs) {
     const { module_arguments, module_function, type_arguments, user_address } = args
-    console.log("Args::", args)
 
     const task = Effect.tryPromise({ 
         try: async () => {
@@ -111,7 +110,7 @@ export function buildPortalTransaction(aptos: Aptos, args: buildPortalTransactio
                 data: {
                     function: module_function as any,
                     functionArguments,
-                    typeArguments: typeArguments as any ?? [] 
+                    typeArguments: typeArguments?.filter((a) => a) as any ?? [] 
                 },
                 options: {
                     expireTimestamp: Date.now() + 1000 * 60 * 60 * 24,
