@@ -85,7 +85,7 @@ const RankBadge = (props: Props) => {
                     <Text>{details?.description}</Text>
                     <Separator />
                     <H5>
-                        Accuired Badges
+                        Acquired Badges
                     </H5>
                     <XStack flex={1} w="100%" columnGap={10} >
                         {
