@@ -359,3 +359,20 @@ export const GET_PORTALS = gql(/* GraphQL */`
         }
     }
 `)
+
+
+export const GET_RANKING = gql(/* GraphQL */`
+    query GetRanking($user_address: String!) {
+    getRanking(
+        user_address: $user_address
+    ) {
+        rank
+        points
+        badges {
+            type
+            owner
+            timestamp
+        }
+    }
+}
+`)

@@ -51,6 +51,7 @@ const documents = {
     "\n    mutation UpdateCommunity($args: updateCommunityInput!) {\n        updateCommunity(input: $args)\n    }\n": types.UpdateCommunityDocument,
     "\n    mutation DeleteCommunity($args: deleteCommunityInput!) {\n        deleteCommunity(input: $args)\n    }\n": types.DeleteCommunityDocument,
     "\n    query Portals {\n        portals {\n            name\n            description\n            icon\n            url\n            post_id\n            user_kid\n            username\n            created_at\n        }\n    }\n": types.PortalsDocument,
+    "\n    query GetRanking($user_address: String!) {\n    getRanking(\n        user_address: $user_address\n    ) {\n        rank\n        points\n        badges {\n            type\n            owner\n            timestamp\n        }\n    }\n}\n": types.GetRankingDocument,
 };
 
 /**
@@ -219,6 +220,10 @@ export function gql(source: "\n    mutation DeleteCommunity($args: deleteCommuni
  * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function gql(source: "\n    query Portals {\n        portals {\n            name\n            description\n            icon\n            url\n            post_id\n            user_kid\n            username\n            created_at\n        }\n    }\n"): (typeof documents)["\n    query Portals {\n        portals {\n            name\n            description\n            icon\n            url\n            post_id\n            user_kid\n            username\n            created_at\n        }\n    }\n"];
+/**
+ * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function gql(source: "\n    query GetRanking($user_address: String!) {\n    getRanking(\n        user_address: $user_address\n    ) {\n        rank\n        points\n        badges {\n            type\n            owner\n            timestamp\n        }\n    }\n}\n"): (typeof documents)["\n    query GetRanking($user_address: String!) {\n    getRanking(\n        user_address: $user_address\n    ) {\n        rank\n        points\n        badges {\n            type\n            owner\n            timestamp\n        }\n    }\n}\n"];
 
 export function gql(source: string) {
   return (documents as any)[source] ?? {};

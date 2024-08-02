@@ -39,6 +39,13 @@ export enum AnchorTransactionType {
   Withdraw = 'WITHDRAW'
 }
 
+export type Badge = {
+  __typename?: 'Badge';
+  owner: Scalars['String']['output'];
+  timestamp?: Maybe<Scalars['Date']['output']>;
+  type: Scalars['String']['output'];
+};
+
 export type CAccount = {
   __typename?: 'CAccount';
   address: Scalars['String']['output'];
@@ -461,6 +468,7 @@ export type Query = {
   accounts: Array<CAccount>;
   anchorTransactions: Array<AnchorTransaction>;
   connection?: Maybe<Connection>;
+  getRanking?: Maybe<Ranking>;
   phoneBook?: Maybe<PhoneBook>;
   portals?: Maybe<Array<Portal>>;
 };
@@ -482,8 +490,21 @@ export type QueryConnectionArgs = {
 };
 
 
+export type QueryGetRankingArgs = {
+  duration?: InputMaybe<Scalars['String']['input']>;
+  user_address: Scalars['String']['input'];
+};
+
+
 export type QueryPhoneBookArgs = {
   address: Scalars['String']['input'];
+};
+
+export type Ranking = {
+  __typename?: 'Ranking';
+  badges?: Maybe<Array<Badge>>;
+  points: Scalars['Int']['output'];
+  rank: Scalars['String']['output'];
 };
 
 export type RegisterDelegateArgs = {
@@ -1032,6 +1053,13 @@ export type PortalsQueryVariables = Exact<{ [key: string]: never; }>;
 
 export type PortalsQuery = { __typename?: 'Query', portals?: Array<{ __typename?: 'Portal', name?: string | null, description?: string | null, icon?: string | null, url: string, post_id: number, user_kid: number, username?: string | null, created_at?: any | null }> | null };
 
+export type GetRankingQueryVariables = Exact<{
+  user_address: Scalars['String']['input'];
+}>;
+
+
+export type GetRankingQuery = { __typename?: 'Query', getRanking?: { __typename?: 'Ranking', rank: string, points: number, badges?: Array<{ __typename?: 'Badge', type: string, owner: string, timestamp?: any | null }> | null } | null };
+
 
 export const RegisterRequestInboxDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"RegisterRequestInbox"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"args"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"RegisterRequestInboxInputArgs"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"registerRequestInbox"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"args"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"raw_transaction"}},{"kind":"Field","name":{"kind":"Name","value":"signature"}}]}}]}}]} as unknown as DocumentNode<RegisterRequestInboxMutation, RegisterRequestInboxMutationVariables>;
 export const RequestConversationDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"RequestConversation"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"args"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"RequestConversationArgs"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"requestConversation"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"args"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"raw_transaction"}},{"kind":"Field","name":{"kind":"Name","value":"signature"}}]}}]}}]} as unknown as DocumentNode<RequestConversationMutation, RequestConversationMutationVariables>;
@@ -1071,3 +1099,4 @@ export const RemoveCommunityHostDocument = {"kind":"Document","definitions":[{"k
 export const UpdateCommunityDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"UpdateCommunity"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"args"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"updateCommunityInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"updateCommunity"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"args"}}}]}]}}]} as unknown as DocumentNode<UpdateCommunityMutation, UpdateCommunityMutationVariables>;
 export const DeleteCommunityDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"DeleteCommunity"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"args"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"deleteCommunityInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"deleteCommunity"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"args"}}}]}]}}]} as unknown as DocumentNode<DeleteCommunityMutation, DeleteCommunityMutationVariables>;
 export const PortalsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"Portals"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"portals"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"icon"}},{"kind":"Field","name":{"kind":"Name","value":"url"}},{"kind":"Field","name":{"kind":"Name","value":"post_id"}},{"kind":"Field","name":{"kind":"Name","value":"user_kid"}},{"kind":"Field","name":{"kind":"Name","value":"username"}},{"kind":"Field","name":{"kind":"Name","value":"created_at"}}]}}]}}]} as unknown as DocumentNode<PortalsQuery, PortalsQueryVariables>;
+export const GetRankingDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetRanking"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"user_address"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"getRanking"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"user_address"},"value":{"kind":"Variable","name":{"kind":"Name","value":"user_address"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"rank"}},{"kind":"Field","name":{"kind":"Name","value":"points"}},{"kind":"Field","name":{"kind":"Name","value":"badges"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"owner"}},{"kind":"Field","name":{"kind":"Name","value":"timestamp"}}]}}]}}]}}]} as unknown as DocumentNode<GetRankingQuery, GetRankingQueryVariables>;
