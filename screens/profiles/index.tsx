@@ -33,6 +33,7 @@ import Badge from "../../components/badges/badge";
 import { GET_RANKING } from '../../lib/convergence-client/queries'
 import { convergenceClient } from '../../data/apollo'
 import RankBadge from '../../components/badges/rank-badge'
+import HighlightMentions from '../../components/ui/feed/highlight-mentions'
 
 interface Props {
   address: string;
@@ -302,7 +303,9 @@ const ProfileDetails = (props: Props) => {
           </XStack>
           <XStack>
             <Text color={"$text"} fontSize={"$sm"}>
-              {profileQuery.data?.account?.profile?.bio}
+              <HighlightMentions
+                content={profileQuery.data?.account?.profile?.bio ?? ''}
+              />
             </Text>
           </XStack>
         </YStack>

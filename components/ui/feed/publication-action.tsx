@@ -84,7 +84,7 @@ const PublicationActions = (props: Props) => {
     return (
         <>
             <TouchableOpacity onPress={onOpen} style={{ paddingLeft: 10 }} >
-                <MoreVertical size={'$1'} color={'$sideText'} />
+                <MoreVertical size={14} color={'$sideText'} />
             </TouchableOpacity>
             {isOpen && <BaseContentSheet
                 open={isOpen}

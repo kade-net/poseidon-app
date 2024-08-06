@@ -51,9 +51,11 @@ const ContentPreviewContainer = (props: Props) => {
                         </Text>
                     </XStack>
                 </XStack>
-                <Text w="100%" color={'$sideText'} >
+                <Text w="100%" fontSize={18} color={'$sideText'} >
                     {
-                        props?.data?.content?.content
+                        truncate(props?.data?.content?.content, {
+                            length: 100
+                        })
                     }
                 </Text>
                 <View flexDirection="row" flexWrap="wrap" w="100%" columnGap={10} rowGap={10} >

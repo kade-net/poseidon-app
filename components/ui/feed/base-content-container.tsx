@@ -1,7 +1,7 @@
 
 import "../../../global"
 import { Dot, Heart, MessageSquare, MoreHorizontal, MoreVertical, Repeat2, Reply } from "@tamagui/lucide-icons";
-import { Avatar, Text, View, XStack, YStack, useTheme } from "tamagui";
+import { Avatar, Separator, Text, View, XStack, YStack, useTheme } from "tamagui";
 import dayjs from "dayjs";
 import relativeTime from 'dayjs/plugin/relativeTime'
 import { Publication, PublicationStats } from "../../../__generated__/graphql";
@@ -76,11 +76,11 @@ function BaseContentContainer(props: BaseContentContainerProps) {
   return (
     <YStack
       w="100%"
-      borderBottomWidth={0.5}
-      borderColor={"$borderColor"}
+      // borderBottomWidth={0.5}
+      // borderColor={"$borderColor"}
       py={10}
       px={20}
-      pb={10}
+      // pb={10}
     >
       {_data?.type == 4 && (
         <Link
@@ -119,7 +119,7 @@ function BaseContentContainer(props: BaseContentContainerProps) {
       )}
 
       <View w="100%" rowGap={10}>
-        <XStack columnGap={10}>
+        <XStack columnGap={15} >
           <Link
             asChild
             href={{
@@ -155,9 +155,9 @@ function BaseContentContainer(props: BaseContentContainerProps) {
               }}
               asChild
             >
-              <YStack>
+              <YStack h="full" justifyContent="space-between" >
                 <XStack w="100%" columnGap={5} alignItems="center">
-                  <Text fontSize={"$xs"}>
+                  <Text fontSize={18} fontWeight={'600'} >
                     {HAS_LONG_DISPLAY_NAME
                       ? `${data?.creator?.profile?.display_name?.slice(
                         0,
@@ -171,7 +171,7 @@ function BaseContentContainer(props: BaseContentContainerProps) {
                     } />
                   </XStack>
                 </XStack>
-                <Text color={"$sideText"} fontSize={"$xs"}>
+                <Text color={"$sideText"}>
                   @
                   {HAS_LONG_USERNAME
                     ? `${data?.creator?.username?.username.slice(0, 10)}...`
@@ -241,7 +241,7 @@ function BaseContentContainer(props: BaseContentContainerProps) {
           {/* Content */}
           <View w="100%" flex={1}>
             <YStack w="100%" paddingBottom={10}>
-              <Text color={"$text"}>
+              <Text color={"$text"} fontSize={20} >
                 <HighlightMentions
                   content={`${data?.content?.content} ${__DEV__ ? data?.id : ""
                     }`}
@@ -292,6 +292,7 @@ function BaseContentContainer(props: BaseContentContainerProps) {
           />
         </View>
       </View>
+      <Separator pt={20} />
     </YStack>
   );
 }
