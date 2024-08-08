@@ -123,13 +123,18 @@ const Editor = (props: Props) => {
     }
 
     const handlePublish = async (values: TPUBLICATION) => {
-        console.log('Publishing', values, publishing, publicationType)
         Haptics.selectionAsync()
         if (publishing) {
             return
         }
         setPublishing(true)
         try {
+            const mentions = Object.fromEntries(
+                Object.entries(MENTIONS ?? {}).filter(([k, v]) => {
+                    return values.content.includes(`@${k}`)
+                })
+            )
+            values.mentions = mentions
             if (publicationType === 1) {
                 await publications.createPublication(values)
                 // TODO: success message
