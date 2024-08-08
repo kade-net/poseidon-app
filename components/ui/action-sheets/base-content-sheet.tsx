@@ -1,5 +1,6 @@
-import { View, Text, Sheet } from 'tamagui'
+import { View, Text } from 'tamagui'
 import React, { memo } from 'react'
+import { Sheet } from '@tamagui/sheet'
 
 interface Props {
     open: boolean
@@ -10,9 +11,11 @@ interface Props {
     showOverlay?: boolean
     animation?: 'quick' | 'lazy' | 'medium' | 'none' | 'slow'
     dismissOnOverlayPress?: boolean
+    containerComponent?: (props: any) => any
+    disableDrag?: boolean
 }
 const BaseContentSheet = (props: Props) => {
-    const { open, onOpenChange, snapPoints, level = 1, children, showOverlay = true, animation, dismissOnOverlayPress = true } = props
+    const { open, onOpenChange, snapPoints, level = 1, children, showOverlay = true, animation, dismissOnOverlayPress = true, containerComponent, disableDrag = false } = props
 
     return (
         <Sheet
@@ -29,12 +32,14 @@ const BaseContentSheet = (props: Props) => {
             dismissOnSnapToBottom
             modal
             unmountChildrenWhenHidden
+            containerComponent={containerComponent}
+            disableDrag={disableDrag}
         >
             <Sheet.Overlay
                 animation={"lazy"}
                 enterStyle={{ opacity: 0 }}
                 exitStyle={{ opacity: 0 }}
-                bg={showOverlay == false ? '$colorTransparent' : undefined}
+                backgroundColor={showOverlay !== undefined && showOverlay == false ? "rgba(0,0,0,0.1)" : undefined}
             />
 
             <Sheet.Frame backgroundColor={"$background"}>

@@ -41,7 +41,7 @@ export const config = createTamagui({
       card: 'rgb(18, 18, 18)',
       text: 'rgb(250,250,250)',
       sideText: '#148BA0',
-      border: 'rgb(39, 39, 41)',
+      border: '#0A2D33',
       reactionBorderColor:"rgb(151,151,156)",
       reactionTextColor:"rgb(151,151,156)",
       activeReaction: "rgb(196, 20, 134)",
@@ -59,7 +59,7 @@ export const config = createTamagui({
       portalBackground: '#2a2432',
       portalButton: '#ffffff1a',
       portalBorderColor: '#4c3a4e80',
-      inputBackground: '#08171A'
+      inputBackground: '#08171A',
     },
     light: {
       ...configBase.themes.light,

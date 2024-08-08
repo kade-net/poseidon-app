@@ -295,7 +295,9 @@ const Home = () => {
                     zIndex={2}
                 >
                     {!isOpen && <TouchableOpacity
-                        onPress={onOpen}
+                        onPress={() => {
+                            router.push('/editor?type=1')
+                        }}
                     >
                         <View
                             p={10}

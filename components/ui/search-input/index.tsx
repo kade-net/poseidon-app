@@ -1,5 +1,5 @@
 import { View, Text, XStack, Input } from 'tamagui'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Search, XCircle } from '@tamagui/lucide-icons'
 import { TouchableOpacity } from 'react-native'
 
@@ -7,11 +7,16 @@ interface Props {
 
 }
 
-type P = Props & Parameters<typeof Input>[0]
+type P = Props & Parameters<typeof Input>[0] & {
+    onInputActiveChange?: (active: boolean) => void
+}
 
 const SearchInput = (props: P) => {
-    const { ...rest } = props
+    const { onInputActiveChange, ...rest } = props
     const [active, setActive] = useState(false)
+    useEffect(() => {
+        onInputActiveChange?.(active)
+    }, [active])
     return (
         <XStack flex={1} alignItems='center' backgroundColor={'$inputBackground'} borderRadius={30} px={20}   >
             {active && <XStack w="100%" alignItems='center'   >
@@ -21,6 +26,15 @@ const SearchInput = (props: P) => {
                     onPress={() => {
                         setActive(false)
                         rest?.onChangeText?.('')
+                    }}
+                    style={{
+                        position: 'absolute',
+                        right: -20,
+                        top: 0,
+                        height: 40,
+                        width: 40,
+                        alignItems: 'center',
+                        justifyContent: 'center',
                     }}
                 >
                     <XCircle color={'$red10'} size={16} />

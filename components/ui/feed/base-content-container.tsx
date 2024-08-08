@@ -292,7 +292,7 @@ function BaseContentContainer(props: BaseContentContainerProps) {
           />
         </View>
       </View>
-      <Separator pt={20} />
+      <Separator borderColor={'$border'} pt={20} />
     </YStack>
   );
 }

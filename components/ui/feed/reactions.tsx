@@ -15,6 +15,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import * as Haptics from 'expo-haptics'
 import BaseButton from '../buttons/base-button'
 import { getReactionType } from '../../../contract/modules/hermes/utils'
+import { useRouter } from 'expo-router'
 
 
 
@@ -44,6 +45,8 @@ const PublicationReactions = (props: Props) => {
         }
         return null
     }, [publication?.content?.content])
+
+    const router = useRouter()
 
     // if (publication?.id == 1769) {
     //     const HAS_GM = GM_SEARCH_REGEX.test((publication?.content?.content as string)?.toLowerCase() ?? '')
@@ -124,11 +127,12 @@ const PublicationReactions = (props: Props) => {
             finally {
                 // closeRepost()
                 setQuoteLoading(false)
+                closeRepost()
             }
             return
         }
-        setCurrentPublicationType(2)
-        onOpen()
+        closeRepost()
+        router.push(`/editor?type=2&publicationId=${publication?.id}&ref=${publication_ref}`)
     }
 
 
@@ -136,8 +140,7 @@ const PublicationReactions = (props: Props) => {
         <View flexDirection='row' alignItems='center' w="full" columnGap={20} >
             <TouchableOpacity onPress={() => {
                 Haptics.selectionAsync()
-                setCurrentPublicationType(3)
-                onOpen()
+                router.push(`/editor?type=3&publicationId=${publication?.id}&ref=${publication_ref}`)
             }} style={styles.action_container} >
                 <MessageSquare strokeWidth={3} size={15} mr={10} color={userInteractions.data?.publicationInteractionsByViewer?.commented ? "$activeReaction" : "$reactionBorderColor"}
                     fill={
