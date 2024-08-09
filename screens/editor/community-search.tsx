@@ -1,5 +1,5 @@
 import { ChevronDown, ChevronUp, Home } from '@tamagui/lucide-icons'
-import React, { useEffect, useMemo } from 'react'
+import React, { memo, useEffect, useMemo } from 'react'
 import { FlatList, Keyboard, KeyboardAvoidingView, Platform, TouchableOpacity, useColorScheme } from 'react-native'
 import { Avatar, Separator, Text, XStack, YStack } from 'tamagui'
 import useDisclosure from '../../components/hooks/useDisclosure'
@@ -183,4 +183,4 @@ const CommunitySearch = (props: Props) => {
     )
 }
 
-export default CommunitySearch
+export default memo(CommunitySearch)

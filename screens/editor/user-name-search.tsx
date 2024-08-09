@@ -1,5 +1,5 @@
 import { View, FlatList, TouchableOpacity, Platform } from 'react-native'
-import React, { useMemo } from 'react'
+import React, { memo, useMemo } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 import { TPUBLICATION } from '../../schema'
 import { useQuery } from '@apollo/client'
@@ -95,4 +95,4 @@ const UserNameSearch = (props: Props) => {
     )
 }
 
-export default UserNameSearch
+export default memo(UserNameSearch)

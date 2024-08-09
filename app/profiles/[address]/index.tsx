@@ -5,7 +5,7 @@ import { Stack, useGlobalSearchParams } from 'expo-router'
 
 const index = () => {
     const params = useGlobalSearchParams()
-    const userAddress = params['address'] as string ?? null
+    const userAddress = params['address'] as string ?? ''
     return (
         <>
             <ProfileDetails

@@ -41,7 +41,6 @@ interface Props {
 
 const ProfileDetails = (props: Props) => {
   const tamaguiTheme = useTheme();
-
   const { address } = props;
   const theme = useTheme();
   const layout = useWindowDimensions();
@@ -79,6 +78,7 @@ const ProfileDetails = (props: Props) => {
             <PostsTab
               topSectionHeight={topSectionHeight}
               manager={scrollManager}
+              address={address}
               {...props}
             />
           );
@@ -87,6 +87,7 @@ const ProfileDetails = (props: Props) => {
             <RepostsTab
               topSectionHeight={topSectionHeight}
               manager={scrollManager}
+              address={address}
               {...props}
             />
           );
@@ -95,6 +96,7 @@ const ProfileDetails = (props: Props) => {
             <LikesTab
               topSectionHeight={topSectionHeight}
               manager={scrollManager}
+              address={address}
               {...props}
             />
           );
@@ -103,6 +105,7 @@ const ProfileDetails = (props: Props) => {
             <NftsTab
               topSectionHeight={topSectionHeight}
               manager={scrollManager}
+              address={address}
               {...props}
             />
           );
@@ -132,7 +135,7 @@ const ProfileDetails = (props: Props) => {
         />
       );
     },
-    [, topSectionHeight, scrollManager]
+    [topSectionHeight, scrollManager]
   );
 
   const IS_SAME_ACCOUNT = delegateManager.owner === address;

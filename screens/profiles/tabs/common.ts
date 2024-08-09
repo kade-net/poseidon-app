@@ -12,6 +12,7 @@ export interface SceneProps extends SceneRendererProps {
 export interface ProfileTabsProps extends SceneProps {
     manager: ScrollManager
     topSectionHeight: number
+    address: string
 }
 
 export interface ScrollManager {
