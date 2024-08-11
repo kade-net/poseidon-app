@@ -14,7 +14,7 @@ const UsersInterest =  () => {
     const insets = useSafeAreaInsets()
 
     const handleSkip = () => {
-        router.push('/onboard/interests/topics/')
+        router.push('/onboard/interests/communities')
     }
 
     const preventBackFlow = (): boolean => {
@@ -46,7 +46,6 @@ const UsersInterest =  () => {
                     <Heading size={"$md"} color={"$text"} >
                         Users
                     </Heading>
-                    <UnstyledButton label='Skip' icon={<ChevronRight/>} after={true} callback={handleSkip}/>
                 </View>
                 <Heading color={"$text"} size="$sm" py={10}>
                     Follow users to see their posts and updates

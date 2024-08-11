@@ -60,7 +60,7 @@ const _layout = () => {
                             if (profileQuery.loading) return null
                             return (
                                 <View bg="$background" w="100%" >
-                                    <View flexDirection='row' w="100%" alignItems='center' justifyContent='space-between' py={5} px={10} >
+                                    <View flexDirection='row' w="100%" alignItems='center' justifyContent='space-between' py={5} px={20} >
                                         <TouchableOpacity
                                             style={{
                                                 flexDirection: 'row',

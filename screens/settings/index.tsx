@@ -12,6 +12,7 @@ import * as Haptics from 'expo-haptics'
 import * as Updates from 'expo-updates'
 import posti from '../../lib/posti'
 import Toast from 'react-native-toast-message'
+import * as LocalAuthentication from 'expo-local-authentication'
 
 const Settings = () => {
     const [updatesReady, setUpdatesReady] = useState(false)
@@ -88,6 +89,15 @@ const Settings = () => {
         }
     }
 
+    const handleViewRecoveryPhrase = async () => {
+        Haptics.selectionAsync()
+        const res = await LocalAuthentication.authenticateAsync()
+        if (res.success || __DEV__) {
+
+            router.push('/settings/codes')
+        }
+    }
+
     return (
         <YStack
             w="100%"
@@ -158,11 +168,7 @@ const Settings = () => {
                         <Separator />
                     </YStack>
                 </Link>
-                <Link
-                    href="/settings/codes"
-                    asChild
-                >
-                    <YStack style={{
+                <TouchableOpacity onPress={handleViewRecoveryPhrase} style={{
                         width: "100%",
                     }} >
                         <XStack w="100%" p={20} justifyContent='space-between' >
@@ -175,8 +181,7 @@ const Settings = () => {
                             <ChevronRight />
                         </XStack>
                         <Separator />
-                    </YStack>
-                </Link>
+                </TouchableOpacity>
                 {Platform.OS == 'android' && <Link
                     href="/settings/anchors"
                     asChild

@@ -155,7 +155,7 @@ function BaseContentContainer(props: BaseContentContainerProps) {
               }}
               asChild
             >
-              <YStack h="full" justifyContent="space-between" >
+              <YStack justifyContent="space-between" >
                 <XStack w="100%" columnGap={5} alignItems="center">
                   <Text fontSize={18} fontWeight={'600'} >
                     {HAS_LONG_DISPLAY_NAME
@@ -180,7 +180,7 @@ function BaseContentContainer(props: BaseContentContainerProps) {
               </YStack>
             </Link>
             {/* <MoreHorizontal /> */}
-            <XStack alignItems="center">
+            <XStack alignItems="center" columnGap={10} >
               <Text color={"$sideText"}>{DATE_VALUE}</Text>
               <PublicationAction
                 publicationId={data?.id ?? 0}

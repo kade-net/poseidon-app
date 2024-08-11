@@ -27,7 +27,7 @@ const BaseContentSheet = (props: Props) => {
             }}
             open={open}
             onOpenChange={onOpenChange}
-            animation={animation == 'none' ? undefined : animation ?? 'quick'}
+            // animation={animation == 'none' ? undefined : animation ?? 'quick'}
             zIndex={level * 100_000}
             dismissOnSnapToBottom
             modal
@@ -36,10 +36,10 @@ const BaseContentSheet = (props: Props) => {
             disableDrag={disableDrag}
         >
             <Sheet.Overlay
-                animation={"lazy"}
+                animation={"medium"}
                 enterStyle={{ opacity: 0 }}
                 exitStyle={{ opacity: 0 }}
-                backgroundColor={showOverlay !== undefined && showOverlay == false ? "rgba(0,0,0,0.1)" : undefined}
+                backgroundColor={showOverlay ? "rgba(0,0,0,0.4)" : '$colorTransparent'}
             />
 
             <Sheet.Frame backgroundColor={"$background"}>

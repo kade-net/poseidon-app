@@ -17,6 +17,15 @@ import { GET_MY_PROFILE } from "../../utils/queries";
 import { Utils } from "../../utils";
 import PayIcon from "../../assets/svgs/pay-icon";
 import TipIcon from "../../assets/svgs/tip-icon";
+import { FullWindowOverlay } from "react-native-screens";
+import * as Haptics from 'expo-haptics'
+import * as Burnt from 'burnt'
+import * as LocalAuthentication from 'expo-local-authentication'
+import wallet from "../../lib/wallets/wallet";
+import { aptos } from "../../contract";
+import { convergenceClient } from "../../data/apollo";
+import { ADD_TRANSACTION } from "../../lib/convergence-client/queries";
+import posti from "../../lib/posti";
 
 const paymentSchema = z.object({
     currency: z.string(),
@@ -26,15 +35,15 @@ const paymentSchema = z.object({
 type PSchema = z.infer<typeof paymentSchema>
 
 interface Props {
-    receiver?: string
+    receiver: string
     action?: 'pay' | 'tip'
     currency?: 'APT' | 'GUI'
     amount?: number
 }
 
 const PayUser = (props: Props) => {
-    // TODO: remove receiver
-    const { receiver = "0x4ef479c7f529d93cd4cf7bcbc0e9c9516816dd6d9bfad032d543327deb24ed85", action = 'pay', currency = 'APT' } = props
+    const [transactionInProgress, setTransactionInProgress] = React.useState(false)
+    const { receiver, action = 'pay', currency = 'APT' } = props
 
     const theme = useTheme()
     const form = useForm<PSchema>({
@@ -77,6 +86,91 @@ const PayUser = (props: Props) => {
         },
         skip: !receiver
     })
+
+    const handlePay = async () => {
+        Haptics.selectionAsync()
+        setTransactionInProgress(true)
+        const currencyDetails = currencies.find(c => c.name == CURRENCY)
+        try {
+            const response = await LocalAuthentication.authenticateAsync()
+            if (!response.success && !__DEV__) {
+                Burnt?.[
+                    Platform.OS === 'ios' ? 'toast' : 'alert'
+                ]({
+                    title: 'Biometric Authentication Failed',
+                    message: 'Please try again',
+                    preset: 'error',
+                })
+                throw new Error('Authentication Failed')
+
+            }
+            const status = await wallet.sendApt({
+                amount: AMOUNT_FLT,
+                recipient: receiver,
+                type: currencyDetails?.address,
+                decimals: currencyDetails?.decimals
+            })
+
+            console.log("Status::", status)
+
+
+            if (status.success) {
+                Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success)
+                Burnt?.[
+                    Platform.OS === 'ios' ? 'toast' : 'alert'
+                ]({
+                    title: 'Transaction Successful',
+                    message: 'Your transaction was successful',
+                    preset: 'done',
+                    haptic: 'success'
+                })
+                form.setValue('amount', '')
+                balanceQuery.refetch()
+
+                try {
+                    await convergenceClient.mutate({
+                        mutation: ADD_TRANSACTION,
+                        variables: {
+                            input: {
+                                amount: AMOUNT_FLT,
+                                hash: status.hash,
+                                receiver: receiver,
+                                sender_address: delegateManager?.account?.address()?.toString() ?? '',
+                                type: action
+                            }
+                        }
+                    })
+                }
+                catch (e) {
+                    console.log("Error::", e)
+                }
+            }
+            else {
+                Burnt?.[
+                    Platform.OS === 'ios' ? 'toast' : 'alert'
+                ]({
+                    title: 'Transaction Failed',
+                    message: 'Your transaction was not successful',
+                    preset: 'error'
+                })
+
+                throw new Error('Transaction Failed')
+            }
+        }
+        catch (e) {
+            posti.capture('wallet-transaction-error', {
+                error: e,
+                amount: AMOUNT_FLT,
+                receiver: receiver,
+                currency: CURRENCY
+            })
+            console.log("Error sending transaction::", e)
+            Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error)
+        }
+        finally {
+            setTransactionInProgress(false)
+        }
+    }
 
     const HAS_BALANCE = (balanceQuery?.data ?? 0) >= (AMOUNT_FLT ?? 0)
 
@@ -185,11 +279,18 @@ const PayUser = (props: Props) => {
                     ios: 60,
                     android: 20
                 })} columnGap={10} >
-                    <BaseButton borderRadius={100} type="outlined" flex={1} >
-                        Cancel
-                    </BaseButton>
-                    <BaseButton borderRadius={100} flex={1} >
-                        Send
+                    <BaseButton
+                        disabled={!HAS_BALANCE}
+                        loading={transactionInProgress}
+                        onPress={handlePay}
+                        borderRadius={100} flex={1}
+                        type={(
+                            !HAS_BALANCE ||
+                            AMOUNT_FLT <= 0 ||
+                            balanceQuery.isLoading
+                        ) ? 'outlined' : 'primary'}
+                    >
+                        Confirm
                     </BaseButton>
                 </XStack>
             </YStack>

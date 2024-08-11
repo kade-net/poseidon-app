@@ -1,11 +1,12 @@
-import { View, Text, Button, Heading, XStack } from 'tamagui'
+import { View, Text, Button, Heading, XStack, H3 } from 'tamagui'
 import React from 'react'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
-import { ChevronLeft, Info, KeySquare, MonitorUp, Wallet } from '@tamagui/lucide-icons'
+import { ArrowLeft, ChevronLeft, Info, KeySquare, MonitorUp, Wallet } from '@tamagui/lucide-icons'
 import { useRouter } from 'expo-router'
 import { Utils } from '../../../utils'
 import UnstyledButton from '../../../components/ui/buttons/unstyled-button'
 import BaseButton from '../../../components/ui/buttons/base-button'
+import { TouchableOpacity } from 'react-native'
 
 const SignIn = () => {
     const insets = useSafeAreaInsets()
@@ -31,35 +32,35 @@ const SignIn = () => {
             flex={1}
             w="100%"
             backgroundColor={"$background"}
-            paddingHorizontal={20}
+            p={20}
         >
-            <View w="100%" >
-                <UnstyledButton callback={goBack} icon={<ChevronLeft/>} label={"Back"}/>  
-            </View>
+            <TouchableOpacity style={{
+                width: '100%',
+                alignItems: 'center',
+                justifyContent: 'flex-start',
+                flexDirection: 'row',
+            }} onPress={goBack} >
+                <ArrowLeft />
+            </TouchableOpacity>
             <View
                 flex={1}
+                w="100%"
+                h="100%"
                 alignItems='center'
-                px={20}
+                justifyContent='center'
                 rowGap={40}
             >
-                <Heading textAlign='center' color={"$text"}>
+                <H3 w="100%" textAlign='center' color={"$text"}>
                     How would you like to sign in?
-                </Heading>
+                </H3>
                 <View
                     rowGap={20}
+                    w="100%"
                 >
-                    <XStack w="100%" columnGap={10}  >
-                        <Info color={'$blue10'} />
-                        <Text
-                            color={'$blue10'}
-                        >
-                            Sign in with Kade Connect will only work if you already have a username!
-                        </Text>
-                    </XStack>
-                    <BaseButton onPress={goToKadeConnect} iconAfter={<MonitorUp />} >
+                    <BaseButton borderRadius={100} onPress={goToKadeConnect} iconAfter={<MonitorUp />} >
                         Sign in with Kade Connect
                     </BaseButton>
-                    <BaseButton onPress={goToSeedPhrase} iconAfter={<KeySquare />} >
+                    <BaseButton borderRadius={100} onPress={goToSeedPhrase} iconAfter={<KeySquare />} >
                         Sign in with Seed Phrase
                     </BaseButton>
                     {/* <BaseButton onPress={goToPetra} iconAfter={<Wallet />} >

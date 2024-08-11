@@ -35,13 +35,7 @@ const Portals = () => {
             </XStack>
             <YStack flex={1} w="100%" h="100%" >
                 <FlatList
-                    data={__DEV__ ? [
-                        {
-                            url: `http://192.168.1.4:3000/swap`,
-                            post_id: 1,
-                            user_kid: 102,
-                        },
-                    ] : portalsQuery?.data?.portals}
+                    data={portalsQuery?.data?.portals}
                     keyExtractor={(item) => item.url}
                     contentContainerStyle={{
                         rowGap: 20,

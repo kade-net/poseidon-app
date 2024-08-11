@@ -4,7 +4,7 @@ import { useQuery } from '@apollo/client'
 import { GET_ACCOUNT_STATS, GET_MY_PROFILE, GET_RELATIONSHIP } from '../../utils/queries'
 import delegateManager from '../../lib/delegate-manager'
 import { NavigationState, SceneRendererProps, TabView } from 'react-native-tab-view'
-import { Animated, Platform, TouchableOpacity, useColorScheme, useWindowDimensions } from 'react-native'
+import { Animated, Platform, useWindowDimensions } from 'react-native'
 import { clone } from 'lodash'
 import { SceneProps } from './tabs/common'
 import PostsTab from './tabs/posts'
@@ -22,18 +22,13 @@ import { useQuery as uzQuery } from 'react-query'
 import { aptos } from '../../contract'
 import AptosIcon from '../../assets/svgs/aptos-icon'
 import BaseButton from '../../components/ui/buttons/base-button'
-import ActiveBadge from "../../components/badges/active";
-import CatalystBadge from "../../components/badges/catalyst";
-import ExplorerBadge from "../../components/badges/explorer";
-import HypeBadge from "../../components/badges/hype";
-import PioneerBadge from "../../components/badges/pioneer";
-import TopPosterBadge from "../../components/badges/top-poster";
-import StreakBadge from "../../components/badges/streak";
 import Badge from "../../components/badges/badge";
 import { GET_RANKING } from '../../lib/convergence-client/queries'
 import { convergenceClient } from '../../data/apollo'
 import RankBadge from '../../components/badges/rank-badge'
 import HighlightMentions from '../../components/ui/feed/highlight-mentions'
+import PayIcon from '../../assets/svgs/pay-icon'
+import PayButton from '../pay/pay-button'
 
 interface Props {
   address: string;
@@ -236,7 +231,7 @@ const ProfileDetails = (props: Props) => {
           setTopSectionHeight(layout?.height ?? 0); // Add the tabbar height as well
         }}
       >
-        <YStack px={10}>
+        <YStack px={20}>
           <XStack w="100%" py={10} columnGap={10}>
             <Avatar circular size={"$7"}>
               <Avatar.Image
@@ -252,9 +247,9 @@ const ProfileDetails = (props: Props) => {
             <YStack justifyContent="space-between" w="100%" flex={1}>
               <XStack w="100%" justifyContent="space-between" flex={1}>
                 <YStack>
-                  <Text fontWeight="bold" color={"$text"} fontSize={"$lg"}>
+                  <H5>
                     {profileQuery.data?.account?.profile?.display_name}
-                  </Text>
+                  </H5>
                   <XStack columnGap={5}>
                     <Text color="$sideText" fontSize={"$sm"}>
                       @{profileQuery.data?.account?.username?.username}
@@ -285,22 +280,6 @@ const ProfileDetails = (props: Props) => {
                     )
                   }
                 </YStack>
-                {!IS_SAME_ACCOUNT && (
-                  <BaseButton
-                    rounded="large"
-                    size={"$3"}
-                    type={
-                      relationshipQuery?.data?.accountRelationship?.follows
-                        ? "outlined"
-                        : "primary"
-                    }
-                    onPress={handleFollowToggle}
-                  >
-                    {relationshipQuery?.data?.accountRelationship?.follows
-                      ? "Following"
-                      : "Follow"}
-                  </BaseButton>
-                )}
               </XStack>
             </YStack>
           </XStack>
@@ -312,7 +291,7 @@ const ProfileDetails = (props: Props) => {
             </Text>
           </XStack>
         </YStack>
-        <XStack px={10} w="100%" alignItems="center" columnGap={10} py={10}>
+        <XStack px={20} w="100%" alignItems="center" columnGap={10} py={10}>
           <XStack columnGap={5}>
             <Text fontWeight={"bold"} color={"$text"}>
               {accountStatsQuery?.data?.accountStats?.following}
@@ -346,6 +325,37 @@ const ProfileDetails = (props: Props) => {
             </Link>
           </XStack>
         </XStack>
+        {!IS_SAME_ACCOUNT &&
+          <XStack px={20} w="100%" alignItems='center' justifyContent='space-between' columnGap={10} py={10} >
+            <BaseButton
+              rounded="full"
+              size={"$3"}
+              flex={1}
+              type={
+                relationshipQuery?.data?.accountRelationship?.follows
+                  ? "outlined"
+                  : "primary"
+              }
+              onPress={handleFollowToggle}
+            >
+              {relationshipQuery?.data?.accountRelationship?.follows
+                ? "Following"
+                : "Follow"}
+            </BaseButton>
+            <PayButton
+              button={(props) => {
+                return (
+                  <BaseButton size={"$3"} onPress={props.onPress} flex={1} rounded='full' type='outlined' icon={<PayIcon color={undefined} size={20} />} >
+                    Pay
+                  </BaseButton>
+                )
+              }}
+              reciever={address}
+              action='pay'
+              currency='APT'
+            />
+
+          </XStack>}
       </Animated.View>
       <YStack flex={1} w="100%" h="100%">
         <TabView

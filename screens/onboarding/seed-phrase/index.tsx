@@ -1,7 +1,7 @@
 import { View, Text, Button, Heading, TextArea, XStack, Spinner } from 'tamagui'
 import React, { useRef } from 'react'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
-import { Check, ChevronLeft } from '@tamagui/lucide-icons'
+import { ArrowLeft, Check, ChevronLeft } from '@tamagui/lucide-icons'
 import { useRouter } from 'expo-router'
 import { z } from 'zod'
 import { Controller, useForm } from 'react-hook-form'
@@ -21,7 +21,9 @@ import BaseButton from '../../../components/ui/buttons/base-button'
 import { getPhoneBook } from '../../../lib/hermes-client/queries'
 import hermes from '../../../contract/modules/hermes'
 import posti from '../../../lib/posti'
-import { Keyboard, KeyboardAvoidingView, Platform, TextInput } from 'react-native'
+import { Keyboard, KeyboardAvoidingView, Platform, TextInput, TouchableOpacity } from 'react-native'
+import SeedPhraseForm from '../../../components/ui/seed-phrase-form'
+import * as Burnt from 'burnt'
 
 // The seed phrase will be a list of 12 words each separated by a space
 const schema = z.object({
@@ -53,8 +55,8 @@ const SeedPhrase = () => {
         router.replace('/onboard/signin')
     }
 
-    const goToUsername = () => { // IF USER DOESN'T HAVE A USERNAME YET
-        router.replace('/onboard/username')
+    const goToUsername = () => { // IF USER DOESN'T HAVE A USERNAME YET GO TO EMAIL
+        router.replace('/onboard/email')
     }
 
     const goToProfile = () => {
@@ -160,10 +162,10 @@ const SeedPhrase = () => {
                             delegate: delegateManager.account?.address().toString(),
                             owner: delegateManager.owner
                         })
-                        Toast.show({
-                            type: 'error',
-                            text1: 'Uh oh!',
-                            text2: 'Failed to setup account, please try again.'
+                        Burnt.toast({
+                            title: 'Account Setup Error',
+                            message: 'Something went wrong.',
+                            preset: 'error'
                         })
                     },
                     onRight: async (right) => {
@@ -187,10 +189,10 @@ const SeedPhrase = () => {
                     error: e
                 })
                 Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error)
-                Toast.show({
-                    type: 'error',
-                    text1: 'Unable to complete setup',
-                    text2: 'Please try again later.'
+                Burnt.toast({
+                    preset: 'error',
+                    title: 'Unable to complete setup',
+                    message: 'Please try again later.'
                 })
                 setLoading(false)
                 console.log(`SOMETHING WENT WRONG:: ${e}`)
@@ -202,10 +204,10 @@ const SeedPhrase = () => {
             })
             Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error)
             console.log(`SOMETHING WENT WRONG:: ${e}`)
-            Toast.show({
-                type: 'error',
-                text1: 'Error',
-                text2: 'Failed to verify seed phrase'
+            Burnt.toast({
+                preset: 'error',
+                title: 'Seed Phrase Error',
+                message: 'Failed to verify seed phrase'
             })
         }
         finally {
@@ -216,89 +218,82 @@ const SeedPhrase = () => {
     const handleError = (error: any) => {
         Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error)
         console.log(`SOMETHING WENT WRONG:: ${error}`)
-        Toast.show({
-            type: 'error',
-            text1: 'Error',
-            text2: 'Please enter a valid seed phrase.'
+        Burnt.toast({
+            preset: 'error',
+            title: 'Error',
+            message: 'Please enter a valid seed phrase.'
         })
 
     }
 
+    const SEED_PHRASE = form.watch('seedPhrase')
+
     return (
-        <View px={20} flex={1} pb={20} backgroundColor={"$background"}>
-            <View w="100%" columnGap={20} >
-                <UnstyledButton callback={goBack} icon={<ChevronLeft/>} label={"Back"}/>
-            </View>
-            <View
-                alignItems='center'
-                justifyContent='space-between'
-                flex={1}
-                w="100%"
-            >
-                <View w="100%" rowGap={10} >
-                    <Heading color={"$text"}>
-                        Seed Phrase
-                    </Heading>
-                    <Controller
-                        control={form.control}
-                        name="seedPhrase"
-                        render={({ field }) => {
-                            return (
-                                <>
-                                <TextArea
-                                        ref={textAreaRef}
-                                    backgroundColor={"$colorTransparent"}
-                                    onChangeText={field.onChange}
-                                    value={field.value}
-                                    numberOfLines={20}
-                                    fontWeight={"$2"}
-                                    fontSize={"$sm"}
-                                    height={100}
-                                    w={'100%'}
-                                        onFocus={() => setFocused(true)}
-                                    placeholder='Enter your seed phrase here...'
-                                        blurOnSubmit
-                                        onSubmitEditing={Keyboard.dismiss}
-                                />
-                                    {
-                                        Platform.OS === 'ios' && focused && (
+        <KeyboardAvoidingView style={{
+            flex: 1,
+            width: '100%',
+            height: '100%'
+        }}
+            behavior={Platform.select({
+                ios: 'padding',
+                android: 'height'
+            })}
+            keyboardVerticalOffset={Platform.select({
+                ios: 60,
+                android: 0
+            })}
+        >
+            <View px={20} flex={1} pb={20} backgroundColor={"$background"}>
+                <XStack w="100%" columnGap={20} >
+                    <TouchableOpacity onPress={goBack} >
+                        <ArrowLeft />
+                    </TouchableOpacity>
+                </XStack>
+                <View
+                    alignItems='center'
+                    justifyContent='space-between'
+                    flex={1}
+                    w="100%"
+                    pt={20}
+                >
+                    <View w="100%" flex={1} rowGap={10} >
+                        <Heading color={"$text"}>
+                            Seed Phrase
+                        </Heading>
 
-                                            <XStack w="100%" >
-                                                <BaseButton
-                                                    width={100}
-                                                    size={"$2"}
-                                                    onPress={handleBlur}
-                                                    borderRadius={20}
-                                                    icon={<Check />}
-                                                >
-                                                    <Text>
-                                                        Done
-                                                    </Text>
-                                                </BaseButton>
-                                            </XStack>
-                                        )
-                                    }
-                                </>
-                            )
-                        }}
-                    />
-                </View>
-                <KeyboardAvoidingView style={{
-                    width: '100%',
-
-                }} >
+                        <Controller
+                            control={form.control}
+                            name="seedPhrase"
+                            render={({ field }) => {
+                                return (
+                                    <SeedPhraseForm
+                                        onChange={(values) => {
+                                            if (values.length == 12) {
+                                                field.onChange(values.join(" "))
+                                            }
+                                        }}
+                                    />
+                                )
+                            }}
+                        />
+                    </View>
                     <BaseButton
                         loading={loading}
                         onPress={form.handleSubmit(handleSubmit, handleError)}
                         w="100%"
+                        borderRadius={100}
+                        disabled={((SEED_PHRASE?.length ?? 0) < 1)}
+                        backgroundColor={
+                            (((SEED_PHRASE?.length ?? 0) < 1) || loading) ? '$lightButton' : '$primary'
+                        }
                     >
                         <Text>
                             Continue
                         </Text>
                     </BaseButton>
-                </KeyboardAvoidingView>
+                </View>
             </View>
-        </View>
+        </KeyboardAvoidingView>
     )
 }
 

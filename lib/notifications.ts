@@ -7,6 +7,9 @@ import { Platform } from "react-native";
 import * as Device from 'expo-device'
 import Constants from 'expo-constants'
 import config from "../config";
+import * as SecureStore from 'expo-secure-store';
+import { convergenceClient } from "../data/apollo";
+import { ADD_TOKEN } from "./convergence-client/queries";
 
 // GET EXPO TOKEN
 
@@ -14,38 +17,26 @@ import config from "../config";
 class PoseidonNotifications {
 
     async enableNotifications() {
-        console.log('Enabling notifications')
         const token = await registerForPushNotificationsAsync()
         if (!token) throw new Error('Failed to get push token for push notification!')
-        console.log("Token:: ", token)
-        const response = await axios.post(`${COMMUNITY_SUPPORT_API}/api/notifications/register`, {
-            user_address: delegateManager.owner!,
-            token: token
-        })
 
-        await storage.save({
-            key: 'notifications',
-            id: delegateManager.owner!,
-            data: {
-                enabled: true,
-                token
+        await convergenceClient.mutate({
+            mutation: ADD_TOKEN,
+            variables: {
+                input: {
+                    sender_address: delegateManager.owner!,
+                    token: token
+                }
             }
         })
+
+        await SecureStore.setItemAsync('expo-push-token', token)
     }
 
     async disableNotifications() {
-        console.log('Disabling notifications')
-        const response = await axios.post(`${COMMUNITY_SUPPORT_API}/api/notifications/disable`, {
-            user_address: delegateManager.owner!,
-        })
+        // TODO: Implement this
 
-        await storage.save({
-            key: 'notifications',
-            id: delegateManager.owner!,
-            data: {
-                enabled: false
-            }
-        })
+        await SecureStore.deleteItemAsync('expo-push-token')
     }
 
 
@@ -53,12 +44,9 @@ class PoseidonNotifications {
     async getNotificationStatus() {
 
         try {
-            const response = await storage.load<{ enabled: boolean }>({
-                key: 'notifications',
-                id: delegateManager.owner!
-            })
+            const token = await SecureStore.getItemAsync('expo-push-token')
 
-            return response
+            return token
         }
         catch (e) {
             return null
@@ -66,15 +54,12 @@ class PoseidonNotifications {
     }
 
     async nukeNotifications() {
-        await storage.remove({
-            key: 'notifications',
-            id: delegateManager.owner!
-        })
+        await SecureStore.deleteItemAsync('expo-push-token')
     }
 
 }
 
-async function registerForPushNotificationsAsync() {
+export async function registerForPushNotificationsAsync() {
     let token;
 
     if (Platform.OS === 'android') {

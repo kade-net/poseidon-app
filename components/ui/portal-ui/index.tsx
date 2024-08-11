@@ -110,7 +110,7 @@ function RenderPortal(props: RenderPortalProps) {
         > 
 
             <YStack pos="relative" w={"100%"} aspectRatio={portal?.components?.image?.aspect_ratio ? Utils.convertAspectRatio(portal?.components?.image?.aspect_ratio) : 1.91 / 1} >
-                <Image
+                {portal?.components?.image?.image && <Image
                     style={{
                         width: '100%',
                         height: '100%',
@@ -128,7 +128,7 @@ function RenderPortal(props: RenderPortalProps) {
                     onLoad={() => {
                         setImageLoading(false)
                     }}
-                />
+                />}
 
                 {
                     imageLoading &&

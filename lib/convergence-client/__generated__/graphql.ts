@@ -153,6 +153,9 @@ export type Mutation = {
   __typename?: 'Mutation';
   acceptRequest: SerializedTransaction;
   addDelegateToKadeAndHermes: SerializedTransaction;
+  addEmail: Scalars['String']['output'];
+  addNotificationSettings: Scalars['String']['output'];
+  addTransaction: Scalars['String']['output'];
   adminRemoveAccount: Scalars['Boolean']['output'];
   cleanAnchorOrder?: Maybe<Scalars['String']['output']>;
   communityAddHost: Scalars['String']['output'];
@@ -176,10 +179,12 @@ export type Mutation = {
   delegateSendEnvelope: SerializedTransaction;
   deleteCommunity: Scalars['String']['output'];
   denyRequest: SerializedTransaction;
+  disableNotifications: Scalars['String']['output'];
   followAccount: SerializedTransaction;
   initKadeAccountWithHermesInboxAndDelegate: SerializedTransaction;
   initSelfDelegateKadeAccountWithHermesInbox: SerializedTransaction;
   joinCommunity: Scalars['String']['output'];
+  markReadNotifications: Scalars['String']['output'];
   registerDelegate: SerializedTransaction;
   registerDelegateOnKadeAndHermes: SerializedTransaction;
   registerInboxAndDelegate: SerializedTransaction;
@@ -193,12 +198,15 @@ export type Mutation = {
   removeReactionWithRef: SerializedTransaction;
   requestConversation: SerializedTransaction;
   send: SerializedTransaction;
+  sendVerificationCode?: Maybe<Scalars['String']['output']>;
+  setTopic: Scalars['String']['output'];
   setupSelfDelegate: SerializedTransaction;
   unfollowAccount: SerializedTransaction;
   updateCommunity: Scalars['String']['output'];
   updateConnection?: Maybe<Scalars['Boolean']['output']>;
   updateProfile: SerializedTransaction;
   uploadFile: UploadedFileResponse;
+  verifyCode?: Maybe<Scalars['String']['output']>;
 };
 
 
@@ -209,6 +217,21 @@ export type MutationAcceptRequestArgs = {
 
 export type MutationAddDelegateToKadeAndHermesArgs = {
   input: AddDelegateToKadeAndHermesArgs;
+};
+
+
+export type MutationAddEmailArgs = {
+  input: AddEmail;
+};
+
+
+export type MutationAddNotificationSettingsArgs = {
+  input: AddNotificationToken;
+};
+
+
+export type MutationAddTransactionArgs = {
+  input?: InputMaybe<RegisterTransaction>;
 };
 
 
@@ -327,6 +350,11 @@ export type MutationDenyRequestArgs = {
 };
 
 
+export type MutationDisableNotificationsArgs = {
+  input: DisableNotifications;
+};
+
+
 export type MutationFollowAccountArgs = {
   input: FollowAccountInput;
 };
@@ -344,6 +372,11 @@ export type MutationInitSelfDelegateKadeAccountWithHermesInboxArgs = {
 
 export type MutationJoinCommunityArgs = {
   input: JoinCommunityInput;
+};
+
+
+export type MutationMarkReadNotificationsArgs = {
+  input: MarkAsRead;
 };
 
 
@@ -412,6 +445,16 @@ export type MutationSendArgs = {
 };
 
 
+export type MutationSendVerificationCodeArgs = {
+  input: SendVerificationCodeEmail;
+};
+
+
+export type MutationSetTopicArgs = {
+  input?: InputMaybe<AddTopic>;
+};
+
+
 export type MutationSetupSelfDelegateArgs = {
   input: SetupSelfDelegateArgs;
 };
@@ -441,6 +484,27 @@ export type MutationUploadFileArgs = {
   input: UploadFileInput;
 };
 
+
+export type MutationVerifyCodeArgs = {
+  input: VerifyCode;
+};
+
+export type Notification = {
+  __typename?: 'Notification';
+  data?: Maybe<Scalars['JSON']['output']>;
+  read?: Maybe<Scalars['Boolean']['output']>;
+  recipient: Scalars['String']['output'];
+  sender: Scalars['String']['output'];
+  timestamp?: Maybe<Scalars['Date']['output']>;
+  type: Scalars['String']['output'];
+};
+
+export type NotificationResults = {
+  __typename?: 'NotificationResults';
+  notifications?: Maybe<Array<Notification>>;
+  unread_notifications: Scalars['Int']['output'];
+};
+
 export type PhoneBook = {
   __typename?: 'PhoneBook';
   address: Scalars['String']['output'];
@@ -468,7 +532,10 @@ export type Query = {
   accounts: Array<CAccount>;
   anchorTransactions: Array<AnchorTransaction>;
   connection?: Maybe<Connection>;
+  getNotifications?: Maybe<NotificationResults>;
   getRanking?: Maybe<Ranking>;
+  getSystemNotifications?: Maybe<Array<Notification>>;
+  notificationsSet?: Maybe<Scalars['Boolean']['output']>;
   phoneBook?: Maybe<PhoneBook>;
   portals?: Maybe<Array<Portal>>;
 };
@@ -490,8 +557,23 @@ export type QueryConnectionArgs = {
 };
 
 
+export type QueryGetNotificationsArgs = {
+  user_address: Scalars['String']['input'];
+};
+
+
 export type QueryGetRankingArgs = {
   duration?: InputMaybe<Scalars['String']['input']>;
+  user_address: Scalars['String']['input'];
+};
+
+
+export type QueryGetSystemNotificationsArgs = {
+  user_address: Scalars['String']['input'];
+};
+
+
+export type QueryNotificationsSetArgs = {
   user_address: Scalars['String']['input'];
 };
 
@@ -583,12 +665,27 @@ export type AddDelegateToKadeAndHermesArgs = {
   sender_address: Scalars['String']['input'];
 };
 
+export type AddEmail = {
+  email: Scalars['String']['input'];
+  verified: Scalars['Boolean']['input'];
+};
+
 export type AddHostInput = {
   community_name: Scalars['String']['input'];
   host_address: Scalars['String']['input'];
   host_username: Scalars['String']['input'];
   member_address: Scalars['String']['input'];
   member_username: Scalars['String']['input'];
+  sender_address: Scalars['String']['input'];
+};
+
+export type AddNotificationToken = {
+  sender_address: Scalars['String']['input'];
+  token: Scalars['String']['input'];
+};
+
+export type AddTopic = {
+  name: Scalars['String']['input'];
   sender_address: Scalars['String']['input'];
 };
 
@@ -689,6 +786,10 @@ export type DeleteCommunityInput = {
   username: Scalars['String']['input'];
 };
 
+export type DisableNotifications = {
+  sender_address: Scalars['String']['input'];
+};
+
 export type FollowAccountInput = {
   delegate_address: Scalars['String']['input'];
   following_address: Scalars['String']['input'];
@@ -714,6 +815,11 @@ export type JoinCommunityInput = {
   username: Scalars['String']['input'];
 };
 
+export type MarkAsRead = {
+  ids?: InputMaybe<Array<Scalars['String']['input']>>;
+  sender_address: Scalars['String']['input'];
+};
+
 export type RegisterDelegateOnKadeAndHermesArgs = {
   public_key: Scalars['String']['input'];
   sender_address: Scalars['String']['input'];
@@ -724,6 +830,14 @@ export type RegisterInboxAndDelegateArg = {
   delegate_address: Scalars['String']['input'];
   public_key: Scalars['String']['input'];
   sender_address: Scalars['String']['input'];
+};
+
+export type RegisterTransaction = {
+  amount: Scalars['Float']['input'];
+  hash: Scalars['String']['input'];
+  receiver: Scalars['String']['input'];
+  sender_address: Scalars['String']['input'];
+  type: Scalars['String']['input'];
 };
 
 export type RemoveCommunityHostInput = {
@@ -755,6 +869,11 @@ export type RemoveReactionWithRefInput = {
   ref: Scalars['String']['input'];
 };
 
+export type SendVerificationCodeEmail = {
+  email?: InputMaybe<Scalars['String']['input']>;
+  sender_address?: InputMaybe<Scalars['String']['input']>;
+};
+
 export type SetupSelfDelegateArgs = {
   sender_address: Scalars['String']['input'];
 };
@@ -784,6 +903,12 @@ export type UpdateProfileInput = {
   delegate_address: Scalars['String']['input'];
   display_name?: InputMaybe<Scalars['String']['input']>;
   pfp?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type VerifyCode = {
+  code?: InputMaybe<Scalars['String']['input']>;
+  email?: InputMaybe<Scalars['String']['input']>;
+  sender_address?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type RegisterRequestInboxMutationVariables = Exact<{
@@ -1060,6 +1185,48 @@ export type GetRankingQueryVariables = Exact<{
 
 export type GetRankingQuery = { __typename?: 'Query', getRanking?: { __typename?: 'Ranking', rank: string, points: number, badges?: Array<{ __typename?: 'Badge', type: string, owner: string, timestamp?: any | null }> | null } | null };
 
+export type SetTopicMutationVariables = Exact<{
+  input?: InputMaybe<AddTopic>;
+}>;
+
+
+export type SetTopicMutation = { __typename?: 'Mutation', setTopic: string };
+
+export type AddTransactionMutationVariables = Exact<{
+  input?: InputMaybe<RegisterTransaction>;
+}>;
+
+
+export type AddTransactionMutation = { __typename?: 'Mutation', addTransaction: string };
+
+export type AddNotificationSettingsMutationVariables = Exact<{
+  input: AddNotificationToken;
+}>;
+
+
+export type AddNotificationSettingsMutation = { __typename?: 'Mutation', addNotificationSettings: string };
+
+export type AddEmailMutationVariables = Exact<{
+  input: AddEmail;
+}>;
+
+
+export type AddEmailMutation = { __typename?: 'Mutation', addEmail: string };
+
+export type SendVerificationCodeMutationVariables = Exact<{
+  input: SendVerificationCodeEmail;
+}>;
+
+
+export type SendVerificationCodeMutation = { __typename?: 'Mutation', sendVerificationCode?: string | null };
+
+export type VerifyCodeMutationVariables = Exact<{
+  input: VerifyCode;
+}>;
+
+
+export type VerifyCodeMutation = { __typename?: 'Mutation', verifyCode?: string | null };
+
 
 export const RegisterRequestInboxDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"RegisterRequestInbox"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"args"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"RegisterRequestInboxInputArgs"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"registerRequestInbox"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"args"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"raw_transaction"}},{"kind":"Field","name":{"kind":"Name","value":"signature"}}]}}]}}]} as unknown as DocumentNode<RegisterRequestInboxMutation, RegisterRequestInboxMutationVariables>;
 export const RequestConversationDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"RequestConversation"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"args"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"RequestConversationArgs"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"requestConversation"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"args"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"raw_transaction"}},{"kind":"Field","name":{"kind":"Name","value":"signature"}}]}}]}}]} as unknown as DocumentNode<RequestConversationMutation, RequestConversationMutationVariables>;
@@ -1100,3 +1267,9 @@ export const UpdateCommunityDocument = {"kind":"Document","definitions":[{"kind"
 export const DeleteCommunityDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"DeleteCommunity"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"args"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"deleteCommunityInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"deleteCommunity"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"args"}}}]}]}}]} as unknown as DocumentNode<DeleteCommunityMutation, DeleteCommunityMutationVariables>;
 export const PortalsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"Portals"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"portals"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"icon"}},{"kind":"Field","name":{"kind":"Name","value":"url"}},{"kind":"Field","name":{"kind":"Name","value":"post_id"}},{"kind":"Field","name":{"kind":"Name","value":"user_kid"}},{"kind":"Field","name":{"kind":"Name","value":"username"}},{"kind":"Field","name":{"kind":"Name","value":"created_at"}}]}}]}}]} as unknown as DocumentNode<PortalsQuery, PortalsQueryVariables>;
 export const GetRankingDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetRanking"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"user_address"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"getRanking"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"user_address"},"value":{"kind":"Variable","name":{"kind":"Name","value":"user_address"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"rank"}},{"kind":"Field","name":{"kind":"Name","value":"points"}},{"kind":"Field","name":{"kind":"Name","value":"badges"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"owner"}},{"kind":"Field","name":{"kind":"Name","value":"timestamp"}}]}}]}}]}}]} as unknown as DocumentNode<GetRankingQuery, GetRankingQueryVariables>;
+export const SetTopicDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"SetTopic"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"addTopic"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"setTopic"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}]}]}}]} as unknown as DocumentNode<SetTopicMutation, SetTopicMutationVariables>;
+export const AddTransactionDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"AddTransaction"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"registerTransaction"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"addTransaction"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}]}]}}]} as unknown as DocumentNode<AddTransactionMutation, AddTransactionMutationVariables>;
+export const AddNotificationSettingsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"AddNotificationSettings"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"addNotificationToken"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"addNotificationSettings"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}]}]}}]} as unknown as DocumentNode<AddNotificationSettingsMutation, AddNotificationSettingsMutationVariables>;
+export const AddEmailDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"AddEmail"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"addEmail"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"addEmail"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}]}]}}]} as unknown as DocumentNode<AddEmailMutation, AddEmailMutationVariables>;
+export const SendVerificationCodeDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"SendVerificationCode"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"sendVerificationCodeEmail"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"sendVerificationCode"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}]}]}}]} as unknown as DocumentNode<SendVerificationCodeMutation, SendVerificationCodeMutationVariables>;
+export const VerifyCodeDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"VerifyCode"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"verifyCode"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"verifyCode"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}]}]}}]} as unknown as DocumentNode<VerifyCodeMutation, VerifyCodeMutationVariables>;

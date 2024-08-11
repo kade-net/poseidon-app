@@ -151,6 +151,7 @@ function RootLayoutNav() {
               <Stack.Screen name="profiles" options={{ headerShown: false }} />
               <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
                 <Stack.Screen name="editor" options={{ headerShown: false, presentation: 'modal', gestureEnabled: false }} />
+                <Stack.Screen name="wallet" options={{ headerShown: false, presentation: 'modal', gestureEnabled: false }} />
             </Stack>
             </PortalProvider>
             <Toast autoHide />

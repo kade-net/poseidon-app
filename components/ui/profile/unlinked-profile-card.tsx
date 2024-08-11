@@ -7,6 +7,7 @@ import { GET_RELATIONSHIP } from '../../../utils/queries'
 import delegateManager from '../../../lib/delegate-manager'
 import { Utils } from '../../../utils'
 import * as Haptics from 'expo-haptics'
+import BaseButton from '../buttons/base-button'
 
 
 interface Props {
@@ -81,13 +82,11 @@ const ProfileCard = (props: Props) => {
                                 </View>
                         </View>
                         <View>
-                            {queryData?.loading ? <Spinner /> : <Button onPress={handleFollowToggle} size={"$3"} backgroundColor={queryData?.data?.accountRelationship?.follows ? "$colourlessButton" : "$button"} borderWidth={queryData?.data?.accountRelationship?.follows ? 1 : 0} borderColor={"$button"} color={queryData?.data?.accountRelationship?.follows ? "$text" : "$buttonText"} mr={10}
-                                variant={queryData?.data?.accountRelationship?.follows ? "outlined" : undefined}
-                            >
+                            <BaseButton loading={queryData?.loading} borderRadius={100} onPress={handleFollowToggle} size={'$3'} type={queryData?.data?.accountRelationship?.follows ? "outlined" : "primary"}  >
                                 {
                                     queryData?.data?.accountRelationship?.follows ? "Following" : "Follow"
                                 }
-                            </Button>}
+                            </BaseButton>
                         </View>
                     </View>
                     {/* Bio */}

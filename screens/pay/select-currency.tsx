@@ -1,5 +1,5 @@
-import { View, Text, Image } from 'react-native'
-import React, { useEffect } from 'react'
+import { View, Text, Image, Platform } from 'react-native'
+import React, { useEffect, useMemo } from 'react'
 import AptosIcon from '../../assets/svgs/aptos-icon'
 import { Adapt, H3, H5, Select, Sheet, XStack, YStack } from 'tamagui'
 import BaseContentSheet from '../../components/ui/action-sheets/base-content-sheet'
@@ -8,6 +8,7 @@ import { z } from 'zod'
 import { Controller, useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { currencies } from '../../lib/currencies'
+import { FullWindowOverlay } from 'react-native-screens'
 
 
 const currencySchema = z.object({
@@ -30,6 +31,15 @@ const SelectCurrency = (props: Props) => {
             currency: value
         }
     })
+    const containerComponent = useMemo(() => (props: any) => (
+        Platform.OS === 'ios' ? (
+            <FullWindowOverlay>
+                <YStack flex={1} pe='box-none' >
+                    {props.children}
+                </YStack>
+            </FullWindowOverlay>
+        ) : props.children
+    ), [])
 
     useEffect(() => {
         const subscription = form.watch((values) => {
@@ -77,6 +87,7 @@ const SelectCurrency = (props: Props) => {
                                     }}
                                     snapPoints={[20]}
                                     dismissOnOverlayPress
+                                    containerComponent={containerComponent}
                                 >
                                     <Sheet.Frame>
                                         <Sheet.ScrollView py={10} >

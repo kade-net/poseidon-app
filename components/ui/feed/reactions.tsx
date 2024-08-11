@@ -147,7 +147,7 @@ const PublicationReactions = (props: Props) => {
 
 
     return (
-      <View flexDirection="row" alignItems="center" w="full" columnGap={20}>
+      <View flexDirection="row" alignItems="center" w={"100%"} columnGap={20}>
         <TouchableOpacity
           onPress={() => {
             Haptics.selectionAsync();
