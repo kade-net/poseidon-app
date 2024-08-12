@@ -8,6 +8,7 @@ import CommunityChoiceCard from '../../../../components/ui/community/community-c
 import communityModule from '../../../../contract/modules/community'
 import { router } from 'expo-router'
 import Toast from 'react-native-toast-message'
+import BaseButton from '../../../../components/ui/buttons/base-button'
 
 interface COMMUNITY {
     __typename?: "Community" | undefined;
@@ -70,7 +71,7 @@ const CommunitiesChoice = () => {
                 await handleFollow(item);
             }
 
-            router.replace('/(tabs)/feed/home')
+            router.replace('/onboard/notification')
         }
         catch (e) {
             Toast.show({
@@ -165,17 +166,11 @@ const CommunitiesChoice = () => {
                     )
                 }}
             />
-            <Button 
-                fontSize={"$sm"} 
-                disabled={saving || selectedItems.length === 0} 
-                backgroundColor={selectedItems.length > 0? "$button" : "$colourlessButton"}  
-                color={selectedItems.length === 0 ? "$text" : "$buttonText"} 
-                borderWidth={1} 
-                borderColor={"$button"} 
-                mt={10} 
-                onPress={saveCommunities}>
-                {saving ? 'Saving' : 'Save Communities'} {saving ? <Spinner color={"white"} /> : null}
-            </Button>
+            <BaseButton
+                disabled={saving}
+                onPress={saveCommunities} loading={saving} borderRadius={100} >
+                Done
+            </BaseButton>
         </YStack>
     )
 }

@@ -51,6 +51,13 @@ const documents = {
     "\n    mutation UpdateCommunity($args: updateCommunityInput!) {\n        updateCommunity(input: $args)\n    }\n": types.UpdateCommunityDocument,
     "\n    mutation DeleteCommunity($args: deleteCommunityInput!) {\n        deleteCommunity(input: $args)\n    }\n": types.DeleteCommunityDocument,
     "\n    query Portals {\n        portals {\n            name\n            description\n            icon\n            url\n            post_id\n            user_kid\n            username\n            created_at\n        }\n    }\n": types.PortalsDocument,
+    "\n    query GetRanking($user_address: String!) {\n    getRanking(\n        user_address: $user_address\n    ) {\n        rank\n        points\n        badges {\n            type\n            owner\n            timestamp\n        }\n    }\n}\n": types.GetRankingDocument,
+    "\n    mutation SetTopic ($input: addTopic) {\n    setTopic(input: $input) \n}    \n": types.SetTopicDocument,
+    "\n    mutation AddTransaction($input: registerTransaction) {\n        addTransaction(input: $input)\n    }\n": types.AddTransactionDocument,
+    "\n    mutation AddNotificationSettings($input: addNotificationToken!) {\n        addNotificationSettings(input: $input)\n    }\n": types.AddNotificationSettingsDocument,
+    "\nmutation AddEmail($input: addEmail!) {\n    addEmail(input: $input)\n}\n    ": types.AddEmailDocument,
+    "\nmutation SendVerificationCode($input: sendVerificationCodeEmail! ) {\n    sendVerificationCode(input: $input)\n}\n    ": types.SendVerificationCodeDocument,
+    "\n    mutation VerifyCode($input: verifyCode!) {\n    verifyCode(\n        input: $input\n    )\n}\n": types.VerifyCodeDocument,
 };
 
 /**
@@ -219,6 +226,34 @@ export function gql(source: "\n    mutation DeleteCommunity($args: deleteCommuni
  * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function gql(source: "\n    query Portals {\n        portals {\n            name\n            description\n            icon\n            url\n            post_id\n            user_kid\n            username\n            created_at\n        }\n    }\n"): (typeof documents)["\n    query Portals {\n        portals {\n            name\n            description\n            icon\n            url\n            post_id\n            user_kid\n            username\n            created_at\n        }\n    }\n"];
+/**
+ * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function gql(source: "\n    query GetRanking($user_address: String!) {\n    getRanking(\n        user_address: $user_address\n    ) {\n        rank\n        points\n        badges {\n            type\n            owner\n            timestamp\n        }\n    }\n}\n"): (typeof documents)["\n    query GetRanking($user_address: String!) {\n    getRanking(\n        user_address: $user_address\n    ) {\n        rank\n        points\n        badges {\n            type\n            owner\n            timestamp\n        }\n    }\n}\n"];
+/**
+ * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function gql(source: "\n    mutation SetTopic ($input: addTopic) {\n    setTopic(input: $input) \n}    \n"): (typeof documents)["\n    mutation SetTopic ($input: addTopic) {\n    setTopic(input: $input) \n}    \n"];
+/**
+ * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function gql(source: "\n    mutation AddTransaction($input: registerTransaction) {\n        addTransaction(input: $input)\n    }\n"): (typeof documents)["\n    mutation AddTransaction($input: registerTransaction) {\n        addTransaction(input: $input)\n    }\n"];
+/**
+ * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function gql(source: "\n    mutation AddNotificationSettings($input: addNotificationToken!) {\n        addNotificationSettings(input: $input)\n    }\n"): (typeof documents)["\n    mutation AddNotificationSettings($input: addNotificationToken!) {\n        addNotificationSettings(input: $input)\n    }\n"];
+/**
+ * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function gql(source: "\nmutation AddEmail($input: addEmail!) {\n    addEmail(input: $input)\n}\n    "): (typeof documents)["\nmutation AddEmail($input: addEmail!) {\n    addEmail(input: $input)\n}\n    "];
+/**
+ * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function gql(source: "\nmutation SendVerificationCode($input: sendVerificationCodeEmail! ) {\n    sendVerificationCode(input: $input)\n}\n    "): (typeof documents)["\nmutation SendVerificationCode($input: sendVerificationCodeEmail! ) {\n    sendVerificationCode(input: $input)\n}\n    "];
+/**
+ * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function gql(source: "\n    mutation VerifyCode($input: verifyCode!) {\n    verifyCode(\n        input: $input\n    )\n}\n"): (typeof documents)["\n    mutation VerifyCode($input: verifyCode!) {\n    verifyCode(\n        input: $input\n    )\n}\n"];
 
 export function gql(source: string) {
   return (documents as any)[source] ?? {};

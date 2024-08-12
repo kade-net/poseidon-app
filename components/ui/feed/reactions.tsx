@@ -15,6 +15,8 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import * as Haptics from 'expo-haptics'
 import BaseButton from '../buttons/base-button'
 import { getReactionType } from '../../../contract/modules/hermes/utils'
+import { useGlobalSearchParams, usePathname, useRouter } from "expo-router";
+import Editor from "../../../screens/editor";
 
 
 
@@ -26,6 +28,8 @@ interface Props {
 }
 
 const PublicationReactions = (props: Props) => {
+    const pathname = usePathname();
+    const params = useGlobalSearchParams<{ address: string }>();
     const insets = useSafeAreaInsets()
     const { initialStats, publication_ref, showNumbers = true, publication } = props
     const [currentPublicationType, setCurrentPublicationType] = React.useState<1 | 2 | 3 | 4>(3)
@@ -44,6 +48,8 @@ const PublicationReactions = (props: Props) => {
         }
         return null
     }, [publication?.content?.content])
+
+    const router = useRouter()
 
     // if (publication?.id == 1769) {
     //     const HAS_GM = GM_SEARCH_REGEX.test((publication?.content?.content as string)?.toLowerCase() ?? '')
@@ -124,160 +130,228 @@ const PublicationReactions = (props: Props) => {
             finally {
                 // closeRepost()
                 setQuoteLoading(false)
+                closeRepost()
             }
             return
         }
-        setCurrentPublicationType(2)
-        onOpen()
+        closeRepost()
+        if (pathname.includes("profiles")) {
+          const possible_address = params.address;
+          router.push(
+            `/profiles/${possible_address}/publication-editor?type=2&publicationId=${publication?.id}&ref=${publication_ref}`
+          );
+          return;
+        }
+        router.push(`/editor?type=2&publicationId=${publication?.id}&ref=${publication_ref}`)
     }
 
 
     return (
-        <View flexDirection='row' alignItems='center' w="full" columnGap={20} >
-            <TouchableOpacity onPress={() => {
-                Haptics.selectionAsync()
-                setCurrentPublicationType(3)
-                onOpen()
-            }} style={styles.action_container} >
-                <MessageSquare strokeWidth={3} size={15} mr={10} color={userInteractions.data?.publicationInteractionsByViewer?.commented ? "$activeReaction" : "$reactionBorderColor"}
-                    fill={
-                        userInteractions.data?.publicationInteractionsByViewer?.commented ? theme.activeReaction.val : theme.background.val
-                    }
-                />
-                {showNumbers && <Text fontSize={"$sm"}
-                    color={
-                        userInteractions.data?.publicationInteractionsByViewer?.commented ? '$activeReaction' : '$reactionTextColor'
-                    }
-                >
-                    {publicationStatsQuery.data?.publicationStats?.comments == 0 ? "" :
-                        publicationStatsQuery.data?.publicationStats?.comments ?? initialStats?.comments ?? 0
-                    }
-                </Text>}
-            </TouchableOpacity>
-            <TouchableOpacity onPress={openRepost} style={styles.action_container} >
-                <Repeat strokeWidth={3} size={15} mr={10} color={(userInteractions.data?.publicationInteractionsByViewer?.reposted
-                            || userInteractions.data?.publicationInteractionsByViewer?.quoted
-                        )?"$activeReaction":"$reactionBorderColor"}
-                    fill={
-                        (userInteractions.data?.publicationInteractionsByViewer?.reposted
-                            || userInteractions.data?.publicationInteractionsByViewer?.quoted
-                        ) ? theme.activeReaction.val : theme.background.val
-                    }
-                />
-                {showNumbers && <Text fontSize={"$sm"}
-                    color={
-                        (userInteractions.data?.publicationInteractionsByViewer?.reposted
-                            || userInteractions.data?.publicationInteractionsByViewer?.quoted
-                        ) ? '$activeReaction' : '$reactionTextColor'
-                    }
-                >
-                    {((publicationStatsQuery.data?.publicationStats?.reposts ?? 0) == 0 && publicationStatsQuery.data?.publicationStats?.quotes == 0) ? "" :
-                        (publicationStatsQuery.data?.publicationStats?.reposts ?? initialStats?.reposts ?? 0) +
-                        (publicationStatsQuery.data?.publicationStats?.quotes ?? initialStats?.quotes ?? 0)
-                    }
-                </Text>}
-            </TouchableOpacity>
-
-            <TouchableOpacity onPress={handleReact} style={styles.action_container} >
-                {
-                    CUSTOM_REACTION ? <Text
-                        fontWeight={'bold'}
-                        color={
-                            userInteractions.data?.publicationInteractionsByViewer?.reacted ? '$activeReaction' : '$reactionTextColor'
-                        }
-                    >
-                        {CUSTOM_REACTION} {" "}
-                    </Text> : 
-                        <Heart strokeWidth={3} size={15} mr={10} color={userInteractions.data?.publicationInteractionsByViewer?.reacted ? "$activeReaction" : "$reactionBorderColor"} borderStyle='dotted'
-                    fill={
-                        userInteractions.data?.publicationInteractionsByViewer?.reacted ? theme.activeReaction.val : theme.background.val
-                    }
-
-                />
-                }
-
-                {showNumbers && <Text fontSize={"$sm"}
-                    color={
-                        userInteractions.data?.publicationInteractionsByViewer?.reacted ? '$activeReaction' : '$reactionTextColor'
-                    }
-                >
-                    {(publicationStatsQuery.data?.publicationStats?.reactions ?? 0) == 0 ? "" :
-                        publicationStatsQuery.data?.publicationStats?.reactions ?? initialStats?.reactions ?? 0
-                    }
-                </Text>}
-            </TouchableOpacity>
-
-            {/* Comment Sheet */}
-            {(isOpen) && <BaseContentSheet
-                open={isOpen}
-                onOpenChange={onToggle}
-                snapPoints={[100]}
-                level={9}
-            >
-                <View
-                    flex={1}
-                    h="100%"
-                    pt={insets.top}
-                    pb={insets.bottom}
-                    backgroundColor={"$background"}
-                >
-                    <PublicationEditor
-                        parentPublicationRef={publication_ref!}
-                        publicationType={
-                            currentPublicationType
-                        }
-                        onClose={() => {
-                            onClose()
-                            if (repostOpen) {
-                                closeRepost()
-                            }
-                        }}
-                        publication={publication}
-                    />
-                </View>
-            </BaseContentSheet>}
-            {
-                (repostOpen) && <BaseContentSheet
-                    snapPoints={[25]}
-                    open={repostOpen}
-                    onOpenChange={onToggleRepost}
-                    showOverlay={true}
-                    dismissOnOverlayPress
-                    animation='medium'
-                    level={1}
-                >
-                    <View
-                        py={20}
-                        px={5}
-                        rowGap={10}
-                        backgroundColor={'$background'}
-                    >
-                        <BaseButton icon={<Repeat size={12} />} onPress={handleRepost} type="outlined" loading={repostLoading} >
-                            <Text>
-                                {
-                                    userInteractions.data?.publicationInteractionsByViewer?.reposted ? "Remove Repost" : "Repost"
-                                }
-                            </Text>
-                        </BaseButton>
-                        <BaseButton variant='outlined' icon={<MessageSquarePlus size={12} />} onPress={handleQuote} type="outlined" loading={quoteLoading} >
-                            <Text>
-                                {
-                                    userInteractions.data?.publicationInteractionsByViewer?.quoted ? "Remove Quote" : "Quote"
-                                }
-                            </Text>
-                        </BaseButton>
-                        <BaseButton
-                            onPress={closeRepost}
-                        >
-                            <Text>
-                                Cancel
-                            </Text>
-                        </BaseButton>
-                    </View>
-                </BaseContentSheet>
+      <View flexDirection="row" alignItems="center" w={"100%"} columnGap={20}>
+        <TouchableOpacity
+          onPress={() => {
+            Haptics.selectionAsync();
+            if (pathname.includes("profiles")) {
+              const possible_address = params.address;
+              router.push(
+                `/profiles/${possible_address}/publication-editor?type=3&publicationId=${publication?.id}&ref=${publication_ref}`
+              );
+              return;
             }
-        </View>
-    )
+            router.push(
+              `/editor?type=3&publicationId=${publication?.id}&ref=${publication_ref}`
+            );
+          }}
+          style={styles.action_container}
+        >
+          <MessageSquare
+            strokeWidth={3}
+            size={15}
+            mr={10}
+            color={
+              userInteractions.data?.publicationInteractionsByViewer?.commented
+                ? "$activeReaction"
+                : "$reactionBorderColor"
+            }
+            fill={
+              userInteractions.data?.publicationInteractionsByViewer?.commented
+                ? theme.activeReaction.val
+                : theme.background.val
+            }
+          />
+          {showNumbers && (
+            <Text
+              fontSize={"$sm"}
+              color={
+                userInteractions.data?.publicationInteractionsByViewer
+                  ?.commented
+                  ? "$activeReaction"
+                  : "$reactionTextColor"
+              }
+            >
+              {publicationStatsQuery.data?.publicationStats?.comments == 0
+                ? ""
+                : publicationStatsQuery.data?.publicationStats?.comments ??
+                  initialStats?.comments ??
+                  0}
+            </Text>
+          )}
+        </TouchableOpacity>
+        <TouchableOpacity onPress={openRepost} style={styles.action_container}>
+          <Repeat
+            strokeWidth={3}
+            size={15}
+            mr={10}
+            color={
+              userInteractions.data?.publicationInteractionsByViewer
+                ?.reposted ||
+              userInteractions.data?.publicationInteractionsByViewer?.quoted
+                ? "$activeReaction"
+                : "$reactionBorderColor"
+            }
+            fill={
+              userInteractions.data?.publicationInteractionsByViewer
+                ?.reposted ||
+              userInteractions.data?.publicationInteractionsByViewer?.quoted
+                ? theme.activeReaction.val
+                : theme.background.val
+            }
+          />
+          {showNumbers && (
+            <Text
+              fontSize={"$sm"}
+              color={
+                userInteractions.data?.publicationInteractionsByViewer
+                  ?.reposted ||
+                userInteractions.data?.publicationInteractionsByViewer?.quoted
+                  ? "$activeReaction"
+                  : "$reactionTextColor"
+              }
+            >
+              {(publicationStatsQuery.data?.publicationStats?.reposts ?? 0) ==
+                0 && publicationStatsQuery.data?.publicationStats?.quotes == 0
+                ? ""
+                : (publicationStatsQuery.data?.publicationStats?.reposts ??
+                    initialStats?.reposts ??
+                    0) +
+                  (publicationStatsQuery.data?.publicationStats?.quotes ??
+                    initialStats?.quotes ??
+                    0)}
+            </Text>
+          )}
+        </TouchableOpacity>
+
+        <TouchableOpacity onPress={handleReact} style={styles.action_container}>
+          {CUSTOM_REACTION ? (
+            <Text
+              fontWeight={"bold"}
+              color={
+                userInteractions.data?.publicationInteractionsByViewer?.reacted
+                  ? "$activeReaction"
+                  : "$reactionTextColor"
+              }
+            >
+              {CUSTOM_REACTION}{" "}
+            </Text>
+          ) : (
+            <Heart
+              strokeWidth={3}
+              size={15}
+              mr={10}
+              color={
+                userInteractions.data?.publicationInteractionsByViewer?.reacted
+                  ? "$activeReaction"
+                  : "$reactionBorderColor"
+              }
+              borderStyle="dotted"
+              fill={
+                userInteractions.data?.publicationInteractionsByViewer?.reacted
+                  ? theme.activeReaction.val
+                  : theme.background.val
+              }
+            />
+          )}
+
+          {showNumbers && (
+            <Text
+              fontSize={"$sm"}
+              color={
+                userInteractions.data?.publicationInteractionsByViewer?.reacted
+                  ? "$activeReaction"
+                  : "$reactionTextColor"
+              }
+            >
+              {(publicationStatsQuery.data?.publicationStats?.reactions ?? 0) ==
+              0
+                ? ""
+                : publicationStatsQuery.data?.publicationStats?.reactions ??
+                  initialStats?.reactions ??
+                  0}
+            </Text>
+          )}
+        </TouchableOpacity>
+
+        {/* Comment Sheet */}
+        {isOpen && (
+          <BaseContentSheet
+            open={isOpen}
+            onOpenChange={onToggle}
+            snapPoints={[100]}
+            level={9}
+          >
+            <Editor
+              publicationType={currentPublicationType}
+              publicationId={publication?.id}
+              parentPublicationRef={publication_ref}
+            />
+          </BaseContentSheet>
+        )}
+        {repostOpen && (
+          <BaseContentSheet
+            snapPoints={[25]}
+            open={repostOpen}
+            onOpenChange={onToggleRepost}
+            showOverlay={true}
+            dismissOnOverlayPress
+            animation="medium"
+            level={1}
+          >
+            <View py={20} px={5} rowGap={10} backgroundColor={"$background"}>
+              <BaseButton
+                icon={<Repeat size={12} />}
+                onPress={handleRepost}
+                type="outlined"
+                loading={repostLoading}
+              >
+                <Text>
+                  {userInteractions.data?.publicationInteractionsByViewer
+                    ?.reposted
+                    ? "Remove Repost"
+                    : "Repost"}
+                </Text>
+              </BaseButton>
+              <BaseButton
+                variant="outlined"
+                icon={<MessageSquarePlus size={12} />}
+                onPress={handleQuote}
+                type="outlined"
+                loading={quoteLoading}
+              >
+                <Text>
+                  {userInteractions.data?.publicationInteractionsByViewer
+                    ?.quoted
+                    ? "Remove Quote"
+                    : "Quote"}
+                </Text>
+              </BaseButton>
+              <BaseButton onPress={closeRepost}>
+                <Text>Cancel</Text>
+              </BaseButton>
+            </View>
+          </BaseContentSheet>
+        )}
+      </View>
+    );
 }
 
 export default memo(PublicationReactions)

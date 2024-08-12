@@ -37,7 +37,7 @@ const PublicationStats = (props: Props) => {
         <View
             flexDirection='row'
             alignItems='center'
-            w="full"
+            w="100%"
             columnGap={10}
         >
             <View flexDirection='row' columnGap={10} >

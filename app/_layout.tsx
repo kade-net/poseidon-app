@@ -3,7 +3,7 @@ import 'react-native-get-random-values'
 import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native'
 import { SplashScreen, Stack } from 'expo-router'
 import { Platform, Text, View, useColorScheme } from 'react-native'
-import { TamaguiProvider } from 'tamagui'
+import { PortalProvider, TamaguiProvider } from 'tamagui'
 import '../tamagui-web.css'
 import { config } from '../tamagui.config'
 import { useFonts } from 'expo-font'
@@ -136,24 +136,28 @@ function RootLayoutNav() {
       <QueryClientProvider client={queryClient}>
         <TamaguiProvider config={config} defaultTheme={"dark"}>
           <ThemeProvider value={DarkTheme}>
+            <PortalProvider shouldAddRootHost >
+
+
             <Stack
               screenOptions={{
-                headerShown: false
+                  headerShown: false,
               }}
-              initialRouteName='onboard'
+                initialRouteName="onboard"
             >
               <Stack.Screen name="index" options={{ headerShown: false }} />
               <Stack.Screen name="onboard" options={{ headerShown: false }} />
               <Stack.Screen name="connect" options={{ headerShown: false }} />
               <Stack.Screen name="profiles" options={{ headerShown: false }} />
               <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+                <Stack.Screen name="editor" options={{ headerShown: false, presentation: 'modal', gestureEnabled: false }} />
+                <Stack.Screen name="wallet" options={{ headerShown: false, presentation: 'modal', gestureEnabled: false }} />
             </Stack>
-            <Toast
-              autoHide
-            />
-          </ThemeProvider> 
+            </PortalProvider>
+            <Toast autoHide />
+          </ThemeProvider>
         </TamaguiProvider>
       </QueryClientProvider>
     </ApolloProvider>
-  )
+  );
 }

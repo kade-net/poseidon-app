@@ -80,7 +80,7 @@ const LinkResolver = (props: Props) => {
             kid={kid}
             post_ref={publication_ref}
             url={
-                __DEV__ ? link?.replace("https://portals.poseidon.ac", "http://192.168.1.4:3000") :
+                // __DEV__ ? link?.replace("https://portals.poseidon.ac", "http://192.168.1.4:3000") :
                     link
             }
         />

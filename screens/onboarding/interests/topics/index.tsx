@@ -1,20 +1,66 @@
 import { router } from "expo-router"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
-import { Button, Heading, Spinner, Text, View, YStack } from "tamagui"
+import { Button, H3, Heading, Spinner, Text, View, XStack, YStack } from "tamagui"
 import UnstyledButton from "../../../../components/ui/buttons/unstyled-button"
 import { ChevronRight } from "@tamagui/lucide-icons"
 import { Utils } from "../../../../utils"
 import topics, { Topic } from "../../../../contract/modules/topics"
-import { useQuery } from "react-query"
-import { useEffect, useState } from "react"
-import { BackHandler, NativeEventSubscription, Pressable } from "react-native"
+import { useQuery as uzQuery } from "react-query"
+import { useEffect, useMemo, useState } from "react"
+import { BackHandler, FlatList, NativeEventSubscription, Pressable, Touchable, TouchableOpacity } from "react-native"
 import Toast from 'react-native-toast-message'
 import posti from "../../../../lib/posti"
+import BaseButton from "../../../../components/ui/buttons/base-button"
+import { useMutation, useQuery } from "@apollo/client"
+import { SET_TOPIC } from "../../../../lib/convergence-client/queries"
+import { convergenceClient } from "../../../../data/apollo"
+import delegateManager from "../../../../lib/delegate-manager"
+
+const TOPICS: Array<Omit<Topic, 'parentTopic'>> = [
+    {
+        name: 'aptos',
+        id: 'aptos'
+    },
+    {
+        name: 'sci-fi',
+        id: 'sci-fi'
+    },
+    {
+        name: 'technology',
+        id: 'technology'
+    },
+    {
+        name: 'DeFi',
+        id: 'DeFi'
+    },
+    {
+        name: 'NFTs',
+        id: 'NFTs'
+    },
+    {
+        name: 'gaming',
+        id: 'gaming'
+    },
+    {
+        name: 'software',
+        id: 'software'
+    },
+    {
+        name: 'startups',
+        id: 'startups'
+    },
+    {
+        name: 'art',
+        id: 'art'
+    }
+]
+
+
 
 const TopicsInterest = () => {
-    const topicsQuery = useQuery({
-        queryKey: ['topics'],
-        queryFn: topics.getInterests
+
+    const [createMutation, createFeedback] = useMutation(SET_TOPIC, {
+        client: convergenceClient
     })
 
     const [activeInterests, setActiveInterests] = useState<Array<string>>([])
@@ -24,7 +70,7 @@ const TopicsInterest = () => {
     const insets = useSafeAreaInsets()
 
     const goToNext = () => {
-        router.push('/onboard/interests/communities/');
+        router.push('/onboard/interests/users');
     }
 
     const handleTopicActive = (name: string) => {
@@ -40,8 +86,17 @@ const TopicsInterest = () => {
 
 
         try {
-            console.log("Active interests::", activeInterests)
-            await topics.createInterest(activeInterests)
+
+            await Promise.all(activeInterests.map(async (interest) => {
+                return await createMutation({
+                    variables: {
+                        input: {
+                            name: interest,
+                            sender_address: delegateManager.owner!
+                        }
+                    }
+                })
+            }))
         }
         catch (e) {
             // silent fail
@@ -71,6 +126,24 @@ const TopicsInterest = () => {
         return true
     }
 
+    const topicsInThrees = useMemo(() => {
+        const rows = TOPICS.reduce((resultArray, item) => {
+            if (resultArray.length === 0) {
+                resultArray.push([item])
+                return resultArray
+            } else {
+                const lastRow = resultArray[resultArray.length - 1]
+                if (lastRow.length < 3) {
+                    lastRow.push(item)
+                } else {
+                    resultArray.push([item])
+                }
+                return resultArray
+            }
+        }, [] as Array<Array<Omit<Topic, 'parentTopic'>>>)
+        return rows
+    }, [])
+
     useEffect(() => {
 
         const subscription: NativeEventSubscription = BackHandler.addEventListener('hardwareBackPress', preventBackFlow)
@@ -85,66 +158,55 @@ const TopicsInterest = () => {
 
 
     return(
-        <View px={20} flex={1} backgroundColor={"$background"}>
-            <YStack height={"100%"}>
-                <View flexDirection='row' w="100%" justifyContent='space-between' alignItems='center'>
-                    <Heading size={"$md"} color={"$text"} >
-                        Topics
-                    </Heading>
-                    <UnstyledButton label='Skip' icon={<ChevronRight/>} after={true} callback={goToNext}/>
-                </View>
-                <Heading color={"$text"} size="$sm" my={10}>
-                        What topics would you be interested in?
-                </Heading>
-                {
-                    topicsQuery.isLoading ?
-                        <View flexDirection="row" justifyContent="center">
-                            <Spinner color={"$text"} size={"large"}/>
-                        </View>
-                    :
-                        <View flexDirection="row" flexWrap="wrap">
-                            {
-                                topicsQuery?.data?.map((topic: Topic)=>{
-                                    return (
-                                        <Pressable key={topic.id} onPress={() => handleTopicActive(topic.id)}>
-                                            <View 
-                                                id={topic.id} 
-                                                mx={2} 
-                                                my={10} 
-                                                px={12} 
-                                                py={8} 
-                                                borderColor={activeInterests.includes(topic.id)? "$button" : "$sideText"} 
-                                                backgroundColor={activeInterests.includes(topic.id)? "$button" : "$colorTransparent"}
-                                                borderWidth={1} 
-                                                borderRadius={3}
-                                            >
-                                                <Text fontSize={"$sm"} color={activeInterests.includes(topic.id) ? "white" : "$text"}>
-                                                    {topic.name}
-                                                </Text>
-                                            </View>
-                                        </Pressable>
-                                    )
-                                })
-                            }
-                        </View>
-                }
-                
-                <Button 
-                    disabled={activeInterests.length === 0} 
-                    fontSize={"$sm"} 
-                    backgroundColor={activeInterests.length > 0? "$button" : "$colourlessButton"} 
-                    borderWidth={1} 
-                    borderColor={"$button"} 
-                    color={activeInterests.length === 0 ? "$text" : "$buttonText"} 
-                    position="absolute" 
-                    bottom={Utils.dynamicHeight(4)} 
-                    width={"100%"}
-                    onPress={handleSubmitInterests}
-                >
-                {saving ? "Saving interests" : "Done"} {saving ? <Spinner color={"$text"} /> : null}
-                </Button>
+        <View p={20} flex={1} backgroundColor={"$background"}>
+            <YStack flex={1} alignItems="center" justifyContent="center" rowGap={20} >
+                <H3>
+                    What are you into 🤔?
+                </H3>
+
+                <YStack alignItems="center" rowGap={10} >
+                    {
+                        topicsInThrees?.map((interests, index) => {
+                            return (
+                                <XStack key={index} w="100%" columnGap={10} >
+                                    {
+                                        interests.map((interest) => {
+                                            return (
+                                                <TouchableOpacity
+                                                    key={interest.id}
+                                                    onPress={() => handleTopicActive(interest.id)}
+                                                >
+                                                    <View 
+                                                        key={interest.id}
+                                                        p={10}
+                                                        borderColor={activeInterests.includes(interest.id) ? "$button" : "$sideText"}
+                                                        backgroundColor={activeInterests.includes(interest.id) ? "$button" : "$colorTransparent"}
+                                                        borderWidth={1} 
+                                                        borderRadius={10}
+                                                    >
+                                                        <Text fontSize={"$sm"} color={activeInterests.includes(interest.id) ? "white" : "$text"}>
+                                                            # {interest.name}
+                                                        </Text>
+                                                    </View>
+                                                </TouchableOpacity>
+                                            )
+                                        })
+                                    }
+                                </XStack>
+                            )
+                        })
+                    }
+                </YStack>
+
+
 
             </YStack>
+            <BaseButton
+                onPress={handleSubmitInterests}
+                loading={saving}
+                borderRadius={100} w="100%" >
+                Continue
+            </BaseButton>
         </View>
     )
 }

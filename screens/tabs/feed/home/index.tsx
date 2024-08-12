@@ -2,7 +2,7 @@ import { View, Text, Avatar, Heading, ButtonIcon, useTheme, Separator, Sheet, Bu
 import React, { useCallback, useMemo, useRef, useState } from 'react'
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context'
 import { ImagePlus, MessageCirclePlus, Settings } from '@tamagui/lucide-icons'
-import { Animated, BackHandler, FlatList, KeyboardAvoidingView, ListRenderItem, Platform, TouchableOpacity } from 'react-native'
+import { Animated, BackHandler, FlatList, Image, KeyboardAvoidingView, ListRenderItem, Platform, TouchableOpacity } from 'react-native'
 import { feed } from './data'
 import BaseContentContainer from '../../../../components/ui/feed/base-content-container'
 import { useFocusEffect, useRouter } from 'expo-router'
@@ -199,9 +199,13 @@ const Home = () => {
                         />
                     </Avatar>
                 </TouchableOpacity>
-                <Heading fontFamily={"$heading"} fontWeight={"$4"} >
-                    Home
-                </Heading>
+                <Image
+                    source={require('../../../../assets/brand/logo.png')}
+                    style={{
+                        width: 36,
+                        height: 36
+                    }}
+                />
                 <TouchableOpacity onPress={goToSettings} >
                     <Settings />
                 </TouchableOpacity>
@@ -295,7 +299,9 @@ const Home = () => {
                     zIndex={2}
                 >
                     {!isOpen && <TouchableOpacity
-                        onPress={onOpen}
+                        onPress={() => {
+                            router.push('/editor?type=1')
+                        }}
                     >
                         <View
                             p={10}

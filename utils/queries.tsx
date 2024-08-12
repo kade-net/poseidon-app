@@ -346,8 +346,8 @@ export const GET_MEMBERSHIP = gql(/* GraphQL */`
 
 
 export const ACCOUNTS_SEARCH_QUERY = gql(/* GraphQL */`
-    query Accounts($search: String, $page: Int!, $size: Int!) {
-        accounts(search: $search, pagination: {page: $page, size: $size}) {
+    query Accounts($search: String, $page: Int!, $size: Int!, $byFollowing: Boolean) {
+        accounts(search: $search, pagination: {page: $page, size: $size}, byFollowing: $byFollowing) {
             id
             address
             timestamp

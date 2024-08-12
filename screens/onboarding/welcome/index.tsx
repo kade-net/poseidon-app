@@ -1,17 +1,18 @@
 import { Link, router, useFocusEffect, useRouter } from 'expo-router'
 import React, { useCallback, useEffect } from 'react'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
-import { Button, Image, SizableText, View, YStack } from 'tamagui'
+import { Button, H2, H3, H5, Image, SizableText, View, YStack } from 'tamagui'
 import petra from '../../../lib/wallets/petra'
 import delegateManager from '../../../lib/delegate-manager'
 import { User } from '@tamagui/lucide-icons'
 import { Text } from 'tamagui'
 import account from '../../../contract/modules/account'
 import { Utils } from '../../../utils'
-import { BackHandler, useColorScheme } from 'react-native'
+import { BackHandler, ImageBackground, useColorScheme } from 'react-native'
 import * as Linking from 'expo-linking'
 import * as Updates from 'expo-updates'
 import posti from '../../../lib/posti'
+import BaseButton from '../../../components/ui/buttons/base-button'
 
 
 const WelcomeScreen = () => {
@@ -60,7 +61,7 @@ const WelcomeScreen = () => {
     )
 
     const goToCreateAccount = () => {
-        router.replace('/onboard/username')
+      router.replace('/onboard/email')
     }
 
     const goToSignIn = () => {
@@ -75,39 +76,85 @@ const WelcomeScreen = () => {
         Linking.openURL('https://legal.poseidon.ac/legal/privacy-policy')
     }
 
+
     return (
-        <View w="100%" backgroundColor={"$background"} alignItems='center' justifyContent='space-between' flex={1} px={20}>
-            <View flex={1} w="100%" alignItems='center' justifyContent='center' >
-                <View
-                    h={80}
-                    w={80}
-                >
-                    <Image
-                        source={colorSchem == 'dark' ? require('../../../assets/brand/logomark/PNG/Kade Logotype_white.png') : require('../../../assets/brand/logomark/PNG/Kade Logotype_black.png')}
-                        width={100}
-                        height={100}
-                    />
-                </View>
-            </View>
+      <ImageBackground
+        source={require('../../../assets/brand/illustration-banner.png')}
+        resizeMode='cover'
+        style={{
+          flex: 1,
+          width: '100%',
+          height: '100%'
+        }}
+      >
+        <View
+          w="100%"
+          // backgroundColor={"$background"}
+          alignItems="center"
+          justifyContent="space-between"
+          flex={1}
+          px={20}
+        >
+          <View flex={1} w="100%" alignItems="center" justifyContent="center" rowGap={10} >
+            <Image
+              source={require('../../../assets/brand/logo.png')}
+              width={100}
+              height={98.5}
+            />
+            <H3>
+              Poseidon
+            </H3>
+            {/* <H5>
+              Let's begin your Web3 journey!
+            </H5> */}
+            {/* <View h={80} w={80}>
+              <Image
+                source={require("../../../assets/brand/logomark/PNG/Kade Logotype_white.png")}
+                width={100}
+                height={100}
+              />
+            </View> */}
+          </View>
 
-            <YStack w="100%" rowGap={10} pb={20} >
-                <View w="100%" rowGap={20}  >
-                    <Button icon={<User size={20} />} w="100%" variant='outlined' onPress={goToSignIn}  >
-                        <SizableText fontSize={"$sm"}>Sign In</SizableText>
-                    </Button>
-                    <Button w="100%" onPress={goToCreateAccount} backgroundColor={"$button"}>
-                        <SizableText fontSize={"$sm"} color={"$buttonText"} >Create Account</SizableText>
-                    </Button>
-                </View>
-                <Text alignItems='center' textAlign='center' fontSize={'$1'} >
-                    By creating an account, you agree to our <Text color={'$COAText'} onPress={handleOpenTerms} >Terms of Service</Text> and <Text onPress={handleOpenPrivacy} color={'$COAText'} >Privacy Policy</Text>
+          <YStack w="100%" rowGap={10} pb={20}>
+            <View w="100%" rowGap={10}>
+              <BaseButton
+                // icon={<User color={'white'} size={20} />}
+                w="100%"
+                type="outlined"
+                borderRadius={100}
+                onPress={goToSignIn}
+                backgroundColor={'$border'}
+              >
+                <Text color={'white'} >
+                  Sign In
                 </Text>
-            </YStack>
+              </BaseButton>
+              <BaseButton
+                w="100%"
+                onPress={goToCreateAccount}
+                borderRadius={100}
+              >
+                <Text>
+                  Get Started
+                </Text>
+              </BaseButton>
 
-        </View >
-        // <SizableText>Hello</SizableText>
-
-    )
+            </View>
+            <Text alignItems="center" textAlign="center" fontSize={"$1"}>
+              By creating an account, you agree to our{" "}
+              <Text color={"$COAText"} onPress={handleOpenTerms}>
+                Terms of Service
+              </Text>{" "}
+              and{" "}
+              <Text onPress={handleOpenPrivacy} color={"$COAText"}>
+                Privacy Policy
+              </Text>
+            </Text>
+          </YStack>
+        </View>
+      </ImageBackground>
+    );
 }
 
 export default WelcomeScreen

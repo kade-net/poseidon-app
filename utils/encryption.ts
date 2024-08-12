@@ -1,3 +1,4 @@
+import '../global'
 import nacl from 'tweetnacl'
 import naclUtil from 'tweetnacl-util'
 import ed2curve from 'ed2curve'

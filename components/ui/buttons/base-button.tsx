@@ -12,6 +12,10 @@ const _BaseButton = styled(Button, {
             outlined: {
                 backgroundColor: '$lightButton',
                 color: '$sideText',
+            },
+            text: {
+                backgroundColor: 'transparent',
+                color: '$primary'
             }
         },
         rounded: {
@@ -23,6 +27,9 @@ const _BaseButton = styled(Button, {
             },
             small: {
                 borderRadius: '$1'
+            },
+            full: {
+                borderRadius: 100
             }
         }
     } as const,
@@ -44,7 +51,7 @@ function BaseButton(props: Parameters<typeof _BaseButton>[0] & { loading?: boole
                 >{loadingText}</Text> :
                     null}  */}
             </XStack> : <>
-                    <Text color={rest.type == 'outlined' ? '$sideText' : 'white'} >
+                    <Text color={rest.type == 'outlined' ? '$sideText' : rest.type == 'text' ? '$primary' : 'white'} >
 
                 {children}
                     </Text>

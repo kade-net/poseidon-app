@@ -75,6 +75,8 @@ interface PoseidonSimpleTransaction {
 interface SEND_ARGS {
     recipient: string,
     amount: number
+    type?: string
+    decimals?: number
 }
 
 
@@ -212,22 +214,27 @@ class PoseidonWallet {
 
 
     sendApt = async (args: SEND_ARGS) => {
-        const { recipient, amount } = args
+        const { recipient, amount, type, decimals } = args
         if (isEmpty(recipient) || amount <= 0) throw new Error("Invalid recipient or amount")
-        console.log("Amount::", amount * 100000000)
+
         const transaction = await aptos.coin.transferCoinTransaction({
-            amount: BigInt(amount * 100000000),
+            amount: BigInt(amount * 10 ** (decimals ?? 8)),
             recipient,
             sender: delegateManager.account?.address().toString()!,
             options: {
                 maxGasAmount: 1000,
-            }
+            },
+            coinType: type as any ?? undefined
         })
+
+
 
         const committedTxn = await aptos.transaction.signAndSubmitTransaction({
             signer: delegateManager.signer!,
             transaction
         })
+
+
 
         const status = await aptos.transaction.waitForTransaction({
             transactionHash: committedTxn.hash

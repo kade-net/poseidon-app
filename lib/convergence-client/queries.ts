@@ -359,3 +359,59 @@ export const GET_PORTALS = gql(/* GraphQL */`
         }
     }
 `)
+
+
+export const GET_RANKING = gql(/* GraphQL */`
+    query GetRanking($user_address: String!) {
+    getRanking(
+        user_address: $user_address
+    ) {
+        rank
+        points
+        badges {
+            type
+            owner
+            timestamp
+        }
+    }
+}
+`)
+
+
+export const SET_TOPIC = gql(/* GraphQL */`
+    mutation SetTopic ($input: addTopic) {
+    setTopic(input: $input) 
+}    
+`)
+
+export const ADD_TRANSACTION = gql(/* GraphQL */`
+    mutation AddTransaction($input: registerTransaction) {
+        addTransaction(input: $input)
+    }
+`)
+
+export const ADD_TOKEN = gql(/* GraphQL */`
+    mutation AddNotificationSettings($input: addNotificationToken!) {
+        addNotificationSettings(input: $input)
+    }
+`)
+
+export const ADD_EMAIL = gql(/* GraphQL */`
+mutation AddEmail($input: addEmail!) {
+    addEmail(input: $input)
+}
+    `)
+
+export const SEND_VERIFICATION_EMAIL = gql(/* GraphQL */`
+mutation SendVerificationCode($input: sendVerificationCodeEmail! ) {
+    sendVerificationCode(input: $input)
+}
+    `)
+
+export const VERIFY_EMAIL = gql(/* GraphQL */`
+    mutation VerifyCode($input: verifyCode!) {
+    verifyCode(
+        input: $input
+    )
+}
+`)

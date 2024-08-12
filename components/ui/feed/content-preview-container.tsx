@@ -12,6 +12,7 @@ dayjs.extend(relativeTime)
 
 interface Props {
     data: Maybe<Publication>
+    flex?: number
 }
 const ContentPreviewContainer = (props: Props) => {
     return (
@@ -24,7 +25,7 @@ const ContentPreviewContainer = (props: Props) => {
                 }
             }}
         >
-            <YStack p={10} borderRadius={'$6'} borderWidth={1} rowGap={10} borderColor={"$lightButton"} >
+            <YStack flex={props?.flex} p={10} borderRadius={'$3'} borderWidth={1} rowGap={10} borderColor={"$border"} >
                 <XStack w="100%" alignItems='center' columnGap={5} >
                     <Avatar circular size={"$3"} >
                         <Avatar.Image src={
@@ -51,9 +52,11 @@ const ContentPreviewContainer = (props: Props) => {
                         </Text>
                     </XStack>
                 </XStack>
-                <Text w="100%" color={'$sideText'} >
+                <Text w="100%" fontSize={18} color={'$sideText'} >
                     {
-                        props?.data?.content?.content
+                        truncate(props?.data?.content?.content, {
+                            length: 100
+                        })
                     }
                 </Text>
                 <View flexDirection="row" flexWrap="wrap" w="100%" columnGap={10} rowGap={10} >

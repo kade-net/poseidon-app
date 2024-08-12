@@ -6,11 +6,12 @@ import delegateManager from '../lib/delegate-manager';
 
 function index() {
 
-    const nextScreen =
-        account.isProfileRegistered ? '/(tabs)/feed/home' :
-            account.isAccountRegistered ? '/onboard/profile' :
-                delegateManager.isDeligateRegistered ? '/onboard/profile' :
-                    '/onboard'
+    const nextScreen = 
+        '/onboard'
+    // account.isProfileRegistered ? '/(tabs)/feed/home' :
+    //     account.isAccountRegistered ? '/onboard/profile' :
+    //         delegateManager.isDeligateRegistered ? '/onboard/profile' :
+    //             '/onboard'
 
     return (
         <Redirect

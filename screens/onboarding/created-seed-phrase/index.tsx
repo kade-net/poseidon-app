@@ -1,7 +1,7 @@
 import { View, Text, Button, TextArea } from 'tamagui'
 import React, { useEffect } from 'react'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
-import { ChevronLeft, Copy } from '@tamagui/lucide-icons'
+import { ChevronLeft, Copy, Lock } from '@tamagui/lucide-icons'
 import * as Clipboard from 'expo-clipboard'
 import delegateManager from '../../../lib/delegate-manager'
 import { useRouter } from 'expo-router'
@@ -9,10 +9,28 @@ import { Utils } from '../../../utils'
 import Toast from 'react-native-toast-message'
 import * as Haptics from 'expo-haptics'
 import { BackHandler, NativeEventSubscription } from 'react-native'
+import BaseButton from '../../../components/ui/buttons/base-button'
+import * as LocalAuthentication from 'expo-local-authentication'
+import * as Burnt from 'burnt'
 
 const CreatedSeedPhrase = () => {
     const insets = useSafeAreaInsets()
     const router = useRouter()
+
+    const secureAndContinue = async () => {
+        await Haptics.selectionAsync()
+        const authResult = await LocalAuthentication.authenticateAsync()
+        if (authResult.success) {
+            goToNext()
+        } else {
+            Burnt.alert({
+                preset: 'error',
+                title: 'Biometric authentication required',
+                message: 'Secure your account with biometric authentication',
+                shouldDismissByTap: true
+            })
+        }
+    }
 
     const copySeedPhrase = async () => {
         Haptics.selectionAsync()
@@ -24,10 +42,10 @@ const CreatedSeedPhrase = () => {
             }
             catch (e) {
                 console.log(`SOMETHING WENT WRONG:: ${e}`)
-                Toast.show({
-                    type: 'error',
-                    text1: 'Error',
-                    text2: 'Failed to copy seed phrase'
+                Burnt.toast({
+                    title: 'Uh oh',
+                    message: `Something went wrong, please try again`,
+                    preset: 'error'
                 })
             }
         }
@@ -38,9 +56,10 @@ const CreatedSeedPhrase = () => {
     }
 
     const preventBackFlow = (): boolean => {
-        Toast.show({
-            type: 'info',
-            text2: `Please complete profile creation`,
+        Burnt.toast({
+            title: 'Profile creation',
+            message: `Please complete profile creation`,
+            preset: 'none'
         })
 
         return true
@@ -61,9 +80,7 @@ const CreatedSeedPhrase = () => {
 
     return (
         <View
-            pt={insets.top}
-            pb={insets.bottom}
-            px={Utils.dynamicWidth(5)}
+            p={20}
             flex={1}
             w="100%"
             backgroundColor={"$background"}
@@ -88,20 +105,19 @@ const CreatedSeedPhrase = () => {
                         </Text>
                     </View>
                     <View w="100%" alignItems='flex-end' >
-                        <Button icon={<Copy />} onPress={copySeedPhrase} color={"$buttonText"} backgroundColor={"$button"}>
+                        <Button borderRadius={100} icon={<Copy />} onPress={copySeedPhrase} color={"$buttonText"} backgroundColor={"$button"}>
                             Copy
                         </Button>
                     </View>
                 </View>
                 <View w="100%" >
-                    <Button
-                        onPress={goToNext}
-                        color={"$buttonText"} backgroundColor={"$button"}
-                        marginBottom={Utils.dynamicHeight(5)}
-                        fontSize={"$sm"}
+                    <BaseButton
+                        onPress={secureAndContinue}
+                        borderRadius={100}
+                        icon={<Lock />}
                     >
-                        Continue
-                    </Button>
+                        Secure
+                    </BaseButton>
                 </View>
             </View>
 

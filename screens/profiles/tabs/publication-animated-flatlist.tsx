@@ -18,10 +18,10 @@ let DEVICE_HEIGHT = Dimensions.get('screen').height
 
 const PublicationAnimatedFlatList = (props: ProfileTabsProps & {
   types?: number[],
-  reaction?: number
+  reaction?: number,
+  address?: string
 }) => {
-  const params = useGlobalSearchParams()
-  const address = params['address'] as string
+  const { address } = props
   const profileQuery = useQuery(GET_MY_PROFILE, {
     variables: {
       address
@@ -45,7 +45,7 @@ const PublicationAnimatedFlatList = (props: ProfileTabsProps & {
     try {
       const totalPublications = postsQuery?.data?.publications?.length ?? 0
       const nextPage = (Math.floor(totalPublications / 20) - 1) + 1
-      console.log("Next page", nextPage)
+      // console.log("Next page", nextPage)
       const results = await postsQuery.fetchMore({
         variables: {
           page: nextPage,
@@ -60,7 +60,7 @@ const PublicationAnimatedFlatList = (props: ProfileTabsProps & {
   }
 
   const handleFetchTop = async () => {
-    console.log("Start reached")
+    // console.log("Start reached")
 
     try {
       await postsQuery?.fetchMore({
@@ -86,25 +86,6 @@ const PublicationAnimatedFlatList = (props: ProfileTabsProps & {
 
   }, [])
 
-  const NoPublications = useCallback(() => {
-    return (
-      <View mt={10}>
-          <Text textAlign='center' fontSize={"$md"} color={"$text"}>No {props.route.title} yet</Text>
-          <View flexDirection='row' justifyContent='center' mt={20}>
-          <Button onPress={handleFetchTop} fontSize={"$sm"} backgroundColor={"$button"} color={"$buttonText"} width={"40%"}>
-            {
-              postsQuery?.loading ? <XStack>
-                <Spinner />
-                <Text>
-                  Refetching
-                </Text>
-              </XStack> : "Refresh"
-            }
-          </Button>
-          </View>
-      </View>
-    )
-  }, [, postsQuery?.loading])
   return (
     <YStack w="100%" h="100%" >
       <Animated.FlatList

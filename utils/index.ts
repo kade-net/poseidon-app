@@ -36,7 +36,6 @@ export namespace Utils {
       }
       const controller = new AbortController()
       setTimeout(() => {
-        console.log("Aborting")
         controller.abort()
       }, 5000)
       const resp = await fetch(uri, { method: 'HEAD', signal: controller.signal })
@@ -63,7 +62,6 @@ export namespace Utils {
     try {
       const controller = new AbortController()
       setTimeout(() => {
-        console.log("Aborting")
         controller.abort()
       }, 5000)
       const resp = await fetch(uri, { method: 'GET', signal: controller.signal })
@@ -75,7 +73,6 @@ export namespace Utils {
           const image: string | null = isString(json?.image) ? json?.image : null
           const imageController = new AbortController()
           setTimeout(() => {
-            console.log("Aborting")
             imageController.abort()
           }, 5000)
           const imageResp = image ? await fetch(image, { method: 'HEAD', signal: imageController.signal }) : null

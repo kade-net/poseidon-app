@@ -61,7 +61,7 @@ const TabNavbar = (props: Props) => {
         <XStack
           position='relative'
           w="100%"
-          px={10}
+          px={20}
           pb={20}
           justifyContent='flex-start'
           bg={'$background'}

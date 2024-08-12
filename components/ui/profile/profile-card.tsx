@@ -1,4 +1,4 @@
-import { View, Text, Avatar, YStack, Separator, Button, Spinner } from 'tamagui'
+import { View, Text, Avatar, YStack, Separator, Button, Spinner, XStack } from 'tamagui'
 import React from 'react'
 import { Account } from '../../../__generated__/graphql'
 import account from '../../../contract/modules/account'
@@ -9,6 +9,7 @@ import { Link } from 'expo-router'
 import { Utils } from '../../../utils'
 import * as Haptics from 'expo-haptics'
 import BaseButton from '../buttons/base-button'
+import RankBadge from '../../badges/rank-badge'
 
 
 interface Props {
@@ -88,9 +89,14 @@ const ProfileCard = (props: Props) => {
                                 }
                             }} >
                                 <View>
-                                    <Text fontWeight={"$5"} fontSize={"$sm"}>
-                                        {data?.profile?.display_name}
-                                    </Text>
+                                    <XStack alignItems='center' columnGap={5} >
+                                        <Text fontWeight={"$5"} fontSize={"$sm"}>
+                                            {data?.profile?.display_name}
+                                        </Text>
+                                        <RankBadge
+                                            user_address={data?.address!}
+                                        />
+                                    </XStack>
                                     <Text fontSize={'$xs'} color={'$sideText'} >
                                         @{data?.username?.username}
                                     </Text>

@@ -317,3 +317,12 @@ export const getReactionType = (content: string) => {
     return null
 
 }
+
+export const formatAddress = (address: string) => {
+    const [first6, last4] = [
+        address.slice(0, 5),
+        address.slice(address.length - 4, address.length)
+    ]
+
+    return `${first6}...${last4}`
+}
