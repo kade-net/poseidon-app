@@ -182,25 +182,6 @@ const Settings = () => {
                         </XStack>
                         <Separator />
                 </TouchableOpacity>
-                {Platform.OS == 'android' && <Link
-                    href="/settings/anchors"
-                    asChild
-                >
-                    <YStack style={{
-                        width: "100%",
-                    }} >
-                        <XStack w="100%" p={20} justifyContent='space-between' >
-                            <XStack columnGap={20} >
-                                <Anchor />
-                                <H4 textTransform='none' >
-                                    Anchors
-                                </H4>
-                            </XStack>
-                            <ChevronRight />
-                        </XStack>
-                        <Separator />
-                    </YStack>
-                </Link>}
 
 
                 <Link
@@ -223,7 +204,7 @@ const Settings = () => {
                     </YStack>
                 </Link>
                 <Link
-                    href="/settings/delete/"
+                    href="/settings/delete"
                     asChild
                 >
                     <YStack style={{

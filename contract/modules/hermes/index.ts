@@ -1,3 +1,4 @@
+import '../../../global'
 import { Effect, Either } from 'effect'
 import delegateManager from '../../../lib/delegate-manager'
 import { NoOwner, UnknownError } from '../../../utils/errors'

@@ -22,7 +22,6 @@ const PublicationAnimatedFlatList = (props: ProfileTabsProps & {
   address?: string
 }) => {
   const { address } = props
-  console.log("Address", address)
   const profileQuery = useQuery(GET_MY_PROFILE, {
     variables: {
       address

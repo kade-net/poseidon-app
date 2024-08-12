@@ -1,7 +1,7 @@
 import { Link, router, useFocusEffect, useRouter } from 'expo-router'
 import React, { useCallback, useEffect } from 'react'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
-import { Button, H2, H5, Image, SizableText, View, YStack } from 'tamagui'
+import { Button, H2, H3, H5, Image, SizableText, View, YStack } from 'tamagui'
 import petra from '../../../lib/wallets/petra'
 import delegateManager from '../../../lib/delegate-manager'
 import { User } from '@tamagui/lucide-icons'
@@ -79,7 +79,7 @@ const WelcomeScreen = () => {
 
     return (
       <ImageBackground
-        source={require('../../../assets/brand/banner-two.png')}
+        source={require('../../../assets/brand/illustration-banner.png')}
         resizeMode='cover'
         style={{
           flex: 1,
@@ -96,15 +96,14 @@ const WelcomeScreen = () => {
           px={20}
         >
           <View flex={1} w="100%" alignItems="center" justifyContent="center" rowGap={10} >
-            <Text textAlign='center' fontSize={48} >
-              👋
-            </Text>
-            <Text>
-              welcome to...
-            </Text>
-            <Text fontSize={32} >
+            <Image
+              source={require('../../../assets/brand/logo.png')}
+              width={100}
+              height={98.5}
+            />
+            <H3>
               Poseidon
-            </Text>
+            </H3>
             {/* <H5>
               Let's begin your Web3 journey!
             </H5> */}

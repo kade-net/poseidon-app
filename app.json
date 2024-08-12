@@ -2,33 +2,33 @@
   "expo": {
     "name": "poseidon",
     "slug": "poseidon",
-    "version": "0.0.31",
+    "version": "0.0.40",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "poseidon",
     "userInterfaceStyle": "automatic",
     "splash": {
       "image": "./assets/images/splash.png",
-      "resizeMode": "contain",
-      "backgroundColor": "#0C1222"
+      "resizeMode": "cover",
+      "backgroundColor": "#071E22"
     },
     "assetBundlePatterns": ["**/*"],
     "ios": {
-      "supportsTablet": true,
+      "supportsTablet": false,
       "bundleIdentifier": "com.kadenet.poseidon",
       "config": {
         "usesNonExemptEncryption": false
       },
-      "buildNumber": "21"
+      "buildNumber": "30"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
-        "backgroundColor": "#0C1222"
+        "backgroundColor": "#071E22"
       },
       "package": "com.kadenet.poseidon",
       "googleServicesFile": "./google-services.json",
-      "versionCode": 21
+      "versionCode": 30
     },
     "web": {
       "bundler": "metro",

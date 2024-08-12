@@ -243,7 +243,7 @@ function BaseContentContainer(props: BaseContentContainerProps) {
             <YStack w="100%" paddingBottom={10}>
               <Text color={"$text"} fontSize={20} >
                 <HighlightMentions
-                  content={`${data?.content?.content} ${__DEV__ ? data?.id : ""
+                  content={`${data?.content?.content} ${__DEV__ ? "" : ""
                     }`}
                   tags={data?.content?.tags}
                   mentions={data?.content?.mentions}
