@@ -19,6 +19,12 @@ const CreatedSeedPhrase = () => {
 
     const secureAndContinue = async () => {
         await Haptics.selectionAsync()
+        const has = await LocalAuthentication.hasHardwareAsync()
+        if (!has) {
+            goToNext()
+            return
+        }
+
         const authResult = await LocalAuthentication.authenticateAsync()
         if (authResult.success) {
             goToNext()

@@ -91,9 +91,15 @@ const Settings = () => {
 
     const handleViewRecoveryPhrase = async () => {
         Haptics.selectionAsync()
-        const res = await LocalAuthentication.authenticateAsync()
-        if (res.success || __DEV__) {
+        const has = await LocalAuthentication.hasHardwareAsync()
+        if (has) {
+            const res = await LocalAuthentication.authenticateAsync()
+            if (res.success || __DEV__) {
 
+                router.push('/settings/codes')
+            }
+            return
+        } else {
             router.push('/settings/codes')
         }
     }
@@ -225,7 +231,7 @@ const Settings = () => {
             </YStack>
             <XStack w="100%" alignItems='center' justifyContent='center' >
                 <Text>
-                    Version 0.0.31
+                    Version 0.0.40
                 </Text>
             </XStack>
             <XStack w="100%" alignItems='center' justifyContent='center' >

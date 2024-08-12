@@ -92,17 +92,20 @@ const PayUser = (props: Props) => {
         setTransactionInProgress(true)
         const currencyDetails = currencies.find(c => c.name == CURRENCY)
         try {
-            const response = await LocalAuthentication.authenticateAsync()
-            if (!response.success && !__DEV__) {
-                Burnt?.[
-                    Platform.OS === 'ios' ? 'toast' : 'alert'
-                ]({
-                    title: 'Biometric Authentication Failed',
-                    message: 'Please try again',
-                    preset: 'error',
-                })
-                throw new Error('Authentication Failed')
+            const has = await LocalAuthentication.hasHardwareAsync()
+            if (has) {
+                const response = await LocalAuthentication.authenticateAsync()
+                if (!response.success && !__DEV__) {
+                    Burnt?.[
+                        Platform.OS === 'ios' ? 'toast' : 'alert'
+                    ]({
+                        title: 'Biometric Authentication Failed',
+                        message: 'Please try again',
+                        preset: 'error',
+                    })
+                    throw new Error('Authentication Failed')
 
+                }
             }
             const status = await wallet.sendApt({
                 amount: AMOUNT_FLT,
