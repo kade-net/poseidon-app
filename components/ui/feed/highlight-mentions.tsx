@@ -53,7 +53,7 @@ const HighlightMentions = (props: Props) => {
     const parts = content?.split(HIGHLIGHT_REGEX) ?? [] // Split by mentions and links
 
     return parts.map((part, index) => {
-        if (Utils.mentionRegex.test(part) && tags?.includes(part.replace('@', ''))) {
+        if (Utils.mentionRegex.test(part) && mentions?.[(part.replace('@', ''))]) {
             return <MemoedMention
                 key={index}
                 username={part}

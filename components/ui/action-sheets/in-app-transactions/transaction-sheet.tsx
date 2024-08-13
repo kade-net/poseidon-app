@@ -21,8 +21,6 @@ interface Props {
 const TransactionSheet = (props: Props) => {
     const { isOpen, onOpen, onClose, onToggle, module_arguments, module_function, type_arguments, wallet } = props
     const [update_preffered_wallet, setUpdatePrefferedWallet] = React.useState(false)
-    console.log("Wallet::", wallet)
-    console.log("Update Preffered Wallet::", wallet == 'delegate' && settings?.active?.preffered_wallet !== 'delegate')
 
     useEffect(() => {
         if (wallet == 'delegate' && settings?.active?.preffered_wallet !== 'delegate') {

@@ -17,6 +17,8 @@ import petra from '../../../../lib/wallets/petra'
 import settings from '../../../../lib/settings'
 import * as ExpoClipboard from 'expo-clipboard'
 import * as Haptics from 'expo-haptics'
+import * as LocalAuthentication from 'expo-local-authentication'
+import * as Burnt from 'burnt'
 
 const NETWORK = config.APTOS_NETWORK
 const EXPLORER = `https://explorer.aptoslabs.com/txn/TXN_VERSION?network=${NETWORK}`
@@ -140,14 +142,35 @@ function Simulated() {
         })
     }
 
-    const onSubmit = () => {
+    const onSubmit = async () => {
         Haptics.selectionAsync()
-        actor.send({
-            type: 'submit',
-            params: {
-                current_location: path
+        const has = await LocalAuthentication.hasHardwareAsync()
+        if (has) {
+            const resp = await LocalAuthentication.authenticateAsync()
+
+            if (resp.success) {
+                actor.send({
+                    type: 'submit',
+                    params: {
+                        current_location: path
+                    }
+                })
+            } else {
+                Burnt.toast({
+                    title: 'Authentication Failed',
+                    message: 'Please try again',
+                    preset: 'error',
+                    haptic: 'error'
+                })
             }
-        })
+        } else {
+            actor.send({
+                type: 'submit',
+                params: {
+                    current_location: path
+                }
+            })
+        }
     }
 
     return (
@@ -389,7 +412,6 @@ const InAppTransactions = (props: P) => {
 
     useEffect(() => {
         if (module_arguments && module_function && currentState == 'closed') {
-            console.log("current wallet::", settings?.active?.preffered_wallet)
             actor.send({
                 type: 'connect',
                 params: {

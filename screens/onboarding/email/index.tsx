@@ -7,7 +7,6 @@ import { Input, Text, useTheme, XStack, YStack } from 'tamagui'
 import { z } from 'zod'
 import BaseButton from '../../../components/ui/buttons/base-button'
 import { useRouter } from 'expo-router'
-import { Clerk } from '@clerk/clerk-js'
 import * as Haptics from 'expo-haptics'
 import * as Burnt from 'burnt'
 import { convergenceClient } from '../../../data/apollo'
@@ -18,8 +17,6 @@ import OtpForm from './otp-form'
 import EmailForm from './email-form'
 import { TabView } from 'react-native-tab-view'
 import { verificationFormContext } from './context'
-
-const clerk = new Clerk(__DEV__ ? 'pk_test_bGVuaWVudC1wYXJyb3QtNDkuY2xlcmsuYWNjb3VudHMuZGV2JA' : ''); // TODO: add prod public key
 
 const schema = z.object({
     email: z.string().email(),

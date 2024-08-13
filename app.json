@@ -2,7 +2,7 @@
   "expo": {
     "name": "poseidon",
     "slug": "poseidon",
-    "version": "0.0.40",
+    "version": "0.0.41",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "poseidon",
@@ -14,12 +14,12 @@
     },
     "assetBundlePatterns": ["**/*"],
     "ios": {
-      "supportsTablet": false,
+      "supportsTablet": true,
       "bundleIdentifier": "com.kadenet.poseidon",
       "config": {
         "usesNonExemptEncryption": false
       },
-      "buildNumber": "30"
+      "buildNumber": "31"
     },
     "android": {
       "adaptiveIcon": {
@@ -28,7 +28,7 @@
       },
       "package": "com.kadenet.poseidon",
       "googleServicesFile": "./google-services.json",
-      "versionCode": 30
+      "versionCode": 31
     },
     "web": {
       "bundler": "metro",
@@ -52,6 +52,14 @@
           "photosPermission": "Allow $(PRODUCT_NAME) to access your photos.",
           "savePhotosPermission": "Allow $(PRODUCT_NAME) to save photos.",
           "isAccessMediaLocationEnabled": true
+        }
+      ],
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "Allow $(PRODUCT_NAME) to access your camera",
+          "microphonePermission": "Allow $(PRODUCT_NAME) to access your microphone",
+          "recordAudioAndroid": true
         }
       ]
     ],

@@ -1,13 +1,7 @@
 import { Link, router, useFocusEffect, useRouter } from 'expo-router'
 import React, { useCallback, useEffect } from 'react'
-import { useSafeAreaInsets } from 'react-native-safe-area-context'
-import { Button, H2, H3, H5, Image, SizableText, View, YStack } from 'tamagui'
-import petra from '../../../lib/wallets/petra'
-import delegateManager from '../../../lib/delegate-manager'
-import { User } from '@tamagui/lucide-icons'
+import { Button, H2, H3, H5, Image, SizableText, useTheme, View, YStack } from 'tamagui'
 import { Text } from 'tamagui'
-import account from '../../../contract/modules/account'
-import { Utils } from '../../../utils'
 import { BackHandler, ImageBackground, useColorScheme } from 'react-native'
 import * as Linking from 'expo-linking'
 import * as Updates from 'expo-updates'
@@ -18,6 +12,7 @@ import BaseButton from '../../../components/ui/buttons/base-button'
 const WelcomeScreen = () => {
     const router = useRouter()
     const colorSchem = useColorScheme()
+  const theme = useTheme()
 
     useEffect(() => {
         (async () => {
@@ -84,7 +79,8 @@ const WelcomeScreen = () => {
         style={{
           flex: 1,
           width: '100%',
-          height: '100%'
+          height: '100%',
+          backgroundColor: theme.background.val
         }}
       >
         <View

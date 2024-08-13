@@ -13,6 +13,7 @@ import Loading from '../feedback/loading'
 import BaseButton from '../buttons/base-button'
 import { useRoute } from '@react-navigation/native'
 import BaseContentSheet from '../action-sheets/base-content-sheet'
+import * as LocalAuthentication from 'expo-local-authentication'
 
 interface RenderButtons {
 

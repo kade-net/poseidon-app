@@ -43,11 +43,11 @@ const UserNameSearch = (props: Props) => {
         const updated = CONTENT.slice(0, selection.start - (currentMention.length + 1)) + `@${username} ` + CONTENT.slice(selection.end)
 
         form.setValue('content', updated)
-
+        const address = mentionsQuery?.data?.accountsSearch?.find((account) => account?.username?.username === username)?.address
         const currentMentions = form.getValues('mentions') ?? {} as Record<string, string>
         form.setValue('mentions', {
             ...currentMentions,
-            [username]: username
+            [username]: address ?? ''
         })
     }
 
