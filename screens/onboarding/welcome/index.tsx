@@ -22,6 +22,7 @@ const WelcomeScreen = () => {
                 if (update.isAvailable) {
                     try {
                         await Updates.fetchUpdateAsync();
+                      await Updates.reloadAsync();
                     } catch (e) {
                         posti.capture('error fetching update', {
                             error: e ?? 'Unable to trigger update fetch',

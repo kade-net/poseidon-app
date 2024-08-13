@@ -9,12 +9,13 @@ import { P, useVerificationForm } from './context'
 import { useRouter } from 'expo-router'
 import * as Haptics from 'expo-haptics'
 import * as Burnt from 'burnt'
-import { Clerk } from '@clerk/clerk-js'
 import { z } from 'zod'
 import { convergenceClient } from '../../../data/apollo'
 import { SEND_VERIFICATION_EMAIL } from '../../../lib/convergence-client/queries'
 import delegateManager from '../../../lib/delegate-manager'
 import posti from '../../../lib/posti'
+
+const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms))
 
 const EmailForm = (props: SceneProps) => {
     const [sendingCode, setSendingCode] = React.useState(false)
@@ -37,14 +38,16 @@ const EmailForm = (props: SceneProps) => {
             })
 
 
-            props.jumpTo('code')
-
             Burnt.toast({
                 preset: 'done',
                 title: 'Code Sent',
                 message: 'Check your email for the verification code',
                 haptic: 'success'
             })
+
+            props.jumpTo('code')
+
+
 
         }
         catch (e) {

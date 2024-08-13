@@ -87,7 +87,7 @@ const Email = () => {
                     renderScene={renderScene}
                     onIndexChange={setCurrentIndex}
                     renderTabBar={() => null}
-
+                    animationEnabled={false}
                 />
             </verificationFormContext.Provider>
         </KeyboardAvoidingView>
