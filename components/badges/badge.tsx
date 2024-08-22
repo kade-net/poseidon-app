@@ -12,6 +12,10 @@ import BaseContentSheet from "../ui/action-sheets/base-content-sheet";
 import { H3, Text, XStack, YStack } from "tamagui";
 import VerifiedBadge from "./verified";
 
+const Lagos = () => {
+  return <Image width={24} height={24} style={{ borderRadius: 5 }} source={require('../../assets/badges/lagos-badge-small.png')} />
+}
+
 type BADGE_TYPES =
   | "active"
   | "catalyst"
@@ -20,7 +24,8 @@ type BADGE_TYPES =
   | "pioneer"
   | "streak"
   | "top-poster"
-  | "verified"
+  | "verified" 
+  | "lagos";
 
 interface BadgeDetails {
   badge: BADGE_TYPES;
@@ -151,6 +156,21 @@ const badgeDetails: BadgeDetails[] = [
         source={require("../../assets/badges/verified.png")}
       />
     ),
+  },
+  {
+    badge: 'lagos',
+    name: 'Lagos',
+    description: 'Awarded for participating in the Lagos Aptos Meetup',
+    icon: <Lagos />,
+    color: '#F5F5DC',
+    display: () => (
+      <Image
+        style={{ borderRadius: 10 }}
+        width={80}
+        height={80}
+        source={require("../../assets/badges/lagos-badge-80.png")}
+      />
+    )
   }
 ];
 
