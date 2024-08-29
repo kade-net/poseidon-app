@@ -535,6 +535,7 @@ export type Query = {
   getNotifications?: Maybe<NotificationResults>;
   getRanking?: Maybe<Ranking>;
   getSystemNotifications?: Maybe<Array<Notification>>;
+  getWalletNotifications?: Maybe<Array<WalletNotification>>;
   notificationsSet?: Maybe<Scalars['Boolean']['output']>;
   phoneBook?: Maybe<PhoneBook>;
   portals?: Maybe<Array<Portal>>;
@@ -569,6 +570,11 @@ export type QueryGetRankingArgs = {
 
 
 export type QueryGetSystemNotificationsArgs = {
+  user_address: Scalars['String']['input'];
+};
+
+
+export type QueryGetWalletNotificationsArgs = {
   user_address: Scalars['String']['input'];
 };
 
@@ -647,6 +653,7 @@ export type UploadFileDimensions = {
 };
 
 export type UploadFileInput = {
+  cdn?: InputMaybe<Scalars['Boolean']['input']>;
   delegate_address: Scalars['String']['input'];
   dimensions?: InputMaybe<UploadFileDimensions>;
   file_byte_size: Scalars['Int']['input'];
@@ -658,6 +665,17 @@ export type UploadedFileResponse = {
   __typename?: 'UploadedFileResponse';
   file_url: Scalars['String']['output'];
   upload_url: Scalars['String']['output'];
+};
+
+export type WalletNotification = {
+  __typename?: 'WalletNotification';
+  amount?: Maybe<Scalars['Float']['output']>;
+  currency?: Maybe<Scalars['String']['output']>;
+  hash?: Maybe<Scalars['String']['output']>;
+  receiver_address?: Maybe<Scalars['String']['output']>;
+  sender_address?: Maybe<Scalars['String']['output']>;
+  timestamp?: Maybe<Scalars['Int']['output']>;
+  type?: Maybe<Scalars['String']['output']>;
 };
 
 export type AddDelegateToKadeAndHermesArgs = {
@@ -1227,6 +1245,13 @@ export type VerifyCodeMutationVariables = Exact<{
 
 export type VerifyCodeMutation = { __typename?: 'Mutation', verifyCode?: string | null };
 
+export type GetWalletNotificationsQueryVariables = Exact<{
+  user_address: Scalars['String']['input'];
+}>;
+
+
+export type GetWalletNotificationsQuery = { __typename?: 'Query', getWalletNotifications?: Array<{ __typename?: 'WalletNotification', amount?: number | null, currency?: string | null, hash?: string | null, receiver_address?: string | null, sender_address?: string | null, type?: string | null, timestamp?: number | null }> | null };
+
 
 export const RegisterRequestInboxDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"RegisterRequestInbox"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"args"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"RegisterRequestInboxInputArgs"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"registerRequestInbox"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"args"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"raw_transaction"}},{"kind":"Field","name":{"kind":"Name","value":"signature"}}]}}]}}]} as unknown as DocumentNode<RegisterRequestInboxMutation, RegisterRequestInboxMutationVariables>;
 export const RequestConversationDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"RequestConversation"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"args"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"RequestConversationArgs"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"requestConversation"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"args"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"raw_transaction"}},{"kind":"Field","name":{"kind":"Name","value":"signature"}}]}}]}}]} as unknown as DocumentNode<RequestConversationMutation, RequestConversationMutationVariables>;
@@ -1273,3 +1298,4 @@ export const AddNotificationSettingsDocument = {"kind":"Document","definitions":
 export const AddEmailDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"AddEmail"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"addEmail"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"addEmail"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}]}]}}]} as unknown as DocumentNode<AddEmailMutation, AddEmailMutationVariables>;
 export const SendVerificationCodeDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"SendVerificationCode"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"sendVerificationCodeEmail"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"sendVerificationCode"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}]}]}}]} as unknown as DocumentNode<SendVerificationCodeMutation, SendVerificationCodeMutationVariables>;
 export const VerifyCodeDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"VerifyCode"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"verifyCode"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"verifyCode"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}]}]}}]} as unknown as DocumentNode<VerifyCodeMutation, VerifyCodeMutationVariables>;
+export const GetWalletNotificationsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetWalletNotifications"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"user_address"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"getWalletNotifications"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"user_address"},"value":{"kind":"Variable","name":{"kind":"Name","value":"user_address"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"amount"}},{"kind":"Field","name":{"kind":"Name","value":"currency"}},{"kind":"Field","name":{"kind":"Name","value":"hash"}},{"kind":"Field","name":{"kind":"Name","value":"receiver_address"}},{"kind":"Field","name":{"kind":"Name","value":"sender_address"}},{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"timestamp"}}]}}]}}]} as unknown as DocumentNode<GetWalletNotificationsQuery, GetWalletNotificationsQueryVariables>;

@@ -17,6 +17,7 @@ import LinkResolver from "./link-resolver";
 import { getMutedUsers, getRemovedFromFeed } from "../../../contract/modules/store-getters";
 import ErrorBoundary from "../../helpers/error-boundary";
 import RankBadge from "../../badges/rank-badge";
+import MediaViewer from "../media/media-viewer";
 
 dayjs.extend(relativeTime);
 
@@ -260,21 +261,9 @@ function BaseContentContainer(props: BaseContentContainerProps) {
                 );
               })}
             </YStack>
-            <View
-              flexDirection="row"
-              flexWrap="wrap"
-              w="100%"
-              columnGap={10}
-              rowGap={10}
-            >
-              {data?.content?.media
-                ?.filter((media: Entities.Media) =>
-                  media?.type?.includes("image")
-                )
-                ?.map((media: Entities.Media) => {
-                  return <FeedImage image={media?.url} key={media?.url} />;
-                })}
-            </View>
+            <MediaViewer
+              data={data?.content?.media ?? []}
+            />
           </View>
         </Link>
         {data?.parent && data?.type == 2 && (

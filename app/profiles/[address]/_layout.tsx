@@ -124,7 +124,7 @@ const _layout = () => {
                         }
                     }}
                 />
-                <Stack.Screen name="publication-editor" options={{ presentation: 'modal', headerShown: false }} />
+                <Stack.Screen name="publication-editor" options={{ headerShown: false }} />
             </Stack>
             <BaseContentSheet
                 open={isOpen}

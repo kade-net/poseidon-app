@@ -1,6 +1,9 @@
 import React from "react";
 import { Stack, useGlobalSearchParams, useRouter } from "expo-router";
 import Editor from "../../../screens/editor";
+import {SafeAreaView} from "react-native-safe-area-context";
+import {useTheme, YStack} from "tamagui";
+import {Platform} from "react-native";
 
 const PublicationEditorScreen = () => {
     const params = useGlobalSearchParams<{
@@ -10,6 +13,7 @@ const PublicationEditorScreen = () => {
         community?: string,
         ref?: string
     }>()
+    const theme = useTheme()
     const router = useRouter()
     let PUBLICATION_TYPE = params?.type ? parseInt(params.type) : 1
     PUBLICATION_TYPE = Number.isNaN(PUBLICATION_TYPE) ? 1 : PUBLICATION_TYPE
@@ -18,14 +22,11 @@ const PublicationEditorScreen = () => {
     let CONTENT = params?.content ?? ""
     let COMMUNITY = params?.community ?? ""
     return (
-
-        <Editor
-            publicationType={PUBLICATION_TYPE}
-            publicationId={PUBLICATION_ID}
-            content={CONTENT}
-            community={COMMUNITY}
-            parentPublicationRef={params?.ref}
-        />
+            <Editor
+                publicationType={PUBLICATION_TYPE}
+                publicationId={PUBLICATION_ID}
+                parentPublicationRef={params?.ref}
+            />
     );
 };
 

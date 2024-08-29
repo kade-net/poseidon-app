@@ -1,6 +1,7 @@
 import { AccountAddress } from "@aptos-labs/ts-sdk";
 import { isEmpty, isString } from "lodash";
-import { Dimensions } from "react-native";
+import { Dimensions, Image } from "react-native";
+import axios from "axios";
 const ipfsBaseUri = 'https://cloudflare-ipfs.com/ipfs/'
 const NO_COLLECTION_IMAGE = 'https://api.dicebear.com/8.x/shapes/png?seed=collection'
 
@@ -159,5 +160,66 @@ export namespace Utils {
     if (!aspect_ratio || aspect_ratio.length === 0) return 1
     const [width, height] = aspect_ratio.split(':')
     return Number(width) / Number(height)
+  }
+
+  export const getImageDimensions = async (uri: string) => {
+    if (!uri) return {
+      width: 1,
+      height: 1,
+      aspect_ratio: 1
+    }
+    try {
+      let width = 1, height = 1;
+      await Image.getSize(uri, (_width, _height) => {
+        width = _width;
+        height = _height;
+      }, (error) => {
+        console.log("Error getting image dimensions", error);
+      })
+
+      const aspect_ratio = width / height
+
+
+      return {
+        width,
+        height,
+        aspect_ratio
+      }
+
+
+    }
+    catch (e) {
+      return {
+        width: 1,
+        height: 1,
+        aspect_ratio: 1
+      }
+    }
+  }
+
+  export const extractDomain = (url: string): string  => {
+    try {
+      const { hostname } = new URL(url);
+      return hostname.replace(/^www\./, '');
+    } catch (error) {
+      console.error('Invalid URL:', error);
+      return '';
+    }
+  }
+
+  export const HIGHLIGHT_REGEX = /(@\w+)|(\b(?:https?|ftp):\/\/\S+\b)|(#\w+)|(^\/[a-zA-Z-]+|\s\/[a-zA-Z-]+)|(\$[a-zA-Z]+)|(\w+)/g;
+
+  interface getCurrencyUSDArgs {
+    currencyID: string
+  }
+  export const getCurrencyUSD = async (args: getCurrencyUSDArgs) => {
+    const response = await axios.get<{data: {currency: string, rates: {USD: string}}}>(`https://api.coinbase.com/v2/exchange-rates`, {
+      params: {
+        currency: args.currencyID
+      },
+
+    })
+
+    return parseFloat(response?.data?.data?.rates?.USD ?? 0)
   }
 }

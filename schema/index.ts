@@ -21,7 +21,14 @@ export const publicationSchema = z.object({
         type: z.string(),
         url: z.string()
     })).optional(),
-    community: z.string().optional()
+    mint_details: z.object({
+        supply: z.number().int(),
+        collection: z.string(),
+        signature: z.string(),
+        currency: z.string()
+    }).optional(),
+    community: z.string().optional(),
+    signature: z.string().optional()
 })
 
 export type TPUBLICATION = z.infer<typeof publicationSchema>

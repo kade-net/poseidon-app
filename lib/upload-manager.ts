@@ -59,7 +59,8 @@ class UploadManager {
                         file_type: file.type,
                         file_byte_size: file_buffer.byteLength,
                         delegate_address:  account.address().hex(),
-                        dimensions: dimesnions
+                        dimensions: dimesnions,
+                        cdn: true
                     } as UploadFileInput
                 }
             })

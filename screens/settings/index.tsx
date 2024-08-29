@@ -190,7 +190,7 @@ const Settings = () => {
                 </TouchableOpacity>
 
 
-                <Link
+                {/* <Link
                     href="/settings/wallet/"
                     asChild
                 >
@@ -208,7 +208,7 @@ const Settings = () => {
                         </XStack>
                         <Separator />
                     </YStack>
-                </Link>
+                </Link> */}
                 <Link
                     href="/settings/delete"
                     asChild
@@ -231,7 +231,7 @@ const Settings = () => {
             </YStack>
             <XStack w="100%" alignItems='center' justifyContent='center' >
                 <Text>
-                    Version 0.0.40
+                    Version 0.0.60
                 </Text>
             </XStack>
             <XStack w="100%" alignItems='center' justifyContent='center' >

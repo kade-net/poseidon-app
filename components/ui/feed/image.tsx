@@ -1,6 +1,7 @@
 import { View, Text, Spinner, YStack, XStack } from 'tamagui'
 import React, { memo, useEffect, useState } from 'react'
-import { Dimensions, Image, TouchableOpacity } from 'react-native'
+import { Dimensions, TouchableOpacity, Image as RnImage } from 'react-native'
+import { Image } from 'expo-image'
 import { Cross, ImageDown, X } from '@tamagui/lucide-icons'
 import { head, isUndefined } from 'lodash'
 import { useQuery } from 'react-query'
@@ -10,12 +11,13 @@ import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context'
 import * as Haptics from 'expo-haptics'
 import Toast from 'react-native-toast-message'
 import uploadManager from '../../../lib/upload-manager'
+import { Image as ImageIcon } from '@tamagui/lucide-icons'
 
 interface FeedImageProps {
-    editable?: boolean
     image: string
-    onRemove?: (id: string | number) => void
     id?: string | number
+    preventExpand?: boolean
+    prefferedAspectRatio?: number
 }
 
 const DEVICE_HEIGHT = Dimensions.get('screen').height
@@ -25,7 +27,7 @@ const IMAGE_HEIGHT_THRESHOLD = DEVICE_HEIGHT * 0.5
 
 const getSize = async (image: string) => {
     return new Promise<{ width: number, height: number }>((res, rej) => {
-        Image.getSize(image, (width, height) => {
+        RnImage.getSize(image, (width, height) => {
             res({ width, height })
         }, (error) => {
             rej(error)
@@ -33,7 +35,7 @@ const getSize = async (image: string) => {
     })
 }
 const FeedImage = (props: FeedImageProps) => {
-    const { image, editable = false, id, onRemove } = props
+    const { image, id, preventExpand, prefferedAspectRatio } = props
     const { onOpen, onToggle, isOpen, onClose } = useDisclosure()
     const [loading, setLoading] = useState(false)
     const insets = useSafeAreaInsets()
@@ -54,6 +56,7 @@ const FeedImage = (props: FeedImageProps) => {
             }
 
         },
+        enabled: !isUndefined(image)
     })
 
 
@@ -80,61 +83,50 @@ const FeedImage = (props: FeedImageProps) => {
             <View
                 position='relative'
                 flex={1}
-                aspectRatio={16 / 9}
+                aspectRatio={1}
                 width={"100%"}
                 height={"100%"}
                 borderRadius={5}
                 overflow='hidden'
+                bg="$portalBackground"
+                alignItems='center'
+                justifyContent='center'
             >
-                <Spinner />
+                <ImageIcon />
             </View>
         )
     }
 
     if (error) return null
 
-    if (!aspectRatio) return null
+    if (!aspectRatio && !prefferedAspectRatio) return null
+
+    const IMAGE_IS_GIF_OR_WEBP = image?.trim()?.endsWith('.gif') || image?.trim()?.endsWith('.webp')
 
     return (
         <View
             position='relative'
             flex={1}
-            aspectRatio={aspectRatio?.is_large ? undefined : aspectRatio?.aspect_ratio}
+            aspectRatio={prefferedAspectRatio ?? (aspectRatio?.is_large ? undefined : aspectRatio?.aspect_ratio)}
             width={"100%"}
-            height={aspectRatio?.is_large ? IMAGE_HEIGHT_THRESHOLD : "100%"}
+            height={(aspectRatio?.is_large && isUndefined(prefferedAspectRatio)) ? IMAGE_HEIGHT_THRESHOLD : "100%"}
             borderRadius={5}
             overflow='hidden'
-            borderWidth={editable ? 1 : undefined}
-            borderColor={editable ? '$borderColor' : undefined}
         >
-            {editable && <TouchableOpacity
-                style={{
-                    position: 'absolute',
-                    top: 10,
-                    left: 10,
-                    zIndex: 2
-                }}
-                onPress={() => {
-                    if (Number.isInteger(id) && !isUndefined(id)) {
-                        onRemove && onRemove(id)
-                    }
-                }}
-            >
-                <X />
-            </TouchableOpacity>}
             <TouchableOpacity style={{ width: '100%', height: '100%' }} onPress={() => {
-                console.log("Open")
-                onOpen()
+                if (!preventExpand) {
+                    onOpen()
+                }
             }} >
                 <Image
-                    resizeMode={
-                        aspectRatio?.is_large ? 'cover' : 'contain'
+                    contentFit={
+                        (aspectRatio?.is_large || prefferedAspectRatio) ? 'cover' : 'contain'
                     }
-                    source={{ uri: image }}
+                    source={{ uri: image, isAnimated: IMAGE_IS_GIF_OR_WEBP }} 
                     style={{
                         width: '100%',
                         height: '100%',
-                        aspectRatio: aspectRatio?.is_large ? undefined : aspectRatio?.aspect_ratio
+                        aspectRatio: (aspectRatio?.is_large || prefferedAspectRatio) ? undefined : aspectRatio?.aspect_ratio
                     }}
                 />
 
@@ -164,7 +156,7 @@ const FeedImage = (props: FeedImageProps) => {
                     </XStack>
                     <YStack flex={1} w="100%" h="100%" alignItems='center' justifyContent='center' >
                         <Image
-                            resizeMode='contain'
+                            contentFit='contain'
                             source={{ uri: image }}
                             style={{
                                 width: '100%',

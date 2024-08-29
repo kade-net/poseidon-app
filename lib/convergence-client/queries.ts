@@ -415,3 +415,19 @@ export const VERIFY_EMAIL = gql(/* GraphQL */`
     )
 }
 `)
+
+export const GET_WALLET_REVENUE = gql(/* GraphQL */`
+    query GetWalletNotifications($user_address: String!) {
+        getWalletNotifications(
+            user_address: $user_address
+        ) {
+            amount
+            currency
+            hash
+            receiver_address
+            sender_address
+            type
+            timestamp
+        }
+    }
+`)

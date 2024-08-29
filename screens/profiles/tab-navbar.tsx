@@ -42,6 +42,7 @@ const TabNavbar = (props: Props) => {
       style={{
         width: '100%',
         position: "absolute",
+          backgroundColor:tamaguiTheme.background.val,
         top: 0,
         left: 0,
         zIndex: 4,
@@ -66,6 +67,7 @@ const TabNavbar = (props: Props) => {
           justifyContent='flex-start'
           bg={'$background'}
           columnGap={20}
+          flex={1}
         >
           {
             props.navigationState.routes.map((route, index) => {
