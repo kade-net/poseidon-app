@@ -107,6 +107,7 @@ const CommunitySearch = (props: Props) => {
                             <SearchInput value={value} onChangeText={setValue} />
                         </XStack>
                         <FlatList
+                            scrollEnabled={false}
                             data={(communityQuery.data?.communities?.slice(0, 5)) ?? []}
                             keyExtractor={(item) => item?.id?.toString()}
                             ListHeaderComponent={() => (

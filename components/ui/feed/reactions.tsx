@@ -1,4 +1,4 @@
-import { View, Text, useTheme, Button, Spinner } from 'tamagui'
+import { View, Text, useTheme, Button, Spinner, XStack } from 'tamagui'
 import React, { memo, useEffect, useMemo, useTransition } from 'react'
 import { StyleSheet, TouchableOpacity } from 'react-native'
 import { Heart, MessageSquare, MessageSquarePlus, Repeat } from '@tamagui/lucide-icons'
@@ -164,29 +164,30 @@ const PublicationReactions = (props: Props) => {
           }}
           style={styles.action_container}
         >
-          <MessageSquare
-            strokeWidth={3}
-            size={15}
-            mr={10}
-            color={
-              userInteractions.data?.publicationInteractionsByViewer?.commented
-                ? "$activeReaction"
-                : "$reactionBorderColor"
+          <XStack backgroundColor={
+            userInteractions?.data?.publicationInteractionsByViewer?.commented
+              ? '$activeReaction'
+              : '$border'
+          } alignItems='center' justifyContent='center' p={10} borderRadius={20}
+            columnGap={
+              publicationStatsQuery.data?.publicationStats?.comments == 0 ? 0 : 10
             }
-            fill={
-              userInteractions.data?.publicationInteractionsByViewer?.commented
-                ? theme.activeReaction.val
-                : theme.background.val
-            }
-          />
-          {showNumbers && (
+          >
+            <MessageSquare
+              strokeWidth={3}
+              size={15}
+              color={
+                "white"
+              }
+              fill={
+                "white"
+              }
+            />
+            {showNumbers && (
             <Text
               fontSize={"$sm"}
               color={
-                userInteractions.data?.publicationInteractionsByViewer
-                  ?.commented
-                  ? "$activeReaction"
-                  : "$reactionTextColor"
+                "white"
               }
             >
               {publicationStatsQuery.data?.publicationStats?.comments == 0
@@ -196,99 +197,104 @@ const PublicationReactions = (props: Props) => {
                   0}
             </Text>
           )}
+          </XStack>
         </TouchableOpacity>
         <TouchableOpacity onPress={openRepost} style={styles.action_container}>
-          <Repeat
-            strokeWidth={3}
-            size={15}
-            mr={10}
-            color={
-              userInteractions.data?.publicationInteractionsByViewer
-                ?.reposted ||
-              userInteractions.data?.publicationInteractionsByViewer?.quoted
-                ? "$activeReaction"
-                : "$reactionBorderColor"
+          <XStack
+            backgroundColor={
+              userInteractions?.data?.publicationInteractionsByViewer?.reposted || userInteractions?.data?.publicationInteractionsByViewer?.quoted ? '$activeReaction' :
+                '$border'}
+            alignItems='center'
+            justifyContent='center'
+            p={10}
+            borderRadius={20}
+            columnGap={
+              (publicationStatsQuery.data?.publicationStats?.reposts ?? 0) == 0 && publicationStatsQuery.data?.publicationStats?.quotes == 0
+                ? 0
+                : 10
             }
-            fill={
-              userInteractions.data?.publicationInteractionsByViewer
-                ?.reposted ||
-              userInteractions.data?.publicationInteractionsByViewer?.quoted
-                ? theme.activeReaction.val
-                : theme.background.val
-            }
-          />
-          {showNumbers && (
-            <Text
-              fontSize={"$sm"}
+          >
+            <Repeat
+              strokeWidth={3}
+              size={15}
               color={
-                userInteractions.data?.publicationInteractionsByViewer
-                  ?.reposted ||
-                userInteractions.data?.publicationInteractionsByViewer?.quoted
-                  ? "$activeReaction"
-                  : "$reactionTextColor"
+                "white"
               }
-            >
-              {(publicationStatsQuery.data?.publicationStats?.reposts ?? 0) ==
-                0 && publicationStatsQuery.data?.publicationStats?.quotes == 0
-                ? ""
-                : (publicationStatsQuery.data?.publicationStats?.reposts ??
+            />
+            {showNumbers && (
+              <Text
+                fontSize={"$sm"}
+                color={
+                  "white"
+                }
+              >
+                {(publicationStatsQuery.data?.publicationStats?.reposts ?? 0) ==
+                  0 && publicationStatsQuery.data?.publicationStats?.quotes == 0
+                  ? ""
+                  : (publicationStatsQuery.data?.publicationStats?.reposts ??
                     initialStats?.reposts ??
                     0) +
                   (publicationStatsQuery.data?.publicationStats?.quotes ??
                     initialStats?.quotes ??
                     0)}
-            </Text>
-          )}
+              </Text>
+            )}
+          </XStack>
         </TouchableOpacity>
 
         <TouchableOpacity onPress={handleReact} style={styles.action_container}>
-          {CUSTOM_REACTION ? (
-            <Text
-              fontWeight={"bold"}
-              color={
-                userInteractions.data?.publicationInteractionsByViewer?.reacted
-                  ? "$activeReaction"
-                  : "$reactionTextColor"
-              }
-            >
-              {CUSTOM_REACTION}{" "}
-            </Text>
-          ) : (
-            <Heart
-              strokeWidth={3}
-              size={15}
-              mr={10}
-              color={
-                userInteractions.data?.publicationInteractionsByViewer?.reacted
-                  ? "$activeReaction"
-                  : "$reactionBorderColor"
-              }
-              borderStyle="dotted"
-              fill={
-                userInteractions.data?.publicationInteractionsByViewer?.reacted
-                  ? theme.activeReaction.val
-                  : theme.background.val
-              }
-            />
-          )}
+          <XStack
+            backgroundColor={
+              userInteractions?.data?.publicationInteractionsByViewer?.reacted ? '$activeReaction' :
+                '$border'}
+            alignItems='center'
+            p={10}
+            borderRadius={20}
+            columnGap={
+              publicationStatsQuery.data?.publicationStats?.reactions == 0
+                ? 0
+                : 10
+            }
+          >
+            {CUSTOM_REACTION ? (
+              <Text
+                fontWeight={"bold"}
+                color={
+                  'white'
+                }
+              >
+                {CUSTOM_REACTION}{" "}
+              </Text>
+            ) : (
+              <Heart
+                strokeWidth={3}
+                size={15}
+                  color={
+                    'white'
+                  }
+                  borderStyle="dotted"
+                  fill={
+                  "white"
+                }
+              />
+            )}
 
-          {showNumbers && (
-            <Text
-              fontSize={"$sm"}
-              color={
-                userInteractions.data?.publicationInteractionsByViewer?.reacted
-                  ? "$activeReaction"
-                  : "$reactionTextColor"
-              }
-            >
-              {(publicationStatsQuery.data?.publicationStats?.reactions ?? 0) ==
-              0
-                ? ""
-                : publicationStatsQuery.data?.publicationStats?.reactions ??
+            {showNumbers && (
+              <Text
+                fontSize={"$sm"}
+                color={
+                  'white'
+                }
+              >
+                {(publicationStatsQuery.data?.publicationStats?.reactions ?? 0) ==
+                  0
+                  ? ""
+                  : publicationStatsQuery.data?.publicationStats?.reactions ??
                   initialStats?.reactions ??
                   0}
-            </Text>
-          )}
+              </Text>
+            )}
+          </XStack>
         </TouchableOpacity>
 
         {/* Comment Sheet */}

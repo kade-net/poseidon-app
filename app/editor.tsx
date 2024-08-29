@@ -1,34 +1,46 @@
 import { View, Text, Platform } from "react-native";
 import React from "react";
 import { useGlobalSearchParams, useRouter } from "expo-router";
-import { YStack } from "tamagui";
+import {useTheme, YStack} from "tamagui";
 import PublicationEditor from "../components/ui/editor/publication-editor";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Editor from "../screens/editor";
+import {TPUBLICATION} from "../schema";
 
 const EditorScreen = () => {
     const params = useGlobalSearchParams<{
         type?: `${number}`,
         publicationId?: `${number}`,
-        content?: string,
-        community?: string,
+        post?: string,
         ref?: string
     }>()
-    const router = useRouter()
+
     let PUBLICATION_TYPE = params?.type ? parseInt(params.type) : 1
     PUBLICATION_TYPE = Number.isNaN(PUBLICATION_TYPE) ? 1 : PUBLICATION_TYPE
     let PUBLICATION_ID = params?.publicationId ? parseInt(params.publicationId) : undefined
     PUBLICATION_ID = Number.isNaN(PUBLICATION_ID) ? undefined : PUBLICATION_ID
-    let CONTENT = params?.content ?? ""
-    let COMMUNITY = params?.community ?? ""
+
+    const theme = useTheme()
     return (
-        <Editor
-            publicationType={PUBLICATION_TYPE}
-            publicationId={PUBLICATION_ID}
-            content={CONTENT}
-            community={COMMUNITY}
-            parentPublicationRef={params?.ref}
-        />
+        <SafeAreaView
+            style={{
+                flex: 1,
+                width: "100%",
+                height: "100%",
+                backgroundColor: theme.background.val
+            }}
+            edges={Platform.select({
+                ios: ['top', 'left', 'right'],
+                android: undefined
+            })}
+        >
+            <Editor
+                publicationType={PUBLICATION_TYPE}
+                publicationId={PUBLICATION_ID}
+                encodedPost={params?.post}
+                parentPublicationRef={params?.ref}
+            />
+        </SafeAreaView>
     );
 };
 

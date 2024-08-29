@@ -1,11 +1,13 @@
 import { View, Text, YStack, H3, XStack } from 'tamagui'
-import React, { useEffect } from 'react'
+import React, {useEffect, useMemo} from 'react'
 import BaseContentSheet from '../base-content-sheet'
 import InAppTransactions from '.'
 import TransactionWrapper from './transaction-wrapper'
 import settings from '../../../../lib/settings'
 import { Info, Wallet } from '@tamagui/lucide-icons'
 import BaseButton from '../../buttons/base-button'
+import {Platform} from "react-native";
+import {FullWindowOverlay} from "react-native-screens";
 
 interface Props {
     isOpen: boolean
@@ -21,6 +23,16 @@ interface Props {
 const TransactionSheet = (props: Props) => {
     const { isOpen, onOpen, onClose, onToggle, module_arguments, module_function, type_arguments, wallet } = props
     const [update_preffered_wallet, setUpdatePrefferedWallet] = React.useState(false)
+
+    const containerComponent = useMemo(() => (props: any) => (
+        Platform.OS === 'ios' ? (
+            <FullWindowOverlay>
+                <YStack flex={1} pe='box-none' >
+                    {props.children}
+                </YStack>
+            </FullWindowOverlay>
+        ) : props.children
+    ), [])
 
     useEffect(() => {
         if (wallet == 'delegate' && settings?.active?.preffered_wallet !== 'delegate') {
@@ -40,6 +52,7 @@ const TransactionSheet = (props: Props) => {
             onOpenChange={onToggle}
             snapPoints={[50]}
             level={10}
+            containerComponent={containerComponent}
         >
             {update_preffered_wallet ? <YStack w="100%" h="100%" p={20} pb={40} rowGap={5} justifyContent='space-between' >
                 <YStack w="100%" rowGap={5} >

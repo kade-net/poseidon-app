@@ -58,6 +58,7 @@ const documents = {
     "\nmutation AddEmail($input: addEmail!) {\n    addEmail(input: $input)\n}\n    ": types.AddEmailDocument,
     "\nmutation SendVerificationCode($input: sendVerificationCodeEmail! ) {\n    sendVerificationCode(input: $input)\n}\n    ": types.SendVerificationCodeDocument,
     "\n    mutation VerifyCode($input: verifyCode!) {\n    verifyCode(\n        input: $input\n    )\n}\n": types.VerifyCodeDocument,
+    "\n    query GetWalletNotifications($user_address: String!) {\n        getWalletNotifications(\n            user_address: $user_address\n        ) {\n            amount\n            currency\n            hash\n            receiver_address\n            sender_address\n            type\n            timestamp\n        }\n    }\n": types.GetWalletNotificationsDocument,
 };
 
 /**
@@ -254,6 +255,10 @@ export function gql(source: "\nmutation SendVerificationCode($input: sendVerific
  * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function gql(source: "\n    mutation VerifyCode($input: verifyCode!) {\n    verifyCode(\n        input: $input\n    )\n}\n"): (typeof documents)["\n    mutation VerifyCode($input: verifyCode!) {\n    verifyCode(\n        input: $input\n    )\n}\n"];
+/**
+ * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function gql(source: "\n    query GetWalletNotifications($user_address: String!) {\n        getWalletNotifications(\n            user_address: $user_address\n        ) {\n            amount\n            currency\n            hash\n            receiver_address\n            sender_address\n            type\n            timestamp\n        }\n    }\n"): (typeof documents)["\n    query GetWalletNotifications($user_address: String!) {\n        getWalletNotifications(\n            user_address: $user_address\n        ) {\n            amount\n            currency\n            hash\n            receiver_address\n            sender_address\n            type\n            timestamp\n        }\n    }\n"];
 
 export function gql(source: string) {
   return (documents as any)[source] ?? {};

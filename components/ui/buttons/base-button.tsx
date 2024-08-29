@@ -16,6 +16,11 @@ const _BaseButton = styled(Button, {
             text: {
                 backgroundColor: 'transparent',
                 color: '$primary'
+            },
+            "outlined-primary": {
+                backgroundColor: '$colorTransparent',
+                borderWidth: 1,
+                borderColor: '$primary'
             }
         },
         rounded: {

@@ -1,7 +1,7 @@
 import { View, Text, YStack, Spinner, Input, Button, XStack } from 'tamagui'
 import React, { useEffect, useMemo, useRef, useState } from 'react'
 import usePortal from '../../../lib/portals/use-portal'
-import { FlatList, Image } from 'react-native'
+import {FlatList, Image, Platform} from 'react-native'
 import { sortBy, truncate } from 'lodash'
 import useDisclosure from '../../hooks/useDisclosure'
 import TransactionSheet from '../action-sheets/in-app-transactions/transaction-sheet'
@@ -14,6 +14,7 @@ import BaseButton from '../buttons/base-button'
 import { useRoute } from '@react-navigation/native'
 import BaseContentSheet from '../action-sheets/base-content-sheet'
 import * as LocalAuthentication from 'expo-local-authentication'
+import {FullWindowOverlay} from "react-native-screens";
 
 interface RenderButtons {
 
@@ -245,6 +246,16 @@ const PortalRenderer = (props: Props) => {
         initialUrl: props?.url?.trim()
     })
 
+    const containerComponent = useMemo(() => (props: any) => (
+        Platform.OS === 'ios' ? (
+            <FullWindowOverlay>
+                <YStack flex={1} pe='box-none' >
+                    {props.children}
+                </YStack>
+            </FullWindowOverlay>
+        ) : props.children
+    ), [])
+
     useEffect(() => {
         if (portal?.portal?.components?.type === 'app') {
             setInitialPortal(portal.portal)
@@ -291,7 +302,7 @@ const PortalRenderer = (props: Props) => {
                     snapPoints={[70]}
                     level={9}
                     showOverlay={false}
-
+                    containerComponent={containerComponent}
 
                 >
                     <YStack rowGap={20} flex={1} w={'100%'} h={'100%'} p={20} pb={100} backgroundColor={'$portalBackground'} >

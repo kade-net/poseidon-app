@@ -55,7 +55,7 @@ function FailedSimulation() {
     return (
         <YStack flex={1} w="100%" h="100%" alignItems='center' justifyContent='space-between' p={20} rowGap={10} >
             <YStack w="100%" rowGap={5} >
-                <Text w="100%"  >Failed Submission</Text>
+                <Text w="100%"  >Failed Simulation</Text>
                 <XStack columnGap={10} w="100%" alignItems='center' >
                     <AlertCircle size={12} color={'$red10'} />
                     <Text color={'$red10'}  >{simulationError}</Text>

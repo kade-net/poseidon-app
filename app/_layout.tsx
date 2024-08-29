@@ -150,8 +150,10 @@ function RootLayoutNav() {
               <Stack.Screen name="connect" options={{ headerShown: false }} />
               <Stack.Screen name="profiles" options={{ headerShown: false }} />
               <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-                <Stack.Screen name="editor" options={{ headerShown: false, presentation: 'modal', gestureEnabled: false }} />
+                <Stack.Screen name="editor" options={{ headerShown: false }} />
                 <Stack.Screen name="wallet" options={{ headerShown: false, presentation: 'modal', gestureEnabled: false }} />
+                <Stack.Screen name="solid-wallet" options={{ headerShown: false, gestureEnabled: false }} />
+              <Stack.Screen name="composable-editor" options={{headerShown: false}}/>
             </Stack>
             </PortalProvider>
             <Toast autoHide />

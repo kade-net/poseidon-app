@@ -1,7 +1,7 @@
 import { View, Text, Avatar, Heading, ButtonIcon, useTheme, Separator, Sheet, Button, TextArea, ScrollView, Spinner, XStack } from 'tamagui'
 import React, { useCallback, useMemo, useRef, useState } from 'react'
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context'
-import { ImagePlus, MessageCirclePlus, Settings } from '@tamagui/lucide-icons'
+import { ImagePlus, MessageCirclePlus, Settings, Wallet } from '@tamagui/lucide-icons'
 import { Animated, BackHandler, FlatList, Image, KeyboardAvoidingView, ListRenderItem, Platform, TouchableOpacity } from 'react-native'
 import { feed } from './data'
 import BaseContentContainer from '../../../../components/ui/feed/base-content-container'
@@ -88,6 +88,10 @@ const Home = () => {
 
     const goToSettings = () => {
         router.push('/settings/')
+    }
+
+    const goToSolid = () => {
+        router.push('/solid-wallet')
     }
 
     const goToProfile = () => {
@@ -203,12 +207,18 @@ const Home = () => {
                     source={require('../../../../assets/brand/logo.png')}
                     style={{
                         width: 36,
-                        height: 36
+                        height: 36,
+                        marginRight: -24
                     }}
                 />
-                <TouchableOpacity onPress={goToSettings} >
-                    <Settings />
-                </TouchableOpacity>
+                <XStack alignItems='center' columnGap={10} >
+                    <TouchableOpacity onPress={goToSolid} >
+                        <Wallet color={'$sideText'} size={24} />
+                    </TouchableOpacity>
+                    <TouchableOpacity onPress={goToSettings} >
+                        <Settings color={'$sideText'} />
+                    </TouchableOpacity>
+                </XStack>
             </Animated.View>
             <Animated.View style={{
                 flex: 1,
