@@ -3,6 +3,7 @@ import {Utils} from "../utils";
 
 const PORTAL_WHITELIST = [
     "shacks.poseidon.ac",
+    "cube.poseidon.ac",
     "swarms.poseidon.ac",
     "portals.poseidon.ac",
     "africanz.poseidon.ac",

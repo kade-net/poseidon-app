@@ -10,6 +10,8 @@ import PortalRenderer from '../portal-ui';
 import { Globe } from '@tamagui/lucide-icons';
 import { truncate } from 'lodash';
 import LinkImage from './linkImage';
+import {Utils} from "../../../utils";
+import {checkIsPortal} from "../../../lib/WHITELISTS";
 
 const HOST_REGEX = /^(?:https?:\/\/)?(?:[^@\n]+@)?(?:www\.)?([^:/\n?]+)/img
 
@@ -39,6 +41,8 @@ const PORTALS_URL = [
 
 const LinkResolver = (props: Props) => {
     const { link = '', kid, publication_ref } = props
+    const DOMAIN = Utils.extractDomain(link)
+    const IS_PORTAL = checkIsPortal(link)
 
     const linkMetaQuery = useQuery({
         queryKey: ['link', link],
@@ -75,7 +79,7 @@ const LinkResolver = (props: Props) => {
         })
     }
 
-    if (link.includes("https://portals.poseidon.ac") || link.includes("http://192.168.1.4:3000") || link.includes('https://shacks.poseidon.ac') || link.includes('https://cube.poseidon.ac')) {
+    if (IS_PORTAL) {
         return <PortalRenderer
             kid={kid}
             post_ref={publication_ref}
