@@ -18,6 +18,7 @@ import { getMutedUsers, getRemovedFromFeed } from "../../../contract/modules/sto
 import ErrorBoundary from "../../helpers/error-boundary";
 import RankBadge from "../../badges/rank-badge";
 import MediaViewer from "../media/media-viewer";
+import BaseAvatar from "../avatar";
 
 dayjs.extend(relativeTime);
 
@@ -86,9 +87,9 @@ function BaseContentContainer(props: BaseContentContainerProps) {
       {_data?.type == 4 && (
         <Link
           href={{
-            pathname: "/(tabs)/feed/[post-id]/",
+            pathname: "/home/tabs/home/[ref]",
             params: {
-              "post-id": data?.publication_ref!,
+              "ref": data?.publication_ref!,
             },
           }}
         >
@@ -104,9 +105,9 @@ function BaseContentContainer(props: BaseContentContainerProps) {
         <Link
           asChild
           href={{
-            pathname: "/(tabs)/feed/[post-id]/",
+            pathname: "/home/tabs/home/[ref]",
             params: {
-              "post-id": data?.parent?.publication_ref!,
+              "ref": data?.parent?.publication_ref!,
             },
           }}
         >
@@ -130,16 +131,10 @@ function BaseContentContainer(props: BaseContentContainerProps) {
               },
             }}
           >
-            <Avatar circular size={"$4"}>
-              <Avatar.Image
-                src={Utils.parseAvatarImage(
-                  data?.creator?.address ?? "1",
-                  data?.creator?.profile?.pfp as string
-                )}
-                accessibilityLabel="Profile Picture"
-              />
-              <Avatar.Fallback backgroundColor="$pink10" />
-            </Avatar>
+            <BaseAvatar size={'$md'} src={Utils.parseAvatarImage(
+                data?.creator?.address ?? "1",
+                data?.creator?.profile?.pfp as string
+            )} />
           </Link>
           <View
             flex={1}
@@ -200,41 +195,11 @@ function BaseContentContainer(props: BaseContentContainerProps) {
             <Text fontFamily={"$heading"}>Reposted</Text>
           </XStack>
         )}
-        {!inCommunityFeed && (
-          <XStack w="100%">
-            {data?.community && (
-              <Link
-                asChild
-                href={{
-                  pathname: "/(tabs)/feed/communities/[name]/",
-                  params: {
-                    name: data?.community?.name,
-                  },
-                }}
-              >
-                <XStack
-                  alignItems="center"
-                  columnGap={10}
-                  borderRadius={5}
-                  px={4}
-                  py={2}
-                  backgroundColor={"$portalBackground"}
-                >
-                  <Avatar circular size={"$1"}>
-                    <Avatar.Image src={data?.community?.image} />
-                    <Avatar.Fallback bg="$pink10" />
-                  </Avatar>
-                  <Text fontSize={12}>{data?.community?.name}</Text>
-                </XStack>
-              </Link>
-            )}
-          </XStack>
-        )}
         <Link
           href={{
-            pathname: "/(tabs)/feed/[post-id]/",
+            pathname: "/home/tabs/home/[ref]",
             params: {
-              "post-id": data?.publication_ref!,
+              "ref": data?.publication_ref!,
             },
           }}
           asChild

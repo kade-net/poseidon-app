@@ -15,7 +15,7 @@ function index() {
 
     return (
         <Redirect
-            href={nextScreen as any}
+            href={'/home'}
         />
     )
 }

@@ -9,7 +9,7 @@ interface Props {
 }
 
 
-const BaseAvatar = (props: Props) => {
+const BaseAvatar = React.forwardRef<unknown, Props>((props, ref) => {
     const { size, src } = props
     const IMG_SIZE = size === '$md' ? '$3' : size === '$sm' ? '$2' : size === '$lg' ? '$4' : '$3'
 
@@ -23,13 +23,13 @@ const BaseAvatar = (props: Props) => {
                     height: '100%',
                     borderRadius: 100
                 }}
-                onLoadStart={() => { }}
-                onLoadEnd={() => { }}
             />
             {/* <ImageIcon/> */}
         </XStack>
     )
-}
+})
+
+BaseAvatar.displayName = 'BaseAvatar'
 
 export default BaseAvatar
 

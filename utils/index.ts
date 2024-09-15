@@ -1,5 +1,5 @@
 import { AccountAddress } from "@aptos-labs/ts-sdk";
-import { isEmpty, isString } from "lodash";
+import {isEmpty, isString, truncate} from "lodash";
 import { Dimensions, Image } from "react-native";
 import axios from "axios";
 const ipfsBaseUri = 'https://cloudflare-ipfs.com/ipfs/'
@@ -221,5 +221,18 @@ export namespace Utils {
     })
 
     return parseFloat(response?.data?.data?.rates?.USD ?? 0)
+  }
+
+  export function formatName(name: string, length?: number){
+    return truncate(name, {
+      length: length ?? 10,
+      omission: '...'
+    })
+  }
+
+  export function convertHexToUint8Array(hex: string, sliceLength?: number) {
+    let newHex = hex?.replace("0x", "")
+    const buff = Buffer.from(newHex, 'hex')
+    return sliceLength ? buff.subarray(0,sliceLength) : buff
   }
 }
