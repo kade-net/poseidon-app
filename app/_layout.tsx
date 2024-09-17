@@ -21,6 +21,7 @@ import { queryClient } from '../data/query'
 import hermes from '../contract/modules/hermes'
 import petra from '../lib/wallets/petra'
 import settings from '../lib/settings'
+import {KeyboardProvider} from "react-native-keyboard-controller";
 
 // petra.RESTRICTED_resetKeys()
 // settings.RESTRICKTED__nuke()
@@ -138,23 +139,24 @@ function RootLayoutNav() {
           <ThemeProvider value={DarkTheme}>
             <PortalProvider shouldAddRootHost >
 
-
-            <Stack
-              screenOptions={{
-                  headerShown: false,
-              }}
-                initialRouteName="onboard"
-            >
-              <Stack.Screen name="index" options={{ headerShown: false }} />
-              <Stack.Screen name="onboard" options={{ headerShown: false }} />
-              <Stack.Screen name="connect" options={{ headerShown: false }} />
-              <Stack.Screen name="profiles" options={{ headerShown: false }} />
-              <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-                <Stack.Screen name="editor" options={{ headerShown: false }} />
-                <Stack.Screen name="wallet" options={{ headerShown: false, presentation: 'modal', gestureEnabled: false }} />
-                <Stack.Screen name="solid-wallet" options={{ headerShown: false, gestureEnabled: false }} />
-              <Stack.Screen name="composable-editor" options={{headerShown: false}}/>
-            </Stack>
+            <KeyboardProvider>
+              <Stack
+                screenOptions={{
+                    headerShown: false,
+                }}
+                  initialRouteName="onboard"
+              >
+                <Stack.Screen name="index" options={{ headerShown: false }} />
+                <Stack.Screen name="onboard" options={{ headerShown: false }} />
+                <Stack.Screen name="connect" options={{ headerShown: false }} />
+                <Stack.Screen name="profiles" options={{ headerShown: false }} />
+                <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+                  <Stack.Screen name="editor" options={{ headerShown: false }} />
+                  <Stack.Screen name="wallet" options={{ headerShown: false, presentation: 'modal', gestureEnabled: false }} />
+                  <Stack.Screen name="solid-wallet" options={{ headerShown: false, gestureEnabled: false }} />
+                <Stack.Screen name="composable-editor" options={{headerShown: false}}/>
+              </Stack>
+            </KeyboardProvider>
             </PortalProvider>
             <Toast autoHide />
           </ThemeProvider>

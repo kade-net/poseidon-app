@@ -4139,9 +4139,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@kade-net/fgs-node-client@npm:^0.0.5":
-  version: 0.0.5
-  resolution: "@kade-net/fgs-node-client@npm:0.0.5"
+"@kade-net/fgs-node-client@npm:^0.0.8":
+  version: 0.0.8
+  resolution: "@kade-net/fgs-node-client@npm:0.0.8"
   dependencies:
     "@graphql-codegen/cli": "npm:^5.0.2"
     "@graphql-codegen/client-preset": "npm:^4.3.3"
@@ -4152,16 +4152,16 @@ __metadata:
     graphql: "npm:^16.9.0"
     graphql-request: "npm:^6.1.0"
     graphql-tag: "npm:^2.12.6"
-  checksum: 99d14389b95ea39af77b3a288c49ef8fd89b6932a763aae5d1c8dd35912634948159b25fae15e9f9ee805911d87531165367186eab48de39e72f3e4724d79205
+  checksum: 7570e32a17a25752ab95458fdb9c4a6a889f120e4c64a06fe00f2df2e890aafad5e6f7d718d80631c8ed1e5e44fe928d99151424d1d137a1d4cf9326e632e5c2
   languageName: node
   linkType: hard
 
-"@kade-net/fgs-rn@npm:^0.1.5":
-  version: 0.1.5
-  resolution: "@kade-net/fgs-rn@npm:0.1.5"
+"@kade-net/fgs-rn@npm:^0.1.14":
+  version: 0.1.14
+  resolution: "@kade-net/fgs-rn@npm:0.1.14"
   dependencies:
     "@aptos-labs/ts-sdk": "npm:^1.27.0"
-    "@kade-net/fgs-node-client": "npm:^0.0.5"
+    "@kade-net/fgs-node-client": "npm:^0.0.8"
     buffer: "npm:^6.0.3"
     expo: "npm:~51.0.28"
     react: "npm:18.2.0"
@@ -4173,7 +4173,7 @@ __metadata:
     expo: "*"
     react: "*"
     react-native: "*"
-  checksum: 2976e33d0093608e5635b0b4ade78172914672a93298a9fa4c5f5f7f4417ac86656c0bb2813ab27d95d7abf3eb98d787f3170ce86e5a7795e5fe19db2ef3c481
+  checksum: 4e30470ec204cf6cdd25bc9c43d9eb4506aba4357b11c400185d6a897ebaf275ad9da6deabd9bff9eaeb2364e85baecf29b4807b8473a7edc547b3331888613e
   languageName: node
   linkType: hard
 
@@ -15822,7 +15822,7 @@ __metadata:
     "@graphql-codegen/typescript-operations": "npm:^4.2.0"
     "@graphql-typed-document-node/core": "npm:^3.2.0"
     "@hookform/resolvers": "npm:^3.3.4"
-    "@kade-net/fgs-rn": "npm:^0.1.5"
+    "@kade-net/fgs-rn": "npm:^0.1.14"
     "@kade-net/portals-parser": "npm:^0.0.23"
     "@react-native-async-storage/async-storage": "npm:1.23.1"
     "@react-navigation/drawer": "npm:^6.7.2"
@@ -15890,6 +15890,7 @@ __metadata:
     react-native-gesture-handler: "npm:~2.16.1"
     react-native-get-random-values: "npm:~1.11.0"
     react-native-keyboard-aware-scroll-view: "npm:^0.9.5"
+    react-native-keyboard-controller: "npm:^1.13.4"
     react-native-opengraph-kit: "npm:^3.0.1"
     react-native-pager-view: "npm:6.3.0"
     react-native-reanimated: "npm:~3.10.1"
@@ -16400,6 +16401,17 @@ __metadata:
   peerDependencies:
     react-native: ">=0.48.4"
   checksum: 95d8ed8a46426b16e819713495d64766a3eed5d63a03fb4feca0351cce55d74197f75d8b01dd3f2c491cda29c155bb71c8063d2fba23e8a0044208aad03d0d91
+  languageName: node
+  linkType: hard
+
+"react-native-keyboard-controller@npm:^1.13.4":
+  version: 1.13.4
+  resolution: "react-native-keyboard-controller@npm:1.13.4"
+  peerDependencies:
+    react: "*"
+    react-native: "*"
+    react-native-reanimated: ">=3.0.0"
+  checksum: 3ce54959765b36830eb5d169588a149d1255b631de0f8c6616a7a88a04006cd798b6d22ba52774cece3a4b2fdd7e6d94f7618c9558ce940a6c070cd81a35873a
   languageName: node
   linkType: hard
 

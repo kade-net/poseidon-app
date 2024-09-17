@@ -7,7 +7,8 @@ const INBOX_ADDRESS = delegateManager.account?.address().toString()!
 
 export async function getClient(){
     try {
-        const randAuthString =await Client.getAuthString(delegateManager.account!.address().toString()!)
+        console.log("INBOX ADDRESS: ", INBOX_ADDRESS);
+        const randAuthString =await Client.getAuthString(INBOX_ADDRESS)
 
         console.log("Rand Auth string ::", randAuthString);
         const signature = delegateManager.signer!.sign(Buffer.from(randAuthString, 'utf-8').toString('hex'))

@@ -6,18 +6,46 @@ import delegateManager from "../../lib/delegate-manager";
 import BaseAvatar from "../../components/ui/avatar";
 import {Utils} from "../../utils";
 import dayjs from "dayjs";
-import {truncate} from "lodash";
+import {sortBy, truncate} from "lodash";
 import {Link} from "expo-router";
 import {TouchableOpacity} from "react-native";
+import { useQuery as uzQuery } from 'react-query'
+import fgs from "../../lib/fgs";
+import {SortOrder} from "../../__generated__/graphql";
 
 interface MessageCardProps {
-    lastMessage?: MESSAGE
     conversationHeader: CONVERSATION_HEADER
 }
 export function MessageCard(props: MessageCardProps){
-    const { lastMessage, conversationHeader } = props
+    const {conversationHeader } = props
 
     const otherParticipant = conversationHeader?.participants?.find(p=> p !== delegateManager.owner)
+
+    const lastMessageQuery = uzQuery({
+        queryFn: async () => {
+            try {
+                const conversation =  await fgs.client!?.conversation(conversationHeader.conversation_id)
+
+                if(conversation){
+                    const messages = sortBy((await conversation.loadConversation({page: 0, size: 20}, SortOrder.Asc)) ?? [], item => -(item.timestamp ?? 0))
+                    return messages?.at(0) ?? null
+                }else
+                {
+                    return null
+                }
+
+            }
+            catch (e)
+            {
+                console.log("Something went wrong: ", e)
+                return null
+            }
+        },
+        queryKey: [`last-message-${conversationHeader.conversation_id}`]
+    })
+
+    const MESSAGE_CONTENT = lastMessageQuery?.data?.content?.trim() ?? ""
+    console.log("Content::", MESSAGE_CONTENT)
 
     const profileQuery = useQuery(GET_MY_PROFILE, {
         variables: {
@@ -26,7 +54,7 @@ export function MessageCard(props: MessageCardProps){
         skip: !otherParticipant,
     })
 
-    const lastWasMe = lastMessage?.originator == delegateManager.owner
+    const lastWasMe = lastMessageQuery?.data?.originator == delegateManager.owner
 
     return (
         <Link asChild href={{
@@ -43,9 +71,9 @@ export function MessageCard(props: MessageCardProps){
                             <Text fontSize={16} fontWeight={'bold'} >
                                 {profileQuery?.data?.account?.profile?.display_name}
                             </Text>
-                            {lastMessage && <Text fontSize={16} color={'$sideText'}>
+                            {lastMessageQuery?.data && <Text fontSize={16} color={'$sideText'}>
                                 {
-                                    dayjs(lastMessage?.timestamp).fromNow()
+                                    dayjs(lastMessageQuery?.data?.timestamp).fromNow()
                                 }
                             </Text>}
                         </XStack>
@@ -53,10 +81,10 @@ export function MessageCard(props: MessageCardProps){
                             @{profileQuery?.data?.account?.username?.username}
                         </Text>
                         {
-                            lastMessage && <Text fontSize={14} color={'$sideText'} >
+                            lastMessageQuery?.data && <Text fontSize={14} color={'$sideText'} >
                                 {
-                                    lastWasMe ? `You: ${truncate(lastMessage?.content, { length: 10 })}` :
-                                        `${profileQuery?.data?.account?.username?.username ?? ""}: ${truncate(lastMessage?.content, { length: 10 })}`
+                                    lastWasMe ? `You: ${truncate(lastMessageQuery?.data?.content, { length: 10 })?.trim()}` :
+                                        `${profileQuery?.data?.account?.username?.username ?? ""}: ${truncate(MESSAGE_CONTENT, { length: 10 })?.trim()}`
                                 }
                             </Text>
                         }

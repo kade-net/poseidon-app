@@ -27,7 +27,7 @@ export function Message(props: Props){
                 }}
             >
                 <Text>
-                    {data?.content}
+                    {data?.content?.trim()}
                 </Text>
             </YStack>
         </XStack>
