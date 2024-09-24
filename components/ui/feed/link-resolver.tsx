@@ -110,11 +110,9 @@ const LinkResolver = (props: Props) => {
         <TouchableWithoutFeedback
             onPress={handleOpenUrl}
         >
-            <YStack borderRadius={5} w="100%" mt={1} >
+            <YStack w="100%" >
                 {
-                    !linkMetaQuery.data?.[0]?.image ? <Text color={'$COAText'} w={'100%'} ellipsizeMode={'tail'} textWrap={"wrap"}  >
-                        {link}
-                        </Text> :
+                    !linkMetaQuery.data?.[0]?.image ? null :
                     <YStack w="100%" columnGap={10} borderWidth={
                         linkMetaQuery.data?.[0]?.image ? 1 : 0
                     } borderColor={'$borderColor'} borderRadius={5} p={5} >

@@ -4,6 +4,8 @@ import { UseFormReturn } from 'react-hook-form'
 import { TPUBLICATION } from '../../../schema'
 import { Utils } from '../../../utils'
 import { Link } from 'expo-router'
+import {checkIsPortal} from "../../../lib/WHITELISTS";
+import {truncate} from "lodash";
 
 // split content string by mentions, links, hashtags, tags, currencies
 const HIGHLIGHT_REGEX = /(@\w+)|(\b(?:https?|ftp):\/\/\S+\b)|(#\w+)|(^\/[a-zA-Z-]+|\s\/[a-zA-Z-]+)|(\$[a-zA-Z]+)|(\w+)/g;
@@ -28,7 +30,7 @@ function Mention(props: MentionProps) {
     const mentions = props.mentions
     const user_address = mentions?.[props.username?.replace("@", '')]
 
-    if (!user_address) return <Text fontFamily={"$body"} fontSize={"$sm"} lineHeight={"$sm"} fontWeight={"$3"} color={"$COAText"}>{props.username}</Text>
+    if (!user_address) return <Text color={"$COAText"}>{props.username}</Text>
 
     return (
         <Link
@@ -40,7 +42,7 @@ function Mention(props: MentionProps) {
             }}
             asChild
         >
-            <Text fontFamily={"$body"} fontSize={"$sm"} lineHeight={"$sm"} fontWeight={"$3"} color={"$COAText"}>{props.username}</Text>
+            <Text color={"$COAText"}>{props.username}</Text>
         </Link>
     )
 
@@ -60,15 +62,16 @@ const HighlightMentions = (props: Props) => {
                 mentions={mentions}
             />
         } else if (Utils.urlRegex.test(part)) {
-            return <Text fontFamily={"$body"} fontSize={18} lineHeight={12} key={index} color={'$COAText'}></Text>
+            if(checkIsPortal(part)) return null;
+            return <Text   key={index} color={'$COAText'}>{truncate(part, {length: 50, omission: '...'})}</Text>
         } else if (HASHTAG_REGEX.test(part)) {
-            return <Text fontFamily={"$body"} fontSize={18} color={'$COAText'} key={index}>{part}</Text>
+            return <Text   color={'$COAText'} key={index}>{part}</Text>
         } else if (TAG_REGEX.test(part)) {
-            return <Text fontFamily={"$body"} fontSize={18} color={'$COAText'} key={index}>{part}</Text>
+            return <Text  color={'$COAText'} key={index}>{part}</Text>
         } else if (CURRENCY_REGEX.test(part)) {
-            return <Text fontFamily={"$body"} fontSize={18} color={'$COAText'} key={index}>{part}</Text>
+            return <Text  color={'$COAText'} key={index}>{part}</Text>
         }
-        return <Text fontFamily={"$body"} fontSize={18} color={'$text'} key={index}>{part}</Text>
+        return <Text  key={index}>{part}</Text>
     })
 }
 

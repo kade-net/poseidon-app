@@ -60,9 +60,6 @@ function RenderPortal(props: RenderPortalProps) {
         const rows: Array<Array<PortalButton>> = []
         const buttons = sortBy(portal?.components?.buttons, 'index') ?? []
 
-        console.log("Buttons::", buttons)
-
-
         buttons.forEach((button, index) => {
             if (index % 2 === 0) {
                 rows.push([button])
@@ -76,7 +73,7 @@ function RenderPortal(props: RenderPortalProps) {
     const router = useRouter()
 
     const handleMint = (button: PortalButton | null) => {
-        router.setParams(currentParams)
+        // router.setParams(currentParams)
         setActiveButton(button)
         onOpen()
     }

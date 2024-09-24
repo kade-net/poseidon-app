@@ -23,10 +23,6 @@ const roboto = createFont({
       5: "700",
       6:"800"
   },
-  lineHeight:{
-    sm:20
-
-  },
 })
 
 export const config = createTamagui({

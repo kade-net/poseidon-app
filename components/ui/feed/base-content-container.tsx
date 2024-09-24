@@ -2,6 +2,7 @@
 import "../../../global"
 import { Dot, Heart, MessageSquare, MoreHorizontal, MoreVertical, Repeat2, Reply } from "@tamagui/lucide-icons";
 import { Avatar, Separator, Text, View, XStack, YStack, useTheme } from "tamagui";
+import { Text as RnText } from 'react-native'
 import dayjs from "dayjs";
 import relativeTime from 'dayjs/plugin/relativeTime'
 import { Publication, PublicationStats } from "../../../__generated__/graphql";
@@ -191,16 +192,15 @@ function BaseContentContainer(props: BaseContentContainerProps) {
           asChild
         >
           {/* Content */}
-          <View w="100%" flex={1}>
+          <YStack w="100%" flex={1}>
             <YStack w="100%" paddingBottom={10}>
-              <Text color={"$text"} fontSize={20} >
+              <RnText style={{fontSize: 18}} >
                 <HighlightMentions
-                  content={`${data?.content?.content} ${__DEV__ ? `${data?.id}` : ""
-                    }`}
+                  content={data?.content?.content}
                   tags={data?.content?.tags}
                   mentions={data?.content?.mentions}
                 />
-              </Text>
+              </RnText>
               {contentLinks?.map((link, i) => {
                 return (
                   <LinkResolver
@@ -215,7 +215,7 @@ function BaseContentContainer(props: BaseContentContainerProps) {
             <MediaViewer
               data={data?.content?.media ?? []}
             />
-          </View>
+          </YStack>
         </Link>
         {data?.parent && data?.type == 2 && (
           <View w="100%" px={5}>

@@ -142,7 +142,7 @@ export default function DrawerContent(props: DrawerProps) {
     },[currentTabKey])
 
 
-    return <YStack backgroundColor={'$portalBackground'} flex={1} w={"100%"} h={"100%"} p={20} >
+    return <YStack backgroundColor={'$background'} flex={1} w={"100%"} h={"100%"} p={20} >
         <FlatList ListHeaderComponent={()=>(
             <YStack mb={20} w={"100%"} rowGap={10} >
                 <Avatar circular size={'$6'} >
