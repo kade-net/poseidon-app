@@ -23,12 +23,13 @@ import {TPUBLICATION} from "../../schema";
 import { useQuery as uzQuery } from 'react-query'
 import {getSavedFeeds} from "../v2/feeds";
 import {Utils} from "../../utils";
+import {MaterialTopTabBarProps} from "@react-navigation/material-top-tabs";
 
-const tabContext = React.createContext<{activeTab: string}>({
+export const tabContext = React.createContext<{activeTab: string}>({
     activeTab: "discover",
 })
 
-const feeds: Array<Feed> = [
+export const initialFeeds: Array<Feed> = [
     {
         key: 'discover',
         type: 'predefined',
@@ -50,7 +51,7 @@ const feeds: Array<Feed> = [
     }
 ]
 
-interface Feed {
+export interface Feed {
     key: string;
     title: string
     type: 'custom' | 'predefined',
@@ -66,17 +67,36 @@ interface TabRoute {
 
 interface FeedsTopBarProps {
     feeds: Feed[]
-    sceneProps: SceneRendererProps & {
-        navigationState: NavigationState<{key: string, title: string}>
-    }
+    materialProps: MaterialTopTabBarProps
 }
 
-const FeedsTopBar = memo((props: FeedsTopBarProps) => {
-    const { feeds, sceneProps } = props
+export const FeedsTopBar = memo((props: FeedsTopBarProps) => {
+    const { feeds, materialProps } = props
     const listRef = useRef<FlatList>(null)
     const navigation = useNavigation()
     const router = useRouter()
     const tabState = useContext(tabContext)
+    const activeTab = materialProps.state.routeNames.at(materialProps.state.index)
+
+    const onPress = (key: string) => {
+        const isFocused = activeTab == key;
+        const event = materialProps.navigation.emit({
+            type: 'tabPress',
+            target: key,
+            canPreventDefault: true,
+        });
+
+        if (!isFocused && !event.defaultPrevented) {
+            materialProps.navigation.navigate(key);
+        }
+    };
+
+    const onLongPress = (key: string) => {
+        materialProps.navigation.emit({
+            type: 'tabLongPress',
+            target: key,
+        });
+    };
 
 
     const handleOpen = () => {
@@ -93,7 +113,7 @@ const FeedsTopBar = memo((props: FeedsTopBarProps) => {
                     translateY: interpolate(
                         bottomBarMode.value,
                         [0,1],
-                        [0, -80]
+                        [0, -100]
                     )
                 }
             ]
@@ -106,7 +126,7 @@ const FeedsTopBar = memo((props: FeedsTopBarProps) => {
             position: 'absolute',
             zIndex: 50
         }, transformStyle]} >
-            <XStack bg={"$background"} w={"100%"} alignItems={'center'} justifyContent={'space-between'} px={20} >
+            <XStack bg={"$background"} w={"100%"} alignItems={'center'} justifyContent={'space-between'} px={20} pt={20} >
                 <TouchableOpacity onPress={handleOpen}  >
                     <Menu color={"$sideText"} />
                 </TouchableOpacity>
@@ -129,15 +149,20 @@ const FeedsTopBar = memo((props: FeedsTopBarProps) => {
                 }} ref={listRef} contentContainerStyle={{
                     columnGap: 10
                 }} horizontal showsHorizontalScrollIndicator={false} data={feeds} renderItem={(props)=>{
-                    const isActive = tabState.activeTab == props.item.key
+                    const isActive = materialProps.state.routeNames.at(materialProps.state.index) == props.item.key
                     return (
                         <TouchableOpacity
                             onPress={()=>{
-                                sceneProps?.jumpTo(props.item.key)
+                                console.log('props:: pressed::', materialProps?.state?.index)
+                                onPress(props.item.key)
                                 listRef?.current?.scrollToIndex({
                                     index: props.index,
                                     animated: true
                                 })
+                            }}
+
+                            onLongPress={()=>{
+                                onLongPress(props.item.key)
                             }}
                         >
                             <YStack py={10} >
@@ -158,10 +183,9 @@ interface FeedTabProps {
     feed: Feed
 }
 
-const FeedTab = React.memo((props: FeedTabProps) => {
+export const FeedTab = React.memo((props: FeedTabProps) => {
     const listRef = useRef<FlatList>(null)
     const { feed } = props
-    const tabState = useContext(tabContext)
     const shellContext = useShellProvider()
     const customVariables = feed.customFeedVariables?.(feed)
     const router = useRouter()
@@ -171,14 +195,14 @@ const FeedTab = React.memo((props: FeedTabProps) => {
             page: 0,
             size: 20,
             types: customVariables?.types,
-            // muted: isEmpty(account.mutedUsers) ? undefined : account.mutedUsers,
-            // hide: isEmpty(publications.hiddenPublications) ? undefined : publications.hiddenPublications,
+            muted: isEmpty(account.mutedUsers) ? undefined : account.mutedUsers,
+            hide: isEmpty(publications.hiddenPublications) ? undefined : publications.hiddenPublications,
             following_feed:customVariables?.following_feed,
             communityName: customVariables?.communityName,
         },
         fetchPolicy: 'cache-and-network',
-        skip: !feed || !customVariables || feed.key !== tabState.activeTab,
-        // skip: true
+        skip: !feed || !customVariables
+        // skip: true,
     })
 
     const fetchedPublications: Array<any> = publicationsQuery?.data?.publications ?? publicationsQuery?.data?.communityPublications ?? []
@@ -222,11 +246,14 @@ const FeedTab = React.memo((props: FeedTabProps) => {
         )
     }, [])
 
-    if(tabState.activeTab !== feed.key) return null;
+    // if(tabState.activeTab !== feed.key) return null;
 
     return (
-        <YStack flex={1} w={"100%"} h={"100%"} position={'relative'} >
+        <YStack flex={1} w={"100%"} h={"100%"} position={'relative'} bg={'$background'} >
             <FlatList
+                contentContainerStyle={{
+                    paddingTop: 100
+                }}
                 ref={listRef}
                 data={fetchedPublications ?? []}
                 renderItem={renderPublication}
@@ -240,18 +267,15 @@ const FeedTab = React.memo((props: FeedTabProps) => {
                 keyExtractor={(i)=> i?.publication_ref}
                 onScroll={shellContext?.handleScroll}
                 scrollEventThrottle={1}
-                contentContainerStyle={{
-                    paddingTop: 80
-                }}
                 ListHeaderComponent={()=>{
-                    if(publicationsQuery?.loading) return <XStack w={"100%"} alignItems={'center'} justifyContent={'center'} >
+                    if(publicationsQuery?.loading) return <XStack w={"100%"} alignItems={'center'} justifyContent={'center'} bg={'$background'} >
                         <Spinner/>
                     </XStack>
                 }}
                 ListFooterComponent={()=>{
                     if(fetchedPublications?.length == 0) return null
                     if(publicationsQuery?.loading) return (
-                        <Loading w={"100%"} />
+                        <Loading w={"100%"} h={'100%'} bg={'$background'} />
                     )
                     return null
                 }}
@@ -332,9 +356,7 @@ const Tabs = memo((props: TabsProps) => {
     }, [currentTabIndex])
 
     const renderTabBar = useCallback((props: SceneRendererProps & { navigationState: NavigationState<{key: string, title: string}>})=>{
-        return (
-            <FeedsTopBar feeds={feeds} sceneProps={props} />
-        )
+        return null
     },[feeds?.length])
 
     return (
@@ -375,7 +397,7 @@ export default function FeedTabs(){
             })
 
             return uniqBy([
-                ...feeds,
+                ...initialFeeds,
                 ...mapped
             ], f => f.key)
         }

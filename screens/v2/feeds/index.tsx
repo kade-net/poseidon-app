@@ -1,4 +1,4 @@
-import {Image, Separator, Spacer, Text, useTheme, View, XStack, YStack} from "tamagui";
+import {Image, Separator, Spacer, Spinner, Text, useTheme, View, XStack, YStack} from "tamagui";
 import storage from "../../../lib/storage";
 import {useQuery, useQueryClient} from "react-query";
 import { useQuery as useApolloQuery } from '@apollo/client'
@@ -105,44 +105,33 @@ const FeedButton = (props: Props) => {
     const client = useQueryClient()
     const { feed, saved } = props
     const [localSave, setLocalSave] = useState<boolean>(saved ?? false)
+    const [loading, setLoading] = useState<boolean>(false)
 
     const savedFeeds = client.getQueryData<Array<FEED>>(['saved-feeds'])
 
     const handleToggle = async () => {
-        const saved = savedFeeds?.find(f => f.key == feed.key)
-        if(!saved){
-            await saveFeed(feed)
-            client.setQueryData<Array<FEED>>(['saved-feeds'], (data)=>{
-                let currentData = data ?? []
-                return [
-                    ...currentData,
-                    feed
-                ]
-            })
+        setLoading(true)
+        try {
+            const saved = savedFeeds?.find(f => f.key == feed.key)
+            if(!saved){
+                await saveFeed(feed)
+                await client.invalidateQueries(['saved-feeds'])
+                await client.invalidateQueries(['feeds'])
+                setLocalSave(true)
+            }else{
+                await removeFeed(feed.key)
+                await client.invalidateQueries(['saved-feeds'])
+                await client.invalidateQueries(['feeds'])
+                setLocalSave(false)
+            }
 
-            client.setQueryData<Array<FEED>>(['feeds'], (data)=>{
-                let currentData = data ?? []
-                return [
-                    ...currentData,
-                    feed
-                ]
-            })
-            setLocalSave(true)
-        }else{
-            await removeFeed(feed.key)
-            client.setQueryData<Array<FEED>>(['saved-feeds'], (data)=> {
-                let currentData = data ?? []
-                const newData = currentData?.filter(f => f.key !== feed.key)
-
-                return newData
-            })
-            client.setQueryData<Array<FEED>>(['feeds'], (data)=> {
-                let currentData = data ?? []
-                const newData = currentData?.filter(f => f.key !== feed.key)
-
-                return newData
-            })
-            setLocalSave(false)
+        }
+        catch(e)
+        {
+            console.log("Unable to save feed", e)
+        }
+        finally {
+            setLoading(false)
         }
     }
 
@@ -165,9 +154,9 @@ const FeedButton = (props: Props) => {
                     </Text>
                 </XStack>
 
-                <TouchableOpacity onPress={handleToggle} >
-                    { HIDE ?  <Minus /> : <Plus/>}
-                </TouchableOpacity>
+                {loading ? <Spinner color={'$sideText'} /> : <TouchableOpacity onPress={handleToggle}>
+                    {HIDE ? <Minus/> : <Plus/>}
+                </TouchableOpacity>}
             </XStack>
             {feed.description && <Text>
                 {feed.description}
@@ -184,7 +173,7 @@ export function SavedFeeds() {
     })
 
     return (
-        <YStack width={'100%'} alignItems={'center'} rowGap={5}  >
+        <YStack width={'100%'} alignItems={'center'} rowGap={5} pt={10}  >
             <YStack w={'100%'} >
                 <Text fontSize={18} fontWeight={'semibold'} >
                     My Feeds

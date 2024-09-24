@@ -141,6 +141,8 @@ const ProfileCardWithButton = memo((props: ProfileCardWithButtonProps)=>{
 
             }
 
+            fgs.client.conversationList = fgs.client.conversationList.concat(header)
+
             router.push({
                 pathname: '/home/tabs/messages/[conversationId]',
                 params: {

@@ -231,7 +231,7 @@ const Settings = () => {
             </YStack>
             <XStack w="100%" alignItems='center' justifyContent='center' >
                 <Text>
-                    Version 0.0.60
+                    Version 0.0.80
                 </Text>
             </XStack>
             <XStack w="100%" alignItems='center' justifyContent='center' >

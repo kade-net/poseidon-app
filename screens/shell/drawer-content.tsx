@@ -13,7 +13,7 @@ import {
     SearchIconOutlined
 } from "../../lib/icons";
 import NotificationIcon from "../../assets/svgs/notification-icon";
-import {Settings, Wallet} from "@tamagui/lucide-icons";
+import {Compass, Settings, Wallet} from "@tamagui/lucide-icons";
 import {FlatList, TouchableOpacity} from "react-native";
 import {useCallback} from "react";
 import {RouteParams, useRouter} from "expo-router";
@@ -70,13 +70,17 @@ const drawerKeys: Array<DrawerNavigationKey> = [
         to: `/home/tabs/${delegateManager.owner!}`
     },
     {
-        key: 'settings',
-        title: 'Settings',
-        icon(focused){
-            return focused ? <Settings/> : <Settings/>
-        },
-        to: '/settings'
+      key: 'portals',
+      title: 'Portals',
+      icon(focused){
+          return <Compass
+            fill={focused ? 'white' : undefined}
+            color={focused ? 'black' : undefined}
+          />
+      },
+        to: '/portals'
     },
+
     {
         key: 'wallet',
         title: 'Wallet',
@@ -84,6 +88,14 @@ const drawerKeys: Array<DrawerNavigationKey> = [
             return focused ? <Wallet /> : <Wallet />
         },
         to: '/solid-wallet'
+    },
+    {
+        key: 'settings',
+        title: 'Settings',
+        icon(focused){
+            return focused ? <Settings/> : <Settings/>
+        },
+        to: '/settings'
     }
 ]
 

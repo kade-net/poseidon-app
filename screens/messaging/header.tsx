@@ -3,7 +3,7 @@ import delegateManager from "../../lib/delegate-manager";
 import { useRouter } from "expo-router";
 import { useQuery } from "@apollo/client";
 import { GET_MY_PROFILE } from "../../utils/queries";
-import { Text, View, XStack, YStack } from "tamagui";
+import {Avatar, Text, View, XStack, YStack} from "tamagui";
 import { TouchableOpacity } from "react-native";
 import { ChevronLeft } from "@tamagui/lucide-icons";
 import BaseAvatar from "../../components/ui/avatar";
@@ -12,6 +12,8 @@ import React from "react";
 import { useConversationContext } from "./context";
 import { Skeleton } from "moti/skeleton";
 import { MotiView } from "moti";
+import {useQuery as uzQuery} from 'react-query'
+import {getOtherParticipants} from "../../lib/fgs/functions";
 
 
 interface ConversationHeaderProps {
@@ -19,14 +21,30 @@ interface ConversationHeaderProps {
 export function ConversationHeader(props: ConversationHeaderProps) {
     const { conversation } = useConversationContext()
 
-    let otherParticipant = conversation?.header.participants.find(p => p !== delegateManager.account?.address().toString())
-    otherParticipant = otherParticipant ?? conversation?.header.originator
+    const participantsQuery = uzQuery({
+        queryKey: ['participant-search', conversation?.header?.conversation_id],
+        queryFn: async () => {
+            try {
+                if(!conversation) return null;
+                const participants = await getOtherParticipants(conversation?.header);
+
+                return participants?.at(0)
+            }
+            catch (e)
+            {
+                console.log("Something went wrong::", e)
+                return null
+            }
+        },
+        enabled: !!conversation?.header?.conversation_id
+    })
 
     const router = useRouter()
     const profileQuery = useQuery(GET_MY_PROFILE, {
         variables: {
-            address: otherParticipant
-        }
+            address: participantsQuery?.data
+        },
+        skip: !conversation?.header?.conversation_id || !participantsQuery?.data || participantsQuery.isLoading
     })
 
     if (profileQuery?.loading) {
@@ -49,7 +67,10 @@ export function ConversationHeader(props: ConversationHeaderProps) {
                 <XStack alignItems={'center'} columnGap={20} >
                     <ChevronLeft />
                     <XStack alignItems={'center'} columnGap={10} >
-                        <BaseAvatar size={'$md'} src={Utils.parseAvatarImage(profileQuery?.data?.account?.address ?? "1", profileQuery?.data?.account?.profile?.pfp)} />
+                        <Avatar size={'$3'} circular >
+                            <Avatar.Image src={Utils.parseAvatarImage(profileQuery?.data?.account?.address ?? "1", profileQuery?.data?.account?.profile?.pfp)} />
+                            <Avatar.Fallback backgroundColor={'pink'}/>
+                        </Avatar>
                         <YStack>
                             <Text fontSize={16} fontWeight={'bold'} >
                                 {profileQuery?.data?.account?.profile?.display_name}

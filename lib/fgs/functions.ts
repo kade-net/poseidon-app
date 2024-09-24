@@ -11,6 +11,7 @@ import {Buffer} from "buffer";
 import {ACCOUNT_VIEW_FUNCTIONS, aptos} from "../../contract";
 import client from "../../data/apollo";
 import {GET_MY_PROFILE} from "../../utils/queries";
+import {uniq} from "lodash";
 
 const INBOX_ADDRESS = delegateManager.account?.address().toString()!
 
@@ -169,5 +170,5 @@ export async function getOtherParticipants(conversationHeader: CONVERSATION_HEAD
         }
     }))).filter(p => p !== null && p !== delegateManager.owner && p !== delegateManager.owner) as Array<string>
 
-    return owners
+    return uniq(owners)
 }

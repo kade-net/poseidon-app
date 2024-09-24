@@ -2,6 +2,7 @@ import { Data, Effect } from "effect";
 import { ExecutableStep, Pipeline } from "..";
 import * as Updates from 'expo-updates'
 import * as Haptics from 'expo-haptics'
+import posti from "../../posti";
 
 class UpdateFetchError extends Data.TaggedError('UpdateFetchError')<{ initialError: any }> { }
 
@@ -41,6 +42,10 @@ const checkAndInstallUpdates: Array<ExecutableStep<any>> = [
                     }
                 },
                 catch(error) {
+                    posti.capture('update failed', {
+                        prevResult: prevResult,
+                        user: delegate.owner
+                    })
                     return new UpdateFetchError({ initialError: error })
                 },
             })

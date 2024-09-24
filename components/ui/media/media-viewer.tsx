@@ -32,7 +32,7 @@ const MediaViewer = (props: Props) => {
         <YStack w="100%" flex={1} >
                 <GenerateLayout
                     layout={layout}
-                    data={data}
+                    data={data?.filter(a => a.type !== undefined)}
                     onRemove={onRemove}
                     editable={onRemove ? true : false}
                 />

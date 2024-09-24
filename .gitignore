@@ -60,3 +60,5 @@ dev-saves
 kade-firebase-service-account.json
 google-services.json
 temp.md
+
+*.apk

@@ -643,7 +643,8 @@ class LocalStore {
                     id: currentProfile?.account?.id ?? Date.now(),
                     __typename: "Account",
                     timestamp: currentProfile?.account?.timestamp ?? Date.now(),
-                    address: delegateManager.owner!
+                    address: delegateManager.owner!,
+                    delegates: currentProfile?.account?.delegates ?? []
                 },
             },
             variables: {

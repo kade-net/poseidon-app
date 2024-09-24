@@ -142,36 +142,38 @@ function RootLayoutNav() {
   }, [colorScheme])
 
   return (
-    <ApolloProvider client={client}>
-      <QueryClientProvider client={queryClient}>
-        <TamaguiProvider config={config} defaultTheme={"dark"}>
-          <ThemeProvider value={DarkTheme}>
-            <PortalProvider shouldAddRootHost >
-            <KeyboardProvider>
-                <InitializationContainer>
-                  <Stack
-                    screenOptions={{
-                    headerShown: false,
-                    }}
-                  initialRouteName="onboard"
-                  >
-                    <Stack.Screen name="index" options={{ headerShown: false }} />
-                    <Stack.Screen name="onboard" options={{ headerShown: false }} />
-                    <Stack.Screen name="connect" options={{ headerShown: false }} />
-                    <Stack.Screen name="profiles" options={{ headerShown: false }} />
-                    <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-                  <Stack.Screen name="editor" options={{ headerShown: false }} />
-                  <Stack.Screen name="wallet" options={{ headerShown: false, presentation: 'modal', gestureEnabled: false }} />
-                  <Stack.Screen name="solid-wallet" options={{ headerShown: false, gestureEnabled: false }} />
-                    <Stack.Screen name="composable-editor" options={{ headerShown: false }} />
-                  </Stack>
-                </InitializationContainer>
-            </KeyboardProvider>
-            </PortalProvider>
-            <Toast autoHide />
-          </ThemeProvider>
-        </TamaguiProvider>
-      </QueryClientProvider>
-    </ApolloProvider>
+      <View style={{flex: 1, width: '100%', height: '100%', backgroundColor: '#071E22'}} >
+        <ApolloProvider client={client}>
+        <QueryClientProvider client={queryClient}>
+          <TamaguiProvider config={config} defaultTheme={"dark"}>
+            <ThemeProvider value={DarkTheme}>
+              <PortalProvider shouldAddRootHost >
+              <KeyboardProvider>
+                  <InitializationContainer>
+                    <Stack
+                      screenOptions={{
+                      headerShown: false,
+                      }}
+                    initialRouteName="onboard"
+                    >
+                      <Stack.Screen name="index" options={{ headerShown: false }} />
+                      <Stack.Screen name="onboard" options={{ headerShown: false }} />
+                      <Stack.Screen name="connect" options={{ headerShown: false }} />
+                      <Stack.Screen name="profiles" options={{ headerShown: false }} />
+                      <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+                    <Stack.Screen name="editor" options={{ headerShown: false }} />
+                    <Stack.Screen name="wallet" options={{ headerShown: false, presentation: 'modal', gestureEnabled: false }} />
+                    <Stack.Screen name="solid-wallet" options={{ headerShown: false, gestureEnabled: false }} />
+                      <Stack.Screen name="composable-editor" options={{ headerShown: false }} />
+                    </Stack>
+                  </InitializationContainer>
+              </KeyboardProvider>
+              </PortalProvider>
+              <Toast autoHide />
+            </ThemeProvider>
+          </TamaguiProvider>
+        </QueryClientProvider>
+      </ApolloProvider>
+      </View>
   );
 }

@@ -100,7 +100,8 @@ export function MessageBox(props: MessageBoxProps) {
         queryClient.setQueryData<{ pages: Array<Array<MESSAGE>>, pageParams: Array<number> }>([`conversation-${conversation?.header.conversation_id}`], (data) => {
 
             return {
-                pages: data?.pages.map((page, i) => {
+                pages: data?.pages?.map((page, i) => {
+                    if(!i && !data?.pages) return [INITIAL]
                     if (i !== (data?.pages?.length - 1)) return page
 
                     return [INITIAL, ...page]

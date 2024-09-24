@@ -6,8 +6,7 @@ import delegateManager from '../../lib/delegate-manager'
 import { Redirect } from 'expo-router'
 
 const Welcome = () => {
-    const nextScreen =
-        account.isProfileRegistered ? '/home' :
+    const nextScreen = account.isProfileRegistered ? '/home' :
             account.isAccountRegistered ? '/onboard/profile' :
                 delegateManager.isDeligateRegistered ? '/onboard/profile' :
                     undefined
