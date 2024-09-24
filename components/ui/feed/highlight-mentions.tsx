@@ -6,6 +6,9 @@ import { Utils } from '../../../utils'
 import { Link } from 'expo-router'
 import {checkIsPortal} from "../../../lib/WHITELISTS";
 import {truncate} from "lodash";
+import * as Linking from "expo-linking";
+import {Alert, TouchableOpacity} from "react-native";
+import * as browser from "expo-web-browser";
 
 // split content string by mentions, links, hashtags, tags, currencies
 const HIGHLIGHT_REGEX = /(@\w+)|(\b(?:https?|ftp):\/\/\S+\b)|(#\w+)|(^\/[a-zA-Z-]+|\s\/[a-zA-Z-]+)|(\$[a-zA-Z]+)|(\w+)/g;
@@ -54,6 +57,26 @@ const HighlightMentions = (props: Props) => {
     const { content = '', tags = [], mentions } = props
     const parts = content?.split(HIGHLIGHT_REGEX) ?? [] // Split by mentions and links
 
+    const handleOpenLink = (link: string) => {
+        const _link = link.trim()
+        Linking.canOpenURL(_link).then(async (supported) => {
+            if (supported) {
+                Alert.alert("Leaving app", "You are about to leave the app, and pose a risk of being redirected to a malicious website. Are you sure you want to continue?", [
+                    {
+                        text: "Cancel",
+                        onPress: () => { }
+                    },
+                    {
+                        text: "Continue",
+                        onPress: () => Linking.openURL(_link)
+                    }
+                ])
+            } else {
+                await browser.openBrowserAsync(_link)
+            }
+        })
+    }
+
     return parts.map((part, index) => {
         if (Utils.mentionRegex.test(part) && mentions?.[(part.replace('@', ''))]) {
             return <MemoedMention
@@ -63,7 +86,7 @@ const HighlightMentions = (props: Props) => {
             />
         } else if (Utils.urlRegex.test(part)) {
             if(checkIsPortal(part)) return null;
-            return <Text   key={index} color={'$COAText'}>{truncate(part, {length: 50, omission: '...'})}</Text>
+            return <TouchableOpacity key={index} onPress={()=>handleOpenLink(part)} ><Text   color={'$COAText'}>{truncate(part, {length: 50, omission: '...'})}</Text></TouchableOpacity>
         } else if (HASHTAG_REGEX.test(part)) {
             return <Text   color={'$COAText'} key={index}>{part}</Text>
         } else if (TAG_REGEX.test(part)) {

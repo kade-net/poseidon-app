@@ -10840,12 +10840,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"expo-image@npm:~1.12.15":
-  version: 1.12.15
-  resolution: "expo-image@npm:1.12.15"
+"expo-image@npm:~1.13.0":
+  version: 1.13.0
+  resolution: "expo-image@npm:1.13.0"
   peerDependencies:
     expo: "*"
-  checksum: 199c4de2acf18c1c01b5f118d9b57f893188e100e317c40aff09ede270cf0a63ae454894f38e7552eea5cbdc8e4a7892371be51f181114006c8b118631ae8935
+  checksum: 108abb4a4f42c78e50a56d9699e941aadc4677063899332b51e0edda220dc100cb5ccb501b5ae27f952bc53f9914ce8316cf0f82f9506b1b15e9bf87b6644cbb
   languageName: node
   linkType: hard
 
@@ -11025,7 +11025,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"expo-splash-screen@npm:0.27.5, expo-splash-screen@npm:~0.27.5":
+"expo-splash-screen@npm:0.27.5":
   version: 0.27.5
   resolution: "expo-splash-screen@npm:0.27.5"
   dependencies:
@@ -11033,6 +11033,17 @@ __metadata:
   peerDependencies:
     expo: "*"
   checksum: ea326263f56677f7a1b4e2f849998aee6b5926609258cba297948bf0215be111fa4feb3aabc403e5b66be57f1e8892de84f0d05c77af432bec487640953397a7
+  languageName: node
+  linkType: hard
+
+"expo-splash-screen@npm:~0.27.6":
+  version: 0.27.6
+  resolution: "expo-splash-screen@npm:0.27.6"
+  dependencies:
+    "@expo/prebuild-config": "npm:7.0.8"
+  peerDependencies:
+    expo: "*"
+  checksum: b36a876f5458b6d2f4e76df152130b9eadbac898767c7395e245557e6b6a764dcd8a7011f73a2f1dead9b1261a1454d6c3d08f30a7b8f731187f4a4ef4eec681
   languageName: node
   linkType: hard
 
@@ -16016,7 +16027,7 @@ __metadata:
     expo-file-system: "npm:~17.0.1"
     expo-font: "npm:~12.0.10"
     expo-haptics: "npm:~13.0.1"
-    expo-image: "npm:~1.12.15"
+    expo-image: "npm:~1.13.0"
     expo-image-picker: "npm:~15.0.7"
     expo-linear-gradient: "npm:~13.0.2"
     expo-linking: "npm:~6.3.1"
@@ -16027,7 +16038,7 @@ __metadata:
     expo-notifications: "npm:~0.28.17"
     expo-router: "npm:~3.5.23"
     expo-secure-store: "npm:~13.0.2"
-    expo-splash-screen: "npm:~0.27.5"
+    expo-splash-screen: "npm:~0.27.6"
     expo-status-bar: "npm:~1.12.1"
     expo-system-ui: "npm:~3.0.7"
     expo-updates: "npm:~0.25.25"
