@@ -56,7 +56,7 @@ function ProfileCardWithFollowBtn(props: ProfileCardProps) {
         }
     }
     return (
-        <Link href={{
+        <Link asChild href={{
             pathname: '/profiles/[address]',
             params: {
                 address: data?.address!

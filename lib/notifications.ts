@@ -57,6 +57,52 @@ class PoseidonNotifications {
         await SecureStore.deleteItemAsync('expo-push-token')
     }
 
+    async updateLastRead(notification_type: 'posts' | 'dms'){
+        try {
+            const currentData = await this.getNotificationCounter(notification_type)
+            if(!currentData) {
+                return storage.save({
+                    key: `notification-${notification_type}`,
+                    id: 'counter',
+                    data: {
+                        type: notification_type,
+                        count: 0,
+                        lastRead: Date.now()
+                    },
+                    expires: null
+                })
+            }
+
+            currentData.lastRead = Date.now()
+
+            return storage.save({
+                key: `notification-${notification_type}`,
+                id: 'counter',
+                data: currentData,
+                expires: null
+            })
+        }
+        catch (e) {
+            console.log("Unable to updated last read")
+        }
+    }
+
+    async getNotificationCounter(type: 'posts' | 'dms'){
+        try {
+            const notification = await storage.load<{type: 'post' | 'dms', count: number, lastRead: number}>({
+                key: `notification-${type}`,
+                id: 'counter',
+
+            })
+
+            return notification
+        }
+        catch (e) {
+            console.log("not found")
+            return null
+        }
+    }
+
 }
 
 export async function registerForPushNotificationsAsync() {

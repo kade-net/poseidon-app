@@ -4,6 +4,8 @@ import {Stack} from "expo-router";
 import {useEffect, useState} from "react";
 import fgs, {FGS} from "../../../../lib/fgs";
 import Loading from "../../../../components/ui/feedback/loading";
+import delegateManager from "../../../../lib/delegate-manager";
+import {getClient} from "../../../../lib/fgs/functions";
 
 
 export default function MessagingScreen(){
@@ -12,8 +14,11 @@ export default function MessagingScreen(){
         ;(async ()=>{
             setSettingUp(true);
             try {
-                if(!fgs.client){
-                    fgs.client = (await FGS.initFGS()).client
+                if(!fgs.client && delegateManager.account){
+                    const client = await getClient()
+                    if(client){
+                        fgs.client =client;
+                    }
                 }
             }
             catch (e)

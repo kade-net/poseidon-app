@@ -1941,6 +1941,22 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@bacons/expo-router-top-tabs@npm:^1.0.0":
+  version: 1.0.0
+  resolution: "@bacons/expo-router-top-tabs@npm:1.0.0"
+  dependencies:
+    "@react-navigation/material-top-tabs": "npm:6.3.0"
+    react-native-collapsible-tab-view: "npm:2.0.2"
+    react-native-pager-view: "npm:6.0.1"
+    react-native-tab-view: "npm:^3.3.0"
+  peerDependencies:
+    expo-router: ^3.5.18
+    react-native: "*"
+    react-native-reanimated: ^3.14.0
+  checksum: ff949454ca88b5359ab1b81357c364bb64ad97d69c0414e7a7d2d537c538f21bef9de9104f2c01cd954b8738ea9cd27820a21ea674891fbaa92871755a5cf7ee
+  languageName: node
+  linkType: hard
+
 "@clerk/clerk-js@npm:^5.14.0":
   version: 5.14.0
   resolution: "@clerk/clerk-js@npm:5.14.0"
@@ -4139,9 +4155,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@kade-net/fgs-node-client@npm:^0.0.8":
-  version: 0.0.8
-  resolution: "@kade-net/fgs-node-client@npm:0.0.8"
+"@kade-net/fgs-node-client@npm:^0.0.12":
+  version: 0.0.12
+  resolution: "@kade-net/fgs-node-client@npm:0.0.12"
   dependencies:
     "@graphql-codegen/cli": "npm:^5.0.2"
     "@graphql-codegen/client-preset": "npm:^4.3.3"
@@ -4152,16 +4168,17 @@ __metadata:
     graphql: "npm:^16.9.0"
     graphql-request: "npm:^6.1.0"
     graphql-tag: "npm:^2.12.6"
-  checksum: 7570e32a17a25752ab95458fdb9c4a6a889f120e4c64a06fe00f2df2e890aafad5e6f7d718d80631c8ed1e5e44fe928d99151424d1d137a1d4cf9326e632e5c2
+    graphql-ws: "npm:^5.16.0"
+  checksum: eb91577b1eb42ec37f62624adbb97cdacd5b957ae00590cf9f544f5281cb52d25ae921845bce1e59a5bbc5a73703a308a0cd5009df39aa67d906a29f7f34328a
   languageName: node
   linkType: hard
 
-"@kade-net/fgs-rn@npm:^0.1.14":
-  version: 0.1.14
-  resolution: "@kade-net/fgs-rn@npm:0.1.14"
+"@kade-net/fgs-rn@npm:^0.1.26":
+  version: 0.1.26
+  resolution: "@kade-net/fgs-rn@npm:0.1.26"
   dependencies:
     "@aptos-labs/ts-sdk": "npm:^1.27.0"
-    "@kade-net/fgs-node-client": "npm:^0.0.8"
+    "@kade-net/fgs-node-client": "npm:^0.0.12"
     buffer: "npm:^6.0.3"
     expo: "npm:~51.0.28"
     react: "npm:18.2.0"
@@ -4173,7 +4190,7 @@ __metadata:
     expo: "*"
     react: "*"
     react-native: "*"
-  checksum: 4e30470ec204cf6cdd25bc9c43d9eb4506aba4357b11c400185d6a897ebaf275ad9da6deabd9bff9eaeb2364e85baecf29b4807b8473a7edc547b3331888613e
+  checksum: cd94f4b8c0088adc676cc45afc70fa4726072ef58e1ba2514eaa8805a636dfd30701cde23aa8890003cbd74fdb7c686b140a97d05dc57cc7fd2ad59229e9147d
   languageName: node
   linkType: hard
 
@@ -4988,6 +5005,22 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@react-navigation/material-top-tabs@npm:6.3.0":
+  version: 6.3.0
+  resolution: "@react-navigation/material-top-tabs@npm:6.3.0"
+  dependencies:
+    color: "npm:^4.2.3"
+    warn-once: "npm:^0.1.0"
+  peerDependencies:
+    "@react-navigation/native": ^6.0.0
+    react: "*"
+    react-native: "*"
+    react-native-pager-view: ">= 4.0.0"
+    react-native-tab-view: ">= 3.0.0"
+  checksum: 6e74709aad57944f0159260a53ba2ca2845e7f9a73935fdca3976fe0683661705e61f01074ff9b6fabbf4a9ebba230224d8ab269b9befcbf8587d9e18c576735
+  languageName: node
+  linkType: hard
+
 "@react-navigation/native-stack@npm:~6.9.12":
   version: 6.9.17
   resolution: "@react-navigation/native-stack@npm:6.9.17"
@@ -5222,6 +5255,20 @@ __metadata:
     component-type: "npm:^1.2.1"
     join-component: "npm:^1.1.0"
   checksum: 4e0b097de2c564673acceb5a0688bb8cf045bab4a1ffed1be19293a6bd2859af723e0d012349ff1d51433a6aad19f729383a302c3c0a9fc831e251cd16ade5ad
+  languageName: node
+  linkType: hard
+
+"@shopify/flash-list@npm:1.6.4":
+  version: 1.6.4
+  resolution: "@shopify/flash-list@npm:1.6.4"
+  dependencies:
+    recyclerlistview: "npm:4.2.0"
+    tslib: "npm:2.4.0"
+  peerDependencies:
+    "@babel/runtime": "*"
+    react: "*"
+    react-native: "*"
+  checksum: 8411d375d3471defcf52c205a7f4055fe99552031e9bcbcca85ced00a8df8a816e4019d09c70e67b48877cd2d91465d8ccbc4bbd3a39513559e326f158b56248
   languageName: node
   linkType: hard
 
@@ -13994,7 +14041,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"lodash.debounce@npm:^4.0.8, lodash.debounce@npm:~4.0.8":
+"lodash.debounce@npm:4.0.8, lodash.debounce@npm:^4.0.8, lodash.debounce@npm:~4.0.8":
   version: 4.0.8
   resolution: "lodash.debounce@npm:4.0.8"
   checksum: cd0b2819786e6e80cb9f5cda26b1a8fc073daaf04e48d4cb462fa4663ec9adb3a5387aa22d7129e48eed1afa05b482e2a6b79bfc99b86886364449500cbb00fd
@@ -15813,6 +15860,7 @@ __metadata:
     "@apollo/client": "npm:^3.9.5"
     "@aptos-labs/ts-sdk": "npm:^1.8.0"
     "@babel/core": "npm:^7.24.0"
+    "@bacons/expo-router-top-tabs": "npm:^1.0.0"
     "@clerk/clerk-js": "npm:^5.14.0"
     "@expo/metro-runtime": "npm:~3.2.1"
     "@graphql-codegen/cli": "npm:^5.0.2"
@@ -15822,11 +15870,12 @@ __metadata:
     "@graphql-codegen/typescript-operations": "npm:^4.2.0"
     "@graphql-typed-document-node/core": "npm:^3.2.0"
     "@hookform/resolvers": "npm:^3.3.4"
-    "@kade-net/fgs-rn": "npm:^0.1.14"
+    "@kade-net/fgs-rn": "npm:^0.1.26"
     "@kade-net/portals-parser": "npm:^0.0.23"
     "@react-native-async-storage/async-storage": "npm:1.23.1"
     "@react-navigation/drawer": "npm:^6.7.2"
     "@react-navigation/native": "npm:^6.0.2"
+    "@shopify/flash-list": "npm:1.6.4"
     "@tamagui/config": "npm:^1.108.2"
     "@tamagui/lucide-icons": "npm:^1.108.2"
     "@tamagui/metro-plugin": "npm:^1.108.2"
@@ -16078,7 +16127,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"prop-types@npm:^15.6.2, prop-types@npm:^15.7.2":
+"prop-types@npm:15.8.1, prop-types@npm:^15.6.2, prop-types@npm:^15.7.2":
   version: 15.8.1
   resolution: "prop-types@npm:15.8.1"
   dependencies:
@@ -16320,6 +16369,21 @@ __metadata:
   languageName: node
   linkType: hard
 
+"react-native-collapsible-tab-view@npm:2.0.2":
+  version: 2.0.2
+  resolution: "react-native-collapsible-tab-view@npm:2.0.2"
+  dependencies:
+    use-debounce: "npm:^5.1.0"
+  peerDependencies:
+    "@react-navigation/material-top-tabs": ^5
+    "@react-navigation/native": ^5
+    react: "*"
+    react-native: "*"
+    react-native-tab-view: "*"
+  checksum: bcbedff7b7ee3dc6c457786a140afa31a039fc075e1b0579fdd71ed87a4253151bd540563d275e93ea55a415c90653b080434f413237a857d1e37b8765140a23
+  languageName: node
+  linkType: hard
+
 "react-native-css-interop@npm:~0.0.21":
   version: 0.0.21
   resolution: "react-native-css-interop@npm:0.0.21"
@@ -16427,6 +16491,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"react-native-pager-view@npm:6.0.1":
+  version: 6.0.1
+  resolution: "react-native-pager-view@npm:6.0.1"
+  peerDependencies:
+    react: "*"
+    react-native: "*"
+  checksum: a89879d164eba419d6f63d8e418479504888595b7c60805a72d0f4e9be607912944b55f0c84b912b05a9c91c37304d564b0d3d5df4f7c06163f680233b973b31
+  languageName: node
+  linkType: hard
+
 "react-native-pager-view@npm:6.3.0":
   version: 6.3.0
   resolution: "react-native-pager-view@npm:6.3.0"
@@ -16510,7 +16584,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-native-tab-view@npm:^3.5.2":
+"react-native-tab-view@npm:^3.3.0, react-native-tab-view@npm:^3.5.2":
   version: 3.5.2
   resolution: "react-native-tab-view@npm:3.5.2"
   dependencies:
@@ -16853,6 +16927,20 @@ __metadata:
     source-map: "npm:~0.6.1"
     tslib: "npm:^2.0.1"
   checksum: b41da2bcf7e705511db2f27d17420ace027de8dd167de9f19190d4988a1f80d112f60c095101ac2f145c8657ddde0c5133eb71df20504efaf3fd9d76ad07e15d
+  languageName: node
+  linkType: hard
+
+"recyclerlistview@npm:4.2.0":
+  version: 4.2.0
+  resolution: "recyclerlistview@npm:4.2.0"
+  dependencies:
+    lodash.debounce: "npm:4.0.8"
+    prop-types: "npm:15.8.1"
+    ts-object-utils: "npm:0.0.5"
+  peerDependencies:
+    react: ">= 15.2.1"
+    react-native: ">= 0.30.0"
+  checksum: 84c2fc1ee7d109e21ca30813f646a5d490a33fa789d1fb3f7f7854c191895de010109563ba1c67a35ec28340a872a039ceb6233a57053480098c48205fc147e9
   languageName: node
   linkType: hard
 
@@ -18668,6 +18756,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"ts-object-utils@npm:0.0.5":
+  version: 0.0.5
+  resolution: "ts-object-utils@npm:0.0.5"
+  checksum: 83c48fbdaba392fb2c01cea53b267ed5538d2bb44fc6c3eecc10bcfabc1780bfa6ec8569b52bbf0140d9b521d9049d5f15884e12286918244d463d854dbc73cb
+  languageName: node
+  linkType: hard
+
 "tsconfig-paths@npm:^3.9.0":
   version: 3.15.0
   resolution: "tsconfig-paths@npm:3.15.0"
@@ -18677,6 +18772,13 @@ __metadata:
     minimist: "npm:^1.2.6"
     strip-bom: "npm:^3.0.0"
   checksum: 2041beaedc6c271fc3bedd12e0da0cc553e65d030d4ff26044b771fac5752d0460944c0b5e680f670c2868c95c664a256cec960ae528888db6ded83524e33a14
+  languageName: node
+  linkType: hard
+
+"tslib@npm:2.4.0":
+  version: 2.4.0
+  resolution: "tslib@npm:2.4.0"
+  checksum: d8379e68b36caf082c1905ec25d17df8261e1d68ddc1abfd6c91158a064f6e4402039ae7c02cf4c81d12e3a2a2c7cd8ea2f57b233eb80136a2e3e7279daf2911
   languageName: node
   linkType: hard
 
@@ -19098,6 +19200,15 @@ __metadata:
     "@types/react":
       optional: true
   checksum: 7cc68dbd8bb9890e21366f153938988967f0a17168a215bf31e24519f826a2de7de596e981f016603a363362f736f2cffad05091c3857fcafbc9c3b20a3eef1e
+  languageName: node
+  linkType: hard
+
+"use-debounce@npm:^5.1.0":
+  version: 5.2.1
+  resolution: "use-debounce@npm:5.2.1"
+  peerDependencies:
+    react: ">=16.8.0"
+  checksum: 42ce160536cf62be602fd609f9a54e53a76df7239263086f6ff91437a349745e48a64103e0385db06952da6e05e61d6aa1448bd58fbe36452391f9ee05eb091e
   languageName: node
   linkType: hard
 

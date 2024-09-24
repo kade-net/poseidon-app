@@ -4,13 +4,13 @@ import { ProfileTabsProps, SceneProps, ScrollManager } from './common'
 import { Animated, Platform } from 'react-native'
 import { useQuery } from 'react-query'
 import collected from '../../../contract/modules/collected'
-import { useGlobalSearchParams } from 'expo-router'
+import { useGlobalSearchParams, useLocalSearchParams } from 'expo-router'
 import CollectionCard from './collection-card'
 import delegateManager from '../../../lib/delegate-manager'
 import { Info } from '@tamagui/lucide-icons'
 
 const NftsTab = (props: ProfileTabsProps) => {
-    const params = useGlobalSearchParams()
+    const params = useLocalSearchParams()
     const address = params['address'] as string
     const nftsQuery = useQuery({
         queryFn: () => {
@@ -34,6 +34,7 @@ const NftsTab = (props: ProfileTabsProps) => {
     )
 
 
+    if (!address) return <YStack flex={1} bg='$background' w={'100%'} h={'100%'} ></YStack>
 
 
     return (

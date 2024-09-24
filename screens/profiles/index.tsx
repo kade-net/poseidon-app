@@ -4,7 +4,7 @@ import { useQuery } from '@apollo/client'
 import { GET_ACCOUNT_STATS, GET_MY_PROFILE, GET_RELATIONSHIP } from '../../utils/queries'
 import delegateManager from '../../lib/delegate-manager'
 import { NavigationState, SceneRendererProps, TabView } from 'react-native-tab-view'
-import { Animated, Platform, useWindowDimensions } from 'react-native'
+import { Animated, Platform, TouchableOpacity, useWindowDimensions } from 'react-native'
 import { clone } from 'lodash'
 import { SceneProps } from './tabs/common'
 import PostsTab from './tabs/posts'
@@ -14,7 +14,7 @@ import NftsTab from './tabs/nfts'
 import { useMultiScrollManager } from '../../components/hooks/useMultiScrollManager'
 import TabNavbar from './tab-navbar'
 import account from '../../contract/modules/account'
-import { Link } from 'expo-router'
+import { Link, useRouter } from 'expo-router'
 import { Utils } from '../../utils'
 import * as Haptics from 'expo-haptics'
 import Toast from 'react-native-toast-message'
@@ -29,6 +29,9 @@ import RankBadge from '../../components/badges/rank-badge'
 import HighlightMentions from '../../components/ui/feed/highlight-mentions'
 import PayIcon from '../../assets/svgs/pay-icon'
 import PayButton from '../pay/pay-button'
+import { useRoute } from "@react-navigation/native";
+import { Pencil } from "@tamagui/lucide-icons";
+import Loading from '../../components/ui/feedback/loading'
 
 interface Props {
   address: string;
@@ -37,6 +40,7 @@ interface Props {
 const ProfileDetails = (props: Props) => {
   const tamaguiTheme = useTheme();
   const { address } = props;
+  const router = useRouter()
   const theme = useTheme();
   const layout = useWindowDimensions();
   const [topSectionHeight, setTopSectionHeight] = useState(0);
@@ -134,6 +138,17 @@ const ProfileDetails = (props: Props) => {
   );
 
   const IS_SAME_ACCOUNT = delegateManager.owner === address;
+
+  const goToEditProfile = () => {
+
+    router.navigate({
+      pathname: '/profiles/[address]/edit',
+      params: {
+        address: address
+      }
+    })
+  }
+
   const profileQuery = useQuery(GET_MY_PROFILE, {
     variables: {
       address: address,
@@ -169,6 +184,7 @@ const ProfileDetails = (props: Props) => {
       }
     },
     queryKey: ["aptosName", address],
+    enabled: !!address,
   });
 
   const rankingQuery = useQuery(GET_RANKING, {
@@ -247,9 +263,14 @@ const ProfileDetails = (props: Props) => {
             <YStack justifyContent="space-between" w="100%" flex={1}>
               <XStack w="100%" justifyContent="space-between" flex={1}>
                 <YStack>
-                  <H5>
-                    {profileQuery.data?.account?.profile?.display_name}
-                  </H5>
+                  <XStack w={'100%'} alignItems={'center'} justifyContent={'space-between'} >
+                    <H5>
+                      {profileQuery.data?.account?.profile?.display_name}
+                    </H5>
+                    {IS_SAME_ACCOUNT && <TouchableOpacity onPress={goToEditProfile}  >
+                      <Pencil color={'$primary'} />
+                    </TouchableOpacity>}
+                  </XStack>
                   <XStack columnGap={5}>
                     <Text color="$sideText" fontSize={"$sm"}>
                       @{profileQuery.data?.account?.username?.username}
@@ -360,6 +381,8 @@ const ProfileDetails = (props: Props) => {
       <YStack flex={1} w="100%" h="100%">
         <TabView
           swipeEnabled={false}
+          lazy
+          renderLazyPlaceholder={() => <Loading flex={1} w="100%" h="100%" />}
           navigationState={{
             index: currentTabIndex,
             routes: tabRoutes,

@@ -6,13 +6,14 @@ import {DrawerActions} from "@react-navigation/native";
 import {conversationHeaders} from "./data";
 import {useCallback, useMemo} from "react";
 import {CONVERSATION_HEADER, deserialize_conversation_header, getInbox, MESSAGE_TYPE,} from "@kade-net/fgs-rn";
-import {MessageCard} from "./components";
-import {useConversationContext} from "./conversation";
+import { MessageCard } from "./components";
 import fgs from "../../lib/fgs";
 import {useQuery} from "react-query";
 import delegateManager from "../../lib/delegate-manager";
 import nacl from 'tweetnacl'
 import {Buffer} from 'buffer'
+import Loading from "../../components/ui/feedback/loading";
+import {uniqBy} from "lodash";
 
 export enum Invite_Type {
     Accepted = 'ACCEPTED',
@@ -20,7 +21,7 @@ export enum Invite_Type {
     Rejected = 'REJECTED'
 }
 
-async function getConversations(){
+export async function getConversations(){
     const pendingConversations = await  fgs.client?.nodeClient!?.getInvitations({
         address: delegateManager.account?.address().toString()!,
         type: Invite_Type.Pending
@@ -36,11 +37,10 @@ async function getConversations(){
         const nonce = combinedHeader.subarray(0,nacl.secretbox.nonceLength)
         const data = combinedHeader.subarray(nacl.secretbox.nonceLength)
 
-        console.log("Data::", data)
         const initiatorInbox = await getInbox(invitation.from)
 
         const shared_secret = nacl.box.before(
-            Buffer.from(initiatorInbox.encrypt_public_key, 'hex'),
+            Buffer.from(initiatorInbox!.encrypt_public_key, 'hex'),
             fgs.client!.encryptionKeyPair.secretKey.subarray(0,32)
         )
 
@@ -63,7 +63,12 @@ async function getConversations(){
         ...currentConversationList,
         ...headers
     ]
-    return combinedConversationList?.filter(conv => conv !== null) as Array<CONVERSATION_HEADER>
+
+    const conversationHeaders = combinedConversationList?.filter(conv => conv !== null) as Array<CONVERSATION_HEADER>
+    if (fgs.client?.conversationList) {
+        fgs.client.conversationList = conversationHeaders
+    }
+    return uniqBy(conversationHeaders, c => c?.conversation_id)
 }
 
 
@@ -72,11 +77,18 @@ export default function Messaging() {
     const pendingConversationsQuery = useQuery({
         queryFn: getConversations,
         queryKey: ['pending-conversations'],
+        onError: (e) => {
+            console.log("Pending Conversations Error::", e)
+        }
     })
 
     const renderConversation = useCallback((props: {item: CONVERSATION_HEADER})=>{
         return <MessageCard conversationHeader={props.item} />
     },[])
+
+    if (pendingConversationsQuery.isLoading) {
+        return <Loading flex={1} w='100%' h='100%' bg={'$background'} />
+    }
 
     return (
         <YStack bg={"$background"} flex={1} w={"100%"} h={"100%"} rowGap={10} position={'relative'} >
@@ -93,11 +105,11 @@ export default function Messaging() {
                 </Text>
                 <View></View>
             </XStack>
-            <FlatList ItemSeparatorComponent={()=> <Separator borderColor={'$border'} />} data={pendingConversationsQuery?.data ?? []} renderItem={renderConversation} ListFooterComponent={()=> {
+            <FlatList refreshing={pendingConversationsQuery.isLoading} onRefresh={pendingConversationsQuery.refetch} ItemSeparatorComponent={() => <Separator borderColor={'$border'} />} data={pendingConversationsQuery?.data ?? []} renderItem={renderConversation} ListFooterComponent={() => {
                 return (
                     <XStack w={"100%"} alignItems={'center'} justifyContent={'center'} p={20} >
                         <Text fontSize={15} color={'$sideText'} >
-                            No more conversations to show
+                            No more dms to show
                         </Text>
                     </XStack>
                 )

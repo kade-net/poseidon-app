@@ -54,7 +54,6 @@ function usePortal(props: usePortalProps) {
                 setError(left)
             },
             onRight(right) {
-                console.log("Right::", right)
                 setPortal(right)
             },
         })

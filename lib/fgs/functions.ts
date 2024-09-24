@@ -1,12 +1,23 @@
-import {Client, generate_random_auth_string, INBOX, NODE_ENTRY_FUNCTIONS} from "@kade-net/fgs-rn";
+import {
+    Client,
+    CONVERSATION_HEADER,
+    generate_random_auth_string,
+    getInbox,
+    INBOX,
+    NODE_ENTRY_FUNCTIONS
+} from "@kade-net/fgs-rn";
 import delegateManager from "../delegate-manager";
 import {Buffer} from "buffer";
-import {aptos} from "../../contract";
+import {ACCOUNT_VIEW_FUNCTIONS, aptos} from "../../contract";
+import client from "../../data/apollo";
+import {GET_MY_PROFILE} from "../../utils/queries";
 
 const INBOX_ADDRESS = delegateManager.account?.address().toString()!
 
 export async function getClient(){
     try {
+
+        const INBOX_ADDRESS = delegateManager.account?.address().toString()!
         console.log("INBOX ADDRESS: ", INBOX_ADDRESS);
         const randAuthString =await Client.getAuthString(INBOX_ADDRESS)
 
@@ -24,7 +35,7 @@ export async function getClient(){
     }
     catch(e)
     {
-        console.log("Something went wrong::", e)
+        console.log("Something went wrong eee::", e)
         return null
     }
 }
@@ -105,4 +116,58 @@ export async function createInbox(){
     {
         console.log("Something went wrong::", e)
     }
+}
+
+export async function getRegisteredDelegates(user_address: string){
+    const userInbox = await getInbox(user_address)
+
+    const account = await client.query({
+        query: GET_MY_PROFILE,
+        variables: {
+            address: user_address
+        }
+    })
+    const registeredDelegates = (await Promise.all((account?.data?.account?.delegates ?? [])?.map(async (delegate)=>{
+        const inbox = await getInbox(delegate.address)
+        if(inbox) return delegate.address
+        return undefined;
+    })))?.filter(a => a !== undefined)
+
+    if(userInbox){
+        return [user_address, ...(registeredDelegates as Array<string>)]
+    }
+
+
+    return (registeredDelegates as Array<string>) ?? []
+}
+
+
+export async function getOtherParticipants(conversationHeader: CONVERSATION_HEADER) {
+    let participants = conversationHeader.participants
+    if(!participants.find(p => p === conversationHeader.originator)){
+        participants = participants.concat(conversationHeader.originator)
+    }
+    const owners: Array<string> = (await Promise.all(participants.map(async(participantAddress)=> {
+        try {
+            const dOwner = await aptos.view({
+                payload: {
+                    function: ACCOUNT_VIEW_FUNCTIONS.delegate_get_owner,
+                    functionArguments: [participantAddress],
+                    typeArguments: []
+                }
+            })
+
+            const [user_kid, delegate_owner_address] = dOwner as [string, string]
+
+            if(user_kid == '0') return participantAddress // Working assumption will be this is an actual user and not a delegate
+
+            return delegate_owner_address
+        }
+        catch(e)
+        {
+            return null
+        }
+    }))).filter(p => p !== null && p !== delegateManager.owner && p !== delegateManager.owner) as Array<string>
+
+    return owners
 }

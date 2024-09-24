@@ -8,14 +8,10 @@ function index() {
 
     const nextScreen = 
         '/onboard'
-    // account.isProfileRegistered ? '/(tabs)/feed/home' :
-    //     account.isAccountRegistered ? '/onboard/profile' :
-    //         delegateManager.isDeligateRegistered ? '/onboard/profile' :
-    //             '/onboard'
 
     return (
         <Redirect
-            href={'/home'}
+            href={nextScreen}
         />
     )
 }

@@ -88,7 +88,7 @@ const CommunitySearch = (props: Props) => {
                     borderRadius={10}
                 >
                     <Text>
-                        {CURRENT_COMMUNITY ? `/${CURRENT_COMMUNITY}` : 'Community'}
+                        {CURRENT_COMMUNITY ? `/${CURRENT_COMMUNITY}` : 'feed'}
                     </Text>
                     {isOpen ? <ChevronUp size={'$1'} /> : <ChevronDown size={'$1'} />}
                 </XStack>
@@ -168,7 +168,10 @@ const CommunitySearch = (props: Props) => {
                             ios: 'padding',
                             android: undefined
                         })}
-                        keyboardVerticalOffset={340}
+                        keyboardVerticalOffset={Platform.select({
+                            ios: 340,
+                            android: 100
+                        })}
                     >
                         {keyboardHide &&
                             <TouchableOpacity onPress={Keyboard.dismiss}  >

@@ -17,11 +17,15 @@ import {Settings, Wallet} from "@tamagui/lucide-icons";
 import {FlatList, TouchableOpacity} from "react-native";
 import {useCallback} from "react";
 import {RouteParams, useRouter} from "expo-router";
+import {MessageTabButton} from "./message-tab-button";
+import {NotificationsTabButton} from "./notifications-tab-button";
+import {useShellProvider} from "./index";
 
 type DrawerNavigationKey = {
     key: string,
     title: string,
     icon: (focused: boolean) => JSX.Element,
+    to: string
 }
 
 const drawerKeys: Array<DrawerNavigationKey> = [
@@ -30,49 +34,56 @@ const drawerKeys: Array<DrawerNavigationKey> = [
         title: 'Home',
         icon(focused){
             return focused ? <HomeIcon color={'white'} /> : <HomeIconOutlined color={'white'} />
-        }
+        },
+        to: '/home'
     },
     {
         key: 'search',
         title: 'Search',
         icon(focused){
             return focused ? <SearchIcon color={'white'} /> : <SearchIconOutlined color={'white'} />
-        }
+        },
+        to: '/home/tabs/search'
     },
     {
         key: 'message',
         title: 'Message',
         icon(focused){
-            return focused ? <MessageIcon color={'white'} /> : <MessageOutlined color={'white'} />
-        }
+            return <MessageTabButton isActive={focused} />
+        },
+        to: '/home/tabs/messages'
     },
     {
         key: 'notifications',
         title: 'Notifications',
         icon(focused){
-            return focused ? <NotificationSolid color={'white'} /> : <NotificationOutlined color={'white'} />
-        }
+            return <NotificationsTabButton focused={focused} />
+        },
+        to: '/home/tabs/notifications'
     },
     {
         key: 'profile',
         title: 'Profile',
         icon(focused){
             return focused ? <ProfileIconSolid color={'white'} /> : <ProfileIcon color={'white'} />
-        }
+        },
+        to: `/home/tabs/${delegateManager.owner!}`
     },
     {
         key: 'settings',
         title: 'Settings',
         icon(focused){
             return focused ? <Settings/> : <Settings/>
-        }
+        },
+        to: '/settings'
     },
     {
         key: 'wallet',
         title: 'Wallet',
         icon(focused){
             return focused ? <Wallet /> : <Wallet />
-        }
+        },
+        to: '/solid-wallet'
     }
 ]
 
@@ -83,7 +94,7 @@ interface DrawerProps extends DrawerContentComponentProps {}
 export default function DrawerContent(props: DrawerProps) {
     const { state, navigation, descriptors } = props
     const router = useRouter()
-
+    const { currentTabKey, setCurrentTabKey } = useShellProvider()
     const profileQuery = useQuery(GET_MY_PROFILE, {
         variables: {
             address: delegateManager.owner!
@@ -98,18 +109,25 @@ export default function DrawerContent(props: DrawerProps) {
     const renderKey = useCallback((props: { item: DrawerNavigationKey, index: number })=>{
         const { item, index } = props
 
+        const handleNavigate = () => {
+            setCurrentTabKey(item.key)
+            router.push(
+                // @ts-ignore - react router's problems
+                item.to
+            )
+        }
 
         return (
-            <TouchableOpacity style={{width: '100%'}} >
+            <TouchableOpacity onPress={handleNavigate} style={{width: '100%'}} >
                 <XStack w={'100%'} columnGap={10} alignItems={'center'} py={20} >
-                    {item?.icon(false)}
+                    {item?.icon(currentTabKey == item.key)}
                     <Text fontSize={18} >
                         {item.title}
                     </Text>
                 </XStack>
             </TouchableOpacity>
         )
-    },[])
+    },[currentTabKey])
 
 
     return <YStack backgroundColor={'$portalBackground'} flex={1} w={"100%"} h={"100%"} p={20} >

@@ -19,6 +19,8 @@ const DEVICE_HEIGHT = Dimensions.get('screen').height;
 const DEVICE_WIDTH = Dimensions.get('screen').width;
 const CONTENT_WIDTH = DEVICE_WIDTH - 40
 import Animated from 'react-native-reanimated'
+import { MessageTabButton } from "./message-tab-button";
+import { NotificationsTabButton } from "./notifications-tab-button";
 
 type BOTTOM_NAV_KEYS = {
     key: string,
@@ -41,13 +43,13 @@ const bottom_nav_keys: Array<BOTTOM_NAV_KEYS> = [
     {
         key: 'message',
         icon: (focused)=> {
-            return focused ? <MessageIcon color={'white'} /> : <MessageOutlined color={'white'} />
+            return <MessageTabButton isActive={focused} />
         }
     },
     {
         key: 'notifications',
         icon: (focused) => {
-            return focused ? <NotificationSolid color={'white'} /> : <NotificationOutlined color={'white'} />
+            return <NotificationsTabButton focused={focused} />
         }
     },
     {
@@ -66,13 +68,17 @@ interface ShellContext {
     bottomBarMode: SharedValue<number>
     currentTabIndex: number;
     setCurrentTabIndex: (index: number) => void;
+    currentTabKey: string;
+    setCurrentTabKey: (key: string) => void;
 }
 
 const shellContext = React.createContext<ShellContext>({
     scrolledDown: false,
     currentOffset: 0,
     currentTabIndex: 0,
+    currentTabKey: 'home',
     setCurrentTabIndex: (index: number) => {},
+    setCurrentTabKey: (key: string) => { },
     handleScrollDirectionChange: (boolean) => {},
     bottomBarMode: {
         value: 0,
@@ -88,8 +94,9 @@ export function ShellProvider(props: {children: React.ReactNode}) {
     const [scrolledDown, setScrolledDown] = useState(false)
     const [currentTabIndex, setCurrentTabIndex] = useState(0);
     const bottomBarMode = useSharedValue(0)
+    const [currentTabKey, setCurrentTabKey] = useState("home");
     return (
-        <shellContext.Provider value={{scrolledDown: scrolledDown, handleScrollDirectionChange: setScrolledDown, currentOffset, setCurrentOffset, bottomBarMode, currentTabIndex, setCurrentTabIndex}}  >{children}</shellContext.Provider>
+        <shellContext.Provider value={{ scrolledDown: scrolledDown, handleScrollDirectionChange: setScrolledDown, currentOffset, setCurrentOffset, bottomBarMode, currentTabIndex, setCurrentTabIndex, currentTabKey, setCurrentTabKey }}  >{children}</shellContext.Provider>
     )
 
 }
@@ -184,17 +191,18 @@ interface ShellBottomTabNavigatorProps extends BottomTabBarProps {}
 export function ShellBottomTabNavigator(props: ShellBottomTabNavigatorProps) {
     const theme = useTheme()
     const router = useRouter()
-    const {bottomBarMode, mode} = useShellProvider()
+    const { bottomBarMode, mode, setCurrentTabKey } = useShellProvider()
     const currentRouteIndex = props.state.index ?? 0
     const activeKey = currentRouteIndex == 0 ? 'home' : currentRouteIndex == 1 ? 'search' : currentRouteIndex == 2 ? 'message' : currentRouteIndex == 3 ? 'notifications' : 'profile'
-    const bottomTabButton = useCallback((props: {item: BOTTOM_NAV_KEYS, index: number})=> {
-        const { item, index } = props
+    const bottomTabButton = useCallback((item: BOTTOM_NAV_KEYS)=> {
         return (
-            <TouchableOpacity style={{
+            <TouchableOpacity key={item.key} style={{
                 flex: 1,
                 width: CONTENT_WIDTH / 5,
                 alignItems: 'center',
+                position: 'relative',
             }} onPress={()=>{
+                setCurrentTabKey(item.key)
                 router.push(
                     // @ts-ignore - react router's problems
                     item.key == 'home' ? '/home/tabs/home' :
@@ -219,11 +227,18 @@ export function ShellBottomTabNavigator(props: ShellBottomTabNavigatorProps) {
                 borderTopWidth: 1,
                 borderTopColor: theme.border.val,
                 width: '100%',
-
+                position: 'relative',
             }]}
         >
-            <XStack bg={"$background"} borderTopWidth={1} borderTopColor={'$border'} width={'100%'} px={20} py={10} alignItems={'center'} justifyContent={'center'} >
-                <Animated.FlatList scrollEnabled={false}  horizontal data={bottom_nav_keys} renderItem={bottomTabButton} />
+            <XStack overflow={'visible'} bg={"$background"} borderTopWidth={1} borderTopColor={'$border'} width={'100%'} px={20} py={10} alignItems={'center'} justifyContent={'center'} >
+                {/*<Animated.FlatList contentContainerStyle={{*/}
+                {/*    overflow: 'visible'*/}
+                {/*}} scrollEnabled={false}  horizontal data={bottom_nav_keys} renderItem={bottomTabButton} />*/}
+                {
+                    bottom_nav_keys?.map((bottom_nav)=>{
+                        return bottomTabButton(bottom_nav)
+                    })
+                }
             </XStack>
         </Animated.View>
     )

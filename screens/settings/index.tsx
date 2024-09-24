@@ -155,25 +155,25 @@ const Settings = () => {
                         <Separator />
                     </YStack>
                 </Link>
-                <Link
-                    href="/settings/notifications"
-                    asChild
-                >
-                    <YStack style={{
-                        width: "100%",
-                    }} >
-                        <XStack w="100%" p={20} justifyContent='space-between' >
-                            <XStack columnGap={20} >
-                                <Bell />
-                                <H4 textTransform='none' >
-                                    Notifications
-                                </H4>
-                            </XStack>
-                            <ChevronRight />
-                        </XStack>
-                        <Separator />
-                    </YStack>
-                </Link>
+                {/*<Link*/}
+                {/*    href="/settings/notifications"*/}
+                {/*    asChild*/}
+                {/*>*/}
+                {/*    <YStack style={{*/}
+                {/*        width: "100%",*/}
+                {/*    }} >*/}
+                {/*        <XStack w="100%" p={20} justifyContent='space-between' >*/}
+                {/*            <XStack columnGap={20} >*/}
+                {/*                <Bell />*/}
+                {/*                <H4 textTransform='none' >*/}
+                {/*                    Notifications*/}
+                {/*                </H4>*/}
+                {/*            </XStack>*/}
+                {/*            <ChevronRight />*/}
+                {/*        </XStack>*/}
+                {/*        <Separator />*/}
+                {/*    </YStack>*/}
+                {/*</Link>*/}
                 <TouchableOpacity onPress={handleViewRecoveryPhrase} style={{
                         width: "100%",
                     }} >

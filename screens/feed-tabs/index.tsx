@@ -1,16 +1,16 @@
 import {Image, Separator, Spinner, Text, useTheme, XStack, YStack} from "tamagui";
 import {useNavigation, useRouter} from "expo-router";
-import {DrawerActions} from "@react-navigation/native";
+import {DrawerActions, useRoute} from "@react-navigation/native";
 import {FlatList, TouchableOpacity} from "react-native";
 import Animated, {interpolate, useAnimatedStyle} from 'react-native-reanimated'
-import {ChevronUp, Hash, Menu, SquarePen} from "@tamagui/lucide-icons";
-import React, {useCallback, useMemo, useRef, useState} from "react";
+import {ChevronUp, Hash, Menu, Newspaper, SquarePen} from "@tamagui/lucide-icons";
+import React, {memo, useCallback, useContext, useMemo, useRef, useState} from "react";
 import {NavigationState, SceneRendererProps, TabView} from "react-native-tab-view";
 import {SceneProps} from "../profiles/tabs/common";
 import {useQuery} from "@apollo/client";
 import {GET_COMMUNITY_PUBLICATIONS, GET_PUBLICATIONS} from "../../utils/queries";
 import account from "../../contract/modules/account";
-import {isEmpty} from "lodash";
+import {isEmpty, uniqBy} from "lodash";
 import publications from "../../contract/modules/publications";
 import {PublicationsQuery} from "../../__generated__/graphql";
 import BaseContentContainer from "../../components/ui/feed/base-content-container";
@@ -20,6 +20,13 @@ import delegateManager from "../../lib/delegate-manager";
 import {TypedDocumentNode} from "@graphql-typed-document-node/core";
 import Loading from "../../components/ui/feedback/loading";
 import {TPUBLICATION} from "../../schema";
+import { useQuery as uzQuery } from 'react-query'
+import {getSavedFeeds} from "../v2/feeds";
+import {Utils} from "../../utils";
+
+const tabContext = React.createContext<{activeTab: string}>({
+    activeTab: "discover",
+})
 
 const feeds: Array<Feed> = [
     {
@@ -39,15 +46,6 @@ const feeds: Array<Feed> = [
         customFeedVariables: (feed)=> ({
             following_feed: delegateManager.owner!,
             types: [1,2],
-        })
-    },
-    {
-        key: 'portals',
-        type: 'predefined',
-        title: 'Portals',
-        query: GET_COMMUNITY_PUBLICATIONS,
-        customFeedVariables: (feed)=> ({
-            communityName: 'portals',
         })
     }
 ]
@@ -73,10 +71,12 @@ interface FeedsTopBarProps {
     }
 }
 
-const FeedsTopBar = (props: FeedsTopBarProps) => {
+const FeedsTopBar = memo((props: FeedsTopBarProps) => {
     const { feeds, sceneProps } = props
-    const listRef = useRef<FlatList>()
+    const listRef = useRef<FlatList>(null)
     const navigation = useNavigation()
+    const router = useRouter()
+    const tabState = useContext(tabContext)
 
 
     const handleOpen = () => {
@@ -115,23 +115,25 @@ const FeedsTopBar = (props: FeedsTopBarProps) => {
                     width={30}
                     height={30}
                 />
-                <TouchableOpacity>
-                    <Hash color={'$sideText'} />
+                <TouchableOpacity
+                    onPress={()=>{
+                        router.push('/home/tabs/home/feeds')
+                    }}
+                >
+                    <Newspaper color={'$sideText'} />
                 </TouchableOpacity>
             </XStack>
             <XStack bg={"$background"} w={"100%"} borderBottomWidth={1} borderBottomColor={'$border'} >
                 <Animated.FlatList style={{
                     paddingHorizontal: 20
-                }} contentContainerStyle={{
+                }} ref={listRef} contentContainerStyle={{
                     columnGap: 10
-                }} horizontal data={feeds} renderItem={(props)=>{
-                    const currentRoute = sceneProps.navigationState.routes.at(sceneProps.navigationState.index)
-                    const isActive = currentRoute!.key == props.item.key
+                }} horizontal showsHorizontalScrollIndicator={false} data={feeds} renderItem={(props)=>{
+                    const isActive = tabState.activeTab == props.item.key
                     return (
                         <TouchableOpacity
                             onPress={()=>{
                                 sceneProps?.jumpTo(props.item.key)
-
                                 listRef?.current?.scrollToIndex({
                                     index: props.index,
                                     animated: true
@@ -139,8 +141,8 @@ const FeedsTopBar = (props: FeedsTopBarProps) => {
                             }}
                         >
                             <YStack py={10} >
-                                <Text fontSize={18} fontWeight={'bold'} color={isActive ? 'white' :'$sideText'} >
-                                    {props?.item?.title}
+                                <Text fontSize={14} textTransform={'capitalize'} fontWeight={'semibold'} color={isActive ? 'white' :'$sideText'} >
+                                    {Utils.shortedNameToTitle(props?.item?.title)}
                                 </Text>
                             </YStack>
                             <Separator borderColor={isActive ? '$primary' : '$colorTransparent'} />
@@ -150,7 +152,7 @@ const FeedsTopBar = (props: FeedsTopBarProps) => {
             </XStack>
         </Animated.View>
     )
-}
+})
 
 interface FeedTabProps {
     feed: Feed
@@ -159,6 +161,7 @@ interface FeedTabProps {
 const FeedTab = React.memo((props: FeedTabProps) => {
     const listRef = useRef<FlatList>(null)
     const { feed } = props
+    const tabState = useContext(tabContext)
     const shellContext = useShellProvider()
     const customVariables = feed.customFeedVariables?.(feed)
     const router = useRouter()
@@ -168,12 +171,14 @@ const FeedTab = React.memo((props: FeedTabProps) => {
             page: 0,
             size: 20,
             types: customVariables?.types,
-            muted: isEmpty(account.mutedUsers) ? undefined : account.mutedUsers,
-            hide: isEmpty(publications.hiddenPublications) ? undefined : publications.hiddenPublications,
+            // muted: isEmpty(account.mutedUsers) ? undefined : account.mutedUsers,
+            // hide: isEmpty(publications.hiddenPublications) ? undefined : publications.hiddenPublications,
             following_feed:customVariables?.following_feed,
             communityName: customVariables?.communityName,
         },
         fetchPolicy: 'cache-and-network',
+        skip: !feed || !customVariables || feed.key !== tabState.activeTab,
+        // skip: true
     })
 
     const fetchedPublications: Array<any> = publicationsQuery?.data?.publications ?? publicationsQuery?.data?.communityPublications ?? []
@@ -217,9 +222,11 @@ const FeedTab = React.memo((props: FeedTabProps) => {
         )
     }, [])
 
+    if(tabState.activeTab !== feed.key) return null;
+
     return (
         <YStack flex={1} w={"100%"} h={"100%"} position={'relative'} >
-            <Animated.FlatList
+            <FlatList
                 ref={listRef}
                 data={fetchedPublications ?? []}
                 renderItem={renderPublication}
@@ -232,6 +239,7 @@ const FeedTab = React.memo((props: FeedTabProps) => {
                 initialNumToRender={10}
                 keyExtractor={(i)=> i?.publication_ref}
                 onScroll={shellContext?.handleScroll}
+                scrollEventThrottle={1}
                 contentContainerStyle={{
                     paddingTop: 80
                 }}
@@ -297,23 +305,28 @@ const FeedTab = React.memo((props: FeedTabProps) => {
 interface TabsProps {
     feeds: Array<Feed>
 }
-const Tabs = (props: TabsProps) => {
+const Tabs = memo((props: TabsProps) => {
     const { feeds } = props
     const feedTabs = useMemo(()=>{
-        return feeds.map((feed) => <FeedTab feed={feed} key={feed.key} />)
-    },[])
+        return feeds?.reduce((prev, curr )=> {
+            prev[curr.key] = <FeedTab feed={curr} />
+            return prev
+        }, {} as Record<string, React.ReactNode> )
+    },[feeds?.length])
     const theme = useTheme()
     const [routes] = useState<Array<TabRoute>>(feeds.map((f)=> ({
         key: f.key,
         title: f.title
     })))
 
+
     const [currentTabIndex, setCurrentTabIndex] = useState(0)
 
     const renderScene = useCallback((props: SceneProps)=> {
         const { route } = props
-
-        const tab = feedTabs.at(currentTabIndex)
+        const activeRoute = routes.at(currentTabIndex)?.key ?? 'discover'
+        console.log("Current Route::", activeRoute)
+        const tab = feedTabs[activeRoute]
         return tab ?? null
 
     }, [currentTabIndex])
@@ -322,31 +335,61 @@ const Tabs = (props: TabsProps) => {
         return (
             <FeedsTopBar feeds={feeds} sceneProps={props} />
         )
-    },[currentTabIndex])
+    },[feeds?.length])
 
     return (
-        <YStack flex={1} w={"100%"} h={"100%"} >
-            <TabView onIndexChange={setCurrentTabIndex} navigationState={{
-                index: currentTabIndex,
-                routes
-            }} lazy renderLazyPlaceholder={()=><Loading flex={1} w={"100%"} h={"100%"} />} renderScene={renderScene} sceneContainerStyle={{
-                        width: '100%',
-                        height: '100%',
-                        flex: 1
-                    }}
-                     renderTabBar={renderTabBar}
-                     animationEnabled={false}
-
-            />
-        </YStack>
+        <tabContext.Provider value={{ activeTab: feeds.at(currentTabIndex)?.key ?? 'discover' }} >
+            <YStack flex={1} w={"100%"} h={"100%"} >
+                <TabView onIndexChange={setCurrentTabIndex} navigationState={{
+                    index: currentTabIndex,
+                    routes
+                }} lazy renderLazyPlaceholder={()=><Loading flex={1} w={"100%"} h={"100%"} />} renderScene={renderScene} sceneContainerStyle={{
+                            width: '100%',
+                            height: '100%',
+                            flex: 1
+                        }}
+                         renderTabBar={renderTabBar}
+                         animationEnabled={false}
+                         swipeEnabled={false}
+                />
+            </YStack>
+        </tabContext.Provider>
     )
-}
+})
 
 export default function FeedTabs(){
+    const feedsQuery = uzQuery({
+        queryKey: ['feeds'],
+        queryFn: async () => {
+            const saved = await getSavedFeeds()
+            const mapped = saved?.map((f)=>{
+                return {
+                    key: f.key,
+                    title: f.title,
+                    type: 'custom',
+                    query: GET_COMMUNITY_PUBLICATIONS,
+                    customFeedVariables: (feed)=> ({
+                        communityName: feed.key,
+                    })
+                } as Feed
+            })
+
+            return uniqBy([
+                ...feeds,
+                ...mapped
+            ], f => f.key)
+        }
+    })
+
+    if(feedsQuery.isLoading){
+        return (
+            <Loading flex={1} backgroundColor={'$background'} w={'100%'} h={'100%'} />
+        )
+    }
 
     return (
-        <YStack flex={1} w={"100%"} h={"100%"} bg={"$background"} >
-            <Tabs feeds={feeds} />
+        <YStack flex={1} w={"100%"} h={"100%"} py={10} bg={"$background"} >
+            <Tabs feeds={feedsQuery?.data ?? []} />
         </YStack>
     )
 }

@@ -49,21 +49,7 @@ function BaseContentContainer(props: BaseContentContainerProps) {
   }, [, data?.content?.content]);
 
   const DATE_VALUE = useMemo(() => {
-    return dayjs(data?.timestamp)
-      .fromNow()
-      ?.replace(" hours ago", "h")
-      ?.replace(" hour ago", "h")
-      ?.replace(" minutes ago", "m")
-      ?.replace(" minute ago", "m")
-      ?.replace(" days ago", "d")
-      ?.replace(" day ago", "d")
-      ?.replace(" months ago", "mo")
-      ?.replace(" month ago", "mo")
-      ?.replace(" years ago", "y")
-      ?.replace(" year ago", "y")
-      ?.replace("anh", "1h")
-      ?.replace("am", "1m")
-      ?.replace("ad", "1d");
+    return data?.timestamp ? Utils.formatTimestamp(data?.timestamp) : ''
   }, [data?.timestamp]);
 
   if (hide) return null;

@@ -105,7 +105,7 @@ const Scan = () => {
     }
 
     const goToFeed = () => {
-        router.replace('/(tabs)/feed/home')
+        router.replace('/home')
     }
 
     useEffect(() => {

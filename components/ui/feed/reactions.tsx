@@ -168,7 +168,7 @@ const PublicationReactions = (props: Props) => {
             userInteractions?.data?.publicationInteractionsByViewer?.commented
               ? '$activeReaction'
               : '$border'
-          } alignItems='center' justifyContent='center' p={10} borderRadius={20}
+          } alignItems='center' justifyContent='center' p={10} py={5} borderRadius={20}
             columnGap={
               publicationStatsQuery.data?.publicationStats?.comments == 0 ? 0 : 10
             }
@@ -207,6 +207,7 @@ const PublicationReactions = (props: Props) => {
             alignItems='center'
             justifyContent='center'
             p={10}
+            py={5}
             borderRadius={20}
             columnGap={
               (publicationStatsQuery.data?.publicationStats?.reposts ?? 0) == 0 && publicationStatsQuery.data?.publicationStats?.quotes == 0
@@ -249,6 +250,7 @@ const PublicationReactions = (props: Props) => {
                 '$border'}
             alignItems='center'
             p={10}
+            py={5}
             borderRadius={20}
             columnGap={
               publicationStatsQuery.data?.publicationStats?.reactions == 0

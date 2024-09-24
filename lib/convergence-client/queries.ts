@@ -431,3 +431,31 @@ export const GET_WALLET_REVENUE = gql(/* GraphQL */`
         }
     }
 `)
+
+export const FGS_REGISTER_INBOX = gql(/* GraphQL */`
+    mutation fgsRegisterInbox($input: fgsRegisterInbox!) {
+        fgsRegisterInbox(input: $input){
+            raw_transaction
+            signature
+        }
+    }
+`);
+
+export const FGS_UPDATE_CONVERSATION_LIST = gql(/* GraphQL */`
+    mutation fgsUpdateConversationList($input: fgsUpdateConversationList!){
+        fgsUpdateConversationList(input: $input){
+            raw_transaction
+            signature
+        }
+    }
+`);
+
+export const FGS_UPDATE_INBOX = gql(/* GraphQL */`
+    mutation fgsUpdateInbox($input: fgsUpdateInbox!){
+        fgsUpdateInbox(input: $input){
+            raw_transaction
+            signature
+        }
+    }
+`)
+

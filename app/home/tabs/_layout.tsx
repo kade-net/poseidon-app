@@ -15,6 +15,7 @@ export default function _layout(){
             headerShown: false,
             tabBarShowLabel: false,
             tabBarHideOnKeyboard: true,
+            lazy: true
         }} sceneContainerStyle={[{
             backgroundColor: theme.background.val
         }]}

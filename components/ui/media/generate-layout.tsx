@@ -1,9 +1,10 @@
 import { useCallback, useMemo } from "react";
 import { TPUBLICATION } from "../../../schema";
-import { XStack, YStack } from "tamagui";
+import {ScrollView, XStack, YStack} from "tamagui";
 import Image from "../../ui/feed/image";
 import VideoViewer from "./video";
 import Removable from "./removable";
+import {FlatList} from "react-native";
 
 function getLayout(data: TPUBLICATION["media"]) {
     if (data?.length === 1) {
@@ -18,10 +19,10 @@ function getLayout(data: TPUBLICATION["media"]) {
     return "none";
 }
 
-export default function GenerateLayout(props: { data: TPUBLICATION["media"], editable?: boolean, onRemove?: (id: string) => void }) {
-    const { data, editable, onRemove } = props;
+export default function GenerateLayout(props: { data: TPUBLICATION["media"], editable?: boolean, onRemove?: (id: string) => void, layout?: 'horizontal' | 'single' | 'double' | 'quad' | 'triple' }) {
+    const { data, editable, onRemove, layout: chosenLayout } = props;
 
-    const layout = useMemo(() => getLayout(data), [data?.length]);
+    const layout = useMemo(() => chosenLayout ?? getLayout(data), [data?.length]);
 
     const component = useCallback(() => {
         switch (layout) {
@@ -174,7 +175,7 @@ export default function GenerateLayout(props: { data: TPUBLICATION["media"], edi
             case "quad": {
                 const [first, second, third, fourth] = data ?? [];
                 return (
-                    <YStack w="100%" flex={1}>
+                    <YStack w="100%" flex={1} >
                         <XStack w="100%" flex={1} >
                             <XStack flex={1} >
                                 {first?.type === "image" ? (
@@ -267,11 +268,40 @@ export default function GenerateLayout(props: { data: TPUBLICATION["media"], edi
                     </YStack>
                 );
             }
+            case "horizontal": {
+                return (
+                    <XStack w={"100%"} flex={1} >
+                        <ScrollView style={{
+                            width: '100%',
+                            height: '100%',
+                        }} showsHorizontalScrollIndicator={false} horizontal columnGap={10} >
+                            {
+                                data?.map((item, index)=>{
+                                    return (
+                                        <XStack key={item.url} style={{flex: 1, height: '100%'}} p={10} >
+                                            <Removable
+                                                id={`${index}`}
+                                                removable={editable}
+                                                onRemove={onRemove}
+                                            >
+                                                {
+                                                    item.type == 'image' ? <Image preventExpand={editable} image={item.url} /> :
+                                                        <VideoViewer data={item} />
+                                                }
+                                            </Removable>
+                                        </XStack>
+                                    )
+                                })
+                            }
+                        </ScrollView>
+                    </XStack>
+                )
+            }
             default: {
                 return null;
             }
         }
-    }, [layout]);
+    }, [layout, data?.length]);
 
     return component();
 }

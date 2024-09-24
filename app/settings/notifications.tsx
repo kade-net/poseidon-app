@@ -6,21 +6,24 @@ import notifications from '../../lib/notifications'
 import { Spinner, YStack } from 'tamagui'
 
 const NotificationsScreen = () => {
-    const notificationStatusQuery = useQuery({
-        queryKey: ['notifications'],
-        queryFn: notifications.getNotificationStatus
-    })
-
-    if (notificationStatusQuery.isLoading) return (
-        <YStack flex={1} backgroundColor={'$background'} alignItems='center' p={20} >
-            <Spinner />
-        </YStack>
-    )
-
+    // const notificationStatusQuery = useQuery({
+    //     queryKey: ['notifications'],
+    //     queryFn: notifications.getNotificationStatus
+    // })
+    //
+    // if (notificationStatusQuery.isLoading) return (
+    //     <YStack flex={1} backgroundColor={'$background'} alignItems='center' p={20} >
+    //         <Spinner />
+    //     </YStack>
+    // )
+    //
+    // return (
+    //     <Notifications
+    //         status={notificationStatusQuery.data?.enabled || false}
+    //     />
+    // )
     return (
-        <Notifications
-            status={notificationStatusQuery.data?.enabled || false}
-        />
+        <YStack></YStack>
     )
 }
 

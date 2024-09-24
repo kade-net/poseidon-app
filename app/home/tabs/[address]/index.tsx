@@ -1,8 +1,14 @@
 import {YStack} from "tamagui";
+import {useGlobalSearchParams, useLocalSearchParams} from "expo-router";
+import ProfileDetails from "../../../../screens/profiles";
+import React from "react";
+import {ProfilesV2} from "../../../../screens/v2/profiles";
 
 
 export default function ProfileScreen(){
+    const params = useLocalSearchParams()
+    const userAddress = params['address'] as string ?? ''
     return (
-        <YStack flex={1} w={"100%"} h={"100%"} bg={"$background"} ></YStack>
+        <ProfilesV2 address={userAddress} />
     )
 }

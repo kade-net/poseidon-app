@@ -1,5 +1,5 @@
 import {Stack} from "expo-router";
-import {ConversationProvider} from "../../../../../screens/messaging/conversation";
+import {ConversationProvider} from "../../../../../screens/messaging/context";
 
 
 export default function _layout(){

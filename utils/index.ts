@@ -2,6 +2,9 @@ import { AccountAddress } from "@aptos-labs/ts-sdk";
 import {isEmpty, isString, truncate} from "lodash";
 import { Dimensions, Image } from "react-native";
 import axios from "axios";
+import dayjs from "dayjs";
+import relativeTime from "dayjs/plugin/relativeTime";
+dayjs.extend(relativeTime);
 const ipfsBaseUri = 'https://cloudflare-ipfs.com/ipfs/'
 const NO_COLLECTION_IMAGE = 'https://api.dicebear.com/8.x/shapes/png?seed=collection'
 
@@ -43,7 +46,7 @@ export namespace Utils {
 
       const contentType = resp.headers.get('content-type')
 
-      if (!contentType || !contentType.startsWith('image')) {
+      if (!contentType || !contentType?.startsWith('image')) {
         return null
       }
 
@@ -234,5 +237,45 @@ export namespace Utils {
     let newHex = hex?.replace("0x", "")
     const buff = Buffer.from(newHex, 'hex')
     return sliceLength ? buff.subarray(0,sliceLength) : buff
+  }
+
+  export function extractFileName(uri: string){
+    return uri?.replace('https://', '')?.split('/').pop()
+  }
+
+  export function cleanFileName(url: string){
+    return url.trim().replaceAll(' ', '').replaceAll('(', '').replaceAll(')', '').replaceAll('\n', '').replaceAll('\r', '')
+  }
+
+  export function shortedNameToTitle(name: string){
+
+    let newName = name.replaceAll('_', ' ')
+
+    return newName
+
+  }
+
+  export function badgeCountFormatter(count: number){
+    if(count > 9) return `9+`
+    return count
+  }
+
+  export function formatTimestamp(timestamp: number){
+    return dayjs(timestamp)
+        .fromNow()
+        ?.replace(" hours ago", "h")
+        ?.replace(" hour ago", "h")
+        ?.replace(" minutes ago", "m")
+        ?.replace(" minute ago", "m")
+        ?.replace(" days ago", "d")
+        ?.replace(" day ago", "d")
+        ?.replace(" months ago", "mo")
+        ?.replace(" month ago", "mo")
+        ?.replace(" years ago", "y")
+        ?.replace(" year ago", "y")
+        ?.replace("anh", "1h")
+        ?.replace("am", "1m")
+        ?.replace("ad", "1d")
+        ?.replace("a few seconds ago", "now")
   }
 }
