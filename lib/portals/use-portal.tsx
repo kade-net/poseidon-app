@@ -2,6 +2,7 @@ import { BasePortal, PortalButton } from '@kade-net/portals-parser'
 import { Effect, Either } from 'effect'
 import React, { useCallback, useEffect, useState } from 'react'
 import { loadAndParsePortalLink, onPortalButtonPressed } from './functions'
+import { useQuery } from 'react-query'
 
 interface usePortalProps {
     initialUrl: string
@@ -54,7 +55,6 @@ function usePortal(props: usePortalProps) {
                 setError(left)
             },
             onRight(right) {
-                console.log("Right::", right)
                 setPortal(right)
             },
         })

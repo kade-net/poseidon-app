@@ -14,7 +14,7 @@ const Notification = () => {
     const theme = useTheme()
     const router = useRouter()
     const goToNext = () => {
-        router.replace('/(tabs)/feed/home')
+        router.replace('/home')
     }
 
 

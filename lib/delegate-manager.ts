@@ -20,7 +20,7 @@ const DERIVATION_PATH = "m/44'/637'/0'/0'/0'"
 
 
 
-class DelegateManager {
+export class DelegateManager {
     private_key: string | null = null;
     account: AptosAccount | null = null;
     private _owner: string | null = null;

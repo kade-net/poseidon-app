@@ -9,7 +9,7 @@ const FundDelegate = () => {
     const router = useRouter()
 
     const goToNext = () => {
-        router.push('/(tabs)/feed/home')
+        router.push('/home')
     }
 
     return (

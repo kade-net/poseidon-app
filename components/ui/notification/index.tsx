@@ -7,6 +7,9 @@ import { useRouter } from 'expo-router'
 import { TouchableOpacity } from 'react-native'
 import dayjs from 'dayjs'
 import relativeTime from 'dayjs/plugin/relativeTime'
+import notifications from "../../../lib/notifications";
+import {useQuery} from "react-query";
+import {Utils} from "../../../utils";
 
 dayjs.extend(relativeTime)
 
@@ -21,7 +24,7 @@ const LikeNotificationContent = (props: Props) => {
         <YStack w="100%" rowGap={5} >
 
             <Avatar circular size={"$3"} >
-                <Avatar.Image src={props.data?.reaction?.creator?.profile?.pfp ?? ''} />
+                <Avatar.Image src={Utils.parseAvatarImage('1', props.data?.reaction?.creator?.profile?.pfp)} />
                 <Avatar.Fallback bg="$pink10" />
             </Avatar>
             <Text >
@@ -42,7 +45,7 @@ const FollowNotificationContent = (props: Props) => {
     return (
         <YStack w="100%" rowGap={5} >
             <Avatar circular size={"$3"} >
-                <Avatar.Image src={props.data?.follow?.follower?.profile?.pfp ?? ''} />
+                <Avatar.Image src={Utils.parseAvatarImage('1', props.data?.follow?.follower?.profile?.pfp)} />
                 <Avatar.Fallback bg="$pink10" />
             </Avatar>
             <Text >
@@ -56,7 +59,7 @@ const CommentNotificationContent = (props: Props) => {
     return (
         <YStack w="100%" rowGap={5} >
             <Avatar circular size={"$3"} >
-                <Avatar.Image src={props.data?.publication?.creator?.profile?.pfp ?? ''} />
+                <Avatar.Image src={Utils.parseAvatarImage('1',props.data?.publication?.creator?.profile?.pfp)} />
                 <Avatar.Fallback bg="$pink10" />
             </Avatar>
             <Text >
@@ -77,7 +80,7 @@ const RepostNotificationContent = (props: Props) => {
     return (
         <YStack w="100%" rowGap={5} >
             <Avatar circular size={"$3"} >
-                <Avatar.Image src={props.data?.publication?.creator?.profile?.pfp ?? ''} />
+                <Avatar.Image src={Utils.parseAvatarImage('1', props.data?.publication?.creator?.profile?.pfp)} />
                 <Avatar.Fallback bg="$pink10" />
             </Avatar>
             <Text >
@@ -98,7 +101,7 @@ const QuoteNotificationContent = (props: Props) => {
     return (
         <YStack w="100%" rowGap={5} >
             <Avatar circular size={"$3"} >
-                <Avatar.Image src={props.data?.publication?.creator?.profile?.pfp ?? ''} />
+                <Avatar.Image src={Utils.parseAvatarImage('1',props.data?.publication?.creator?.profile?.pfp)} />
                 <Avatar.Fallback bg="$pink10" />
             </Avatar>
             <Text >
@@ -117,6 +120,19 @@ const QuoteNotificationContent = (props: Props) => {
 
 
 const BaseNotificationContent = (props: Props) => {
+
+    const notificationCounter = useQuery({
+        queryKey: ['new-notification-counter'],
+        queryFn: async ()=> {
+            try {
+                const counter = await notifications.getNotificationCounter("posts")
+                return counter
+            }
+            catch (error) {
+                return null
+            }
+        }
+    })
 
     const { data } = props
     const type = data?.type ?? 1
@@ -161,12 +177,16 @@ const BaseNotificationContent = (props: Props) => {
         }
     }
 
+    const isNew = notificationCounter.data ? notificationCounter.data?.lastRead < data.timestamp : false
+
     return (
         <TouchableOpacity
             onPress={handleSelect}
             disabled={type == 2 && data?.publication?.type == 4}
         >
-            <XStack w="100%" columnGap={10} py={20} px={10}  >
+            <XStack
+                backgroundColor={isNew ? '$lightButton'  : undefined}
+                w="100%" columnGap={10} py={20} px={10}  >
                 <YStack h="100%" >
                     {
                         type == 1 ?

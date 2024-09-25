@@ -1,4 +1,4 @@
-import { View, Text, YStack, Heading, Avatar, Separator } from 'tamagui'
+import {View, Text, YStack, Heading, Avatar, Separator, XStack} from 'tamagui'
 import React, { memo, useMemo } from 'react'
 import { PublicationQuery } from '../../../../__generated__/graphql'
 import { Link, useRouter } from 'expo-router'
@@ -40,10 +40,10 @@ const PublicationContent = (props: Props) => {
         router.back()
     }
     return (
-        <YStack w="100%" >
+        <YStack w="100%" pt={10} >
 
-            <View w="100%" flexDirection='row' alignItems='center' columnGap={50} mb={20} >
-                <TouchableOpacity onPress={goBack} >
+            <View w="100%" flexDirection='row' alignItems='center' justifyContent={'space-between'} mb={20} >
+                <TouchableOpacity style={{width: 80}} onPress={goBack} >
                     <ArrowLeft />
                 </TouchableOpacity>
                 <Heading
@@ -51,6 +51,7 @@ const PublicationContent = (props: Props) => {
                 >
                     Conversation
                 </Heading>
+                <XStack w={80} ></XStack>
             </View>
             <View w="100%">
 

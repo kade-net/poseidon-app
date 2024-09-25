@@ -3,7 +3,8 @@ import AsyncStorage from "@react-native-async-storage/async-storage"
 
 
 const storage = new Storage({
-    storageBackend: AsyncStorage
+    storageBackend: AsyncStorage,
+    defaultExpires: null
 })
 
 export default storage

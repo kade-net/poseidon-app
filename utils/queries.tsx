@@ -2,8 +2,8 @@ import { gql } from "../__generated__";
 
 
 export const GET_PUBLICATIONS = gql(/* GraphQL */`
-    query Publications($page: Int!, $size: Int!, $type: Int, $address: String, $types: [Int!], $reaction: Int, $hide: [String!], $muted: [Int!]){
-        publications(pagination: { page: $page, size: $size }, type: $type, creator_address: $address, types: $types, reaction: $reaction, hide: $hide, muted: $muted) {
+    query Publications($page: Int!, $size: Int!, $type: Int, $address: String, $types: [Int!], $reaction: Int, $hide: [String!], $muted: [Int!], $following_feed: String){
+        publications(pagination: { page: $page, size: $size }, type: $type, creator_address: $address, types: $types, reaction: $reaction, hide: $hide, muted: $muted, following_feed: $following_feed) {
             __typename
             id,
             timestamp
@@ -80,6 +80,9 @@ export const GET_MY_PROFILE = gql(/* GraphQL */`
             username
         }
         timestamp
+        delegates {
+            address
+        }
     }
 }
 `)

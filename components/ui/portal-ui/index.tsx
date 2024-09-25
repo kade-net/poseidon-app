@@ -1,5 +1,5 @@
 import { View, Text, YStack, Spinner, Input, Button, XStack } from 'tamagui'
-import React, { useEffect, useMemo, useRef, useState } from 'react'
+import React, {memo, useEffect, useMemo, useRef, useState} from 'react'
 import usePortal from '../../../lib/portals/use-portal'
 import {FlatList, Image, Platform} from 'react-native'
 import { sortBy, truncate } from 'lodash'
@@ -68,21 +68,15 @@ function RenderPortal(props: RenderPortalProps) {
             }
         })
         return rows
-    }, [currentURL, cacheBuster, loading])
+    }, [currentURL, kid, portal?.components?.buttons?.length])
 
     const router = useRouter()
 
     const handleMint = (button: PortalButton | null) => {
-        router.setParams(currentParams)
+        // router.setParams(currentParams)
         setActiveButton(button)
         onOpen()
     }
-
-    useEffect(() => {
-        if (!isOpen) {
-            router.setParams(currentParams)
-        }
-    }, [isOpen])
 
     const handleClose = async (hash: string) => {
         router.setParams(currentParams)
@@ -97,7 +91,6 @@ function RenderPortal(props: RenderPortalProps) {
             })
         }
     }
-
 
 
     return (
@@ -120,6 +113,7 @@ function RenderPortal(props: RenderPortalProps) {
                     }}
                     source={{
                         uri: portal?.components?.image?.image + (
+                            !cacheBuster ? "" :
                             portal?.components?.image?.image.includes('?') ? `&cache_buster=${cacheBuster}` :
                                 `?cache_buster=${cacheBuster}`
                         )

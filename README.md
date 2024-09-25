@@ -1,1 +1,3 @@
-note because this is in a monorepo had to remove react, react-dom, and react-native-web deps and change metro.config.js a bit.
+## Poseidon
+Poseidon is a cross-platform client of the Kade decentralised social network.
+This repo contains the official source code for [Poseidon Android and iOS](https://poseidon.ac)

@@ -1,5 +1,5 @@
 import { View, Text, YStack, H3, XStack } from 'tamagui'
-import React, {useEffect, useMemo} from 'react'
+import React, {memo, useEffect, useMemo} from 'react'
 import BaseContentSheet from '../base-content-sheet'
 import InAppTransactions from '.'
 import TransactionWrapper from './transaction-wrapper'
@@ -20,7 +20,7 @@ interface Props {
     wallet?: 'preffered' | 'delegate'
 }
 
-const TransactionSheet = (props: Props) => {
+const TransactionSheet = memo((props: Props) => {
     const { isOpen, onOpen, onClose, onToggle, module_arguments, module_function, type_arguments, wallet } = props
     const [update_preffered_wallet, setUpdatePrefferedWallet] = React.useState(false)
 
@@ -95,6 +95,6 @@ const TransactionSheet = (props: Props) => {
                 </TransactionWrapper>}
         </BaseContentSheet>
     )
-}
+})
 
 export default TransactionSheet

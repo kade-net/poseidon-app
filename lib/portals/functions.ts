@@ -18,8 +18,6 @@ export function loadAndParsePortalLink(args: loadAndParsePortalLinkArgs) {
         })),
         Effect.flatMap((definition) => {
 
-
-            console.log("definition", definition)
             return Effect.try({
                 try() {
                     const portal = BasePortal.deserialize(definition)

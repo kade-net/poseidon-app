@@ -11,7 +11,7 @@ import { Utils } from '../../../../utils'
 import Empty from '../../../../components/ui/feedback/empty'
 
 const isActualAddress = (address: string) => {
-    return address.length === 66 && address.startsWith('0x')
+    return address.length === 66 && address?.startsWith('0x')
 }
 
 interface Props {

@@ -180,6 +180,9 @@ export type Mutation = {
   deleteCommunity: Scalars['String']['output'];
   denyRequest: SerializedTransaction;
   disableNotifications: Scalars['String']['output'];
+  fgsRegisterInbox: SerializedTransaction;
+  fgsUpdateConversationList: SerializedTransaction;
+  fgsUpdateInbox: SerializedTransaction;
   followAccount: SerializedTransaction;
   initKadeAccountWithHermesInboxAndDelegate: SerializedTransaction;
   initSelfDelegateKadeAccountWithHermesInbox: SerializedTransaction;
@@ -352,6 +355,21 @@ export type MutationDenyRequestArgs = {
 
 export type MutationDisableNotificationsArgs = {
   input: DisableNotifications;
+};
+
+
+export type MutationFgsRegisterInboxArgs = {
+  input: FgsRegisterInbox;
+};
+
+
+export type MutationFgsUpdateConversationListArgs = {
+  input: FgsUpdateConversationList;
+};
+
+
+export type MutationFgsUpdateInboxArgs = {
+  input: FgsUpdateInbox;
 };
 
 
@@ -808,6 +826,28 @@ export type DisableNotifications = {
   sender_address: Scalars['String']['input'];
 };
 
+export type FgsRegisterInbox = {
+  encrypt_public_key?: InputMaybe<Scalars['String']['input']>;
+  encrypted_private_key_set?: InputMaybe<Scalars['String']['input']>;
+  node?: InputMaybe<Scalars['String']['input']>;
+  randAuthString?: InputMaybe<Scalars['String']['input']>;
+  sender_address?: InputMaybe<Scalars['String']['input']>;
+  sign_public_key?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type FgsUpdateConversationList = {
+  newConversationList?: InputMaybe<Scalars['String']['input']>;
+  sender_address?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type FgsUpdateInbox = {
+  newEncryptedPrivateKeySet?: InputMaybe<Scalars['String']['input']>;
+  newEncryptionPublicKey?: InputMaybe<Scalars['String']['input']>;
+  newRandAuthString?: InputMaybe<Scalars['String']['input']>;
+  newSignerPublicKey?: InputMaybe<Scalars['String']['input']>;
+  sender_address?: InputMaybe<Scalars['String']['input']>;
+};
+
 export type FollowAccountInput = {
   delegate_address: Scalars['String']['input'];
   following_address: Scalars['String']['input'];
@@ -1252,6 +1292,27 @@ export type GetWalletNotificationsQueryVariables = Exact<{
 
 export type GetWalletNotificationsQuery = { __typename?: 'Query', getWalletNotifications?: Array<{ __typename?: 'WalletNotification', amount?: number | null, currency?: string | null, hash?: string | null, receiver_address?: string | null, sender_address?: string | null, type?: string | null, timestamp?: number | null }> | null };
 
+export type FgsRegisterInboxMutationVariables = Exact<{
+  input: FgsRegisterInbox;
+}>;
+
+
+export type FgsRegisterInboxMutation = { __typename?: 'Mutation', fgsRegisterInbox: { __typename?: 'SerializedTransaction', raw_transaction: Array<number>, signature: Array<number> } };
+
+export type FgsUpdateConversationListMutationVariables = Exact<{
+  input: FgsUpdateConversationList;
+}>;
+
+
+export type FgsUpdateConversationListMutation = { __typename?: 'Mutation', fgsUpdateConversationList: { __typename?: 'SerializedTransaction', raw_transaction: Array<number>, signature: Array<number> } };
+
+export type FgsUpdateInboxMutationVariables = Exact<{
+  input: FgsUpdateInbox;
+}>;
+
+
+export type FgsUpdateInboxMutation = { __typename?: 'Mutation', fgsUpdateInbox: { __typename?: 'SerializedTransaction', raw_transaction: Array<number>, signature: Array<number> } };
+
 
 export const RegisterRequestInboxDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"RegisterRequestInbox"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"args"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"RegisterRequestInboxInputArgs"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"registerRequestInbox"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"args"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"raw_transaction"}},{"kind":"Field","name":{"kind":"Name","value":"signature"}}]}}]}}]} as unknown as DocumentNode<RegisterRequestInboxMutation, RegisterRequestInboxMutationVariables>;
 export const RequestConversationDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"RequestConversation"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"args"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"RequestConversationArgs"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"requestConversation"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"args"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"raw_transaction"}},{"kind":"Field","name":{"kind":"Name","value":"signature"}}]}}]}}]} as unknown as DocumentNode<RequestConversationMutation, RequestConversationMutationVariables>;
@@ -1299,3 +1360,6 @@ export const AddEmailDocument = {"kind":"Document","definitions":[{"kind":"Opera
 export const SendVerificationCodeDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"SendVerificationCode"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"sendVerificationCodeEmail"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"sendVerificationCode"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}]}]}}]} as unknown as DocumentNode<SendVerificationCodeMutation, SendVerificationCodeMutationVariables>;
 export const VerifyCodeDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"VerifyCode"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"verifyCode"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"verifyCode"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}]}]}}]} as unknown as DocumentNode<VerifyCodeMutation, VerifyCodeMutationVariables>;
 export const GetWalletNotificationsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetWalletNotifications"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"user_address"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"getWalletNotifications"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"user_address"},"value":{"kind":"Variable","name":{"kind":"Name","value":"user_address"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"amount"}},{"kind":"Field","name":{"kind":"Name","value":"currency"}},{"kind":"Field","name":{"kind":"Name","value":"hash"}},{"kind":"Field","name":{"kind":"Name","value":"receiver_address"}},{"kind":"Field","name":{"kind":"Name","value":"sender_address"}},{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"timestamp"}}]}}]}}]} as unknown as DocumentNode<GetWalletNotificationsQuery, GetWalletNotificationsQueryVariables>;
+export const FgsRegisterInboxDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"fgsRegisterInbox"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"fgsRegisterInbox"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"fgsRegisterInbox"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"raw_transaction"}},{"kind":"Field","name":{"kind":"Name","value":"signature"}}]}}]}}]} as unknown as DocumentNode<FgsRegisterInboxMutation, FgsRegisterInboxMutationVariables>;
+export const FgsUpdateConversationListDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"fgsUpdateConversationList"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"fgsUpdateConversationList"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"fgsUpdateConversationList"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"raw_transaction"}},{"kind":"Field","name":{"kind":"Name","value":"signature"}}]}}]}}]} as unknown as DocumentNode<FgsUpdateConversationListMutation, FgsUpdateConversationListMutationVariables>;
+export const FgsUpdateInboxDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"fgsUpdateInbox"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"fgsUpdateInbox"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"fgsUpdateInbox"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"raw_transaction"}},{"kind":"Field","name":{"kind":"Name","value":"signature"}}]}}]}}]} as unknown as DocumentNode<FgsUpdateInboxMutation, FgsUpdateInboxMutationVariables>;

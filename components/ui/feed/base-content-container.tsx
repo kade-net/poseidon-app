@@ -2,6 +2,7 @@
 import "../../../global"
 import { Dot, Heart, MessageSquare, MoreHorizontal, MoreVertical, Repeat2, Reply } from "@tamagui/lucide-icons";
 import { Avatar, Separator, Text, View, XStack, YStack, useTheme } from "tamagui";
+import { Text as RnText } from 'react-native'
 import dayjs from "dayjs";
 import relativeTime from 'dayjs/plugin/relativeTime'
 import { Publication, PublicationStats } from "../../../__generated__/graphql";
@@ -18,6 +19,7 @@ import { getMutedUsers, getRemovedFromFeed } from "../../../contract/modules/sto
 import ErrorBoundary from "../../helpers/error-boundary";
 import RankBadge from "../../badges/rank-badge";
 import MediaViewer from "../media/media-viewer";
+import BaseAvatar from "../avatar";
 
 dayjs.extend(relativeTime);
 
@@ -48,21 +50,7 @@ function BaseContentContainer(props: BaseContentContainerProps) {
   }, [, data?.content?.content]);
 
   const DATE_VALUE = useMemo(() => {
-    return dayjs(data?.timestamp)
-      .fromNow()
-      ?.replace(" hours ago", "h")
-      ?.replace(" hour ago", "h")
-      ?.replace(" minutes ago", "m")
-      ?.replace(" minute ago", "m")
-      ?.replace(" days ago", "d")
-      ?.replace(" day ago", "d")
-      ?.replace(" months ago", "mo")
-      ?.replace(" month ago", "mo")
-      ?.replace(" years ago", "y")
-      ?.replace(" year ago", "y")
-      ?.replace("anh", "1h")
-      ?.replace("am", "1m")
-      ?.replace("ad", "1d");
+    return data?.timestamp ? Utils.formatTimestamp(data?.timestamp) : ''
   }, [data?.timestamp]);
 
   if (hide) return null;
@@ -86,9 +74,9 @@ function BaseContentContainer(props: BaseContentContainerProps) {
       {_data?.type == 4 && (
         <Link
           href={{
-            pathname: "/(tabs)/feed/[post-id]/",
+            pathname: "/home/tabs/home/[ref]",
             params: {
-              "post-id": data?.publication_ref!,
+              "ref": data?.publication_ref!,
             },
           }}
         >
@@ -104,9 +92,9 @@ function BaseContentContainer(props: BaseContentContainerProps) {
         <Link
           asChild
           href={{
-            pathname: "/(tabs)/feed/[post-id]/",
+            pathname: "/home/tabs/home/[ref]",
             params: {
-              "post-id": data?.parent?.publication_ref!,
+              "ref": data?.parent?.publication_ref!,
             },
           }}
         >
@@ -130,16 +118,10 @@ function BaseContentContainer(props: BaseContentContainerProps) {
               },
             }}
           >
-            <Avatar circular size={"$4"}>
-              <Avatar.Image
-                src={Utils.parseAvatarImage(
-                  data?.creator?.address ?? "1",
-                  data?.creator?.profile?.pfp as string
-                )}
-                accessibilityLabel="Profile Picture"
-              />
-              <Avatar.Fallback backgroundColor="$pink10" />
-            </Avatar>
+            <BaseAvatar size={'$md'} src={Utils.parseAvatarImage(
+                data?.creator?.address ?? "1",
+                data?.creator?.profile?.pfp as string
+            )} />
           </Link>
           <View
             flex={1}
@@ -200,56 +182,25 @@ function BaseContentContainer(props: BaseContentContainerProps) {
             <Text fontFamily={"$heading"}>Reposted</Text>
           </XStack>
         )}
-        {!inCommunityFeed && (
-          <XStack w="100%">
-            {data?.community && (
-              <Link
-                asChild
-                href={{
-                  pathname: "/(tabs)/feed/communities/[name]/",
-                  params: {
-                    name: data?.community?.name,
-                  },
-                }}
-              >
-                <XStack
-                  alignItems="center"
-                  columnGap={10}
-                  borderRadius={5}
-                  px={4}
-                  py={2}
-                  backgroundColor={"$portalBackground"}
-                >
-                  <Avatar circular size={"$1"}>
-                    <Avatar.Image src={data?.community?.image} />
-                    <Avatar.Fallback bg="$pink10" />
-                  </Avatar>
-                  <Text fontSize={12}>{data?.community?.name}</Text>
-                </XStack>
-              </Link>
-            )}
-          </XStack>
-        )}
         <Link
           href={{
-            pathname: "/(tabs)/feed/[post-id]/",
+            pathname: "/home/tabs/home/[ref]",
             params: {
-              "post-id": data?.publication_ref!,
+              "ref": data?.publication_ref!,
             },
           }}
           asChild
         >
           {/* Content */}
-          <View w="100%" flex={1}>
+          <YStack w="100%" flex={1}>
             <YStack w="100%" paddingBottom={10}>
-              <Text color={"$text"} fontSize={20} >
+              <RnText style={{fontSize: 18}} >
                 <HighlightMentions
-                  content={`${data?.content?.content} ${__DEV__ ? `${data?.id}` : ""
-                    }`}
+                  content={data?.content?.content}
                   tags={data?.content?.tags}
                   mentions={data?.content?.mentions}
                 />
-              </Text>
+              </RnText>
               {contentLinks?.map((link, i) => {
                 return (
                   <LinkResolver
@@ -264,7 +215,7 @@ function BaseContentContainer(props: BaseContentContainerProps) {
             <MediaViewer
               data={data?.content?.media ?? []}
             />
-          </View>
+          </YStack>
         </Link>
         {data?.parent && data?.type == 2 && (
           <View w="100%" px={5}>

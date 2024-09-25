@@ -1,0 +1,6 @@
+
+
+interface ShellContext {
+    currentTab: string
+}
+

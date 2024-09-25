@@ -110,23 +110,26 @@ const LinkResolver = (props: Props) => {
         <TouchableWithoutFeedback
             onPress={handleOpenUrl}
         >
-            <YStack borderRadius={5} w="100%" mt={5} >
-                <YStack w="100%" columnGap={10} borderWidth={
-                    linkMetaQuery.data?.[0]?.image ? 1 : 0
-                } borderColor={'$borderColor'} borderRadius={5} p={5} >
-                    {linkMetaQuery.data?.at(0)?.image && <LinkImage url={linkMetaQuery.data?.at(0)?.image!}/>}
-                    <YStack rowGap={5} flex={1} >
-                        {linkDomain.length>0 && <SizableText color={"$sideText"} ellipse={true} w="100%" >
-                            {linkDomain}
-                        </SizableText>}
-                        {linkMetaQuery.data?.[0]?.title && <SizableText numberOfLines={2} size={"$sm"}  w="100%" >
-                            {linkMetaQuery.data?.[0]?.title}
-                        </SizableText>}
-                        {linkMetaQuery.data?.[0]?.description && <SizableText numberOfLines={3} mt={2} fontSize={12} w="100%" >
-                            {linkMetaQuery.data?.[0]?.description}
-                        </SizableText>}
+            <YStack w="100%" >
+                {
+                    !linkMetaQuery.data?.[0]?.image ? null :
+                    <YStack w="100%" columnGap={10} borderWidth={
+                        linkMetaQuery.data?.[0]?.image ? 1 : 0
+                    } borderColor={'$borderColor'} borderRadius={5} p={5} >
+                        {linkMetaQuery.data?.at(0)?.image && <LinkImage url={linkMetaQuery.data?.at(0)?.image!}/>}
+                        <YStack rowGap={5} flex={1} >
+                            {linkDomain.length>0 && <SizableText color={"$sideText"} ellipse={true} w="100%" >
+                                {linkDomain}
+                            </SizableText>}
+                            {linkMetaQuery.data?.[0]?.title && <SizableText numberOfLines={2} size={"$sm"}  w="100%" >
+                                {linkMetaQuery.data?.[0]?.title}
+                            </SizableText>}
+                            {linkMetaQuery.data?.[0]?.description && <SizableText numberOfLines={3} mt={2} fontSize={12} w="100%" >
+                                {linkMetaQuery.data?.[0]?.description}
+                            </SizableText>}
+                        </YStack>
                     </YStack>
-                </YStack>
+                }
             </YStack>
         </TouchableWithoutFeedback>
     )

@@ -24,6 +24,7 @@ import posti from '../../../lib/posti'
 import { Keyboard, KeyboardAvoidingView, Platform, TextInput, TouchableOpacity } from 'react-native'
 import SeedPhraseForm from '../../../components/ui/seed-phrase-form'
 import * as Burnt from 'burnt'
+import { initializeFGSAccountPipeline } from '../../../lib/pipeline/pipelines/fgs-initialization'
 
 // The seed phrase will be a list of 12 words each separated by a space
 const schema = z.object({
@@ -64,7 +65,7 @@ const SeedPhrase = () => {
     }
 
     const goToFeed = () => {
-        router.replace('/(tabs)/feed/home')
+        router.replace('/home')
     }
 
     const handleSubmit = async (values: TSchema) => {
@@ -76,6 +77,15 @@ const SeedPhrase = () => {
             console.log(delegateManager.owner)
 
             await account.markAsImported()
+
+            try {
+                // TODO: pipeline placement
+                await initializeFGSAccountPipeline.process(delegateManager!)
+
+            }
+            catch (e) {
+                console.log("Unable to initialize fgs inbox::", e)
+            }
 
             try { 
 

@@ -1,8 +1,8 @@
-import { View, Text, YStack, XStack, H3, useTheme } from 'tamagui'
+import {View, Text, YStack, XStack, H3, useTheme, Separator} from 'tamagui'
 import React from 'react'
 import { useQuery } from '@apollo/client'
 import { GET_PORTALS } from '../../../lib/convergence-client/queries'
-import { FlatList } from 'react-native'
+import {FlatList, TouchableOpacity} from 'react-native'
 import LinkResolver from '../../../components/ui/feed/link-resolver'
 import { convergenceClient } from '../../../data/apollo'
 import PortalCard from './portal-card'
@@ -12,6 +12,7 @@ import { Portal } from '../../../lib/convergence-client/__generated__/graphql'
 import { WebView } from 'react-native-webview'
 import BaseButton from '../../../components/ui/buttons/base-button'
 import { useRouter } from 'expo-router'
+import {ChevronLeft, Menu} from "@tamagui/lucide-icons";
 
 const Portals = () => {
     const theme = useTheme()
@@ -26,14 +27,21 @@ const Portals = () => {
             w='100%'
             h={'100%'}
             backgroundColor={'$background'}
-            p={20}
+            rowGap={20}
         >
-            <XStack w="100%" alignItems='center' justifyContent='space-between' pb={20} >
-                <H3 fontFamily={'$roboto'} >
-                    Portals
-                </H3>
-            </XStack>
-            <YStack flex={1} w="100%" h="100%" >
+            <YStack w={'100%'} >
+                <XStack w="100%" alignItems='center' justifyContent='space-between' px={20} pt={0} py={10}  >
+                    <TouchableOpacity onPress={router.back} style={{width: 80}}>
+                        <ChevronLeft/>
+                    </TouchableOpacity>
+                    <Text fontWeight={'bold'} fontSize={18} >
+                        Portals
+                    </Text>
+                    <View style={{width: 80}} ></View>
+                    </XStack>
+                    <Separator borderColor={'$border'} />
+            </YStack>
+            <YStack p={20} flex={1} w="100%" h="100%" >
                 <FlatList
                     data={portalsQuery?.data?.portals}
                     keyExtractor={(item) => item.url}

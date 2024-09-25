@@ -11,6 +11,7 @@ import { UploadFileInput } from "./convergence-client/__generated__/graphql"
 import { useQuery } from "@apollo/client"
 import { uploadFile } from "./convergence-client/queries"
 import { convergenceClient } from "../data/apollo"
+import {Utils} from "../utils";
 
 
 const cloudfront_url = 'https://dw26fem5oa72i.cloudfront.net/'
@@ -101,15 +102,11 @@ class UploadManager {
     async downloadFile(uri: string) {
         try {
 
-            const timestamp = new Date().getTime().toString()
-            const res = await FileSystem.downloadAsync(uri, `${FileSystem.documentDirectory}${timestamp}.jpg`)
-            const { granted } = await MediaLibrary.requestPermissionsAsync()
+            // const timestamp = new Date().getTime().toString()
+            const fileName = Utils.extractFileName(uri)
+            await FileSystem.downloadAsync(uri, `${FileSystem.documentDirectory}/${fileName}`)
+            Alert.alert('Image saved')
 
-            if (granted) {
-
-                await MediaLibrary.saveToLibraryAsync(res.uri)
-                Alert.alert('Image saved')
-            }
         }
         catch (e) {
             console.log(`SOMETHING WENT WRONG:: ${e}`)
