@@ -7,7 +7,7 @@ import { Link } from 'expo-router'
 import {checkIsPortal} from "../../../lib/WHITELISTS";
 import {truncate} from "lodash";
 import * as Linking from "expo-linking";
-import {Alert, TouchableOpacity} from "react-native";
+import {Alert, Pressable, TouchableOpacity} from "react-native";
 import * as browser from "expo-web-browser";
 
 // split content string by mentions, links, hashtags, tags, currencies
@@ -87,11 +87,9 @@ const HighlightMentions = (props: Props) => {
         } else if (Utils.urlRegex.test(part)) {
             if(checkIsPortal(part)) return null;
             return (
-                <TouchableOpacity key={index} onPress={()=>handleOpenLink(part)} >
-                    <Text flex={1} fontSize={18}   color={'$COAText'}>
-                        {truncate(part, {length: 30, omission: '...'})}
-                    </Text>
-                </TouchableOpacity>
+                <Text key={index} onPress={()=>handleOpenLink(part)} color={'$COAText'}>
+                    {truncate(part, {length: 30, omission: '...'})}
+                </Text>
             )
         } else if (HASHTAG_REGEX.test(part)) {
             return <Text   color={'$COAText'} key={index}>{part}</Text>
