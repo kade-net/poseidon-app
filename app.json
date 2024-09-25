@@ -2,7 +2,7 @@
   "expo": {
     "name": "poseidon",
     "slug": "poseidon",
-    "version": "0.0.80",
+    "version": "0.0.81",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "poseidon",
@@ -19,7 +19,7 @@
       "config": {
         "usesNonExemptEncryption": false
       },
-      "buildNumber": "80"
+      "buildNumber": "81"
     },
     "android": {
       "adaptiveIcon": {
@@ -28,9 +28,8 @@
       },
       "package": "com.kadenet.poseidon",
       "googleServicesFile": "./google-services.json",
-      "versionCode": 80,
-      "softwareKeyboardLayoutMode": "pan",
-      "blockedPermissions": ["android.permission.READ_MEDIA_IMAGES", "android.permission.READ_MEDIA_VIDEO"]
+      "versionCode": 83,
+      "softwareKeyboardLayoutMode": "pan"
     },
     "web": {
       "bundler": "metro",
