@@ -69,12 +69,12 @@
         "origin": false
       },
       "eas": {
-        "projectId": "30159790-9cfe-44b4-bb58-30450db634ec"
+        "projectId": ""
       }
     },
     "owner": "kade-net",
     "updates": {
-      "url": "https://u.expo.dev/30159790-9cfe-44b4-bb58-30450db634ec"
+      "url": ""
     },
     "runtimeVersion": {
       "policy": "appVersion"
