@@ -88,7 +88,7 @@ const Publication = (props: Props) => {
     }, [])
 
     return (
-        <View flex={1} w="100%" h="100%" py={5} pl={10} >
+        <View flex={1} w="100%" h="100%" py={5} pl={10} backgroundColor={'$background'} >
             {
                 commentsQuery?.loading ? <View
                     w="100%"

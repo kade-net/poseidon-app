@@ -86,7 +86,13 @@ const HighlightMentions = (props: Props) => {
             />
         } else if (Utils.urlRegex.test(part)) {
             if(checkIsPortal(part)) return null;
-            return <TouchableOpacity key={index} onPress={()=>handleOpenLink(part)} ><Text   color={'$COAText'}>{truncate(part, {length: 50, omission: '...'})}</Text></TouchableOpacity>
+            return (
+                <TouchableOpacity key={index} onPress={()=>handleOpenLink(part)} >
+                    <Text flex={1} fontSize={18}   color={'$COAText'}>
+                        {truncate(part, {length: 30, omission: '...'})}
+                    </Text>
+                </TouchableOpacity>
+            )
         } else if (HASHTAG_REGEX.test(part)) {
             return <Text   color={'$COAText'} key={index}>{part}</Text>
         } else if (TAG_REGEX.test(part)) {

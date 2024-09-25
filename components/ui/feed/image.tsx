@@ -141,7 +141,7 @@ const FeedImage = (props: FeedImageProps) => {
                 <YStack pt={insets.top} pb={insets.bottom} flex={1} w="100%" h="100%" >
                     <XStack
                         w="100%"
-                        px={20}
+                        p={20}
                         justifyContent='space-between'
                     >
                         <TouchableOpacity onPress={onClose}>

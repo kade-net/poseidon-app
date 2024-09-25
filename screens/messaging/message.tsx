@@ -71,27 +71,19 @@ const Attachments = memo((props: {data: MESSAGE})=> {
                     const decrypted = await conversation?.decryptFile(res.uri)
                     // console.log("Decrypted:: ", decrypted)
                     const decryptedFile = decrypted?.includes('file://') ? decrypted : `file://${decrypted}`
-                    const { granted } = await MediaLibrary.requestPermissionsAsync()
+                    // const { granted, status } = await MediaLibrary.requestPermissionsAsync()
 
                     const decFileInfo = await FileSystem.readAsStringAsync(decryptedFile, {encoding: 'base64'})
                     if((decFileInfo?.trim()?.length ?? 0) == 0){
                         return null
                     }
 
-                    if (granted) {
-                        await MediaLibrary.saveToLibraryAsync(decryptedFile)
+                    return {
+                        uri: decryptedFile,
+                        TYPE: attachment.TYPE,
+                        SIZE: attachment.SIZE
+                    } as ATTACHMENT
 
-
-
-                        return {
-                            uri: decryptedFile,
-                            TYPE: attachment.TYPE,
-                            SIZE: attachment.SIZE
-                        } as ATTACHMENT
-
-                    }
-
-                    return null
                 })?.filter(a => a !== null))
 
                 return attachments as Array<ATTACHMENT>

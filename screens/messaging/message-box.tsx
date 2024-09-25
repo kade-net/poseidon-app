@@ -65,7 +65,7 @@ export function MessageBox(props: MessageBoxProps) {
     const keyboardFollower = useAnimatedStyle(() => {
         return {
             height: Math.abs(keyboardHeight.value) - 50,
-            marginBottom: keyboardHeight.value > -20 ? 0 : KEYBOARD_PADDING,
+            // marginBottom: keyboardHeight.value > -20 ? 0 : KEYBOARD_PADDING,
         }
     })
 
